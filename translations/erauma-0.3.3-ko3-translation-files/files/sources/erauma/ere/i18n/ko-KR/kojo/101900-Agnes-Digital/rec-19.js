@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/rec-19.js
-// 대상 함수/속성: rec_end, rec_start
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file アグネスデジタル - 募集
  * @author 片手虾好评发售中！
@@ -9,7 +7,7 @@
 const era = require('#/era-electron');
 
 module.exports = {
-  // [번역 대상] rec_start — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec_start
   rec_start: (() => {
     /**
      * @param {CharaTalk} digital
@@ -86,7 +84,7 @@ module.exports = {
     f.title = "변태다! 변…… 변태인가? (전편)";
     return f;
   })(),
-  // [번역 대상] rec_end — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec_end
   rec_end: (() => {
     /**
      * @param {CharaTalk} digital

@@ -1,9 +1,8 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/111900-Dream-Journey/daily-119.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file ドリームジャーニー - 日常
 # @author 幽白書
 # @author Claude (翻訳)
-# [번역 대상] select_after_basement — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] select_after_basement
 select_after_basement:
   sync: true
   lines:
@@ -18,7 +17,7 @@ select_after_basement:
           content: %CHARA%
         - 「……ふふ。あなたは、本当に優しい人ですね。」
 
-# [번역 대상] good_morning — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_morning
 good_morning:
   sync: true
   lines:
@@ -92,7 +91,7 @@ good_morning:
               content: %CHARA%
             - 「笑顔が……可愛い、ですか？……%CALLNAME% が喜ぶなら、もう少し、笑ってみますね。」
 
-# [번역 대상] good_morning_after_basement — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_morning_after_basement
 good_morning_after_basement:
   sync: true
   lines:
@@ -112,7 +111,7 @@ good_morning_after_basement:
           content: %CHARA%
         - 「大丈夫、大丈夫……私のそばにいれば……怖いことなんて、ありません……」
 
-# [번역 대상] end_talk — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] end_talk
 end_talk:
   # FLAGNAME:36 = 変態行為
   - if: era.get('flag:36') === 0

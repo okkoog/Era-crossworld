@@ -1,10 +1,9 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/106400-Mejiro-Palmer/ero-64.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロパーマー - 調教
 # @author Bottle
 # @author KUN
 # @author Claude (翻訳)
-# [번역 대상] kiss — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiss
 kiss:
   - if: d.edu_first
     lines:
@@ -33,7 +32,7 @@ kiss:
       - 「ん……」
   - パーマーの熱い双乳が胸に張り付き、部屋には唇と舌が吸い合う音だけが残る。
 
-# [번역 대상] lure — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] lure
 lure:
   - パーマーは%YOU%と向かい合って座り、下唇をそっと噛み、期待と緊張で目を揺らしている。
   - %SEX%の指が胸を撫で、感触を記憶に残すように辿る。
@@ -45,7 +44,7 @@ lure:
   - %YOU%の気持ちを察したように、%SEX%は前へ寄り、互いの体温がわかる距離で止まった。
   - それでも少し無理をしているのか、%YOU%の手が鎖骨を撫でて乳の間へ届いたとき、パーマーは目を閉じて小さく震えた。
 
-# [번역 대상] pet_breast — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pet_breast
 pet_breast:
   - if: d.is_first
     lines:
@@ -80,7 +79,7 @@ pet_breast:
       - %SEX%の声は羞恥を含んでいるのに、体は正直に反応し、反射のように震える。
       - %SEX%の乳首はさらに硬く尖り、もっと愛撫を欲しがっているみたいだった。
 
-# [번역 대상] prepare_anal — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] prepare_anal
 prepare_anal:
   - if: d.is_first
     lines:
@@ -119,7 +118,7 @@ prepare_anal:
       - パーマーは喉から漏れる声をもう隠さず、%YOU%の指の動きに合わせてゆっくり尻を揺らす。
       - %SEX%の後穴は%YOU%の指に撫でられて少しずつ綻び、より大きな侵入を待っているみたいだった……
 
-# [번역 대상] cunnilingus — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cunnilingus
 cunnilingus:
   - if: d.edu_first
     lines:
@@ -142,7 +141,7 @@ cunnilingus:
   - パーマーは%YOU%の頭を押さえて押しのけようとするが、両脚はすでに固められ、顔を覆って咽るしかない。
   - %SEX%の腰が上下に抽動する。逃げたいのか、%YOU%の口の動きに無意識に合わせているのか、わからない。
 
-# [번역 대상] ask_blow_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ask_blow_job
 ask_blow_job:
   - if: d.is_first
     lines:
@@ -183,7 +182,7 @@ ask_blow_job:
       - 液が%SEX%の下唇から前胸へ垂れるのに、顔の紅潮を足すだけだった。
       - 射精感が潮のようにパーマーの動きに合わせて下腹部で盛り上がる。このままなら……
 
-# [번역 대상] ask_deep_blow_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ask_deep_blow_job
 ask_deep_blow_job:
   - if: d.is_first
     lines:
@@ -202,7 +201,7 @@ ask_deep_blow_job:
       - 溢れた汁が下唇と金玉の間に銀糸を引き、パーマーの前胸をぐちゃぐちゃに濡らす。
       - 早く終わらせたいのか、パーマーはだんだん速度を上げ、もともと苦しげだった声と吐息がいっそう乱れる……
 
-# [번역 대상] sixty_nine — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sixty_nine
 sixty_nine:
   - if: d.edu_first
     lines:
@@ -237,7 +236,7 @@ sixty_nine:
   - 刺激された%YOU%は、舌を%SEX%の陰唇の間に遊ばせ、浅く味わったり、花径の奥まで入れたりする。
   - 互いのリズムを探り、低い呻きと淫らな水音に乗せて、快感の醸成と奉仕に溺れていく。
 
-# [번역 대상] ask_foot_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ask_foot_job
 ask_foot_job:
   - if: d.is_first
     lines:
@@ -281,7 +280,7 @@ ask_foot_job:
       - %SEX%の両足裏が作る穴が%YOU%の肉棒を包んで上下し、先走りが%SEX%の趾の間を伝う。
       - 腿の間からパーマーと目が合うと、ほんの一瞬で%SEX%は顔を逸らし目を閉じる。羞恥の中でもがいているようだった。
 
-# [번역 대상] missionary — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] missionary
 missionary:
   - if: d.is_first
     lines:
@@ -326,7 +325,7 @@ missionary:
           - 「はあっ、あっ、あっ、あっん。」
       - 接合部は混じり合った体液でぐちゃぐちゃに汚れ、パーマーももう顔を隠さず、性の快感に沈んだ%TEEN%の表情が一覧できる。
 
-# [번역 대상] doggy_style — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] doggy_style
 doggy_style:
   - if: d.is_first
     lines:
@@ -367,7 +366,7 @@ doggy_style:
           - 「ん……あっん……%CALLNAME%……おっ……んん……」
       - パーマーの両股は%YOU%のリズムに合わせて肉の波を立て、快感に沈んだ%SEX%は趾をあちこちに伸ばしている。
 
-# [번역 대상] sitting — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sitting
 sitting:
   - if: d.is_first
     lines:
@@ -418,7 +417,7 @@ sitting:
           - 「%CALLNAME%, 빨리…… 나를 만족시켜줘……❤」
       - パーマーの尻が何度も%YOU%の睾丸を圧し、射精を急かしているみたいだった。
 
-# [번역 대상] hug_standing — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hug_standing
 hug_standing:
   - if: d.is_first
     lines:
@@ -453,7 +452,7 @@ hug_standing:
       - パーマーの両脚は絶えず震え、自分の体重を支えきれないのに、後ろへ寄って%YOU%の動きに合わせている。
       - 二人の体液が接合部で銀糸になって流れ、床に水溜まりを作る。
 
-# [번역 대상] ask_cowgirl — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ask_cowgirl
 ask_cowgirl:
   - if: d.is_first
     lines:
@@ -497,7 +496,7 @@ ask_cowgirl:
       - %SEX%の声は柔らかい呻きから満たされた嬌声へ変わり、焦るように%YOU%の胯を上下する。
       - 肉体のぶつかり合う音が部屋に響き、交歓の快感の波が%YOU%を溺れさせそうだった。
 
-# [번역 대상] hit_anal — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hit_anal
 hit_anal:
   - if: d.is_first
     lines:
@@ -540,7 +539,7 @@ hit_anal:
       - %SEX%はもう声を抑えず、平手のたびに咽んで叫び、尻は微かに上がって、もっと罰を請うみたいだった。
       - 잠시 후, 메지로 파머는 몸을 돌려 %YOU%과(와) 마주 앉았으나, 시선은 여전히 허공을 헤매며 아랫입술을 가볍게 깨물고 있었다.
 
-# [번역 대상] ero_start — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ero_start
 ero_start:
   # TFLAGNAME:9 = 強姦
   - if: era.get('tflag:9') === 0
@@ -611,7 +610,7 @@ ero_start:
                 content: %CHARA%
               - 「%CALLNAME%なら……」
 
-# [번역 대상] cannot_look_back — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cannot_look_back
 cannot_look_back:
   title: もう逃げられない逃げ
   lines:
@@ -691,7 +690,7 @@ cannot_look_back:
     -
     - どちらに転んでも、もう後戻りはできない
 
-# [번역 대상] raping_start — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] raping_start
 raping_start:
   - 夢の途中、下から来る激しい刺激で意識が引き戻される。
   - color: %COLOR%
@@ -712,7 +711,7 @@ raping_start:
     lines:
       - %CHARA%は%YOU%の上に伏せ、自分の気持ちと本能のまま、絶えず体を揺らしている。
 
-# [번역 대상] join_3p — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p
 join_3p:
   - color: %COLOR%
     content:
@@ -734,23 +733,23 @@ join_3p:
   - acc: 2
     content: 「これは、だめだ……」
 
-# [번역 대상] join_3p_accept — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p_accept
 join_3p_accept:
   - %CHARA%は目尻を赤くし、%YOU%の胸に飛び込むと陶酔するように息を吸う。
   - 再び顔を上げたとき、瞳はもう熱い霞を帯びていた……
 
-# [번역 대상] join_3p_reject — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p_reject
 join_3p_reject:
   - %CHARA%の表情は期待から陰へ落ち、落胆を下がった前髪の奥へしまう。
   - %YOU%へ無理に笑みを作り、気まずい寂しさを残して去った。
 
-# [번역 대상] join_3p_force — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p_force
 join_3p_force:
   - %YOU%の拒む声を無視し、一気に襟を掴む。
   - 力ずくで自分の前へ引き倒し、強引に口づける。
   - 口を離したとき、%CHARA%はもう服を脱ぎ、上位から容赦なく見下ろしていた……
 
-# [번역 대상] mark_pleasure — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mark_pleasure
 mark_pleasure:
   - if: d.level === 1
     color: %COLOR%
@@ -771,7 +770,7 @@ mark_pleasure:
         content: %CHARA%
       - 「はあっ❤️️ もう逃げられない❤️ これがないとだめ❤️ パーマーはもう……この人のものだよ❤️」
 
-# [번역 대상] mark_meek — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mark_meek
 mark_meek:
   - if: d.level === 1
     color: %COLOR%
@@ -792,7 +791,7 @@ mark_meek:
         content: %CHARA%
       - 「やっぱり、あんたにしかできない❤️️ あんただけ❤️️……」
 
-# [번역 대상] report_preg_with_inmon — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] report_preg_with_inmon
 report_preg_with_inmon:
   title: 妊娠
   lines:
@@ -810,7 +809,7 @@ report_preg_with_inmon:
         - 「この子も、ちょっと褒めて……あと、パーマーも……」
     - %CHARA%は目を閉じ、%YOU%の体にぴったり寄り添う。
 
-# [번역 대상] report_preg_with_love — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] report_preg_with_love
 report_preg_with_love:
   title: 妊娠
   lines:
@@ -823,7 +822,7 @@ report_preg_with_love:
         - 「えへへ……ちょっと、大変なことになったかも。」
     - %CHARA%は顔を真っ赤にして笑い、%YOU%の肩にすり寄る。
 
-# [번역 대상] report_preg_after_raped_in_sleep — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] report_preg_after_raped_in_sleep
 report_preg_after_raped_in_sleep:
   title: 妊娠
   lines:
@@ -836,7 +835,7 @@ report_preg_after_raped_in_sleep:
         - 「%CALLNAME%……なんで……」
     - 翳った瞳が、自分の絶えず震える手を映している。
 
-# [번역 대상] get_semen_blow_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_blow_job
 get_semen_blow_job:
   - if: era.get('nowex:64:饮精量') > 0
     lines:
@@ -857,7 +856,7 @@ get_semen_blow_job:
       - %SEX%は眉をわずかに寄せるだけで、唇も鼻梁も額も髪まで、%CALLNAME%の印を浴びるに任せる。
       - 射精したばかりの先端で%CHARA%の柔らかい頬を擦り、%YOU%は余韻を味わいながら、目の前の傑作を眺める。
 
-# [번역 대상] get_semen_deep_blow_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_deep_blow_job
 get_semen_deep_blow_job:
   - color: %COLOR%
     content:
@@ -874,7 +873,7 @@ get_semen_deep_blow_job:
         content: %CHARA%
       - 「%CALLNAME%……パーマー、うまくできた？」
 
-# [번역 대상] get_semen_sixty_nine — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_sixty_nine
 get_semen_sixty_nine:
   - %CHARA%の舌が%YOU%の陰茎の上で舞い、吞吐のたびに%YOU%の全身が痺れる。
   - 同時に、%YOU%の唇と舌も%CHARA%の濡れた蜜穴を探り、%SEX%の腰を絶えず捻らせる……
@@ -887,7 +886,7 @@ get_semen_sixty_nine:
   - %CHARA%は少しむせたが、すぐ立て直し、口の中の濁りを懸命に飲み込む。
   - %SEX%の喉が絶えず動き、舌先が%YOU%の敏感な先端をきつく覆うのがわかる。快感が髄まで走る……
 
-# [번역 대상] get_semen_foot_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_foot_job
 get_semen_foot_job:
   - color: %COLOR%
     content:
@@ -898,7 +897,7 @@ get_semen_foot_job:
   - %YOU%の低い呻きとともに、濃い精液が先端から噴き、%CHARA%の白い足背と脛へ飛び散る。
   - %CHARA%は目の前の光景を眺め、趾を縮めて粘る液体の温度と質感を味わい、瞳に興奮の光を浮かべる。
 
-# [번역 대상] get_semen_missionary — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_missionary
 get_semen_missionary:
   - color: %COLOR%
     content:
@@ -916,7 +915,7 @@ get_semen_missionary:
   - %CHARA%は%YOU%の下で激しく抽動する。逃げたいのか、無意識に%YOU%の動きへ合わせているのか、わからない。
   - 肉棒は膣の締まりの中で最後の数滴を出し、%YOU%は%CHARA%が意識を失う刹那に見せた表情を眺める。
 
-# [번역 대상] get_semen_doggy_style — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_doggy_style
 get_semen_doggy_style:
   - 絶頂が近く、両膝だけでなんとか尻を支えているほか、%CHARA%のしなやかな体は完全にベッドへ崩れ落ちている。
   - %YOU%が上から%SEX%の蜜穴を何度も貫くのに任せ、瞳は額のほうへ返る。
@@ -928,7 +927,7 @@ get_semen_doggy_style:
         content: %CHARA%
       - 「음으……」
 
-# [번역 대상] get_semen_sitting — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] get_semen_sitting
 get_semen_sitting:
   - 絶頂が近く、%CHARA%の両脚は%YOU%の腰にきつく絡み、深い侵入のたびに締まる。
   - %SEX%の喘ぎはもう嗄れ、音節の一つ一つが情欲の顫音で満ちている。

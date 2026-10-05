@@ -1,13 +1,70 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/102100-Tamamo-Cross/ero-21.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file タマモクロス - 調教
 # @author 雞雞
 tied_heart:
-  # 검토 보류: 본문 미복제. HELD_LOCATIONS.md 참조.
-  sync: true
-  lines: []
+  title: 縛られた心
+  lines:
+    #トレーナー室内
+    #イベント名：縛られた心
+    #トリガー：恋慕状態後にランダム発生
+    - 何も見えない……半ば閉じた瞼の外から、光が瞳に入る感触だけがある。
+    - 目が乾く。%CHARA%は何度も瞬き、涙で潤す。
+    - %TEEN%はゆっくりと意識を取り戻し、故郷より馴染み深いトレーナー室のソファに、ぐったり座っている自分に気づく。
+    - %CHARA%は両手を見る。左右それぞれ、頑丈な鉄輪で繋がれ、腕を自由に伸ばせない。
+    - 見知らぬ場所に縛られたわけではないという事実に、%SEX%はいくらか安心した。
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「なんやこれ——！」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「そんな突っ込みが欲しかったんやろ？ほな、さっさと手錠外して——」
+    - %SEX%の視線は、隣で面白そうにこの惨めな姿を鑑賞している%YOU%へ漂う。
+    - acc: 1
+      content: 「それはあかん。最近のタマ、言うこと聞かんさかい……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「そんなことないわ、でたらめ言うな！」
+    - %YOU%は身を寄せ、顔を%CHARA%の眼前まで近づける。
+    - %YOU%の熱い息が少女の肌に当たり、%SEX%も思わず呼吸を深くした。
+    - acc: 1
+      content: 「だってタマ、いつも俺を誘うような顔してるやろ……」
+    -
+    - acc: 1
+      content: 「走ってるとき、一生懸命お尻を振って見せて、運動のあとは体をくっつけて雌の匂いを自慢する……俺がどれだけ我慢してるか、分かるか？」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「それがわしと何の関係が……あんた自身の悪趣味やろ、ロリコン！」
+    - %SEX%は真っ赤になって言い返す。だがスポーツブラの下の可憐な乳首は、勝手に勃起し、下腹まで熱くなっていた。
+    - %YOU%は上唇を舐め、%CHARA%をソファに押し倒し、相手の両腕のあいだから頭を通す。
+    - acc: 1
+      content: 「ほんなら、俺を押しのけてみろ。」
+    - いまの%CHARA%は両手を手錠で繋がれているだけだ。%UMA%の身体能力なら、脚で抵抗するのも、逃げ出すのも造作ないはず……
+    - if: era.get('relation:21:0') > 225
+      content:
+        - %CHARA%は口を開こうとして、適切な言葉が見つからず、そのまま両腕で%YOU%の首を抱き、二人は深い接吻に沈んだ。
+    - if: era.get('relation:21:0') <= 225
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「ほんま、えげつない大人やな……」
+        - %CHARA%は舌打ちし、気が進まなそうに両腕で%YOU%の首を抱き、深い接吻を迎えた。
 
-# [번역 대상] mark_pleasure — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mark_pleasure
 mark_pleasure:
   - if: d.level === 1
     color: %COLOR%
@@ -30,7 +87,7 @@ mark_pleasure:
           - 「ちびども、ごめんやで。わし、もうこの人から離れられへんらしい……」
       - %CHARA% の体は、完全に堕ちた。
 
-# [번역 대상] mark_meek — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mark_meek
 mark_meek:
   - if: d.level === 1
     lines:
@@ -97,7 +154,7 @@ mark_shame:
         content: %CHARA%
       - 「그게 내랑 무슨 상관이고…… 그냥 니 악취미 아이가, 이 썩을 로리콘 자슥아!」
 
-# [번역 대상] mark_hate — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mark_hate
 mark_hate:
   - if: d.level === 1
     color: %COLOR%

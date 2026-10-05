@@ -1,10 +1,9 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/106400-Mejiro-Palmer/love-64.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロパーマー - 恋慕
 # @author Bottle
 # @author KUN
 # @author Claude (翻訳)
-# [번역 대상] distance — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] distance
 distance:
   # 恋慕24、外出で堤を散歩中に発生
   title: 距離感
@@ -71,17 +70,62 @@ distance:
         -
         - その変化を捉えた%YOU%は、蜜のように飲み込んで、軽い足取りでパーマーの後ろに付く
 
-# [번역 대상] pre-happy — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-happy
 pre-happy:
   - color: %COLOR%
     content: 【もしある日、%CHARA%か%YOU%が眠ってしまったら……】
 
 happy:
-  # 검토 보류: 본문 미복제. HELD_LOCATIONS.md 참조.
-  sync: true
-  lines: []
+  title: 喜び
+  lines:
+    # 恋慕39、一方が昏睡のとき翌週に発生
+    - 夜、トレーニング室
+    - とっくに目が覚めた%YOU%なのに、帰りたくない。目の前のガラスに、絵のような景色が映っているからだ
+    - 眠るパーマーが顔の半分を%YOU%の右肩に埋め、窓の向こうの満天の星を背景にしている
+    -
+    - 均一な呼吸、穏やかな顔。起こすのが忍びない深い眠りだ
+    - だがトレーニング室は泊まる場所として最悪で、それに——寮の門限が近い
+    -
+    - acc: 1
+      content: パーマーを抱いて寮へ運ぶ
+    -
+    - if: era.get('cflag:71:性别') !== 1
+      content: 両手でパーマーの肩と腿を支え、%YOU%は男子高校生の言えない秘密を量っている
+    - 最近ちゃんと減量してるな
+    - 内腿の柔らかい感触、赤ん坊のように白い両腕、そしていつもの、パーマーだけのもの体香
+    - %YOU%はどうしても、腕の中の愛らしい生き物と、レース場のしなやかな走りを結び付けられない
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「せめて……寮の前で下ろしてほしいな……%CALLNAME%？」
+    -
+    - %YOU%はびくりとする。パーマーが急に目覚めたからではない。%YOU%が一度も聞いたことのない、拗ねるような声だったからだ
+    -
+    - 「今は自分で歩きたくないのか？」
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……うん」
+    -
+    - パーマーは顔を%YOU%の肩に埋め、片手で服をきつく掴む。心拍と一緒に速くなるのは、%SEX%の乱れた吐息だ
+    - パーマーの鼻には、自分はどんな匂いなんだろう。%YOU%はふとそう思う
+    - divider: true
+    - 寮の入口から数メートル離れた木陰で、ようやく地に足の着いたパーマーは二歩歩いて引き返す
+    - %YOU%が反応する前に、%SEX%は%YOU%の両肩に手を置き、唇の形を%YOU%の顔に残した
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「ご、誤解しないでよ。これはお礼のキス……えへへ～」
+    -
+    - %YOU%はその場で固まり、パーマーが走って戻る後ろ姿を見る。揺れる髪が街灯の下で銀に光る
 
-# [번역 대상] 49 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] 49
 49:
   title: 温度
   lines:
@@ -193,7 +237,7 @@ happy:
                   content: %CHARA%
                 - 「見ない見ない、早く行こう～」
 
-# [번역 대상] 74 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] 74
 74:
   title: 約束
   lines:
@@ -325,7 +369,7 @@ happy:
         - パーマーはすぐいつもの明るさを取り戻し、いつものように話しながら%YOU%と砂利道を歩く
         - 違うのは、半尺しか残っていない距離と、夕陽の下で組んだ十指だけ……
 
-# [번역 대상] 89 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] 89
 89:
   title: 陽だまり
   lines:
@@ -429,7 +473,7 @@ happy:
             -
             - パーマーは%YOU%と十指を組み、それからゆっくり婚後の展望をつぶやく……
 
-# [번역 대상] 99 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] 99
 99:
   title: 錠
   lines:
@@ -616,7 +660,7 @@ happy:
         - color: %COLOR%
           content: それは%TEEN%が永遠に抜けられない、涙で形を刻み、蜜汁で鋳造された愛の錠
 
-# [번역 대상] here — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] here
 here:
   title: ここでもいいよ
   lines:
@@ -705,7 +749,7 @@ here:
     - 巻き毛の黒い一本が、印のように%TEEN%の口元に貼りついている
     - ……%SEX%に、教えるべきか？
 
-# [번역 대상] escape — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] escape
 escape:
   title: あなたと、天の果てまで逃げる
   lines:
@@ -972,7 +1016,7 @@ escape:
               content: 「もちろん」
           # 馬跳
 
-# [번역 대상] valentine_out_after_sex — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] valentine_out_after_sex
 valentine_out_after_sex:
   - color: %COLOR%
     content:
@@ -1021,7 +1065,7 @@ valentine_office_after_sex:
 
 # 依存心シリーズ
 
-# [번역 대상] trust — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] trust
 trust:
   title: あんたが信じてくれた私……
   lines:
@@ -1173,7 +1217,7 @@ trust:
         - 「すごく、いい夢……」
   # 依存心
 
-# [번역 대상] is_you — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] is_you
 is_you:
   title: あなただから……
   lines:
@@ -1235,7 +1279,7 @@ is_you:
           content: %CHARA%
         - （いつか、%YOURNAME%はずっとパーマーを見てくれる）
 
-# [번역 대상] nega_dis — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] nega_dis
 nega_dis:
   title: ゼロ距離の私たち
   lines:
@@ -1515,7 +1559,7 @@ nega_dis:
     - acc: 2
       content: 「今日はだめだ」
 
-# [번역 대상] come_for_you — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] come_for_you
 come_for_you:
   title: 夜になって、会いに行く
   lines:
@@ -1590,7 +1634,7 @@ come_for_you:
     - acc: 2
       content: 抵抗を諦める
 
-# [번역 대상] come_fy_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] come_fy_end
 come_fy_end:
   - color: %COLOR%
     content:
@@ -1610,7 +1654,7 @@ come_fy_end:
         content: %CHARA%
       - 「어이, %ACE称呼善信%, 나 두어 바퀴 뛰고 올게. 문 닫기 몇 분 전에는 돌아올 거니까…… 너무 오래 끌지 마.」
 
-# [번역 대상] endless_escape — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] endless_escape
 endless_escape:
   title: 終わりのない逃亡
   lines:
@@ -1686,26 +1730,26 @@ endless_escape:
           content: %CHARA%
         - 「会いたいよ……パーマーのトレーナー」
 
-# [번역 대상] pre-rooftop — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-rooftop
 pre-rooftop:
   - color: %COLOR%
     content: 【%CHARA%は屋上で待っている】
 
 # イベントタイトル定義用
-# [번역 대상] rooftop — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] rooftop
 rooftop:
   title: 待つ、それとも……
   lines:
     -
 
     # イベントタイトル定義用
-# [번역 대상] rooftop_3 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] rooftop_3
 rooftop_3:
   title: 待つ、それとも……期待
   lines:
     -
 
-# [번역 대상] rooftop_event — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] rooftop_event
 rooftop_event:
   # 依存心取得後、天皇賞（春）未勝利、屋上で発生
   # 発生9回以下：待つ、それとも……
@@ -1865,7 +1909,7 @@ rooftop_event:
             content: %CHARA%
           - （너이기 때문에, 그래서……）
 
-# [번역 대상] s_feeling — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_feeling
 s_feeling:
   title: 違和感
   lines:
@@ -1961,7 +2005,7 @@ s_feeling:
         - %YOU%の返事を待たず、パーマーはホテルの扉を押す
         # 強姦
 
-# [번역 대상] s_feeling_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_feeling_end
 s_feeling_end:
   - color: %COLOR%
     content:
@@ -1976,12 +2020,12 @@ s_feeling_end:
   - パーマーは%YOU%をきつく抱き、翳んだ目でふわりと笑う
   - 꼬리가 자기도 모르게 옆으로 미끄러져 슬그머니 허리에 감긴다.
 
-# [번역 대상] pre-nap — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-nap
 pre-nap:
   - color: %COLOR%
     content: 【%CHARA%と屋上で昼ごはんを食べたいか】
 
-# [번역 대상] nap — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] nap
 nap:
   title: 静かな昼寝
   lines:
@@ -2227,7 +2271,7 @@ nap:
             - パーマーはもう真っ赤な顔を上げ、力を入れて%YOU%の顔に口づける
             # 馬跳
 
-# [번역 대상] nap_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] nap_end
 nap_end:
   - color: %COLOR%
     content:
@@ -2258,12 +2302,12 @@ nap_end:
       - 「트레이너는 나랑 같이 해줄 거지?」
   - パーマーは笑顔のまま、%YOU%の手を引いて屋上を離れる
 
-# [번역 대상] pre-leisure — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-leisure
 pre-leisure:
   - color: %COLOR%
     content: 【%CHARA%とカラオケへ行こう！】
 
-# [번역 대상] leisure — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] leisure
 leisure:
   title: 息抜き
   lines:
@@ -2375,12 +2419,12 @@ leisure:
                 - 「もう……そんな冗談、やめなさいよ」
             - 今日の歌声は、%YOU%が叩かれる悲鳴と混ざり合う
 
-# [번역 대상] pre-cinema — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-cinema
 pre-cinema:
   - color: %COLOR%
     content: 【%ARDAN%がいるときに、%CHARA%と映画を見に行こう！】
 
-# [번역 대상] cinema — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cinema
 cinema:
   title: 映画館怪談！？
   lines:
@@ -2722,7 +2766,7 @@ cinema:
         - ベッドに座った二人が目を交わし、揃ってベッドで服を剥がされた%YOU%を見る
       # 3Pへ。アルダン上位、パーマー助手
 
-# [번역 대상] movie_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] movie_end
 movie_end:
   - color: %COLOR_71%
     content:
@@ -2747,7 +2791,7 @@ movie_end:
   - 二人はベッドに倒れ、間の%YOU%を一緒に抱き、甘く胸に貼りつく
   - 따뜻한 손바닥이 방금 사정한 음경을 붙잡고 부드럽게 위아래로 훑기 시작했다.
 
-# [번역 대상] delicious — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] delicious
 delicious:
   title: いきなり美食タイム？
   lines:
@@ -2806,7 +2850,7 @@ delicious:
     - ……ほどなくパーティーの空気に変わったことを無視すれば
 # 二人の体力+200、体重+10～20（x10）
 
-# [번역 대상] rest — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] rest
 rest:
   title: 休息……？
   lines:
@@ -2932,12 +2976,12 @@ rest:
     - 残りの時間は、ゆっくり味わう時間だ
   # 馬跳
 
-# [번역 대상] pre-travel — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-travel
 pre-travel:
   - color: %COLOR%
     content: 【パーマー号に乗って、%CHARA%とドライブへ行こう！】
 
-# [번역 대상] travel — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] travel
 travel:
   title: 短い旅
   lines:
@@ -3056,12 +3100,12 @@ travel:
     - 日没の帰路になってから、車内に散らばったティッシュと犯行の道具を慌てて片付ける
   # 馬跳
 
-# [번역 대상] pre-joke — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] pre-joke
 pre-joke:
   - color: %COLOR%
     content: 【%CHARA%が眠っているとき……】
 
-# [번역 대상] joke — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] joke
 joke:
   title: 小さな物語の始まり
   lines:
@@ -3176,7 +3220,7 @@ joke:
           content: %CHARA%
         - 「トレーナーにちょっと冗談言ったら、怒るかな……」
 
-# [번역 대상] not_joke — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] not_joke
 not_joke:
   title: 面白くない冗談
   lines:
@@ -3394,7 +3438,7 @@ not_joke:
               content: %CHARA%
             - 「パーマー、ほんと……馬鹿！」
 
-# [번역 대상] not_joke_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] not_joke_end
 not_joke_end:
   - %YOU%の傍に動かず倒れたパーマーは、ただ微笑んでいる
   - そっと%YOU%の体に凭れ、その中に寄り添う
@@ -3404,7 +3448,7 @@ not_joke_end:
         content: %CHARA%
       - 「오늘 밤…… 뭘 할까?」
 
-# [번역 대상] end_joke — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] end_joke
 end_joke:
   title: 冗談は、もう終わり
   lines:
@@ -3456,7 +3500,7 @@ end_joke:
         - 「楽しみだなぁ……トレーナー～」
   # 恋慕+4
 
-# [번역 대상] concern — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] concern
 concern:
   title: 心配しすぎだよ！
   lines:
@@ -3872,7 +3916,7 @@ concern:
         - 服が床に落ち、二つの美しい体が%YOU%の上にのしかかる
         - 下の小さなトレーナーは、もう準備ができていて、不満そうに空気の中で微かに震えている
 
-# [번역 대상] concern_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] concern_end
 concern_end:
   - color: %COLOR%
     content:
@@ -3910,7 +3954,7 @@ concern_end:
         content: %RYAN%
       - 「아…… 이젠 선생님한테 붙잡혀서 보충 수업을 들어야겠네.」
 
-# [번역 대상] dessert — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] dessert
 dessert:
   title: スイーツ……ちょっと違う？
   lines:
@@ -4379,7 +4423,7 @@ dessert:
         - 理性の糸が切れたみたいに
         - マックイーンとパーマーが、揃って%YOU%の上に覆いかぶさる
 
-# [번역 대상] dessert_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] dessert_end
 dessert_end:
   - color: %COLOR%
     content:
@@ -4429,7 +4473,7 @@ dessert_end:
         content: %MCQUEEN%
       - 「당신도 보러…… 트레이너님도 계셨군요.」
 
-# [번역 대상] party — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] party
 party:
   title: パーティーの時間
   lines:
@@ -4614,7 +4658,7 @@ party:
         - %YOU%が声を我慢しきれなくなる直前、小さな口にも塞がれる。
         - 倒れる前、視界の最後にあったのは、白い三日月のメッシュだった。
 
-# [번역 대상] party_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] party_end
 party_end:
   - 메지로 아르당이 제멋대로 한 걸음 뒤로 물러나자, 파머는 서둘러 달려가 떠나려는 발걸음을 붙잡았다.
   - 반쯤 강제로 메지로 아르당을 붙잡고 나서야 파머는 정신을 차렸다.

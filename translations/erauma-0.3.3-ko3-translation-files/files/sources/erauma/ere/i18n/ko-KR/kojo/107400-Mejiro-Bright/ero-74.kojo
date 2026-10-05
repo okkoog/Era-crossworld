@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/107400-Mejiro-Bright/ero-74.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロブライト - 調教
 # @author KUN
 join_3p:
@@ -21,7 +20,7 @@ join_3p:
   - acc: 2
     content: 「이번에는…… 좀 힘들겠어」
 
-# [번역 대상] join_3p_accept — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p_accept
 join_3p_accept:
   - color: %L_COLOR%
     content:
@@ -40,7 +39,7 @@ join_3p_accept:
         content: %CHARA%
       - 「그럼 저희…… 다 함께 가보실까요❤」
 
-# [번역 대상] join_3p_force — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p_force
 join_3p_force:
   - color: %COLOR%
     content:
@@ -71,7 +70,7 @@ join_3p_force:
         content: %CHARA%
       - 「그럼 저희도 다 함께 가요～」
 
-# [번역 대상] join_3p_reject — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] join_3p_reject
 join_3p_reject:
   - color: %COLOR%
     content:

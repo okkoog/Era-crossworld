@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/others/pregnant-slave.js
-// 대상 함수/속성: punish, punish_first
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * Partial Korean reuse from EraUmaK 2.21.
  * Only scenes with confirmed structural matches are overridden here.
@@ -26,7 +24,7 @@ const { get_random_entry } = require('#/utils/list-utils');
 const { akuochi, buff_colors } = require('#/data/color-const');
 const { pregnant_stage_enum } = require('#/data/ero/status-const');
 
-const { degeneration_to_evil } = require('#/i18n/ja-JP/snippets');
+const { degeneration_to_evil } = require("#/i18n/ko-KR/snippets");
 const ja = require('#/i18n/ja-JP/timon/others/pregnant-slave');
 const ko = Object.create(ja);
 
@@ -83,7 +81,7 @@ Object.assign(ko, {
     }
     get_random_entry(buffer)();
   },
-  // [번역 대상] punish_first — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // 한국어 작업 모듈 연결: punish_first
   punish_first: (() => {
     /**
      * @author 幽白書
@@ -280,7 +278,7 @@ Object.assign(ko, {
     f.title = [{ color: buff_colors[2], content: '임신주머니 직무의 징벌' }];
     return f;
   })(),
-  // [번역 대상] punish — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // 한국어 작업 모듈 연결: punish
   punish: (() => {
     /**
      * @author 幽白書
@@ -477,3 +475,632 @@ Object.assign(ko, {
 });
 
 module.exports = ko;
+
+module.exports = {
+  ...module.exports,
+
+  // [번역 대상] be_awake_as_slave
+  async be_awake_as_slave(chara, child, you, callname_c) {
+    await printAndWait(['夜半、', you.get_colored_name(), ' は飛び起きた']);
+    await printAndWait('孕袋である以上、眠りの時間も務めを忘れてはならない');
+    await printAndWait('ただ、今夜の客が少し特殊なだけだ');
+    println();
+    await printAndWait([
+      you.get_colored_name(),
+      ' は、前と後ろで違うリズムの衝撃を受けていた',
+    ]);
+    await printAndWait([
+      child.get_colored_name(),
+      ' は ',
+      callname_c,
+      ' と低く呼びながら腰を揺らし、突くたびに ',
+      you.get_colored_name(),
+      ' のいちばん奥へ届く',
+    ]);
+    await printAndWait([
+      you.get_colored_name(),
+      ' はベッドに跪き、自分の子に獣のような姿勢で犯される感覚を、恥ずかしさとともに味わった',
+    ]);
+    await printAndWait(
+      '母としての矜持——そんなものがあったとして——は、いま完全に消えた',
+    );
+    await printAndWait([
+      '雌犬のように尻を揺らし、いじめられたい様子は、口で奉仕している ',
+      chara.get_colored_name(),
+      ' の笑いものにもなった',
+    ]);
+    await printAndWait([
+      you.get_colored_name(),
+      ' は口の肉棒をより深く含み、濃い匂いのなかへ顔を埋めて現実から逃れた',
+    ]);
+    println();
+    await printAndWait([
+      'ほどなく、',
+      chara.get_colored_name(),
+      ' と ',
+      child.get_colored_name(),
+      ' は濃い精を放った',
+    ]);
+    await printAndWait([
+      you.get_colored_name(),
+      ' は口の精を吐き、手に塗り、指を秘部へ入れてゆっくり掻き混ぜ、溢れた白濁をもう一方の手で掬って飲み込んだ',
+    ]);
+    if (get('cflag:0:妊娠阶段') === 1 << pregnant_stage_enum.no) {
+      await printAndWait([
+        chara.get_colored_name(),
+        ' の精と ',
+        child.get_colored_name(),
+        ' の精が混ざる。どちらが先に孕ませるのだろう？',
+      ]);
+      await printAndWait([
+        you.get_colored_name(),
+        ' は想像に耽り、目の前の ',
+        chara.get_colored_name(),
+        ' と ',
+        child.get_colored_name(),
+        ' の肉棒が、その仕草で再び起き上がっているのに気づかなかった',
+      ]);
+    } else {
+      await printAndWait([
+        you.get_colored_name(),
+        ' の仕草を見て、',
+        chara.get_colored_name(),
+        ' と ',
+        child.get_colored_name(),
+        ' の肉棒は再び起き上がった',
+      ]);
+    }
+    await printAndWait('夜は、まだ続く……');
+  },
+
+  // 한국어 작업 모듈 연결: have_baby_dedicate
+  have_baby_dedicate: (() => {
+    const title = '新しい命';
+    /**
+     * 孕袋が自ら身を捧げて子を産む
+     * @author 幽白書
+     * @param {CharaTalk} you
+     * @param {CharaTalk} father
+     */
+    const f = async (you, father) => {
+      await printAndWait([you.get_colored_name(), ' は子を抱き上げた——']);
+      const ret = await degeneration_to_evil('歓びを思い出す', '母性が湧く');
+      if (ret === 1) {
+        await printAndWait([
+          you.get_colored_name(),
+          ' は子を抱き、胸に激しいものが湧いた',
+        ]);
+        await printAndWait([
+          'これは ',
+          you.get_colored_name(),
+          ' と ',
+          father.get_colored_name(),
+          ' が結ばれて生まれた子だ',
+        ]);
+        await printAndWait('……違う。結ばれたのではない');
+        await printAndWait([
+          you.get_colored_name(),
+          ' の遺伝子が自ら服し、',
+          father.get_colored_name(),
+          ' の遺伝子の下に跪いて生まれた産物だ',
+        ]);
+        await printAndWait([
+          you.get_colored_name(),
+          ' の体は、相性に抗えず、遺伝子の奥の渇望に抗えない',
+        ]);
+        await printAndWait([
+          'この子の顔を見て、',
+          you.get_colored_name(),
+          ' の胸はさまざまな慈しみでいっぱいになる',
+        ]);
+        await printAndWait([
+          'そこに見える ',
+          father.get_colored_name(),
+          ' の影の一つひとつが、強く容赦のない甘い侵犯を何度も思い出させる',
+        ]);
+        await printAndWait([
+          'この子を連れて外へ出る絵を思うと、自分が ',
+          father.get_colored_name(),
+          ' の専属孕袋である証明を持ち歩いているようで……',
+        ]);
+        await printAndWait([you.get_colored_name(), ' の下は、思わず震えた']);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          ' は子を抱き、胸に波が立った',
+        ]);
+        await printAndWait([
+          'これは ',
+          you.get_colored_name(),
+          ' と ',
+          father.get_colored_name(),
+          ' が結ばれて生まれた子だ',
+        ]);
+        await printAndWait('違う。結ばれたのではない');
+        await printAndWait([
+          father.get_colored_name(),
+          ' の遺伝子が ',
+          you.get_colored_name(),
+          ' の遺伝子を侵して生まれた産物だ',
+        ]);
+        await printAndWait([
+          'この体に生まれつきの奴隷性に抗いがたい。心底では受け入れられず、嫌悪していても、改造された体は子のための部屋を自ら開き、',
+          father.get_colored_name(),
+          ' に種を播かれる準備を整える',
+        ]);
+        await printAndWait([
+          '胸の子を見て、',
+          you.get_colored_name(),
+          ' は恨むべきだった',
+        ]);
+        await printAndWait([
+          'そこに見える ',
+          father.get_colored_name(),
+          ' の影の一つひとつが、強く容赦のない侵犯を何度も思い出させる',
+        ]);
+        await printAndWait([
+          'この子を宿した夜、',
+          father.get_colored_name(),
+          ' の求めで、',
+          you.get_colored_name(),
+          ' は子犬のように四つん這いになり、精で満たされ、両手が体を支えられなくなるまで続き、',
+          father.get_colored_name(),
+          ' はやっと肉棒を抜き、',
+          you.get_colored_name(),
+          ' の口へ入れて終わりにした',
+        ]);
+        await printAndWait([
+          'だが二人の遺伝子はそれほど相性がよかったのか、',
+          you.get_colored_name(),
+          ' は憎しみきれず、胸に湧いたのは母と呼ばれる感情だけだった',
+        ]);
+        await printAndWait([
+          '——ただ、',
+          you.get_colored_name(),
+          ' はまだ知らない。この子が育ったあと、その感情は再び遺伝子上の屈服へと変わる……',
+        ]);
+      }
+      setColor();
+      return [ret];
+    };
+    f.title = title;
+    return f;
+  })(),
+
+  // 한국어 작업 모듈 연결: have_baby_in_sleep
+  have_baby_in_sleep: (() => {
+    const title = '新しい命';
+    /**
+     * 孕袋が睡姦で子を産む
+     * @author 幽白書
+     * @param {CharaTalk} you
+     * @param {CharaTalk} father
+     * @param {number} children_count
+     * @param {number} edu_count
+     */
+    const f = async (you, father, children_count, edu_count) => {
+      await printAndWait([you.get_colored_name(), ' は子を抱き上げた——']);
+      const ret = await degeneration_to_evil('慈しんで撫でる', '無言で抗う');
+      if (ret === 1) {
+        await printAndWait([
+          you.get_colored_name(),
+          ' の胸は愛情でいっぱいだった',
+        ]);
+        await printAndWait('子の父が誰かは、もうどうでもいい');
+        await printAndWait([
+          'むしろ、孕袋のいつもの仕事をしているだけで、こんなに可愛い子が得られる……',
+          you.get_colored_name(),
+          ' は心のなかで、顔も知らない父へ礼を言った',
+        ]);
+        await printAndWait('これから、この子をきちんと育て上げよう……');
+        await printAndWait([
+          'いつのまにか、かつて ',
+          you.get_colored_name(),
+          ' の胸にあった、トレーナーとしての責任と誇りが、また芽を出した……',
+        ]);
+        printButton('「！」', 1);
+        await input();
+        await printAndWait([
+          '突然の水が、',
+          you.get_colored_name(),
+          ' を幻想から叩き起こした',
+        ]);
+        await printAndWait('抱き上げた子が、母へ人生最初の尿をかけた');
+        await printAndWait([
+          '自分の子に便所にされたこと——たとえ偶然でも——に、',
+          you.get_colored_name(),
+          ' は言いようのない快感を覚えた。この子が自分を便所として使えるように生まれてきたのだ、とさえ思えた',
+        ]);
+        await printAndWait([
+          you.get_colored_name(),
+          ' は優しく子の秘部を舐め、体にかかった液を残らず口へ運び、満足げに指を舐めた',
+        ]);
+        println();
+        await printAndWait('これほど卑しい姿は、最下等の孕袋でもこの程度だ');
+        await printAndWait('こんな自分が、元の生活へ戻れるはずがない');
+        await printAndWait('そんな生活へ戻ることなど、もう耐えられない');
+        await printAndWait([
+          you.get_colored_name(),
+          ' は胸の子を優しく見ている。表情は変わらない',
+        ]);
+        await printAndWait('だが、胸のなかはもう違う');
+        await printAndWait(
+          '————どうすれば、この子を、自分を調教するのにいちばん向いた主人に育てられるだろう？',
+        );
+      } else {
+        await printAndWait(
+          'この子へ、理論上は母として持つべき感情が、薄れてしまっている',
+        );
+        await printAndWait(
+          '生まれたばかりの子に罪はないと、わかっているのに……',
+        );
+        printButton('「！」', 1);
+        await printAndWait(['突然、', you.get_colored_name(), ' は声を上げた']);
+        await printAndWait([
+          '子の最初の尿は、狙いを定めたように噴き、',
+          you.get_colored_name(),
+          ' の顔を濡らした',
+        ]);
+        await printAndWait(
+          '看護師も善意の笑いをこぼした。子の健康を喜ぶかのように',
+        );
+        await printAndWait([
+          'だが ',
+          you.get_colored_name(),
+          ' の胸に喜びはなく、頭のなかには過去が蘇る',
+        ]);
+        println();
+        await printAndWait(
+          `朝、両脚を開いて蹲り、眠気の残る${father.uma_sex_title}の朝勃ちを口で処理し、一日の初精と初尿を腹へ飲み込んだ経験`,
+        );
+        await printAndWait(
+          `夕方、トレーニング場で練習を終えた${father.uma_sex_title}たちに欲の処理を懇願され、一日分の汗と垢のついた肉棒を口に含み、${father.couple_title}の疲れを口のなかへ吐き出させた経験`,
+        );
+        if (children_count > 0 || edu_count > 0) {
+          await printAndWait([
+            you.get_colored_name(),
+            ' は悲しげに、数日前の夜を思い出した',
+          ]);
+          await printAndWait([
+            '自分の',
+            children_count > 0 ? '子' : `担当${father.uma_sex_title}`,
+            'が夢遊で部屋へ入り、半睡のなかで秘部を満たしたあと、眠っている唇を無理に開いて掃除したときも、自分は目覚められなかった',
+          ]);
+          println();
+          await printAndWait([
+            you.get_colored_name(),
+            ' は、この生活に慣れ始めているのではないかと疑い始めた……',
+          ]);
+          await printAndWait([
+            'だめだ、そう思ってはいけない、と ',
+            you.get_colored_name(),
+            ' は我に返ったように首を振った',
+          ]);
+        }
+        println();
+        await printAndWait('……やはり、思い出すのは辛い記憶ばかり。だが……');
+        await printAndWait(
+          '胸のなかの、何も知らず、母の顔に尿をかけても気にせず、けらけら笑う子を見る',
+        );
+        await printAndWait('子の天性は、善悪とは無縁だ……');
+        await printAndWait('あるいは、まだ機会はある……？');
+        println();
+        await printAndWait('子が周囲の行いを学ぶ力を、忘れている');
+        await printAndWait(
+          `孕袋が奉仕する相手が、身分を問わない「すべての${father.uma_sex_title}」であることも、忘れている`,
+        );
+        await printAndWait(
+          '傍らの看護師が、もう孕袋の口奉仕を欲しがっていることにも気づかない',
+        );
+        await printAndWait(
+          '無意識に、実の子がかけた尿を舐め取っていることにも気づかない',
+        );
+        await printAndWait([
+          you.get_colored_name(),
+          ' は子を抱き、看護師のスカートの下の太いものを吸わされても、瞳の光は消えなかった',
+        ]);
+        println();
+        if (get('exp:0:生产次数') > 0) {
+          await printAndWait([
+            'また空虚な夢を抱き、',
+            you.get_colored_name(),
+            ' は今度こそこの子をきちんと育てると決意した',
+          ]);
+        } else {
+          await printAndWait([
+            '空虚な夢を抱き、',
+            you.get_colored_name(),
+            ' はこの子をきちんと育てると決意した',
+          ]);
+        }
+      }
+      setColor();
+      return [ret];
+    };
+    f.title = title;
+    return f;
+  })(),
+
+  // 한국어 작업 모듈 연결: morning_duty
+  morning_duty: (() => {
+    /**
+     * @param {CharaTalk} chara キャラ
+     * @param {CharaTalk} you プレイヤー
+     * @param {string} your_title 現在の肩書（XX性奴隷 / XX孕袋）
+     * @param {string} penis_desc 陰茎の形容
+     */
+    const f = async (chara, you, your_title, penis_desc) => {
+      const ret = [];
+      await printAndWait([
+        you.get_colored_name(),
+        ' は、頬を叩く温もりで目を覚ました。',
+      ]);
+      if (chara.sex_code === 0) {
+        await printAndWait([
+          '一晩中 ',
+          you.get_colored_name(),
+          ' を苛んだ ',
+          chara.get_colored_name(),
+          ' は、また薬を飲み、わざわざ',
+          chara.sex,
+          'の高貴な',
+          penis_desc,
+          '肉棒を目覚ましにした。',
+        ]);
+      } else {
+        await printAndWait([
+          '一晩中 ',
+          you.get_colored_name(),
+          ' を苛んだ ',
+          chara.get_colored_name(),
+          ' は、またわざわざ',
+          chara.sex,
+          'の高貴な',
+          penis_desc,
+          '肉棒を目覚ましにした。',
+        ]);
+      }
+      await printAndWait([
+        '——',
+        you.get_colored_name(),
+        ' に、まだ果たしていない務めがあることを思い出させる。朝から夜まで、同じことの繰り返しだ。',
+      ]);
+      ret.push(
+        await degeneration_to_evil('素直に含む', '嫌そうに顔をそむける'),
+      );
+      if (ret[0] === 1) {
+        await printAndWait([
+          '手間をかけるまでもなく、',
+          you.get_colored_name(),
+          ' が唇を少し開いた瞬間、肉棒は待ちきれずに入ってきた。',
+        ]);
+        await printAndWait([
+          chara.get_colored_name(),
+          ' の好き放題のなか、',
+          you.get_colored_name(),
+          ' は従順に唇と舌で奉仕した。',
+        ]);
+        await printAndWait([
+          your_title,
+          ' ',
+          you.get_colored_actual_name(),
+          ' は、今日も自分の務めを忘れない……',
+        ]);
+      } else {
+        await printAndWait([
+          'ここまで落ちても、',
+          you.get_colored_name(),
+          ' には矜持、少なくとも気位はある——',
+        ]);
+        await printAndWait([
+          you.get_colored_name(),
+          ' がわずかに顔をそらし、そう主張しようとしたとき、すでに我慢の切れた主人 ',
+          chara.get_colored_name(),
+          ' は平手打ちを食らわせ、いまの立場を思い出させた。',
+        ]);
+        await printAndWait([
+          'それから ',
+          chara.get_colored_name(),
+          ' は、',
+          you.get_colored_name(),
+          ' の協力など期待せず、この朝食を独りで取り始めた。',
+        ]);
+        await printAndWait([
+          your_title,
+          ' ',
+          you.get_colored_actual_name(),
+          ' は、今日も務めを叩き込まれた……',
+        ]);
+      }
+      setColor();
+      return ret;
+    };
+    f.title = '翌朝の務め';
+    return f;
+  })(),
+
+  // [번역 대상] office_study
+  async office_study(chara, you) {
+    await printAndWait([
+      chara.get_colored_name(),
+      ' の学業を指導したあと、',
+      chara.get_colored_name(),
+      ' は頬を赤らめて ',
+      you.get_colored_name(),
+      ' を見つめた。次は、性教育の時間だ。',
+    ]);
+    await printAndWait([
+      you.get_colored_name(),
+      ' が指導する側なのに、',
+      chara.get_colored_name(),
+      ' のほうが ',
+      you.get_colored_name(),
+      ' の体をよく知っている。',
+      chara.get_colored_name(),
+      ' の手のなかで、',
+      you.get_colored_name(),
+      ' は自分の敏感な場所と、触れたときの恥ずかしい反応を、否応なく教え込まれた。',
+    ]);
+  },
+
+  // [번역 대상] oyakodon
+  oyakodon: (() => {
+    /**
+     * @author 幽白書
+     * @param {CharaTalk} child
+     * @param {CharaTalk} father
+     * @param {CharaTalk} you
+     */
+    const f = async (child, father, you) => {
+      await printAndWait([
+        you.get_colored_name(),
+        ' は ',
+        child.get_colored_name(),
+        ' と ',
+        father.get_colored_name(),
+        ' に、ぴったり挟まれていた。',
+      ]);
+      await printAndWait([
+        '二本の灼熱の肉棒が、',
+        you.get_colored_name(),
+        ' の前後を同時に攻め、突くたびに新しい快感が走る。',
+      ]);
+      await printAndWait([
+        '朦朧のなか、',
+        you.get_colored_name(),
+        ' は ',
+        child.get_colored_name(),
+        ' が生まれたときのことを思い出した——',
+      ]);
+      await you.used_to_say_and_wait(
+        'いつか子が大きくなったら……子と、子の父に一緒に使われ、挟まれて、雄の肉棒に溺れる……',
+        true,
+      );
+      await printAndWait('あの妄想が、いま現実になっている……');
+    };
+    f.title = '親子丼';
+    return f;
+  })(),
+
+  // [번역 대상] race_start
+  race_start: (() => {
+    /**
+     * @author 幽白書
+     * @param {CharaTalk} chara
+     * @param {CharaTalk} you
+     */
+    const f = async (chara, you) => {
+      await printAndWait([
+        `ほかのトレーナーが担当${chara.uma_sex_title}へ最後の言葉をかけているあいだ、`,
+        you.get_colored_name(),
+        ' は ',
+        chara.get_colored_name(),
+        ' の肉棒を口に含んでいた。',
+      ]);
+      await printAndWait([
+        'レース前の熱に酔った ',
+        chara.get_colored_name(),
+        // FLAGNAME:35 = 惩戒力度
+        ' の硬い下は当然処理が要る。それも',
+        get('flag:35') === 2 ? '性奴隷' : '孕袋',
+        'である ',
+        you.get_colored_name(),
+        ' に欠かせない務めだ。',
+      ]);
+      await printAndWait([
+        '精をすべて飲み込んだあと、',
+        you.get_colored_name(),
+        ' は ',
+        chara.get_colored_name(),
+        ' の肉棒へ、レースの無事を祈る口づけを落とした。',
+      ]);
+    };
+    f.title = 'レースの前に';
+    return f;
+  })(),
+
+  // [번역 대상] s_a_dating
+  async s_a_dating(chara, you) {
+    await printAndWait([
+      chara.get_colored_name(),
+      ' は ',
+      you.get_colored_name(),
+      ' の手を引き、中庭へデートに出た。',
+    ]);
+    await printAndWait([
+      you.get_colored_name(),
+      ' は両脚を閉じ、太ももから白い液がゆっくり流れ落ちている。マスクは何かの液に濡れ、口と鼻に張りついていた。発情の匂いに、通りかかった',
+      chara.uma_sex_title,
+      'たちまで頬を赤らめて鼻を摘まんだ。',
+    ]);
+  },
+
+  // [번역 대상] s_a_tree_hollow
+  async s_a_tree_hollow(chara, you) {
+    await printAndWait([
+      chara.get_colored_name(),
+      ' は ',
+      you.get_colored_name(),
+      ' を枯れ木の洞のそばへ連れていった。',
+    ]);
+    await printAndWait([
+      you.get_colored_name(),
+      ` は、${chara.sex}が最近のストレスを吐き出したいだけだと思った瞬間、切り株へ押し倒された。`,
+    ]);
+    await printAndWait([
+      'それから ',
+      you.get_colored_name(),
+      ' の下半身の衣がゆっくり剥がれ、熱い肉柱が入り口に当たった。',
+    ]);
+    await printAndWait([
+      '声を出せば、洞の反響で ',
+      you.get_colored_name(),
+      ' の声が学園中に響くだろう。',
+    ]);
+    await printAndWait([
+      `担当の${chara.uma_sex_title}に枯れ木の洞で犯されたと知れれば、`,
+      you.get_colored_name(),
+      ' のトレーナーとしての名声は終わりだ……',
+    ]);
+    await printAndWait('もっとも、そんなものはとうに残っていない。');
+    await printAndWait([
+      you.get_colored_name(),
+      ' は枯れ木の洞のそばで喘いだ。',
+      get('flag:35') === 2 ? '性奴隷' : '孕袋',
+      'である ',
+      you.get_colored_name(),
+      ' にとって、これもいつもの一日にすぎない。',
+    ]);
+  },
+
+  // [번역 대상] school_rooftop
+  async school_rooftop(chara, you) {
+    await printAndWait([
+      '屋上での公開露出……このとき誰かが顔を上げれば、',
+      you.get_colored_name(),
+      ' は耐えきれないだろう。',
+    ]);
+    await printAndWait(
+      `屋上の下、トレーニング場を走る${chara.uma_sex_title}たち。`,
+    );
+    await printAndWait(
+      '見られたら、きっと果ててしまう。潮が雨のように下の者へ落ちる……',
+    );
+    await printAndWait([
+      'だが、',
+      chara.get_colored_name(),
+      ' に片脚を上げられ、力の入れようのない体勢の ',
+      you.get_colored_name(),
+      ' は、屋上の防護ネットに頼るしかなく、鉄線が胸に赤い痕を残した。',
+    ]);
+    // TALENTNAME:32 = 泌乳
+    if (get('talent:0:32') > 0) {
+      await printAndWait('ああ、出てしまった……');
+      await printAndWait([
+        `秘部の潮が溢れるより先に、下の${chara.uma_sex_title}の頭へ落ちたのは、`,
+        you.get_colored_name(),
+        ' の乳首から細い流れとなって出た乳だった。',
+      ]);
+    }
+  },
+};

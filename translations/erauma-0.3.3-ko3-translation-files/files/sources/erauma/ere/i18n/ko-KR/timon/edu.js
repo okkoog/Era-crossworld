@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/edu.js
-// 대상 함수/속성: foreign_rest, foreign_study, foreign_train, foreign_travel, pl_future, race_end_item_lose, race_end_item_win, race_start, tf_change_debuff, train_fail, under_palace
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file 育成の地の文
  * @author 雞雞
@@ -79,7 +77,7 @@ module.exports = {
     f.title = '정상의 자리에 오르다';
     return f;
   })(),
-  // [번역 대상] under_palace — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] under_palace
   under_palace: (() => {
     /**
      * @author 雞雞
@@ -108,7 +106,7 @@ module.exports = {
     f.title = '명예의 전당 아래서';
     return f;
   })(),
-  // [번역 대상] pl_future — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] pl_future
   pl_future: (() => {
     /**
      * @author 雞雞
@@ -296,7 +294,7 @@ module.exports = {
       ]);
     }
   },
-  // [번역 대상] train_fail — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] train_fail
   train_fail: (() => {
     /**
      * @author 雞雞
@@ -345,7 +343,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {number} debuff
    */
-  // [번역 대상] tf_change_debuff — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] tf_change_debuff
   tf_change_debuff(chara, debuff) {
     if (debuff > 0) {
       era.print([
@@ -367,7 +365,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {boolean} is_success
    */
-  // [번역 대상] foreign_study — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] foreign_study
   async foreign_study(chara, you, is_success) {
     if (!chara.id) {
       await era.printAndWait([
@@ -421,7 +419,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] foreign_rest — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] foreign_rest
   async foreign_rest(chara, you) {
     await era.printAndWait([
       '調子を戻すため、',
@@ -438,7 +436,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] foreign_train — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] foreign_train
   async foreign_train(chara, you) {
     await era.printAndWait([
       '現地のコースに慣れるため、',
@@ -456,7 +454,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {string} loc_name
    */
-  // [번역 대상] foreign_travel — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] foreign_travel
   async foreign_travel(chara, you, loc_name) {
     await era.printAndWait([
       '気分をほぐすため、',
@@ -469,7 +467,7 @@ module.exports = {
     ]);
     await era.printAndWait('돈은 꽤 들었지만 그만한 가치가 있었다!');
   },
-  // [번역 대상] race_start — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] race_start
   race_start: (() => {
     /**
      * @param {CharaTalk} chara
@@ -527,7 +525,7 @@ module.exports = {
     f.title = '레이스 전에';
     return f;
   })(),
-  // [번역 대상] race_end_item_win — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] race_end_item_win
   race_end_item_win: (() => {
     /**
      * @author 黑奴队长
@@ -558,7 +556,7 @@ module.exports = {
     f.title = '감정이 고조된 승리';
     return f;
   })(),
-  // [번역 대상] race_end_item_lose — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] race_end_item_lose
   race_end_item_lose: (() => {
     /**
      * @author 黑奴队长

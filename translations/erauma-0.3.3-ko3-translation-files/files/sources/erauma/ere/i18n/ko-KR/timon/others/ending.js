@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/others/ending.js
-// 대상 함수/속성: punishment3
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * Partial Korean reuse from EraUmaK 2.21.
  * Unmatched/new 3.113 entries inherit from ja-JP.
@@ -189,7 +187,8 @@ ko.punishment2 = async (you, date, uma, they) => {
   );
 };
 
-ko.punishment3 = async (you, uma, they) => {
+ko.punishment3 = // [번역 대상] punishment3
+  async (you, uma, they) => {
   era.setOffset(6);
   era.setWidth(12);
   await you.say_as_unknown_and_wait(
@@ -272,3 +271,132 @@ ko.bt_confirm_yes = '비참한 현실을 직시한다';
 ko.bt_confirm_no = '으아아 안 볼래';
 
 module.exports = ko;
+
+module.exports = {
+  ...module.exports,
+
+  // [번역 대상] basement_end
+  basement_end: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} chara
+     * @param {CharaTalk} you
+     */
+    const f = async (chara, you) => {
+      era.setOffset(6);
+      era.setWidth(12);
+      await era.printAndWait('トレセンの、どの探知機にも映らない地下室で……');
+      await era.printAndWait([
+        you.get_colored_name(),
+        ' は手足を縛る縄を必死にほどこうとしたが、自分を締めつけるだけだった。',
+      ]);
+      await era.printAndWait([
+        chara.get_colored_name(),
+        ' はベッドの縁に座り、',
+        you.get_colored_name(),
+        ' に嫣然と微笑み、優しく世話をした。',
+      ]);
+      await era.printAndWait([
+        'だが ',
+        you.get_colored_name(),
+        ' の胸にあるのは、未知の未来への深い恐怖だけだった……',
+      ]);
+      await era.printAndWait([
+        chara.get_colored_name(),
+        ' の愛に囚われ、',
+        you.get_colored_name(),
+        ' は結末を迎えた……',
+      ]);
+      era.setWidth(24);
+      era.setOffset(0);
+    };
+    f.title = '情愛の牢獄';
+    return f;
+  })(),
+
+  // [번역 대상] crazy_fan_end
+  crazy_fan_end: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} chara
+     * @param {CharaTalk} you
+     */
+    const f = async (chara, you) => {
+      era.setOffset(6);
+      era.setWidth(12);
+      if (era.get(`relation:${chara.id}:0`) < 0) {
+        await era.printAndWait([
+          '出走でも取材でも、',
+          you.get_colored_name(),
+          ' と担当の険悪さは衆目の知るところだった。その険悪さが担当の成長を妨げているという声は止まらず、校側もこの組み合わせに堪忍袋の緒が切れ始めていた……だが、彼らよりさらに耐性のない者たちがいた。',
+        ]);
+      } else {
+        await era.printAndWait([
+          you.get_colored_name(),
+          ' が怠りすぎたのか、担当',
+          chara.uma_sex_title,
+          'の天賦が足りなかったのか。勝利はいつまでも遠いままだった。校側もこの組み合わせに堪忍袋の緒が切れ始めていた……だが、彼らよりさらに耐性のない者たちがいた。',
+        ]);
+      }
+      await era.printAndWait([
+        you.get_colored_name(),
+        ' は ',
+        chara.get_colored_name(),
+        ' へ渡すハチミツケーキを片手に、大雨の道をひとり歩いていた。背後から急な足音がし、それから腰に錐のような痛みが走った。',
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        ' は地面に押し倒され、背後の者は背中へ刺し続けた。',
+        you.get_colored_name(),
+        ' が動かなくなるまで。',
+      ]);
+      await era.printAndWait(
+        'ケーキ箱を包んだビニール袋は、雨粒に激しく叩かれ、叩かれ、叩かれ続けた……',
+      );
+      await era.printAndWait('怒れるファンの報復を受け、結末を迎えた……');
+      era.setWidth(24);
+      era.setOffset(0);
+    };
+    f.title = 'ファン襲撃';
+    return f;
+  })(),
+
+  // [번역 대상] slave_end
+  slave_end: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} chara
+     * @param {CharaTalk} you
+     */
+    const f = async (chara, you) => {
+      era.setOffset(6);
+      era.setWidth(12);
+      await era.printAndWait([
+        '金に腐った ',
+        you.get_colored_name(),
+        ' は、選んではならない道へ足を踏み入れた——自尊を捨て、自分の生徒から金を借りる……',
+      ]);
+      await era.printAndWait('だが運命の贈り物には、みな裏で値がついている。');
+      await era.printAndWait([
+        you.get_colored_name(),
+        ' の借入は、雪だるま式の複利のなかで、ついに ',
+        you.get_colored_name(),
+        ' が耐えうる重さを超えた。',
+      ]);
+      await era.printAndWait([
+        'あとは、',
+        you.get_colored_name(),
+        ' が代価を返す番だ……',
+      ]);
+      await era.printAndWait([
+        '金の関係に囚われた ',
+        you.get_colored_name(),
+        ' は、結末を迎えた……',
+      ]);
+      era.setWidth(24);
+      era.setOffset(0);
+    };
+    f.title = '金の奴隷';
+    return f;
+  })(),
+};

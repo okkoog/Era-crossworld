@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/daily-3.js
-// 대상 함수/속성: cl_christmas, cl_halloween, cl_new_year, cl_temple_fair, cl_valentine, end_talk, gn_sex_confirm, gn_sex_intro, gn_sex_reject, good_morning, good_night_normal, o_c_pray, o_r_fishing, o_r_walking, o_s_arcade, o_s_drawing, o_s_ktv, o_s_movie, office_cook, office_rest, office_study, s_a_dating, s_a_tree_hollow, s_r_lunch, talk
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file トウカイテイオー - 日常
  * @author 天马闪光蹄
@@ -18,7 +16,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {number} b_escape 地下室からの脱出方法
    */
-  // [번역 대상] good_morning — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] good_morning
   good_morning(teio, you, b_escape) {
     if (b_escape > 0) {
       switch (b_escape) {
@@ -126,7 +124,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] office_study — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] office_study
   async office_study(teio, you) {
     await you.say_and_wait('무적의 테이오 님에게도 모르는 게 다 있네.');
     await era.printAndWait(
@@ -137,7 +135,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] talk — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] talk
   async talk(teio, you) {
     if (era.get('base:3:体力') < era.get('maxbase:3:体力') * 0.45) {
       if (Math.random() < 0.5) {
@@ -203,7 +201,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] office_cook — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] office_cook
   async office_cook(teio, you) {
     await teio.say_and_wait('무적의 테이오 님은…… 응, 이런 것도 잘한다고!');
     await era.printAndWait(
@@ -227,7 +225,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] office_rest — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] office_rest
   async office_rest(teio, you) {
     if (era.get('relation:3:0') > 150) {
       await you.say_and_wait(`자, 일어나렴, 테이오 ${teio.adult_sex_title}.`);
@@ -255,7 +253,7 @@ module.exports = {
     );
   },
   /** @param {CharaTalk} teio トウカイテイオー */
-  // [번역 대상] s_a_tree_hollow — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_tree_hollow
   async s_a_tree_hollow(teio) {
     if (era.get('status:3:腿伤') > 0) {
       await teio.say_and_wait('今のボクは……はは、ははは、うっ——');
@@ -269,7 +267,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] s_a_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_dating
   async s_a_dating(teio, you) {
     await era.printAndWait(
       `学園のなかで……これは大丈夫なのか？${you.name} の胸に疑問が湧く。だがそばに張りついているテイオーは、顔がやけに赤いだけで、様子は崩れていない。`,
@@ -279,7 +277,7 @@ module.exports = {
     );
   },
   /** @param {CharaTalk} teio トウカイテイオー */
-  // [번역 대상] s_r_lunch — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_r_lunch
   async s_r_lunch(teio) {
     await teio.say_and_wait('ここでご飯、意外といい感じだね！');
     await era.printAndWait(
@@ -291,7 +289,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname トウカイテイオーがプレイヤーを呼ぶ名
    */
-  // [번역 대상] o_r_fishing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_r_fishing
   async o_r_fishing(teio, you, callname) {
     await teio.say_and_wait([callname, '、こっち！']);
     await era.printAndWait(
@@ -305,7 +303,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] o_r_walking — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_r_walking
   async o_r_walking(teio, you) {
     await teio.say_and_wait(`川沿いを歩くの～気持ちいい！`);
     await era.printAndWait(
@@ -316,7 +314,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] o_s_arcade — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_arcade
   async o_s_arcade(teio, you) {
     await era.printAndWait(
       `${you.name} と ${teio.name} はゲームセンターで思いきり遊び、帰る前に余ったコインをクレーンゲームで『浪費』することにした。`,
@@ -330,7 +328,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname トウカイテイオーがプレイヤーを呼ぶ名
    */
-  // [번역 대상] o_s_drawing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_drawing
   async o_s_drawing(teio, you, callname) {
     if (era.get('relation:3:0') > 225) {
       await teio.say_and_wait([callname, '……無敵のテイオー運、分けてあげる！']);
@@ -351,7 +349,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname トウカイテイオーがプレイヤーを呼ぶ名
    */
-  // [번역 대상] o_s_ktv — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_ktv
   async o_s_ktv(teio, you, callname) {
     if (era.get('relation:3:0') > 225) {
       await teio.say_and_wait([callname, '！ボクの歌、どうだった！']);
@@ -371,7 +369,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] o_s_movie — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_movie
   async o_s_movie(teio, you) {
     if (era.get('relation:3:0') > 225) {
       await era.printAndWait(
@@ -400,7 +398,7 @@ module.exports = {
    * @param {PrintedSpan} callname トウカイテイオーがプレイヤーを呼ぶ名
    * @param {number} dice おみくじの出目。0-1の小数で、小さいほど良い
    */
-  // [번역 대상] o_c_pray — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_c_pray
   async o_c_pray(teio, you, callname, dice) {
     await teio.say_and_wait([
       callname,
@@ -449,7 +447,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname トウカイテイオーがプレイヤーを呼ぶ名
    */
-  // [번역 대상] good_night_normal — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] good_night_normal
   async good_night_normal(teio, you, callname) {
     era.print(
       `忙しい一日が終わり、${you.name} は ${teio.name} を学生寮の入口まで送る。`,
@@ -463,7 +461,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] gn_sex_intro — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_intro
   gn_sex_intro(teio, you) {
     era.print(
       `忙しい一日が終わり、${you.name} は ${teio.name} を学生寮の入口まで送る。`,
@@ -484,7 +482,7 @@ module.exports = {
     );
     teio.say('あの、外泊届は出してあるから、今日は……');
   },
-  // [번역 대상] gn_sex_confirm — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_confirm
   gn_sex_confirm: (teio, you) => [
     '声が徐々に細くなる。血が頬へ上り、',
     you.get_colored_name(),
@@ -498,7 +496,7 @@ module.exports = {
    * @param {PrintedSpan} callname トウカイテイオーがプレイヤーを呼ぶ名
    * @param {number} check 求愛判定。大成功なら拒否しても逆に押し切られる
    */
-  // [번역 대상] gn_sex_reject — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_reject
   async gn_sex_reject(teio, you, callname, check) {
     if (check !== 2) {
       return;
@@ -548,7 +546,7 @@ module.exports = {
       ]);
     }
   },
-  // [번역 대상] cl_new_year — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_new_year
   cl_new_year: (() => {
     const title = '新年';
     /**
@@ -572,7 +570,7 @@ module.exports = {
     f.title = title;
     return f;
   })(),
-  // [번역 대상] cl_valentine — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_valentine
   cl_valentine: (() => {
     const title = 'バレンタイン';
     /**
@@ -621,7 +619,7 @@ module.exports = {
     f.title = title;
     return f;
   })(),
-  // [번역 대상] cl_temple_fair — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_temple_fair
   cl_temple_fair: (() => {
     const title = '縁日';
     /**
@@ -672,7 +670,7 @@ module.exports = {
     f.title = title;
     return f;
   })(),
-  // [번역 대상] cl_halloween — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_halloween
   cl_halloween: (() => {
     const title = 'ハロウィン';
     /**
@@ -737,7 +735,7 @@ module.exports = {
     f.title = title;
     return f;
   })(),
-  // [번역 대상] cl_christmas — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_christmas
   cl_christmas: (() => {
     const title = 'クリスマス';
     /**
@@ -792,7 +790,7 @@ module.exports = {
    * @param {CharaTalk} teio トウカイテイオー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] end_talk — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] end_talk
   async end_talk(teio, you) {
     if (era.get('flag:变态行为') === 0) {
       if (era.get('love:3') >= 75) {

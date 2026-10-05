@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/edu-13.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロマックイーン - 育成
 # @author 伊兰
 # @author Claude (翻訳)
@@ -11,7 +10,7 @@ train:
       - 「가겠어요!」
   - 맥퀸의 투지에 찬 말과 함께, 훈련이 본격적으로 진행되었다.
 
-# [번역 대상] train_success — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train_success
 train_success:
   sync: true
   lines:
@@ -30,7 +29,7 @@ train_success:
         - 結局%YOU%が数分間も話し続け、マックイーンに軽く蹴られてようやく終わった。
     -
 
-# [번역 대상] train_fail — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train_fail
 train_fail:
   title: トレーニング失敗
   lines:
@@ -90,7 +89,7 @@ train_fail:
             - 「はあ……また、申し訳なさが込み上げますわ。」
         - 医者の手当てを終えたあと、%YOU%はマックイーンを寮で休ませた。
 
-# [번역 대상] train_add — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train_add
 train_add:
   title: 遅れを取りたくない
   lines:
@@ -156,7 +155,7 @@ train_add:
             - 「自分を律さねば、未来は見えません。『堂々と』こそが、メジロ家の流儀ですわ。」
         - 결과적으로 %트레이너%의 끊이지 않는 칭찬을 몇 분 동안 듣고서야, 맥퀸의 가벼운 발길질과 함께 상황이 마무리되었다.
 
-# [번역 대상] train_success_sex — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train_success_sex
 train_success_sex:
   - %트레이너%은(는) 훈련장에서 부상을 당한 맥퀸을 부축해 보건실로 데려가 %그녀%를 침대에 눕혔다.
   - 맥퀸은 몹시 분해하는 기색이었다.
@@ -181,7 +180,7 @@ train_success_sex:
     lines:
       - 실망스러운 대답을 들은 맥퀸은 귀를 축 늘어뜨린 채 원망 섞인 눈길을 보내며 떠나갔다.
 
-# [번역 대상] race_start — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_start
 race_start:
   title: レースの前
   lines:
@@ -201,7 +200,7 @@ race_start:
         - 「ですから%CALLNAME%、わたくしのまた一つの勝利を、見届けてくださいませ。」
     - %YOU%とマックイーンは互いに気合を入れ、コースへ向かった。
 
-# [번역 대상] race_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_win
 race_win:
   title: レース勝利
   lines:
@@ -242,7 +241,7 @@ race_win:
           content: %CHARA%
         - 「より華麗に、より優雅に、より優美に……より高い目標へ進みましょう。」
 
-# [번역 대상] race_5 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_5
 race_5:
   title: レース入着
   lines:
@@ -279,7 +278,7 @@ race_5:
           content: %CHARA%
         - 「そのために、もっと強くならねばなりません。」
 
-# [번역 대상] race_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_lose
 race_lose:
   title: レース敗北
   lines:
@@ -317,7 +316,7 @@ race_lose:
           content: %CHARA%
         - 「ですから%CALLNAME%、わたくしをもっと強くしてくださいませ！」
 
-# [번역 대상] meet_mejiro — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] meet_mejiro
 meet_mejiro:
   title: メジロ家の%SIBLINGS%との初対面
   lines:
@@ -455,7 +454,7 @@ meet_mejiro:
         - 「決して何かを我慢しているわけではございませんわ。そんなことはありません！」
     - %YOU%はふふと笑い、目の前の食事を味わい始めた。
 
-# [번역 대상] begin_race — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] begin_race
 begin_race:
   title: メイクデビュー前
   lines:
@@ -508,7 +507,7 @@ begin_race:
       content: 「いってらっしゃい！」
     - %YOU%も微笑み、コースへ向かうメジロマックイーンを見送った。
 
-# [번역 대상] begin_race_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] begin_race_win
 begin_race_win:
   title: 目標へ
   lines:
@@ -564,7 +563,7 @@ begin_race_win:
           content: %CHARA%
         - 「では、よろしくお願いいたしますわ、%CALLNAME%。」
 
-# [번역 대상] kiku_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho
 kiku_sho:
   title: 切磋
   lines:
@@ -620,7 +619,7 @@ kiku_sho:
       content: 「行け。信じている。」
     - メジロマックイーンは%YOU%に小さく頷き、メジロライアンと準備室を出た。
 
-# [번역 대상] kiku_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho_win
 kiku_sho_win:
   title: 見事な一戦
   lines:
@@ -685,7 +684,7 @@ kiku_sho_win:
           content: %CHARA%
         - 「次の切磋、楽しみにしておりますわ。」
 
-# [번역 대상] tenn_spr — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr
 tenn_spr:
   title: 制覇の前夜
   lines:
@@ -739,7 +738,7 @@ tenn_spr:
           content: %CHARA%
         - 「全力を尽くしましょう！」
 
-# [번역 대상] tenn_spr_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr_win
 tenn_spr_win:
   title: メジロ家を継ぐ者
   lines:
@@ -801,7 +800,7 @@ tenn_spr_win:
         - 「ですから本当に、みなさまに感謝を。そして%CALLNAME%のご指導に、感謝を！」
     - 言葉が落ちると、観客席から長く途切れない歓声が爆発した。
 
-# [번역 대상] takz_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin
 takz_kin:
   title: 落ち着いて迎える
   lines:
@@ -849,7 +848,7 @@ takz_kin:
           content: %CHARA%
         - 「そしてライアンにも、わたくしの勝利への覚悟を知っていただきましょう。」
 
-# [번역 대상] takz_kin_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin_win
 takz_kin_win:
   title: メジロ家の強さ
   lines:
@@ -986,7 +985,7 @@ takz_kin_win:
         - 「はい……！」
     - こうして——天皇賞（秋）が、次の目標になった。
 
-# [번역 대상] tenn_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho
 tenn_sho:
   title: 最後の一瞬まで輝く
   lines:
@@ -1018,7 +1017,7 @@ tenn_sho:
     - それから%SEX%は振り返らず地下通路を出て、観客席と相手を見据え、一言も発さず、腕のメジロ家の腕章を少し整えた。
     - 大股でゲートの後方へ歩き、ウォームアップを始めた。
 
-# [번역 대상] tenn_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_win
 tenn_sho_win:
   title: 幕を下ろす
   lines:
@@ -1072,7 +1071,7 @@ tenn_sho_win:
     - acc: 1
       content: 「行こう。」
 
-# [번역 대상] new_year — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] new_year
 new_year:
   title: 新年
   lines:
@@ -1117,7 +1116,7 @@ new_year:
           content: %CHARA%
         - 「では、新しい一年も、%YOU%によろしくお願いいたしますわ。」
 
-# [번역 대상] valentine — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] valentine
 valentine:
   title: バレンタインデー
   lines:
@@ -1221,7 +1220,7 @@ valentine:
             - 「ですが……限定チョコを味わえたのですもの、一口でも満足ですわ。」
         - %YOU%はその様子を見て笑いながらメジロマックイーンをなだめた。バレンタインだけの、別種の日常はこうして終わった。
 
-# [번역 대상] halloween — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] halloween
 halloween:
   title: ハロウィン
   lines:
@@ -1314,7 +1313,7 @@ halloween:
           content: %CHARA%
         - 「ええ、ハッピーハロウィン。」
 
-# [번역 대상] mejiro_family — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mejiro_family
 mejiro_family:
   title: メジロ家からの招待
   lines:
@@ -1356,7 +1355,7 @@ mejiro_family:
           content: %CHARA%
         - 「楽しみにしておりますわ。」
 
-# [번역 대상] mejiro_party — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mejiro_party
 mejiro_party:
   title: メジロ家の晩餐会
   lines:
@@ -1815,7 +1814,7 @@ mejiro_party:
         - 「では、%CALLNAME%、おやすみなさい。」
     - そのあと、%YOU%は執事に案内されて整った客室へ行き、身体を洗い、寝間着を着てベッドに横たわり、深く眠った。
 
-# [번역 대상] want_dessert — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] want_dessert
 want_dessert:
   title: スイーツが食べたい
   lines:

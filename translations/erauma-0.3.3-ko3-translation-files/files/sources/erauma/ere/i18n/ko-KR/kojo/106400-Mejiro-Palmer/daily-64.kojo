@@ -1,9 +1,8 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/106400-Mejiro-Palmer/daily-64.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロパーマー - 日常
 # @author KUN
 # @author Claude (翻訳)
-# [번역 대상] select — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] select
 select:
   sync: true
   lines:
@@ -86,7 +85,7 @@ select:
                   content: %CHARA%
                 - 「もう入んないよ……えへへ……」
 
-# [번역 대상] select_escape — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] select_escape
 select_escape:
   sync: true
   lines:
@@ -125,7 +124,7 @@ select_escape:
               content: %CHARA%
             - 「하지만 난 역시…… 네 곁에 있고 싶어.」
 
-# [번역 대상] office_study — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_study
 office_study:
   - random: true
     lines:
@@ -144,7 +143,7 @@ office_study:
           - 「OK OK, 이해했어!」
       - %CHARA%は何かを理解したらしい。残りの問題をすらすら片付けていく。
 
-# [번역 대상] office_prepare — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_prepare
 office_prepare:
   - random: true
     lines:
@@ -175,7 +174,7 @@ office_prepare:
             content: %CHARA%
           - 「그래도 완벽하게 해낼 거야. 승리를 눈앞에서 놓치고 싶지는 않으니까!」
 
-# [번역 대상] talk — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] talk
 talk:
   # STATUSNAME:10 = 昏睡
   # STATUSNAME:39 = 馬跳S
@@ -454,7 +453,7 @@ talk:
                 content: %CHARA%
               - 「昔はよく%CALL_74%の髪、整えてあげてたんだよね～ 今は%CALLNAME%にお願い、かな。」
 
-# [번역 대상] office_gift — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_gift
 office_gift:
   - if: d.half_life === 0
     lines:
@@ -504,7 +503,7 @@ office_gift:
           - 「난 게임도 꽤 잘한다구, 에헴~」
       - %CHARA%は腕の中の贈り物をきつく抱き、目尻に水気が浮かぶ。
 
-# [번역 대상] office_cook — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_cook
 office_cook:
   - if: d.half_life === 0
     random: true
@@ -548,7 +547,7 @@ office_cook:
           - 「まず%CALLNAME%の胃を掴んで、それで続けて……」
       - %YOU%には聞こえない声で、独り言をつぶやく。
 
-# [번역 대상] office_rest — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_rest
 office_rest:
   - random: true
     lines:
@@ -582,7 +581,7 @@ office_rest:
             content: %CHARA%
           - 「에이, 모처럼 시간이 비었는데……」
 
-# [번역 대상] office_game — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_game
 office_game:
   - random: true
     lines:
@@ -627,7 +626,7 @@ office_game:
             content: %CHARA%
           - 「%CALLNAME%、ただ%SELF_CALL%とゲームしたいだけ？」
 
-# [번역 대상] s_a_tree_hollow — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_a_tree_hollow
 s_a_tree_hollow:
   - random: true
     lines:
@@ -646,7 +645,7 @@ s_a_tree_hollow:
           - 「반드시! 이길 거야! 레이스든, 그 무엇이든!」
       - %YOU%にはよくわからない話だったが、%CHARA%の笑顔を見たら、それ以上は考えなかった。
 
-# [번역 대상] s_a_dating — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_a_dating
 s_a_dating:
   - if: d.half_life === 0
     lines:
@@ -670,7 +669,7 @@ s_a_dating:
             content: %CHARA%
           - 「헤헤~」
 
-# [번역 대상] s_r_lunch — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_r_lunch
 s_r_lunch:
   - if: d.check > 0
     lines:
@@ -726,7 +725,7 @@ s_r_lunch:
                 content: %CHARA%
               - 「옥상 경치 좋지? 난 기분 전환하고 싶을 때 가끔 올라오곤 해!」
 
-# [번역 대상] o_r_fishing — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_r_fishing
 o_r_fishing:
   - random: true
     lines:
@@ -745,7 +744,7 @@ o_r_fishing:
           - 「그립네~ 예전에도 자주 이렇게 소풍을 나오곤 했었는데~」
       - %CHARA%は竿を投げ、水面の穏やかなウキを眺めながら気ままに話し始める。
 
-# [번역 대상] o_r_walking — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_r_walking
 o_r_walking:
   - random: true
     lines:
@@ -768,7 +767,7 @@ o_r_walking:
             content: %CHARA%
           - 「이대로…… 있어도 될까?」
 
-# [번역 대상] o_s_arcade — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_arcade
 o_s_arcade:
   - random: true
     lines:
@@ -804,7 +803,7 @@ o_s_drawing:
             content: %CHARA%
           - 「아쉽네, 오늘도 추첨권 행사는 없구나……」
 
-# [번역 대상] o_s_ktv — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_ktv
 o_s_ktv:
   - random: true
     lines:
@@ -823,7 +822,7 @@ o_s_ktv:
           - 「音楽って、やっぱり元気出るね、%CALLNAME%！」
       - %CHARA%は嬉しそうに、音楽に合わせて跳ねている。
 
-# [번역 대상] o_s_movie — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_movie
 o_s_movie:
   - if: era.get('cflag:71:66') !== 1
     random: true
@@ -873,7 +872,7 @@ o_s_movie:
           - 「둘이서 영화를 보러 온다니, 왠지 평소랑은 다른 느낌이네……」
       - %CHARA%は傍らでしばらくつぶやいていたが、%YOU%と繋いだ手はむしろ強く握る。
 
-# [번역 대상] o_c_pray — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_c_pray
 o_c_pray:
   - トレセン近くの神社は規模こそ小さいが、%UMA%の間ではかなり名が通っている。
   - 出走前にわざわざ足を運び、少しの期待を乗せておみくじを引く%UMA%も多い。
@@ -948,7 +947,7 @@ o_c_pray:
           - 「고마워……」
       - 작은 목소리였지만, 고요한 신사 안에서는 무척이나 선명하게 울려 퍼졌다.
 
-# [번역 대상] o_s_restaurant — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_restaurant
 o_s_restaurant:
   - random: true
     lines:
@@ -995,7 +994,7 @@ o_s_restaurant:
             content: %CHARA%
           - 「食べ終わったら、もう少し付き合ってくれる？ %CALLNAME%」
 
-# [번역 대상] o_s_dating — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_dating
 o_s_dating:
   - if: d.half_life === 0
     lines:
@@ -1040,7 +1039,7 @@ o_s_dating:
           - 「なんでかわからないけど……離したら、%CALLNAME%が傍からいなくなりそうで……」
       - ほかの人には聞こえない声で、%YOU%の肩に凭れて小さく言う。
 
-# [번역 대상] o_s_shopping — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_shopping
 o_s_shopping:
   - random: true
     lines:
@@ -1084,7 +1083,7 @@ o_s_shopping:
           - 「%CALLNAME%の家にこれがあったら、遊びに行っていい？」
       - %CHARA%の目は光っていて、門限のことは完全に頭にないようだった。
 
-# [번역 대상] good_night_normal — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_night_normal
 good_night_normal:
   sync: true
   lines:
@@ -1115,7 +1114,7 @@ good_night_normal:
       lines:
         - 眠りに落ちた%YOU%は、朦朧の中で%CHARA%が手を出そうとして迷っている姿を見た気がした。最後に残ったのは、親しみと優しさの混ざった別れの声だけ。
 
-# [번역 대상] good_night_sex — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_night_sex
 good_night_sex:
   - %CHARA%を寮まで送ったあと、袖をそっと引かれる。
   - %YOU%の後ろに立つ%CHARA%は少し呂律が怪しいのに、最後の声だけははっきり聞こえる。
@@ -1156,7 +1155,7 @@ good_night_sex:
           - %CHARA%の表情は期待から陰へ落ち、落胆を下がった前髪の奥へしまう。
           - 素直に振り返って寮へ入るのに、入口でもう一度こっそり%YOU%の姿を見てから、うつむいて角の向こうへ消えた。
 
-# [번역 대상] load_talk — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] load_talk
 load_talk:
   # CFLAGNAME:81 = 妊娠段階
   # CFLAGNAME:57 = 拡張変数
@@ -1180,7 +1179,7 @@ load_talk:
             content: %CHARA%
           - 「나도 알고 있다구……」
 
-# [번역 대상] tree_hollow_snails — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tree_hollow_snails
 tree_hollow_snails:
   title: カタツムリになっちゃう///
   lines:
@@ -1277,7 +1276,7 @@ tree_hollow_snails:
     - %TEEN%は力の抜けた両脚を引きずり、揺れるスカートの間から乳白色の液柱が連なって落ち、地面に軌跡を残す……
 
 # 育成中バージョン
-# [번역 대상] cl_palace — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_palace
 cl_palace:
   title: 殿堂入り週
   lines:
@@ -1325,7 +1324,7 @@ cl_palace:
     - パーマーは再び壇上を見る。瞳に憧れの星が浮かんでいる
 
 # 育成中バージョン
-# [번역 대상] cl_fans_in_edu — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_fans_in_edu
 cl_fans_in_edu:
   title: ファン感謝祭
   lines:
@@ -1417,7 +1416,7 @@ cl_fans_in_edu:
     - 手を伸ばしたパーマーは、一片の名残もない笑顔を見せた
 
 # 育成済みバージョン
-# [번역 대상] cl_fans — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_fans
 cl_fans:
   title: ファン感謝祭
   lines:
@@ -1611,7 +1610,7 @@ cl_fans:
                 - 「したいなら、帰ってからにしてよ」
 
 # 育成中限定
-# [번역 대상] cl_temple_fair — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_temple_fair
 cl_temple_fair:
   title: 縁日
   lines:
@@ -1994,7 +1993,7 @@ cl_temple_fair:
     - acc: 2
       content: 「いや、パスで」
 
-# [번역 대상] cl_halloween — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_halloween
 cl_halloween:
   title: ハロウィン
   lines:
@@ -2036,7 +2035,7 @@ cl_halloween:
     - 自然に%YOU%の手を掴み、一気に外へ走り出す
     - その一日は楽しかったが、結末として体力でパーマーに敵わない%YOU%は、翌日きちんと寝て過ごすことになった
 
-# [번역 대상] cl_christmas — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_christmas
 cl_christmas:
   title: クリスマス
   lines:
@@ -2324,7 +2323,7 @@ cl_christmas:
                   content: %CHARA%
                 - 「メリークリスマス、トレーナー」
 
-# [번역 대상] cl_christmas_sex_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_christmas_sex_end
 cl_christmas_sex_end:
   - color: %COLOR%
     content:
@@ -2368,7 +2367,7 @@ cl_christmas_sex_end:
       - 「아, 겨우 맞췄다!」
 
 # 情愛の檻（恋慕＞74、通常）
-# [번역 대상] basement_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] basement_end
 basement_end:
   title: また明日
   lines:
@@ -2398,7 +2397,7 @@ basement_end:
         - 「今は先に寝よう……パーマーのトレーナー」
 
 # 金銭奴隷（恋慕＞74）
-# [번역 대상] slave_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] slave_end
 slave_end:
   title: 迷いの終点
   lines:

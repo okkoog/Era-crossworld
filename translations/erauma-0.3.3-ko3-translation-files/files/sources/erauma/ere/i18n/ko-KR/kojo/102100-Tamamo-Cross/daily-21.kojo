@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/102100-Tamamo-Cross/daily-21.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file タマモクロス - 日常
 # @author 雞雞
 select:
@@ -20,7 +19,7 @@ select:
               content: %CHARA%
             - 「컨디션은 좀 어떻나? 밥은 뭇고? 밥 묵고 가만히 있으믄 소 된다 카더라! 아하하!」
 
-# [번역 대상] good_morning — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_morning
 good_morning:
   sync: true
   lines:
@@ -459,7 +458,7 @@ office_study:
             content: %CHARA%
           - 「아 내 안 잤다, 안 잤다니까네……」
 
-# [번역 대상] office_rest — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_rest
 office_rest:
   - random: true
     lines:

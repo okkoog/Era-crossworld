@@ -1,9 +1,8 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/rec-2.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file サイレンススズカ - 募集
 # @author 牛蛙煲
 # @author Claude (翻訳)
-# [번역 대상] start — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] start
 start:
   title: 첫 만남
   lines:
@@ -256,7 +255,7 @@ start:
       lines:
         - %SEX%의 주변을 가득 메운 인파를 보고 %YOU%은(는) 현명하게 포기하기로 했다.
 
-# [번역 대상] after — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] after
 after: # 신참/숙련, 다음에 트레이닝 코스 진입 시
   title: 선발 레이스 후
   lines:
@@ -475,7 +474,7 @@ after: # 신참/숙련, 다음에 트레이닝 코스 진입 시
         - 「네, 잘 부탁드려요!」
     - 回り道はあった。それでも、%YOU% は %CHARA% を募集できた。
 
-# [번역 대상] tomorrow — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tomorrow
 tomorrow: # 중견 이상, 다음에 트레이닝 코스 진입 시
   title: 선발 레이스 다음 날
   lines:
@@ -517,7 +516,7 @@ tomorrow: # 중견 이상, 다음에 트레이닝 코스 진입 시
     - acc: 1
       content: 「일단 부딪쳐보자. 방법이 있겠지.」
 
-# [번역 대상] tomorrow_after_tomorrow — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tomorrow_after_tomorrow
 tomorrow_after_tomorrow: # 【선발 레이스 다음 날】 이후, 이번 주, 트레이닝 코스
   title: 선발 레이스 다다음 날
   lines:
@@ -583,7 +582,7 @@ tomorrow_after_tomorrow: # 【선발 레이스 다음 날】 이후, 이번 주,
           content: %CHARA%
         - 「네??」
 
-# [번역 대상] river — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] river
 river: # 【선발 레이스 다다음 날】 이후, 이번 주, 외출-강변 제방
   title: 강변 제방
   lines:
@@ -622,7 +621,7 @@ river: # 【선발 레이스 다다음 날】 이후, 이번 주, 외출-강변 
       content: 「서두를 필요 없어. 앞으로 달릴 기회는 얼마든지 있으니까. 가자, 학원으로 돌아가자.」
     - %CHARA% は素直に頷いた。
 
-# [번역 대상] beginning — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] beginning
 beginning: # 【강변 제방】 이후, 이번 주, 다음에 트레이닝 코스 진입 시
   title: 새로운 시작
   lines:

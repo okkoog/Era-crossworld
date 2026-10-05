@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/104600-Smart-Falcon/rec-46.js
-// 대상 함수/속성: rec_final, rec_start
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file 스마트 팔콘 - 모집
  * @author 黑奴一号
@@ -15,7 +13,7 @@ module.exports = {
    * @param {CharaTalk} minoru 駿川たづな / ハーベストタイム
    * @param {string} callname スマートファルコンのプレイヤーへの呼び方
    */
-  // [번역 대상] rec_start — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec_start
   async rec_start(falcon, you, minoru, callname) {
     await falcon.say_as_passer_by_and_wait(
       falcon.uma_sex_title,
@@ -260,7 +258,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {string} callname
    */
-  // [번역 대상] rec_final — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec_final
   async rec_final(falcon, you, callname) {
     // 1は前向き、2は後ろ向き
     // 拍 1

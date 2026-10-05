@@ -1,6 +1,6 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/others/god-shop.js
-// 대상 함수/속성: common_start_pray, leave, pray_money, pray_over_limit, pray_your_power
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
+
+const money_color = require('#/data/color-const')["money_color"];
 /**
  * Partial Korean reuse from EraUmaK 2.21.
  * Unmatched/new 3.113 entries inherit from ja-JP.
@@ -184,7 +184,8 @@ ko.pray_money_buff = async (you, finish_cb) => {
 };
 
 
-ko.pray_your_power = async (
+ko.pray_your_power = // [번역 대상] pray_your_power
+  async (
   you,
   god,
   uma,
@@ -358,7 +359,8 @@ ko.pray_heal = async (chara, god, you, uma, chara_react, finish_cb) => {
   return ret;
 };
 
-ko.common_start_pray = (chara, you) => {
+ko.common_start_pray = // [번역 대상] common_start_pray
+  (chara, you) => {
   if (chara.id > 0) {
     print([
       you.get_colored_name(),
@@ -422,7 +424,8 @@ ko.start_with_no_god = async (you, god) => {
 };
 
 
-ko.pray_over_limit = async (chara, you, uma, limited, cost) => {
+ko.pray_over_limit = // [번역 대상] pray_over_limit
+  async (chara, you, uma, limited, cost) => {
   print([
     '（',
     limited,
@@ -497,7 +500,8 @@ ko.pray_over_limit = async (chara, you, uma, limited, cost) => {
 };
 
 
-ko.pray_money = async (you, uma, finish_cb) => {
+ko.pray_money = // [번역 대상] pray_money
+  async (you, uma, finish_cb) => {
   print(
     '（では、だいたいいくらくらい欲しい？）\n頭の中に、突然そんな問いが浮かぶ……',
   );
@@ -560,7 +564,8 @@ ko.pray_money = async (you, uma, finish_cb) => {
   return ret;
 };
 
-ko.leave = async (chara, you, has_prayed) => {
+ko.leave = // [번역 대상] leave
+  async (chara, you, has_prayed) => {
   if (chara.id > 0) {
     if (has_prayed) {
       await printAndWait([
@@ -593,3 +598,134 @@ ko.leave = async (chara, you, has_prayed) => {
 };
 
 module.exports = ko;
+
+module.exports = {
+  ...module.exports,
+
+  // [번역 대상] borrow_money
+  async borrow_money(god, you) {
+    const honour = get('flag:当前声望');
+    if (honour < 50) {
+      return await printAndWait('名声が足りない');
+    }
+    print('いくらのウマコインが欲しい？');
+    printButton('400 ウマコイン（50 名声）', 1);
+    printButton('800 ウマコイン（100 名声）', 2, { disabled: honour < 100 });
+    printButton('1200 ウマコイン（150 名声）', 2, { disabled: honour < 150 });
+    printButton('1600 ウマコイン（200 名声）', 2, { disabled: honour < 200 });
+    printButton('やめておく', 99);
+    const ret = await input();
+    if (ret === 99) {
+      await printAndWait([
+        you.get_colored_name(),
+        ' は ',
+        god.get_colored_name(),
+        ' へウマコインを祈るのを諦めた……',
+      ]);
+    } else {
+      await printAndWait([
+        you.get_colored_name(),
+        ' はトレセンから追加手当 ',
+        { color: money_color, content: (400 * ret).toLocaleString() },
+        ' ウマコインの通知を受け取った……ただし、その文面には見下すようなニュアンスがあった……',
+      ]);
+    }
+    return ret;
+  },
+
+  // [번역 대상] bt_pray
+  bt_pray: '女神に祈る',
+
+  // [번역 대상] get_target_entry_heal
+  get_target_entry_heal: (name, cost) => `${name}（${cost} 名声）`,
+
+  // [번역 대상] get_target_entry_over_limit
+  get_target_entry_over_limit: (name, cost) =>
+    `${name}（-${cost} 名声、トレーニング補正-10%）`,
+
+  // [번역 대상] handle_pray_end
+  handle_pray_end(god, you, has_prayed) {
+    if (has_prayed) {
+      print([
+        god.get_colored_name(),
+        ' は ',
+        you.get_colored_name(),
+        ' の願いを叶えた',
+      ]);
+    } else {
+      print([
+        you.get_colored_name(),
+        ' は ',
+        god.get_colored_name(),
+        ' への祈りを諦めた……',
+      ]);
+    }
+  },
+
+  // [번역 대상] handle_pray_honour_buff
+  async handle_pray_honour_buff() {
+    print('本当に？');
+    printButton(
+      `確定（名声獲得+${get('global:声望加成')}%→${get('global:声望加成') + 1}%）`,
+      1,
+    );
+    printButton('やめておく', 2);
+    return await input();
+  },
+
+  // [번역 대상] handle_pray_money_buff
+  async handle_pray_money_buff() {
+    print('本当に？');
+    printButton(
+      `確定（ウマコイン獲得+${get('global:金钱加成')}%→${get('global:金钱加成') + 1}%）`,
+      1,
+    );
+    printButton('やめておく', 2);
+    return await input();
+  },
+
+  // [번역 대상] handle_pray_over_limit
+  handle_pray_over_limit(chara) {
+    print([chara.get_colored_name(), ' は限界を超えたようだ']);
+  },
+
+  // [번역 대상] handle_pray_your_power
+  async handle_pray_your_power(disabled_list, random_select) {
+    print('どの能力が欲しい？');
+    printButton('スピード（+80）', 0, { disabled: disabled_list[0] });
+    printButton('スタミナ（+80）', 1, { disabled: disabled_list[1] });
+    printButton('パワー（+80）', 2, { disabled: disabled_list[2] });
+    printButton('根性（+80）', 3, { disabled: disabled_list[3] });
+    printButton('賢さ（+80）', 4, { disabled: disabled_list[4] });
+    printButton('どれでもいい！（ランダム能力+100）', 5);
+    printButton('やめておく', 99);
+    const ret = [await input(), 0];
+    ret[1] = ret[0];
+    if (ret[0] === 5) {
+      ret[1] = random_select;
+    }
+    return ret;
+  },
+
+  // [번역 대상] no_targets
+  no_targets: '条件を満たす対象がいない',
+
+  // [번역 대상] pray_heal_no_need
+  async pray_heal_no_need(chara, you, finish_cb) {
+    await printAndWait([
+      '女神さまが、これからも ',
+      chara.get_colored_name(),
+      ' の健康を守ってくださるよう祈る……',
+    ]);
+    println();
+    await finish_cb();
+    println();
+    await printAndWait('三女神像は、いまも静かに立っている……');
+  },
+
+  // [번역 대상] pray_select
+  pray_select: '何を祈る？',
+
+  // [번역 대상] select_target
+  select_target: '対象を選んでください',
+};

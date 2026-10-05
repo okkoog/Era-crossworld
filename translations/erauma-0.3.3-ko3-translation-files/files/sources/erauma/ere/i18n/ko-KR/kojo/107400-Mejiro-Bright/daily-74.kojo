@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/107400-Mejiro-Bright/daily-74.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロブライト - 日常
 # @author KUN
 select:
@@ -238,7 +237,7 @@ office_game:
             content: %CHARA%
           - 「전 게임엔 통 소질이 없나 봐요……」
 
-# [번역 대상] office_gift — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] office_gift
 office_gift:
   - random: true
     lines:
@@ -452,7 +451,7 @@ o_s_cinema:
             content: %CHARA%
           - 「로맨스 영화는…… 어떠신가요?」
 
-# [번역 대상] out_church — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] out_church
 out_church:
   - 뚜렷한 목적지 없이 둘이서 도로를 거닐다 보니, 마침 트레센 학원 뒷산으로 이어지는 오솔길 앞에 다다랐다.
   - 上の神社を見て、%CHARA%と %YOU% は、ついでも縁だと山頂へ向かった。
@@ -511,7 +510,7 @@ o_s_shopping:
             content: %CHARA%
           - 「무언가 사시려는 건가요? 저도 %CALLNAME%께 소박한 선물 하나쯤은 해드릴 수 있답니다오～」
 
-# [번역 대상] good_night — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_night
 good_night:
   sync: true
   lines:

@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/103700-Eishin-Flash/rec-37.js
-// 대상 함수/속성: rec_final, rec_start
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file エイシンフラッシュ - 募集
  * @author 爱放箭的袁本初
@@ -13,7 +11,7 @@ const __JaOriginal = require('#/i18n/ja-JP/kojo/103700-Eishin-Flash/rec-37.js');
 
 module.exports = {
   ...__JaOriginal,
-  // [번역 대상] rec_start — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec_start
   async rec_start(flash, you) {
     await era.printAndWait(
       `トレーニング場で、${you.name} は余光に、どこか見覚えのある後ろ姿を捉えた。`,
@@ -34,7 +32,7 @@ module.exports = {
       `仕方なく ${you.name} は首を振り、いったんそのことは脇へ置いた。`,
     );
   },
-  // [번역 대상] rec_final — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec_final
   async rec_final(flash, you) {
     let ret;
     await era.printAndWait(
@@ -908,5 +906,75 @@ module.exports = {
       ret = (await era.input()) === 1;
     }
     return ret;
+  },
+
+  // [번역 대상] rec_rest
+  async rec_rest(flash, you) {
+    await era.printAndWait(
+      `数日後、部屋を片付けていると、${you.name} は机の引き出しの隅に、銀黒の勲章が静かに置かれているのを見つけた。`,
+    );
+    era.printButton('「これは？」', 1);
+    await era.input();
+    await era.printAndWait(
+      `好奇心に押され、${you.name} は勲章を手に取り、よく見た。`,
+    );
+    await flash.say_as_unknown_and_wait(
+      'ご助力、ありがとうございました。お礼として、どうかこれを受け取ってください。',
+    );
+    era.printButton('「ああ、思い出した！」', 1);
+    await era.input();
+    await era.printAndWait(
+      `記憶が急に戻ってきた。以前、用事で外出して学園近くの地下鉄駅で待っていたとき、道に迷った${flash.uma_sex_title}を助け、お礼として受け取った品だ。`,
+    );
+    await era.printAndWait(
+      `とはいえ、その${flash.uma_sex_title}の顔はもう霞んでいる。${you.name} がかろうじて思い出せるのは、艶やかな黒い短髪と、外国人特有の澄んだ青い瞳——その目立つ特徴だけだった。`,
+    );
+    await era.printAndWait('プルルル——');
+    era.printButton('「！」', 1);
+    await era.input();
+    await era.printAndWait(
+      `もう少し細部を思い出そうとしていたところへ、けたたましい着信音が思考を断ち切った。`,
+    );
+    era.printButton('「出る」', 1);
+    era.printButton('「切る」', 2);
+    if ((await era.input()) === 1) {
+      await era.printAndWait(
+        `思考を遮られた不快さは残っていたが、${you.name} はそれでも携帯を取り、丁寧に応答した。`,
+      );
+      await you.say_as_passer_by_and_wait(
+        '係員',
+        `トレーナー${you.adult_sex_title}、選抜レースが始まります。まだ会場にいらっしゃいませんが。`,
+      );
+      await era.printAndWait('受話器の向こうから、焦った声が聞こえた。');
+      era.printButton('「選抜レース？」', 1);
+      await era.input();
+      await era.printAndWait(
+        `その言葉に ${you.name} はわずかに間を置き、今日グラウンドで大事な行事があるのを思い出した。`,
+      );
+      era.printButton('「すぐ行く！」', 1);
+      await era.input();
+      await era.printAndWait(
+        `それに気づいた ${you.name} は、すぐ扉を開けて飛び出した。`,
+      );
+    } else {
+      await era.printAndWait(
+        `思考を遮られた苛立ちのまま、${you.name} は携帯を取り、切断した。`,
+      );
+      await era.printAndWait('プツッ。');
+      await era.printAndWait('着信音がぴたりと止んだ。');
+      await era.printAndWait(
+        `${you.name} が携帯を置こうとしたとき、画面の日付に視線が留まった。`,
+      );
+      era.printButton('「そういえば……」', 1);
+      await era.input();
+      await era.printAndWait(
+        `次の瞬間、${you.name} は今日グラウンドで大事な行事があるのを、はっと思い出した。`,
+      );
+      era.printButton('「選抜レースが始まる！」', 1);
+      await era.input();
+      await era.printAndWait(
+        `それに気づいた ${you.name} は、すぐ扉を開けて飛び出した。`,
+      );
+    }
   },
 };

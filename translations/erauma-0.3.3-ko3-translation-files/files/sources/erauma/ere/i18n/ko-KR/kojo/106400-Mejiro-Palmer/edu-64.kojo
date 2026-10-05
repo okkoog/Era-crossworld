@@ -1,9 +1,8 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/106400-Mejiro-Palmer/edu-64.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロパーマー - 育成
 # @author KUN
 # @author Claude (翻訳)
-# [번역 대상] train — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train
 train:
   # BASENAME:0 = 体力
   - if: era.get('base:64:0') < era.get('maxbase:64:0') * 0.45
@@ -111,7 +110,7 @@ train:
                 content: %CHARA%
               - 「もっとハイになるために、お願い、%CALLNAME%！」
 
-# [번역 대상] ts_add — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ts_add
 ts_add:
   title: 追加トレーニング
   lines:
@@ -139,7 +138,7 @@ ts_add:
             - 「了解！ じゃあ今日はしっかり休むね。」
         - %CHARA%は後頭部を抱え、ついでに肘で隣の相棒を軽く叩く。
 
-# [번역 대상] train_fail — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train_fail
 train_fail:
   title: 保健室で
   lines:
@@ -167,7 +166,7 @@ train_fail:
         - 「心配しないで。すぐ起きてくるから。」
     - 手を上げて、そっと%YOU%の胸を叩く。
 
-# [번역 대상] race_start — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_start
 race_start:
   title: レースの前
   lines:
@@ -187,7 +186,7 @@ race_start:
         - 「おっ！ 了解！」
     - %YOU%に向かって親指を立て、肩の力を抜いて控え室を出ていく
 
-# [번역 대상] race_end_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_end_win
 race_end_win:
   title: レース勝利
   lines:
@@ -204,7 +203,7 @@ race_end_win:
           content: %CHARA%
         - 「えへへ、トレーナーのおかげだね～」
 
-# [번역 대상] race_end_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_end_lose
 race_end_lose:
   title: レース敗北
   lines:
@@ -221,7 +220,7 @@ race_end_lose:
         - 「もう、あたし何やってるんだろ……」
 
 #募集後の休息
-# [번역 대상] beginning — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] beginning
 beginning:
   title: メジロパーマー、登場！
   lines:
@@ -319,7 +318,7 @@ beginning:
     - 笑顔がいちばんいい顔だ。今のパーマーは、今まででいちばん明るい。
 
 #ジュニア級5月第1週
-# [번역 대상] rumor — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] rumor
 rumor:
   title: 小さな噂
   lines:
@@ -366,7 +365,7 @@ rumor:
       content: 壁に向かって、力なく自分に言う
 
 #ジュニア級5月第2週
-# [번역 대상] strange — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] strange
 strange:
   title: 微妙な距離
   lines:
@@ -451,7 +450,7 @@ strange:
     - 心からの笑いは、移るものだ
 
 #ジュニア級6月第1週
-# [번역 대상] free_race — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] free_race
 free_race:
   title: 自由レース、行く？
   lines:
@@ -557,7 +556,7 @@ free_race:
     - パーマーはゴールに立ち、観客席へ二本の指を立てて、自然に笑う
 
 # メイクデビュー
-# [번역 대상] begin_race — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] begin_race
 begin_race:
   title: 開幕戦
   lines:
@@ -588,7 +587,7 @@ begin_race:
         - 「うん、あたしの走りで……わかった！」
 
 # メイクデビュー勝利
-# [번역 대상] begin_race_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] begin_race_win
 begin_race_win:
   title: 「逃げ」の幕開け！
   lines:
@@ -608,7 +607,7 @@ begin_race_win:
     - %SEX%を信じることが、今やるべきことだ
 
 #ジュニア級7月
-# [번역 대상] mejiro — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mejiro
 mejiro:
   title: 目白という重圧
   lines:
@@ -718,7 +717,7 @@ mejiro:
     - 今日はまだ集まりがある。足を速めないと
 
 #クラシック級1月1週
-# [번역 대상] new_year_1 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] new_year_1
 new_year_1:
   title: 新年の抱負
   lines:
@@ -994,7 +993,7 @@ new_year_1:
         - パーマーと%YOU%は、いろいろな特製ドリンクを楽しんだ
 
 #クラシック級3月1週
-# [번역 대상] how — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] how
 how:
   title: 三冠、どうするの！？
   lines:
@@ -1094,7 +1093,7 @@ how:
     - パーマーの表情が少し変わり、上げた腕で%YOU%の胸を軽く叩く
     - 笑顔にあった陰りは消え、%SEX%らしい、自信のある笑顔だけが残る
 
-# [번역 대상] sats_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sats_sho
 sats_sho:
   title: 皐月賞へ！
   lines:
@@ -1130,7 +1129,7 @@ sats_sho:
     - 満面の笑みで手を離し、選手通路を出ていく
 
 # 皐月賞勝利
-# [번역 대상] sats_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sats_sho_win
 sats_sho_win:
   title: とりあえず一冠！
   lines:
@@ -1166,7 +1165,7 @@ sats_sho_win:
         - 「二人の勝ちだよ、トレーナー！」
 
 # 皐月賞敗北
-# [번역 대상] sats_sho_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sats_sho_lose
 sats_sho_lose:
   title: 負けても大丈夫！
   lines:
@@ -1213,7 +1212,7 @@ sats_sho_lose:
         - 「次もよろしく、トレーナー！」
 
 #クラシック級5月1日、同チームメジロライアンかつ同学年でないときは発生しない
-# [번역 대상] sisters — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sisters
 sisters:
   title: %SISTERS%も、ライバル
   lines:
@@ -1287,7 +1286,7 @@ sisters:
         - 「ライアンと、試してみるよ」
 
 #クラシック級5月1日、皐月勝利、同チームメジロライアンかつ同学年でないときは発生しない
-# [번역 대상] sisters_1crown — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sisters_1crown
 sisters_1crown:
   title: %SISTERS%も、ライバル
   lines:
@@ -1360,7 +1359,7 @@ sisters_1crown:
           content: %CHARA%
         - 「試してみるよ……クラシック路線とか」
 
-# [번역 대상] toky_yus — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] toky_yus
 toky_yus:
   title: 日本ダービーへ！
   lines:
@@ -1408,7 +1407,7 @@ toky_yus:
         - %YOU%に背を向け、ぐっと顔を上げ、自信のある顔でコースへ向かう
 
 # 日本ダービー勝利
-# [번역 대상] toky_yus_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] toky_yus_win
 toky_yus_win:
   title: 幸運な逃げ
   lines:
@@ -1440,7 +1439,7 @@ toky_yus_win:
     - 興奮した両手を上げ、トレーナーの掌と軽く合わせる
 
 # 日本ダービー敗北
-# [번역 대상] toky_yus_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] toky_yus_lose
 toky_yus_lose:
   title: 運が、ちょっと……
   lines:
@@ -1463,7 +1462,7 @@ toky_yus_lose:
           content: %CHARA%
         - 「わかってる。だから……少なくとも、今はこうして休ませて」
 
-# [번역 대상] hako_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hako_kin
 hako_kin:
   title: 函館記念へ！
   lines:
@@ -1514,7 +1513,7 @@ hako_kin:
         - 「全力で応えるから、トレーナー！」
 
 # 函館記念勝利
-# [번역 대상] hako_kin_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hako_kin_win
 hako_kin_win:
   title: 観光の準備
   lines:
@@ -1559,7 +1558,7 @@ hako_kin_win:
             - 「少なくとも帰るまで……一緒にいてね」
 
 #函館記念の前後を踏んだあと、同ターンの任意外出で発生
-# [번역 대상] hometown — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hometown
 hometown:
   title: 故郷の時間
   lines:
@@ -1679,7 +1678,7 @@ hometown:
         - 「あ、ちょっと変かな、この言い方」
     - 少し照れた顔で、熱い白い大根をもう一口噛む
 
-# [번역 대상] summer_start_1 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_start_1
 summer_start_1:
   title: 夏季合宿（クラシック級）開始
   lines:
@@ -1770,7 +1769,7 @@ summer_start_1:
     - 目白家の%UMA%としてだけじゃなく、メジロパーマーとして探す
 
 #合宿中8月2週、同チームにダイタクヘリオスがいるとヘリオス／パーマーの好感が相互+30
-# [번역 대상] summer_middle_1 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_middle_1
 summer_middle_1:
   title: 夏季合宿（クラシック級）途中
   lines:
@@ -2227,7 +2226,7 @@ summer_middle_1:
         - 「今日のあたしが走ったのは、走りたかったから！」
     - パーマーは笑顔のまま、冗談めかして言う
 
-# [번역 대상] summer_end_1 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_end_1
 summer_end_1:
   title: 夏季合宿（クラシック級）終了
   lines:
@@ -2389,7 +2388,7 @@ summer_end_1:
         - 「あたしの道を！」
     - 伏せていた耳がだんだん立ち、目にも気力が戻る
 
-# [번역 대상] kiku_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho
 kiku_sho:
   title: 菊花賞へ
   lines:
@@ -2429,7 +2428,7 @@ kiku_sho:
         - 「うん！ %SELF_CALL%の走り、見てて！」
 
 # 二冠取得済み
-# [번역 대상] kiku_sho_2crown — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho_2crown
 kiku_sho_2crown:
   title: 菊花賞へ
   lines:
@@ -2483,7 +2482,7 @@ kiku_sho_2crown:
           content: %CHARA%
         - 「三冠が決まる瞬間も！」
 
-# [번역 대상] kiku_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho_win
 kiku_sho_win:
   title: 「逃げ」の帰還！
   lines:
@@ -2544,7 +2543,7 @@ kiku_sho_win:
             - 「ただの……普通の抱きつきなのに……」
 
 # 菊花賞敗北
-# [번역 대상] kiku_sho_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho_lose
 kiku_sho_lose:
   title: 少しだけの内緒話……
   lines:
@@ -2582,7 +2581,7 @@ kiku_sho_lose:
     - 今は、パーマーにこうして泣かせておいたほうがいい
 
 # 三冠称号獲得後の休息
-# [번역 대상] triple_crown — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] triple_crown
 triple_crown:
   title: 三冠達成！
   lines:
@@ -2701,7 +2700,7 @@ triple_crown:
         - 「あれ、どこか変かな……」
 
 # クラシック級有馬記念
-# [번역 대상] classical_arim_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] classical_arim_kin
 classical_arim_kin:
   title: 有馬記念へ
   lines:
@@ -2741,7 +2740,7 @@ classical_arim_kin:
 
 # クラシック級有馬勝利
 # スキル「大逃げ」習得
-# [번역 대상] c_arim_kin_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] c_arim_kin_win
 c_arim_kin_win:
   title: 有馬記念のスーパー逃亡者！
   lines:
@@ -2791,7 +2790,7 @@ c_arim_kin_win:
         - 「今日は%SELF_CALL%の勝ち！ どう？」
 
 # クラシック級有馬敗北
-# [번역 대상] c_arim_kin_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] c_arim_kin_lose
 c_arim_kin_lose:
   title: 少し惜しい逃亡ショー
   lines:
@@ -2826,7 +2825,7 @@ c_arim_kin_lose:
         - 「このまま、ここで……ちょっとだけ逃げさせて……」
 
 #シニア級1月1週
-# [번역 대상] new_year_2 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] new_year_2
 new_year_2:
   title: 新年の初詣
   lines:
@@ -3119,7 +3118,7 @@ new_year_2:
         - パーマーはビリヤードの神から、いろいろな技を学んだ……本当に？
 
 # 日経新春杯
-# [번역 대상] nikk_hai — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] nikk_hai
 nikk_hai:
   title: 気分転換！
   lines:
@@ -3170,7 +3169,7 @@ nikk_hai:
         - ……ほかの意味はない、はずだ
 
 # 日経新春杯勝利
-# [번역 대상] nikk_hai_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] nikk_hai_win
 nikk_hai_win:
   title: 新しい一日！
   lines:
@@ -3225,7 +3224,7 @@ nikk_hai_win:
             - 「そんなに好きなら……もっと見てていいよ」
 
 # 天皇賞（春）
-# [번역 대상] tenn_spr — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr
 tenn_spr:
   title: 目白だけじゃない！
   lines:
@@ -3262,7 +3261,7 @@ tenn_spr:
     - 振り返り、選手通路を出て場へ向かう
 
 # 天皇賞（春）勝利
-# [번역 대상] tenn_spr_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr_win
 tenn_spr_win:
   title: 逃げ切りの勝ち！
   lines:
@@ -3324,7 +3323,7 @@ tenn_spr_win:
         - 目は合わない。でも薄い赤の顔に、澄んだ笑顔が見える
 
 # 天皇賞（春）敗北
-# [번역 대상] tenn_spr_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr_lose
 tenn_spr_lose:
   title: 主役じゃなくてもいい！
   lines:
@@ -3441,7 +3440,7 @@ tenn_spr_lose:
             - 「残りの分も、いけるかも？」
 
 # シニア級宝塚記念
-# [번역 대상] takz_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin
 takz_kin:
   title: とにかく信じる！
   lines:
@@ -3465,7 +3464,7 @@ takz_kin:
     - あちらの相棒へ、勝ちの合図を送る
 
 # 宝塚記念勝利
-# [번역 대상] takz_kin_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin_win
 takz_kin_win:
   title: ちょっと寂しいけど、いい！
   lines:
@@ -3541,7 +3540,7 @@ takz_kin_win:
           content: %CHARA%
         - 「それに、大事なのは、あたしがやりきったことだもん！」
 
-# [번역 대상] summer_start_2 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_start_2
 summer_start_2:
   title: 夏季合宿（シニア級）開始
   lines:
@@ -3676,7 +3675,7 @@ summer_start_2:
     - ハイりきった夏が、待っているだけだ！
 
 # 恋慕＞74
-# [번역 대상] summer_middle_2 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_middle_2
 summer_middle_2:
   title: 夏の小さな事故
   lines:
@@ -3954,7 +3953,7 @@ summer_middle_2:
             - 「お願い……」
       # 馬跳び
 
-# [번역 대상] summer_sex_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_sex_end
 summer_sex_end:
   - color: %COLOR%
     content:
@@ -3987,7 +3986,7 @@ summer_sex_end:
     content: パーマーは顔を赤くして、少し仕返しみたいに%CALLNAME%の体をまたつまむ
 
 # 恋慕＞74、8月第4週から
-# [번역 대상] walk — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] walk
 walk:
   title: 海辺の散歩
   lines:
@@ -4080,7 +4079,7 @@ walk:
         - 「前に言ってくれたみたいに、ずっと見てて」
     - パーマーは明るい太陽を背に、%YOU%へ向かって満面で笑う
 
-# [번역 대상] summer_end_2 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_end_2
 summer_end_2:
   title: 夏季合宿（シニア級）終了
   lines:
@@ -4200,7 +4199,7 @@ summer_end_2:
     - %DICTUS%の確信した言い方を聞き、%YOU%も視線を、はしゃいでいるパーマーとダイタクヘリオスへ戻す
 
 # シニア級天皇賞（秋）
-# [번역 대상] tenn_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho
 tenn_sho:
   title: あたしの走りで！
   lines:
@@ -4236,7 +4235,7 @@ tenn_sho:
         - 「どんな馬場でも、あたしの走りは変わらない！」
 
 #依存持ちの天皇賞（秋）
-# [번역 대상] tenn_sho_yandere — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_yandere
 tenn_sho_yandere:
   title: あたしの走りと、あたしの……
   lines:
@@ -4294,7 +4293,7 @@ tenn_sho_yandere:
         - （トレーナー%YOURSEX%……ずっと、いたんだ！）
 
 # 天皇賞（秋）勝利
-# [번역 대상] tenn_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_win
 tenn_sho_win:
   title: やっほー！ 全身泥でも全然いい！
   lines:
@@ -4376,7 +4375,7 @@ tenn_sho_win:
         - さっきを続けていたら、パーマーを押し倒していたかもしれない
 
 # 天皇賞（秋）敗北
-# [번역 대상] tenn_sho_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_lose
 tenn_sho_lose:
   title: あは、ちょっとだけ悔しいかも
   lines:
@@ -4427,7 +4426,7 @@ tenn_sho_lose:
     - パーマーの顔は悪戯っぽく、器用な舌を出す
 
 # シニア級有馬記念
-# [번역 대상] senior_arim_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] senior_arim_kin
 senior_arim_kin:
   title: 準備はいい？ 逃げ、始めるよ！
   lines:
@@ -4478,7 +4477,7 @@ senior_arim_kin:
     - 手を上げて後ろへ親指を残し、強い目で場へ踏み出す。手を振っている友人のほうへ歩く
 
 # 通常勝負服
-# [번역 대상] s_arim_kin_win_clothe1 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_arim_kin_win_clothe1
 s_arim_kin_win_clothe1:
   title: これが、熱いあたしの走りだ！
   lines:
@@ -4630,7 +4629,7 @@ s_arim_kin_win_clothe1:
                 - 「続きは、あとで、していい？」
 
 # クリスマス勝負服
-# [번역 대상] s_arim_kin_win_clothe46 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_arim_kin_win_clothe46
 s_arim_kin_win_clothe46:
   title: 逃げのゴールは、ここ
   lines:
@@ -4796,7 +4795,7 @@ s_arim_kin_win_clothe46:
                 - 「お願い。クリスマスの%SELF_CALL%だよ」
             # 馬跳びへ
 
-# [번역 대상] ak_c46_hug_sex_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ak_c46_hug_sex_end
 ak_c46_hug_sex_end:
   - color: %COLOR%
     content:
@@ -4820,7 +4819,7 @@ ak_c46_hug_sex_end:
         content: %CHARA%
       - 「これから、ううん、一生よろしくね、%YOURNAME%！」
 
-# [번역 대상] ak_c46_kiss_sex_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ak_c46_kiss_sex_end
 ak_c46_kiss_sex_end:
   - color: %COLOR%
     content:
@@ -4872,7 +4871,7 @@ ak_c46_kiss_sex_end:
       - 「원래는 다시 시작할 마음의 준비를 하고 있었거든! 쓸데없는 준비였네~」
 
 # シニア級12月4週
-# [번역 대상] christmas_party — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] christmas_party
 christmas_party:
   title: 目白のクリスマス夜会
   lines:
@@ -5040,7 +5039,7 @@ christmas_party:
           content: 「パーマーの手を引く」
           # 馬跳び
 
-# [번역 대상] party_sex_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] party_sex_end
 party_sex_end:
   - color: %COLOR%
     content:
@@ -5076,7 +5075,7 @@ party_sex_end:
   - 응원을 받은 파머는 즉시 주먹을 불끈 쥐고 상대를 따라 경기장으로 내려갔다.
 
 #シニア級宝塚記念優勝、有馬記念連覇後。育成後（4年目）1月4週
-# [번역 대상] winner — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] winner
 winner:
   title: 顎、上がりすぎ！
   lines:
@@ -5275,7 +5274,7 @@ winner:
     - グランプリ三連覇の誇りを胸に刻み、パーマーはこれからも新しい祭典へ挑む
 
 #称号条件達成後、2月1週
-# [번역 대상] sports_car — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sports_car
 sports_car:
   title: 驚愕！ スポーツカーが贈り物！
   lines:
@@ -5671,7 +5670,7 @@ rain_notify:
 
 # メイクデビュー後、任意G1出走後、一人で商店街外出時
 # リマインド：一人外出の雨の日、思いがけない出会いがあるかも
-# [번역 대상] rain — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] rain
 rain:
   title: 大雨に濡れても
   lines:
@@ -5883,13 +5882,13 @@ rain:
               content: %CHARA%
             - 「そんなこと言ってるあいだに、コーヒー冷めるよ～。ほら、早く飲んで」
 
-# [번역 대상] important_place_notify — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] important_place_notify
 important_place_notify:
   - color: %COLOR%
     content: 【%CHARA%は前にここで自由レースに出た……もう一度連れてきてみるか】
 
 #（自由レース、行く？）発動後、クラシック級商店街
-# [번역 대상] important_place — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] important_place
 important_place:
   title: 大事な場所だから
   lines:
@@ -6034,13 +6033,13 @@ important_place:
             - 「それを誰にも否定されたくない！」
         - そのあとパーマーは%YOU%に、%SEX%の友人たちの話をたくさんした
 
-# [번역 대상] golf_notify — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] golf_notify
 golf_notify:
   - color: %COLOR%
     content: 【最近%CHARA%は、トレーニングのあと商店街へ急いでいる】
 
 #恋慕＞49、シニア級クリスマス 商店街
-# [번역 대상] golf — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] golf
 golf:
   title: 遠回りのホールインワン
   lines:
@@ -6413,13 +6412,13 @@ golf:
     - acc: 2
       content: 「そのうち、だな……」
 
-# [번역 대상] lottery_notify — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] lottery_notify
 lottery_notify:
   - color: %COLOR%
     content: 【%CHARA%といっしょに抽選しよう！】
 
 # 恋慕＞49、シニア級1月 商店街抽選
-# [번역 대상] lottery — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] lottery
 lottery:
   title: 抽選会！
   lines:
@@ -6529,14 +6528,14 @@ lottery:
         - でも%SEX%を見ると、青い目に少し期待が乗っている
         - こんなパーマーを、少しからかいたくなる。本当に可愛いから
 
-# [번역 대상] hot_spring_notify — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hot_spring_notify
 hot_spring_notify:
   - color: %COLOR%
     content: 【%CHARA%といっしょに温泉へ行こう！】
 
 # 抽選した年の12月
 # 券あり or 恋慕90
-# [번역 대상] hot_spring — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hot_spring
 hot_spring:
   title: 温泉旅行
   lines:
@@ -6980,7 +6979,7 @@ hot_spring:
 # ランダムイベント
 ################################
 
-# [번역 대상] lunch_break — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] lunch_break
 lunch_break:
   title: 昼休み、逃した
   lines:
@@ -7019,7 +7018,7 @@ lunch_break:
       # やる気down、体力-50
 
 #クラシック級以降、外出時ランダム
-# [번역 대상] dis_talent — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] dis_talent
 dis_talent:
   title: 距離感の天才
   lines:
@@ -7296,7 +7295,7 @@ dis_talent:
         - 二人のふざけあいのなか、帰路へ就く
 
 #シニア級以降、外出時にランダム
-# [번역 대상] choice — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] choice
 choice:
   title: 究極の選択！
   lines:
@@ -7635,7 +7634,7 @@ choice:
                 - 「だってあのとき、みんなで旅行してるみたいで、けっこう楽しかったんだよ！」
 
 # 恋慕74未満、ヘリオスの恋慕49未満、ランダム
-# [번역 대상] confused — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] confused
 confused:
   title: 迷う恋心
   lines:
@@ -7806,7 +7805,7 @@ confused:
     - 顔の紅潮が羞恥か興奮か運動か、わからないまま、散歩中の%YOU%とぶつかるまで続く
 
 #恋慕＞74、睡眠姦の条件を満たす
-# [번역 대상] a_step — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] a_step
 a_step:
   title: 一歩、前へ
   lines:
@@ -7933,7 +7932,7 @@ a_step:
         - 「えっ？」
 
 # ファン襲撃（恋慕＞74）
-# [번역 대상] crazy_fan_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] crazy_fan_end
 crazy_fan_end:
   title: 逃げ切れない
   lines:

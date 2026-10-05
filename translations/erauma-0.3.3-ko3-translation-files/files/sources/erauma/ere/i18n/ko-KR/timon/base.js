@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/base.js
-// 대상 함수/속성: get_clock, get_info_awake, rescue_battle_prison, rescue_battle_success, rescue_fail_awake, rescue_join, rescue_sneak_prison, rescue_sneak_success, school_rescue, welcome
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file 地下室の地の文
  * @author 露娜俘虏
@@ -16,7 +14,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {number} fine
    */
-  // [번역 대상] school_rescue — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] school_rescue
   async school_rescue(you, fine) {
     await era.printAndWait([
       '肝を冷やす一週間のあと、',
@@ -34,7 +32,7 @@ module.exports = {
    * @param {number} minutes
    * @param {boolean} [base_12]
    */
-  // [번역 대상] get_clock — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] get_clock
   get_clock(hours, minutes, base_12 = false) {
     let p_hour;
     let p_minute;
@@ -73,7 +71,7 @@ module.exports = {
    * @param {number} love_level
    * @param {boolean} is_fix
    */
-  // [번역 대상] get_info_awake — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] get_info_awake
   get_info_awake(chara, you, security_level, love_level, is_fix) {
     const ret = [chara.get_colored_name(), ' は'];
     switch (security_level) {
@@ -165,7 +163,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] welcome — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] welcome
   welcome(chara, you) {
     if (LifeEventMarks.get_marks(0).b_start) {
       era.print([
@@ -427,7 +425,7 @@ module.exports = {
       '을(를) 바라볼 뿐이었다.',
     ]);
   },
-  // [번역 대상] rescue_fail_awake — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rescue_fail_awake
   rescue_fail_awake: (() => {
     /**
      * @author 黑奴队长
@@ -474,7 +472,7 @@ module.exports = {
       "를 향해 미소 짓고 있었다……",
     ]);
   },
-  // [번역 대상] rescue_sneak_success — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rescue_sneak_success
   rescue_sneak_success: (() => {
     /**
      * @author 黑奴队长
@@ -509,7 +507,7 @@ module.exports = {
     f.title = "영웅의 구출";
     return f;
   })(),
-  // [번역 대상] rescue_sneak_prison — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rescue_sneak_prison
   rescue_sneak_prison: (() => {
     /**
      * @author 黑奴队长
@@ -553,7 +551,7 @@ module.exports = {
     f.title = "호랑이 굴을 벗어나니……";
     return f;
   })(),
-  // [번역 대상] rescue_join — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rescue_join
   rescue_join: (() => {
     /**
      * @author 黑奴队长
@@ -597,7 +595,7 @@ module.exports = {
     f.title = "하늘 아래 두 개의 태양";
     return f;
   })(),
-  // [번역 대상] rescue_battle_success — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rescue_battle_success
   rescue_battle_success: (() => {
     /**
      * @author 黑奴队长
@@ -639,7 +637,7 @@ module.exports = {
     f.title = "영웅의 구출";
     return f;
   })(),
-  // [번역 대상] rescue_battle_prison — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rescue_battle_prison
   rescue_battle_prison: (() => {
     /**
      * @author 黑奴队长

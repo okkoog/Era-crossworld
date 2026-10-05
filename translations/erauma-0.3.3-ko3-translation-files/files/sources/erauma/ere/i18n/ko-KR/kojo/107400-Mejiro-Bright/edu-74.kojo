@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/107400-Mejiro-Bright/edu-74.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロブライト - 育成
 # @author KUN
 train:
@@ -38,7 +37,7 @@ train:
 # 主線
 # --------------------------------
 # 募集後
-# [번역 대상] at_my_side — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] at_my_side
 at_my_side:
   title: 당신이 제 곁에 있기에
   lines:
@@ -108,7 +107,7 @@ at_my_side:
     - %YOU%의 조금 벙찐 얼굴을 바라보며, 그녀는 한없이 순수한 미소를 지어 보였다.
 
 # ジュニア級6月3週、ときめき以上、同チームにメジロなし
-# [번역 대상] mejiro_tea — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mejiro_tea
 mejiro_tea:
   title: 메지로 가문의 티타임
   lines:
@@ -436,7 +435,7 @@ begin_race_end:
       - 「저, 앞으로도 정말 열심히 할게요!」
 
 # ジュニア級8月1週、ライアンが育成中でない
-# [번역 대상] inherit — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] inherit
 inherit:
   title: 그 의지를 이어받아
   lines:
@@ -617,7 +616,7 @@ inherit:
     # 好感+20
 
 # ジュニア級11月1週
-# [번역 대상] my_way — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] my_way
 my_way:
   title: 스스로 선택한 길
   lines:
@@ -718,7 +717,7 @@ my_way:
     # 好感+15
 
 # ホープフルステークス前
-# [번역 대상] hope_sta — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hope_sta
 hope_sta:
   - color: %COLOR%
     content:
@@ -879,7 +878,7 @@ hope_sta_lose:
       - 「……평정심을 유지할 수 있도록 더 노력해야겠어요.」
 
 # クラシック級3月3週
-# [번역 대상] light — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] light
 light:
   title: 마음속에 밝혀진 자신감
   lines:
@@ -967,7 +966,7 @@ light:
     # 好感+20
 
 # 皐月賞
-# [번역 대상] sats_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sats_sho
 sats_sho:
   - 삼관의 첫 레이스, 사츠키상.
   - 평소에는 멍하니 있던 %CHARA%가 눈앞의 경기장을 바라보며 평소와는 사뭇 다른 분위기를 풍긴다.
@@ -1033,7 +1032,7 @@ sats_sho_win:
       - 「에헤헤…… 역시 %CALLNAME% 덕분이에요.」
 
 # 皐月賞敗北
-# [번역 대상] sats_sho_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sats_sho_lose
 sats_sho_lose:
   - color: %COLOR%
     content:
@@ -1111,7 +1110,7 @@ toky_yus_win:
       - 「제가 이겼어요.」
 
 # 日本ダービー敗北
-# [번역 대상] toky_yus_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] toky_yus_lose
 toky_yus_lose:
   - color: %COLOR%
     content:
@@ -1137,7 +1136,7 @@ toky_yus_lose:
   - 落ち込みつつも、%SEX%らしい落ち着いた微笑みは残している。
 
 # 菊花賞
-# [번역 대상] kiku_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho
 kiku_sho:
   - color: %COLOR%
     content:
@@ -1198,7 +1197,7 @@ kiku_sho:
   - %YOU%의 말에 가볍게 웃으며 답한 뒤, %CHARA%는 확고한 눈빛을 띤 채 삼관의 마지막 전투를 시작한다.
 
 # 菊花賞勝利
-# [번역 대상] kiku_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho_win
 kiku_sho_win:
   - color: %COLOR%
     content:
@@ -1272,7 +1271,7 @@ kiku_sho_win:
         content: 당연히, 그저 바라보는 것만으로는 아무것도 알아낼 수 없다.
 
 # 菊花賞敗北
-# [번역 대상] kiku_sho_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kiku_sho_lose
 kiku_sho_lose:
   - color: %COLOR%
     content:
@@ -1300,7 +1299,7 @@ kiku_sho_lose:
       - 「죄송해요…… %CALLNAME%.」
 
 # ステイヤーズステークス
-# [번역 대상] stay_sta — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] stay_sta
 stay_sta:
   - color: %COLOR%
     content:
@@ -1341,7 +1340,7 @@ stay_sta:
       - 「%CALLNAME%, 똑똑히 지켜봐 주세요.」
 
 # シニア級4月2週
-# [번역 대상] for_tenn_spr — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] for_tenn_spr
 for_tenn_spr:
   title: 텐노상에 대한 집착
   lines:
@@ -1448,7 +1447,7 @@ for_tenn_spr:
             - 「네, %CALLNAME%의 기대에 부응하도록 할게요.」
 
 # 天皇賞（春）
-# [번역 대상] tenn_spr — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr
 tenn_spr:
   - color: %COLOR%
     content:
@@ -1537,7 +1536,7 @@ tenn_spr:
       - 「네!」
 
 # 天皇賞（春）勝利
-# [번역 대상] tenn_spr_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_spr_win
 tenn_spr_win:
   - 승리의 순간, %CHARA%를 향한 뜨거운 환호성이 관람석을 뒤흔들며 경기장 전체를 가득 메운다.
   - 천천히 속도를 줄이던 %CHARA%는 전광판을 바라보고, 주변의 함성을 다시금 확인하고 나서야 비로소 기쁨의 환호를 내지른다.
@@ -1568,7 +1567,7 @@ tenn_spr_win:
       - 결국 그녀도 은근히 장난기가 넘치는 %CHARA%이기 때문이다.
 
 # シニア級5月1週、天皇賞（春）一着
-# [번역 대상] mejiro_name — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] mejiro_name
 mejiro_name:
   title: 메지로의 이름
   lines:
@@ -1691,7 +1690,7 @@ mejiro_name:
 
 # 宝塚記念
 # ドーベル出走あり
-# [번역 대상] takz_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin
 takz_kin:
   - 타카라즈카 기념을 논함에 있어서 메지로의 이름은 결코 빼놓을 수 없다.
   - 그런 자부심을 품은 채, 현재 %CHARA%는 경기장에 서서 아지랑이가 피어오르는 코스를 바라보고 있다.
@@ -1812,7 +1811,7 @@ tenn_sho:
       - 「가을 텐노상!」
 
 # 天皇賞（秋）勝利
-# [번역 대상] tenn_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_win
 tenn_sho_win:
   - color: %COLOR%
     content:
@@ -1931,7 +1930,7 @@ arim_kin:
   - 힘차게 발걸음을 내딛으며 아리마 기념의 무대로 당당히 걸어 나간다.
 
 # 有馬記念勝利
-# [번역 대상] arim_kin_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] arim_kin_win
 arim_kin_win:
   - content:
       - fontWeight: bold
@@ -2181,7 +2180,7 @@ accel_era:
 # --------------------------------
 # out_shopping
 # 熱恋以上、シニア級新年
-# [번역 대상] hot_spring_ticket — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hot_spring_ticket
 hot_spring_ticket:
   title: 온천 여행권……?
   lines:
@@ -2256,9 +2255,220 @@ hot_spring_ticket:
 # out_start
 # 四年目2月2週、温泉券あり
 hot_spring:
-  # 검토 보류: 본문 미복제. HELD_LOCATIONS.md 참조.
-  sync: true
-  lines: []
+  title: 온천~ 나른하고 포근하게~
+  lines:
+    - 치열했던 레이스의 나날들이 마침내 일단락되었고, 은퇴와 관련된 행정 절차도 대부분 마무리가 되었다.
+    - 무거운 짐을 내려놓은 %YOU%과(와) %CHARA%는 오랜만의 해방감에 안도의 한숨을 내쉬며, 푹 쉬기 위해 일전에 방문했던 상점가 근처를 다시 찾는다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「아, 그러고 보니……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「그 시절, 바로 이곳에서 당첨되었었죠?」
+    - 낯익은 추첨 부스 앞을 지나갈 때, %CHARA%가 문득 생각났다는 듯 툭 한마디를 던진다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「%CALLNAME%, 혹시 지금 소지하고 계시나요?」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「저희 두 사람의 온천 여행권 말이에요~」
+    - 마치 오늘 외출의 진짜 목적이 이 이야기를 꺼내기 위함이었던 것처럼, 정확히 이 장소로 이끌었던 것이다.
+    - 당연하게도 그 여행권은 지금 이 순간에도 %YOU%의 지갑 한구석에 소중히 보관되어 기회를 엿보고 있었다.
+    - acc: 1
+      content: 「당연히 챙겼지. 설마 지금 당장 가고 싶어서 그래?」
+      lines:
+        - 지갑에서 조심스레 온천 여행권을 꺼내어 보여주자, %CHARA%의 반쯤 감겨 있던 눈이 살짝 동그래진다.
+        - 티켓 표면에 적힌 유효기간을 빤히 쳐다보더니, 다소 호들갑스러운 몸짓으로 %YOU%의 손을 붙잡아 온다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「어라, 유효기간이 얼마 남지 않은 모양이에요……」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「이왕 이렇게 된 거, 저희 오늘 곧바로 출발하는 것은 어떨까요?」
+        - 미심쩍은 기분에 %YOU%이(가) 여행권을 뒤집어 확인해 보니, 정말로 만료일까지 고작 며칠밖에 남지 않은 상태였다.
+        - 사정이 이렇다면 굳이 미룰 이유가 없으니 곧장 출발하기로 결심한다.
+    - acc: 2
+      content: 「아차, 깜빡하고 안 가져왔는데. (국어책 읽기)」
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「어쩜 그러실 수가 있나요오~」
+        - %CHARA%가 특유의 귀여운 억양으로 어미를 길게 빼며 탄식하지만, 주의 깊게 들으면 일부러 서운한 척 연기하고 있음을 눈치챌 수 있다.
+        - 의도가 빤히 보이는 장난인 만큼, 당연히 뒤이어 꿍꿍이가 있을 터였다.
+        - 가볍게 두세 걸음 다가온 %CHARA%가 %YOU%의 옷소매를 잡고 살며시 잡아당기며, 마치 어린아이처럼 응석 부리는 눈빛을 보내온다.
+        - 作り物だとわかっていても、普段見ない潤んだ大きな目は、%YOU% が%SEX%をからかうつもりだった心に罪悪感を起こす。
+        - 결국 짓궂은 생각을 접고 지갑을 열어 다시 확인하는 시늉을 하며 조용히 온천권을 꺼내 든다.
+        - acc: 1
+          content: 「아, 여기 찾았네. (국어책 읽기)」
+        - 꺼내 든 여행권을 확인하던 %YOU%은(는) 문득 무언가 이상함을 감지한다.
+        - %CHARA%의 기대 섞인 시선 속에서 %YOU%이(가) 온천권의 상세 내역을 꼼꼼히 뜯어보자——
+        - acc: 1
+          content: 「이거 유효기간이 고작 사흘밖에 안 남았잖아?!」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「어머나~」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「소중한 기회를 그냥 날려버릴 수는 없으니, 지금 당장 함께 가도록 해요?」
+        - 동글동글하고 귀여운 얼굴을 살짝 기울이며 %YOU%의 어깨 부근에 조심스레 기댄다.
+        - 이 지경에 이르렀으니 도저히 거절할 방도가 없다.
+    - 우마무스메 트위터에서 대단히 뜨거운 반응을 얻고 있는 유명 온천 여관에 도착하자, %CHARA% 역시 긴장했는지 무의식중에 %YOU%의 손을 꽉 쥔다.
+    - 손끝에 실린 힘을 느끼고 고개를 돌리자, 마침 눈앞에서 생기 가득한 빛을 띠고 있는 %CHARA%의 두 눈과 정면으로 마주친다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「%CALLNAME%, 어서 함께 안으로 들어가요~」
+    - 말을 마친 %CHARA%는 %YOU%의 손을 이끌고 로비로 향하더니, 제법 익숙한 태도로 프런트에서 체크인 절차를 밟는다.
+    - 그녀의 등 뒤에서 이 모든 과정을 묵묵히 지켜보던 %YOU%의 입가에도 자연스레 부드러운 미소가 번진다.
+    - divider: true
+    - 따스한 탕 안으로 몸을 담그자, %YOU%의 입에서 기분 좋은 탄성이 절로 터져 나온다.
+    - 과연 소문대로 우마무스메 트위터에서 엄청난 호평을 받는 데에는 그만한 명백한 이유가 있었다.
+    - 뜨끈한 온천수에 몸을 깊숙이 묻은 채 부드러운 물살의 흐름을 느끼며 피로를 녹여낸다……
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「우와~」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「포근하고 따뜻하네요~」
+    - 자욱한 물안개 너머로 들려오는 %CHARA%의 나른한 목소리가 이번 휴식에 편안함을 한층 더해준다.
+    - 하지만 흘러가는 시간과 함께, 이 평화로움은 서서히 묘한 긴장감으로 변하기 시작한다.
+    - acc: 1
+      content: 「음? 브라이트는 어디 갔지?」
+    - 온기 탓에 머리가 다소 몽롱해진 %YOU%이(가) 자리에서 일어나 대욕탕을 나가려던 순간, 무언가 이질감을 느끼고 걸음을 멈춘다.
+    - %CHARA%가 먼저 탕을 빠져나가는 모습을 본 기억이 전혀 없기 때문이다.
+    - 덜렁거리는 담당 우마무스메가 혹시 물속에서 쓰러지기라도 했을까 염려되어, %YOU%은(는) 급히 수건을 챙겨 다른 탕을 살피려다 바로 곁에서 익숙한 긴 머리칼을 발견한다.
+    - 이 정도로 가까운 거리라면, 사실상 서로의 실루엣이 전부 노출된 것이나 다름없다.
+    - acc: 1
+      content: %SEX%は天然だと思おう。うん。
+    - acc: 1
+      content: 이건 분명 의도적인 연출이 틀림없어……
+    - 쓸데없는 잡념을 지워버리고, 서둘러 자세를 낮춰 %CHARA%의 상태를 살핀다.
+    - 정작 %CHARA% 본인에게 있어서는 무척이나 자연스러운 상황인 모양이다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「후아아……」
+    - 온천의 따스한 기운에 몸이 깊이 이완되어 평온하게 수면을 취하고 있었던 모양이다.
+    - 탕 속에 잠겨 있던 그녀의 몸을 조심스레 붙들어 일으키며, 최대한 시선을 먼 곳으로 돌린 채 황급히 수건을 덮어준다……
+    - acc: 1
+      content: 「정말이지, 한시도 마음을 놓을 수가 없네.」
+    - 입으로는 나지막이 불평을 늘어놓으면서도 %YOU%은(는) 얌전히 %CHARA%를 부축해 탕 밖으로 나왔고, 두 사람은 온천 바닥 가에 나란히 걸터앉는다.
+    - %YOU%이(가) 조심스러운 손길로 그녀의 피부에 맺힌 물방울을 닦아주자, %CHARA% 역시 서서히 두 눈을 깜빡이며 의식을 되찾는다.
+    - そばの人を確かめた瞬間、迷わずそばへ擦り寄る。
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「머리가 어질어질하네요~」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「하지만 다행히도 %CALLNAME%께서 제 곁에 계셔주셨군요~」
+    - 망설임 없이 %YOU%의 가슴팍으로 파고들며, 동글동글한 얼굴을 %YOU%의 복부 부근에 폭 기댄다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「응~」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……어라라?」
+    - %YOU%의 품에 안겨 있던 %CHARA%가 순간 미세하게 몸을 떨더니, 천천히 고개를 들어 올려다본다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「%CALLNAME%……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「어쩐지 무척 뜨거운 열기가 느껴지는데 말이죠?」
+    - 마치 속내를 전부 알고 있으면서 짐짓 모르는 척 묻는 듯한 태도로, %CHARA%는 가냘픈 손길로 %YOU%의 몸을 가리고 있던 수건을 살며시 쥐어쥔다.
+    - 하얀 수건이 아래로 미끄러져 내리는 순간, %CHARA%의 얼굴은 이미 붉은 홍조로 가득 물든다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「아……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「%CALLNAME%…… 무척 흥분하신 모양이네요……」
+    - 온천의 뜨거운 열기 때문인지, 혹은 다른 이유에서인지 %CHARA%의 뺨은 붉게 상기되어 있으며 부끄러운 듯 슬그머니 시선을 회피한다.
+    - acc: 1
+      content: 「그게 누구 때문인데 그래.」
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「저 때문에……」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「하지만 %CALLNAME%께서도 결코 싫지만은 않으시죠?」
+        - 스스로 몸을 살짝 뒤로 물리며, 평소의 온화한 모습과는 다소 거리가 먼 대담한 도발을 던진다.
+        - 무의식중에 대형 사고를 치고도 능청스럽게 구는 %CHARA%에게 가벼운 벌을 주겠다는 듯, %YOU%은(는) 수건을 내던지고 앞으로 다가서서——
+        - 부드러운 거짓말을 자아내던 그녀의 입술을 거칠게 훔쳐 막아버린다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「읍, 으읍!」
+    - acc: 2
+      content: 「괜찮아, 브라이트.」
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「하지만 %CALLNAME%, 무척 힘겨워 보이시는걸요……」
+        - %CHARA%의 지적대로 %YOU%은(는) 비록 겉으로는 미소를 지어 보이고 있었으나, 솔직한 신체 반응만큼은 결코 속일 수 없었다.
+        - 과하게 붉어진 안색은 더 이상 온천의 이로운 온도 때문이 아니었다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「아니요……」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「이것이 저로 인해 비롯된 일이라면, 제가 온전히 책임을 져야 마땅하겠죠!」
+        - 이번만큼은 평소와 다르게 이례적일 정도로 빠른 판단을 내리며, 중심을 잃고 비틀거리던 %YOU%을(를) 기습적으로 밀쳐 눕힌다.
+        - 귓가를 가득 채우는 거친 숨소리를 들으며, %YOU%은(는) 마침내 결단을 내린다——
+        - acc: 1
+          content: 「더는 못 참아!」
 
 hot_spring_sex:
   - 객실로 다시 돌아왔을 때, %YOU%과(와) %CHARA%는 얼굴이 나란히 새빨갛게 익은 채 그 누구도 먼저 선뜻 입을 열지 못한다.
@@ -2275,7 +2485,7 @@ hot_spring_sex:
 
 # week_end
 # hot_spring後、良縁以上
-# [번역 대상] wish — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] wish
 wish:
   title: 소원
   lines:
@@ -2370,7 +2580,7 @@ wish:
 
 # week_start
 # 愛欲以上、トレーニング不足
-# [번역 대상] where_is_time — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] where_is_time
 where_is_time:
   title: 시간은…… 어디로 사라진 걸까요?
   lines:
@@ -2436,7 +2646,7 @@ where_is_time:
 
 # week_start
 # 愛欲以上、徹夜
-# [번역 대상] sleep — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] sleep
 sleep:
   title: 자, 편안하게 숙면을 취하도록 해요
   lines:

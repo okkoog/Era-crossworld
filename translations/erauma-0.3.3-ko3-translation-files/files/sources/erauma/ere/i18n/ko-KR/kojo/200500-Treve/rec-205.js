@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/200500-Treve/rec-205.js
-// 대상 함수/속성: rec
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file トレヴ - 募集
  * @author 梦露
@@ -15,7 +13,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname トレヴのプレイヤーへの呼び方
    */
-  // [번역 대상] rec — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] rec
   async rec(treve, taste, may, you, callname) {
     const ret = [];
     await era.printAndWait(

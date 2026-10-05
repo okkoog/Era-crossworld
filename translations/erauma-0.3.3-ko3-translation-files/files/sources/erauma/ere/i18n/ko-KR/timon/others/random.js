@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/others/random.js
-// 대상 함수/속성: breakfast, drug_notice, kamen_rider, privacy_2_1, privacy_3, strange_day, strange_day2, ts_shower
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file ランダム小イベント
  * @author イーウィヤ
@@ -119,7 +117,7 @@ module.exports = {
     f.title = '개인 정보 보안 (2!?)';
     return f;
   })(),
-  // [번역 대상] privacy_2_1 — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] privacy_2_1
   privacy_2_1: (() => {
     /**
      * @author Mr.E.
@@ -266,7 +264,7 @@ module.exports = {
     f.title = '모닝 펠라';
     return f;
   })(),
-  // [번역 대상] strange_day — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] strange_day
   strange_day: (() => {
     /**
      * @author 念来过倒要你
@@ -417,7 +415,7 @@ module.exports = {
     f.title = '웃긴 날 (이상한 날）';
     return f;
   })(),
-  // [번역 대상] privacy_3 — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] privacy_3
   privacy_3: (() => {
     /**
      * @author Mr.E.
@@ -613,7 +611,7 @@ module.exports = {
     f.title = '개인 정보 보안 (3?)';
     return f;
   })(),
-  // [번역 대상] strange_day2 — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] strange_day2
   strange_day2: (() => {
     /**
      * @author 念来过倒要你
@@ -1468,7 +1466,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] drug_notice — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] drug_notice
   drug_notice: (() => {
     /**
      * @author 雞雞
@@ -1707,7 +1705,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] breakfast — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] breakfast
   breakfast: (() => {
     /**
      * @author 幽白書
@@ -1758,7 +1756,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] kamen_rider — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] kamen_rider
   kamen_rider: (() => {
     /**
      * @author Mr.E.
@@ -1924,7 +1922,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ts_shower — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] ts_shower
   ts_shower: (() => {
     /**
      * @author 幽白書
@@ -1983,4 +1981,1143 @@ module.exports = {
   })(),
 
 
+
+  // [번역 대상] all_round_meek
+  all_round_meek: (() => {
+    /**
+     * @author イーウィヤ
+     * @param {CharaTalk} meek ハッピーミーク
+     */
+    const f = async (meek) => {
+      await printAndWait(
+        'どこからか、時代を感じさせる一枚の紙が飛んできた！？',
+      );
+      await printAndWait('……手を伸ばして掴んだ。');
+      await printAndWait(
+        '短距離、マイル、中距離、長距離の内容が、なんで同じ一ページに載ってるんだよ——',
+      );
+      await meek.say_and_wait('あの、それ、返していただけますか……');
+      await printAndWait([
+        '驚いているところへ、',
+        meek.get_colored_name(),
+        ' に声をかけられた。',
+      ]);
+      await printAndWait(
+        '……他人の宝物を覗いてしまったような後ろめたさで、素直に返した。',
+      );
+      println();
+      await printAndWait(
+        '……あれ、もしかしてあのページ、桐生院家のトレーニング秘伝だった！？',
+      );
+      await printAndWait(
+        'ずいぶん経ってから突然思い出し、手のひらを思いきり叩いた。',
+      );
+    };
+    f.title = '何でも少しはできるミークさん';
+    return f;
+  })(),
+
+  // [번역 대상] av_meteor
+  av_meteor: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} vega アドマイヤベガ
+     * @param {CharaTalk} you プレイヤー
+     * @param {boolean} good_event 予兆を吉とするか凶とするか
+     * */
+    const f = async (vega, you, good_event) => {
+      await printAndWait([
+        'ある夜、',
+        you.get_colored_name(),
+        ' は枯れ木の洞のそばで、星空を仰ぐ ',
+        vega.get_colored_name(),
+        ' を見かけた。',
+      ]);
+      await printAndWait('視線を辿ると、目の端に流星が一筋、かすめて消えた。');
+      printButton(
+        '「これは何かの予兆だ！」（育成中のウマ娘のやる気+1 または -1）',
+        1,
+      );
+      printButton('「ただの流れ星だ。」（安定度+1）', 2);
+      const ret = await input();
+      if (ret === 1) {
+        if (good_event) {
+          await printAndWait('何かいいことが起きたようだ！');
+        } else {
+          await printAndWait('悪いことが……');
+        }
+      } else {
+        await printAndWait('ごく平凡なことが起きたようだ！');
+      }
+      return [ret];
+    };
+    f.title = '彗星の観測';
+    return f;
+  })(),
+
+  // [번역 대상] bankruptcy
+  bankruptcy: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (you) => {
+      await printAndWait([
+        '怠惰でまともに働かなかったせいだろうか。それとも運が ',
+        you.get_colored_name(),
+        ' の味方をしなかっただけか。ともかく ',
+        you.get_colored_name(),
+        ' は銀行口座の数字を底まで削ってしまった！',
+      ]);
+      await printAndWait([
+        '情けないが、担当の',
+        get('flag:角色性别') === 1 ? 'ウマ郎' : 'ウマ娘',
+        'に頼み込むしかない……のか？',
+      ]);
+      printButton('「こんなことになるなんて……」', 1);
+      await input();
+    };
+    f.title = '破産';
+    return f;
+  })(),
+
+  // [번역 대상] big_sale
+  big_sale: (() => {
+    /**
+     * @author 牛蛙煲
+     * @param {CharaTalk} you プレイヤー
+     * @param {string} uma ウマ娘 または ウマ郎
+     * @param {boolean} disabled 育成中の担当がいない、または所持ウマコインが 10 未満
+     */
+    const f = async (you, uma, disabled) => {
+      await printAndWait('外出の途中、商店街を通りかかった……');
+      await printAndWait('何か様子が違う？');
+      await you.say_as_passer_by_and_wait(
+        '八百屋の店主',
+        'いらっしゃいご覧あれ、新鮮な野菜果物が超特価だよ！',
+      );
+      await printAndWait([
+        you.get_colored_name(),
+        'は興味を引かれて覗き込んだ。',
+      ]);
+      await printAndWait(
+        '店先には色とりどりの野菜と果物が並び、見た目も鮮度も申し分ない。',
+      );
+      await you.say_as_passer_by_and_wait(
+        '八百屋の店主',
+        'うちは安くて旨いよ。どうだい、少し買っていくかい？',
+      );
+      printButton(
+        `ニンジンを買う（ウマコイン-10、育成中の${uma}のスピード+20）`,
+        1,
+        {
+          disabled,
+        },
+      );
+      printButton(
+        `ニンニクを買う（ウマコイン-10、育成中の${uma}のスタミナ+20）`,
+        2,
+        {
+          disabled,
+        },
+      );
+      printButton(
+        `ジャガイモを買う（ウマコイン-10、育成中の${uma}のパワー+20）`,
+        3,
+        {
+          disabled,
+        },
+      );
+      printButton(`唐辛子を買う（ウマコイン-10、育成中の${uma}の根性+20）`, 4, {
+        disabled,
+      });
+      printButton(`イチゴを買う（ウマコイン-10、育成中の${uma}の賢さ+20）`, 5, {
+        disabled,
+      });
+      printButton('懐が寒いので失礼する', 6);
+      const ret = await input();
+      switch (ret) {
+        case 1:
+          await printAndWait([
+            you.get_colored_name(),
+            'は成長期の',
+            uma,
+            'の食事量を見込んで、新鮮なニンジンを買った。',
+          ]);
+          await printAndWait([
+            '大きな袋を学園まで運び、',
+            you.get_colored_name(),
+            'は担当の',
+            uma,
+            'へ、スピードの象徴たるニンジンハンバーグとニンジンジュースを作った。',
+          ]);
+          await printAndWait('好評だった！');
+          break;
+        case 2:
+          await printAndWait([
+            you.get_colored_name(),
+            'は成長期の',
+            uma,
+            'の食事量を見込んで、新鮮なニンニクを買った。',
+          ]);
+          await printAndWait([
+            '大きな袋を学園まで運び、',
+            you.get_colored_name(),
+            'は担当の',
+            uma,
+            'へ、スタミナ抜群の特大ニンニクラーメンを作った。',
+          ]);
+          await printAndWait('好評だった！');
+          break;
+        case 3:
+          await printAndWait([
+            you.get_colored_name(),
+            'は成長期の',
+            uma,
+            'の食事量を見込んで、新鮮なジャガイモを買った。',
+          ]);
+          await printAndWait([
+            '大きな袋を学園まで運び、',
+            you.get_colored_name(),
+            'は担当の',
+            uma,
+            'へ、パワーを感じるマッシュポテト丼を作った。',
+          ]);
+          await printAndWait('好評だった！');
+          break;
+        case 4:
+          await printAndWait([
+            you.get_colored_name(),
+            'は成長期の',
+            uma,
+            'の食事量を見込んで、新鮮な唐辛子を買った。',
+          ]);
+          await printAndWait([
+            '唐辛子を学園へ持ち帰ると、',
+            you.get_colored_name(),
+            'は担当の',
+            uma,
+            'へ、見ただけで色を失う超辛麻婆豆腐を作った。',
+          ]);
+          await printAndWait('好評だった！');
+          break;
+        case 5:
+          await printAndWait([
+            you.get_colored_name(),
+            'は成長期の',
+            uma,
+            'の食事量を見込んで、新鮮なイチゴを買った。',
+          ]);
+          await printAndWait([
+            '大きな袋を学園まで運び、',
+            you.get_colored_name(),
+            'は担当の',
+            uma,
+            'へ、見た目からして賢そうなイチゴアイスを作った。',
+          ]);
+          await printAndWait('好評だった！');
+          break;
+        case 6:
+          if (!disabled) {
+            await printAndWait([
+              you.get_colored_name(),
+              'は担当の食事量を思い出し、そっと離れた。',
+            ]);
+          } else {
+            await printAndWait(['あいにく、使う宛がなかった。']);
+            await printAndWait([
+              you.get_colored_name(),
+              ' は首を振り、踵を返した。',
+            ]);
+          }
+      }
+      return [ret];
+    };
+    f.title = '商店街の大安売り';
+    return f;
+  })(),
+
+  // [번역 대상] chocolate
+  chocolate: (() => {
+    /**
+     * @author Mr.E.
+     * @param {CharaTalk} you プレイヤー
+     * @param {number} max_lover エアシャカール、トランセンド、ドリームジャーニーのうち恋慕が最高の者
+     * @param {number} max_love エアシャカール、トランセンド、ドリームジャーニーのうち最高の恋慕。未募集なら -1
+     */
+    const f = async (you, max_lover, max_love) => {
+      await printAndWait('バレンタインだが、仕事に休みはない。');
+      await printAndWait(
+        'トレーナーという仕事は、ときどき「下心あり」の相手にも備えねばならない。タイムラインを開けば、恋の酸っぱさが漂いまくりだ。',
+      );
+      printButton(
+        '「噂話など風の音。今日も担当のために体を燃やす一日だ」（体力＆気力+50）',
+        1,
+      );
+      printButton('「暇なら、投稿して場を盛り上げるか」', 2);
+      const ret = await input();
+      if (ret === 2) {
+        if (max_love === -1) {
+          await printAndWait([
+            '「冷蔵庫を開けて一番ロマンチックなのは、やはり濃縮コーヒー」',
+          ]);
+          await printAndWait('適当に一文を整え、サブ垢で投稿した。');
+        } else if (max_love < 60) {
+          await printAndWait(
+            '「今日も仕事に励む一日。え、バレンタイン？ チョコを注文しようとしたら連絡先が空だった！」',
+          );
+          await printAndWait('適当に一文を整え、サブ垢で投稿した。');
+          println();
+          await printAndWait(
+            '翌日、匿名の荷物が届いた。開けてみると、上質なチョコレートだった',
+          );
+          println();
+          await printAndWait('妙だな、誰が送ったんだ……');
+        } else {
+          await printAndWait(
+            '「本命チョコ迷子、N年目。コンビニで青汁味のポッキーを買い、自分を応援」',
+          );
+          await printAndWait('適当に一文を整え、サブ垢で投稿した。');
+          println();
+          switch (max_lover) {
+            case 36:
+              // エアシャカールの場合
+              await printAndWait(
+                '翌日、匿名の荷物が届いた。開けてみるとチョコレートで、小さく精巧な印象だった',
+              );
+              break;
+            case 80:
+              // トランセンドの場合
+              await printAndWait(
+                '翌日、匿名の荷物が届いた。開けてみるとチョコレートで、缶バッジに似た形だった',
+              );
+              break;
+            case 119:
+              // ドリームジャーニーの場合
+              await printAndWait(
+                '翌日、匿名の荷物が届いた。開けてみるとチョコレートで、ひどく華やかだった',
+              );
+          }
+          println();
+          await printAndWait(['妙だな、誰が送ったんだ……']);
+        }
+      }
+      return [ret];
+    };
+    f.title = 'チョコレート！';
+    return f;
+  })(),
+
+  // [번역 대상] custom
+  custom: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (you) => {
+      await printAndWait([
+        'ある午後、',
+        you.get_colored_name(),
+        ' は最近始めたスマホゲーム『キラめく優秀少女』で、また低確率のトレーニング失敗を踏んだ……慣れろ、慣れろ……',
+      ]);
+      printButton(
+        '「……慣れるか！」（ウマコイン-50、育成中のウマ娘の体力+15%）',
+        1,
+        {
+          disabled: get('flag:当前马币') < 50,
+        },
+      );
+      printButton('「慣れろ！」', 2);
+      const ret = await input();
+      if (ret === 1) {
+        await printAndWait([
+          you.get_colored_name(),
+          ' は大人の魔法・課金を放った！',
+        ]);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          ' はスマホを叩き壊す衝動を押しとどめた……',
+        ]);
+      }
+      return [ret];
+    };
+    f.title = '慣れとは恐ろしい';
+    return f;
+  })(),
+
+  // [번역 대상] experiment
+  experiment: (() => {
+    /**
+     * @author イーウィヤ
+     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ss サンデーサイレンス（正確にはカフェの「友人」）
+     * @param {CharaTalk} coffee マンハッタンカフェ
+     * @param {boolean} is_endu_med スタミナ薬かどうか
+     */
+    const f = async (you, ss, coffee, is_endu_med) => {
+      await you.say_and_wait('誰かいる……');
+      println();
+      await printAndWait('この教室、別用途で使われてるなんて聞いてないが……');
+      await printAndWait([
+        '突然の大雨、突然の雷。追い立てられるように、',
+        you.get_colored_name(),
+        ' はこの小さな宝庫へたどり着いた。',
+      ]);
+      println();
+      await you.say_and_wait('たぶん、どれか一つ選べということか？');
+      println();
+      await printAndWait('革紐に収まったワインレッドの薬');
+      await printAndWait('そして、少し古びた黒猫のぬいぐるみ');
+      println();
+      you.say('どっちにしよう……', true);
+      printButton('薬（スタミナ+? または 体力+50）', 1);
+      printButton('ぬいぐるみ（賢さ+8、スキルPt+?）', 2);
+      const ret = await input();
+      if (ret === 1) {
+        if (is_endu_med) {
+          await printAndWait('にがっ——');
+        } else {
+          await printAndWait('からっ——');
+        }
+      } else {
+        await ss.say_as_unknown_and_wait('よしよしよしよし——');
+        await coffee.say_as_unknown_and_wait('ん……？');
+        await printAndWait([
+          '窓の外を',
+          coffee.uma_sex_title,
+          'の影が掠めた気がした？ まさか～ここは一階じゃないぞ。',
+        ]);
+      }
+      return [ret];
+    };
+    f.title = '廃れた理科室の探検';
+    return f;
+  })(),
+
+  // [번역 대상] fishing
+  fishing: (() => {
+    /**
+     * @author 幽白書
+     * @param {CharaTalk} sky セイウンスカイ
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (sky, you) => {
+      sky.name = '笠をかぶった芦毛の' + sky.uma_sex_title;
+      await printAndWait([
+        you.get_colored_name(),
+        ' は釣り竿を持って川辺へ行くと、一人の',
+        sky.uma_sex_title,
+        'に出会った。',
+      ]);
+      await printAndWait([
+        sky.sex,
+        'は振り返らず、',
+        you.get_colored_name(),
+        ' に背を向けたまま言った。',
+      ]);
+      println();
+      await sky.say_and_wait(
+        'にゃっはっは、奇遇だね。出会いは縁、好きなほうを持っていきなよ～',
+      );
+      println();
+      await printAndWait([
+        you.get_colored_name(),
+        ' が見ると、相手のそばには古い釣り竿とルアーが置いてある。',
+      ]);
+      printButton('釣り竿を選ぶ（今回の漁獲が倍）', 1);
+      printButton('ルアーを選ぶ（白因子 20）', 2);
+      const ret = await input();
+      if (ret === 1) {
+        await printAndWait([
+          you.get_colored_name(),
+          ' は釣り竿を選んだ。すると何かの魔力でもかかったように、',
+          you.get_colored_name(),
+          ' の今日の手は恐ろしく良く、釣れた魚は普段の二倍以上だった！',
+        ]);
+      } else {
+        await printAndWait('ん？ このルアーの流線型……');
+        await printAndWait([
+          'そのとき、',
+          you.get_colored_name(),
+          ' に閃きが走った！',
+        ]);
+      }
+      return [ret];
+    };
+    f.title = '釣りの心得';
+    return f;
+  })(),
+
+  // [번역 대상] gs_carrot
+  gs_carrot: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} gs ゴールドシップ
+     */
+    const f = async (gs) => {
+      await printAndWait([
+        '学園で、芦毛の得体の知れない',
+        gs.uma_sex_title,
+        'に呼び止められた。',
+      ]);
+      await gs.say_and_wait(
+        'ヒッ！ そこのトレーナー！ ゴルシと海で大根引きしねえか！',
+      );
+      await printAndWait([
+        '問題児の ',
+        gs.get_colored_name(),
+        ' だった……それに海に大根なんて生えてるのか？',
+      ]);
+      printButton('「引きたいなら引け！」（ウマコイン+20）', 1);
+      printButton('「なんだか怪しい……」（体力+100）', 2);
+      const ret = await input();
+      if (ret === 1) {
+        await printAndWait(
+          '砂浜から、虹色に輝き宝石みたいな大根が掘り出せた！？',
+        );
+      } else {
+        await printAndWait(
+          '普通の大根が手に入った……いや、海辺に生えてて普通か！？ とりあえず昼のおかずの足しだ。',
+        );
+      }
+      return [ret];
+    };
+    f.title = '大根引きの鬼';
+    return f;
+  })(),
+
+  // [번역 대상] justice
+  justice: (() => {
+    /**
+     * @author 牛蛙煲
+     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} chara キャラ
+     * @param {CharaTalk} minoru 駿川たづな
+     * @param {PrintedSpan} call_301 一般キャラから駿川たづなへの呼び方
+     */
+    const f = async (you, chara, minoru, call_301) => {
+      chara.name = chara.sex_code === 1 ? '奇妙なウマ郎' : '奇妙なウマ娘';
+      await printAndWait([
+        you.get_colored_name(),
+        'が道を歩いていると、前方で',
+        chara.uma_sex_title,
+        'に追われるトレーナーが見えた。',
+      ]);
+      await printAndWait([
+        'そのトレーナーはすでに体力が尽きかけており、後ろの',
+        chara.uma_sex_title,
+        'にいつ追いつかれてもおかしくない。',
+      ]);
+      await printAndWait([
+        'そのときトレーナーは',
+        you.get_colored_name(),
+        'を見つけ、一筋の希望にすがるように',
+        you.get_colored_name(),
+        'へ走ってきた。',
+      ]);
+      await you.say_as_passer_by_and_wait(
+        '見知らぬトレーナー',
+        '頼む、助けてくれ。あそこへは戻りたくない……あの地下室へは……',
+      );
+      await printAndWait([
+        you.get_colored_name(),
+        'は、目の前の絶望しきった見知らぬトレーナーと、急速に近づく赤い目の',
+        chara.uma_sex_title,
+        'を見て、',
+      ]);
+      printButton('見知らぬトレーナーを助ける', 1);
+      printButton(`${chara.name}を助ける`, 2);
+      printButton('見て見ぬふりをする', 3);
+      const ret = await input();
+      switch (ret) {
+        case 1:
+          await printAndWait([
+            '何が起きたかは分からないが、同僚として助け合おうと、',
+            you.get_colored_name(),
+            'は迷いながらも頷いた。',
+          ]);
+          await chara.say_and_wait(
+            '私のトレーナーを返してくれませんか？ まだ……話したいことがあるんです……',
+          );
+          await printAndWait([
+            you.get_colored_name(),
+            'は、危険の気配を濃く漂わせる',
+            chara.uma_sex_title,
+            'を見て、こっそり唾を飲み込んだ。',
+          ]);
+          await you.say_and_wait([
+            'その、揉め事なら話して落ち着いて解決しよう。でないと',
+            call_301,
+            'に電話するぞ。',
+          ]);
+          await printAndWait([
+            you.get_colored_name(),
+            '自身も膝が笑っていたが、とっさにいちばん正しい手を選んだ——',
+            minoru.get_colored_name(),
+            'の名を出したのだ。',
+          ]);
+          await printAndWait([
+            '案の定、',
+            you.get_colored_name(),
+            'の目の前で',
+            chara.uma_sex_title,
+            'は迷い始めた。',
+          ]);
+          await chara.say_and_wait(
+            'トレーナー……逃げ切れないわ。次は、こんなにいい同僚には出会えないわよ……',
+          );
+          await printAndWait([
+            '眼前の',
+            chara.uma_sex_title,
+            'の鋭い視線は、',
+            you.get_colored_name(),
+            'を貫きそうで、',
+            you.get_colored_name(),
+            'の体を通して後ろのトレーナーまで見ているかのようだった。',
+          ]);
+          await printAndWait([
+            'それから、',
+            chara.sex,
+            'はくるりと踵を返して去った。',
+          ]);
+          await printAndWait([
+            you.get_colored_name(),
+            'と後ろのトレーナーは同時に息を吐いた。',
+          ]);
+          await you.say_as_passer_by_and_wait(
+            '見知らぬトレーナー',
+            '本当にありがとうございます。ほんの気持ちですが、受け取ってください……',
+          );
+          await printAndWait([
+            '見知らぬトレーナーは財布を取り出し、',
+            you.get_colored_name(),
+            'の手に押し込み、反応する前に急いで遠ざかった。',
+          ]);
+          await printAndWait([
+            you.get_colored_name(),
+            'は何が起きたか聞きたかったが、もう機会はなさそうだ。',
+          ]);
+          println();
+          await printAndWait('100 ウマコインを得た！');
+          break;
+        case 2:
+          await chara.say_and_wait(
+            '私のトレーナーを返してくれませんか？ まだ……話したいことがあるんです……',
+          );
+          await printAndWait([
+            you.get_colored_name(),
+            'は、危険の気配を濃く漂わせる',
+            chara.uma_sex_title,
+            'を見て、逆らう気力が湧かなかった。',
+          ]);
+          await you.say_and_wait('お二人でどうぞ。自分はこれで。');
+          await printAndWait([
+            'そう言い、',
+            you.get_colored_name(),
+            'は横へそっとずれ、後ろの見知らぬトレーナーを晒した。',
+          ]);
+          await printAndWait([
+            '挙動のおかしい',
+            chara.uma_sex_title,
+            'はすぐ見知らぬトレーナーの腕を掴み、少し強引に引き寄せた。',
+          ]);
+          await chara.say_and_wait(
+            'こっそり逃げるなんて……こんなに生意気なトレーナーは、ちゃんと『お世話』しないと……',
+          );
+          await printAndWait([
+            you.get_colored_name(),
+            'は息を殺して、',
+            chara.uma_sex_title,
+            'が親しげにトレーナーの腕へ頬をすり寄せながら、相手を引きずって去るのを見た。',
+          ]);
+          await printAndWait([
+            '突然、その',
+            chara.uma_sex_title,
+            'は何か思い出したように品を取り出し、',
+            you.get_colored_name(),
+            'へ投げてきた。',
+          ]);
+          await printAndWait([you.get_colored_name(), 'は慌てて受け取った。']);
+          await chara.say_and_wait(
+            '親切なトレーナーさん、ご自分の担当を決して冷たくしないでね？ ふふ……',
+          );
+          await printAndWait([
+            you.get_colored_name(),
+            'は二人の姿が遠ざかるのを見送り、まだ心臓が落ち着かない。',
+          ]);
+          break;
+        case 3:
+          await printAndWait([
+            you.get_colored_name(),
+            'には、この異常すぎる状況と向き合う勇気がなかった。慌ててスマホを取り出し、電話中のふりをしてそっと離れた。',
+          ]);
+          await printAndWait([
+            '奇妙な',
+            chara.uma_sex_title,
+            'と見知らぬトレーナーが',
+            you.get_colored_name(),
+            'の視界から消えるまで、',
+            you.get_colored_name(),
+            'はなかなか力が抜けなかった。',
+          ]);
+          await printAndWait([
+            you.get_colored_name(),
+            'も分かっている。どちらにも手を出さないのは、本質的には奇妙な',
+            chara.uma_sex_title,
+            'を助けることだ。',
+          ]);
+          await printAndWait([
+            'それでも',
+            you.get_colored_name(),
+            'は一日中このことを考え、かえって普段より頭が冴えた気がした。',
+          ]);
+      }
+      if (get('exp:0:监禁次数') === 0) {
+        await printAndWait([
+          'あとで、',
+          you.get_colored_name(),
+          'はふと思った。自分も同じ過ちを犯し、同じ結末へ向かうのではないか、と。',
+        ]);
+      }
+      return [ret];
+    };
+    f.title = '見過ごせぬこと';
+    return f;
+  })(),
+
+  // [번역 대상] nice_weekend
+  nice_weekend: (() => {
+    /**
+     * @author Mr.E.
+     * @param {CharaTalk} chara アグネスデジタルまたはメジロドーベル
+     * @param {CharaTalk} you プレイヤー
+     * @param {PrintedSpan} callname キャラからプレイヤーへの呼び方
+     */
+    const f = async (chara, you, callname) => {
+      const ret = [];
+      await printAndWait([
+        chara.get_colored_name(),
+        ' は同人の締切が迫り、',
+        you.get_colored_name(),
+        ' を週末、',
+        chara.sex,
+        'の作業部屋へ呼び、追い込みに付き合わせてきた',
+      ]);
+      printButton('トレーニングに響かないための必要経費だ（承諾）', 1);
+      printButton('休みは休みだ。残業などあり得ない！（拒否）', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        await printAndWait(
+          '社畜として、締切への嫌悪は骨に染みている。トレーナーとして、担当を助けるのも当然の務めだ！',
+        );
+        await printAndWait(
+          'ついに日曜が終わろうとするころ、二人はこの一冊を完成させた。',
+        );
+        const love = get(`love:${chara.id}`),
+          relation = get(`relation:${chara.id}:0`);
+        if (love >= 50 && love * (get('flag:极端行为限制') || 1) >= relation) {
+          await printAndWait([
+            you.get_colored_name(),
+            ' はいつ眠ったか覚えていない。担当に連れられて作業を始めたこと、',
+            you.get_colored_name(),
+            ' がこの手の作業に向かなかったのか、それとも単に疲れすぎたのか。ともかく目を覚ますと月曜の未明で、体には働きすぎの痛みが残っていた。',
+          ]);
+          println();
+          await printAndWait([
+            '突然、',
+            you.get_colored_name(),
+            ' は体がやけに重いと感じた',
+          ]);
+          println();
+          printButton('疲れすぎか？ もう少し休もう（異変を見ない）', 1);
+          printButton('痺れたのか？ 少し体を動かそう（異変を見る）', 2);
+          ret.push(await input());
+          if (ret.at(-1) === 1) {
+            await printAndWait([
+              you.get_colored_name(),
+              ' はぼんやりと、',
+              chara.get_colored_name(),
+              ' の作業部屋で目を覚ました。相手はすでに ',
+              you.get_colored_name(),
+              ' へ夕食を用意していたが、それでも ',
+              you.get_colored_name(),
+              ' はやる気が出ない……',
+            ]);
+          } else {
+            await printAndWait([
+              you.get_colored_name(),
+              ' が体を動かすと、',
+              chara.get_colored_name(),
+              ' が ',
+              you.get_colored_name(),
+              ' の脇に伏せていた。',
+            ]);
+            await printAndWait(['裸 で 伏 せ て い た']);
+            await printAndWait([
+              you.get_colored_name(),
+              ' は何か言おうとしたが、目の前が暗くなり、腰に力が抜けた',
+            ]);
+            await chara.say_and_wait([
+              callname,
+              '、もう起きた？ じゃあ第二ラウンドね❤️～',
+            ]);
+          }
+        } else {
+          if (love >= 50) {
+            await printAndWait([
+              '内容はトレーナーと',
+              chara.uma_sex_title,
+              'の甘い日常で、大好評だった！ ただ、なぜかトレーナーの顔が ',
+              you.get_colored_name(),
+              ' に似ている気がする？（ウマコイン+150）',
+            ]);
+          }
+          if (relation >= 550) {
+            await printAndWait([
+              '頒布のあと、',
+              chara.get_colored_name(),
+              ' は礼として ',
+              you.get_colored_name(),
+              ' にスイーツを奢りたがった。（【濃縮コーヒー】×5 を入手）',
+            ]);
+          }
+        }
+      }
+      return ret;
+    };
+    f.title = '楽しい週末の始まり！';
+    return f;
+  })(),
+
+  // [번역 대상] or_riverside_walk
+  or_riverside_walk: (() => {
+    /**
+     * @author KUN
+     * @param {CharaTalk} chara キャラ
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (chara, you) => {
+      const ret = [];
+      await printAndWait([
+        '土手でしばらく過ごしたあと、',
+        you.get_colored_name(),
+        ' と ',
+        chara.get_colored_name(),
+        ' は帰路についた。',
+      ]);
+      await printAndWait('優しい風が二人の顔を撫で、心地よい。');
+      printButton('「もう戻ろうか」', 1);
+      printButton('「少し遅くなったな」', 2);
+      await input();
+      await printAndWait([
+        you.get_colored_name(),
+        ' が話すあいだ、隣の ',
+        chara.get_colored_name(),
+        ' はそっと視線をこちらへ向け、静かに肩を寄せてきた。',
+      ]);
+      println();
+      await printAndWait('ゆっくり並んで歩く道は、ほとんど人通りがない。');
+      await chara.say_and_wait('静かだね……');
+      await printAndWait([
+        '何かに気づいたのか、',
+        chara.get_colored_name(),
+        ' は歩幅を緩めた。',
+      ]);
+      println();
+      await printAndWait([
+        '隣の ',
+        chara.get_colored_name(),
+        ' が立ち止まったのに気づき、',
+        you.get_colored_name(),
+        ' も足を止めて振り返った。',
+      ]);
+      printButton('「どうした？」', 1);
+      await input();
+      await chara.say_and_wait('ちょっと、目を閉じてもらえる？');
+      await printAndWait([
+        '訳のわからない頼みに、',
+        you.get_colored_name(),
+        ' は少し戸惑ったが、それでも目を閉じた。',
+      ]);
+      println();
+      await printAndWait('耳元を風が過ぎ、涼しさの中に一筋の熱が混じる。');
+      await printAndWait([
+        '目を開けずとも、',
+        you.get_colored_name(),
+        ' には何が起きたか分かった。',
+      ]);
+      await printAndWait('両腕が体を抱き、顔に温かく湿った感触が触れた。');
+      println();
+      await chara.say_and_wait('……はい、戻ろう。');
+      await printAndWait([
+        '再び目を開けると、',
+        chara.get_colored_name(),
+        ' は静かに ',
+        you.get_colored_name(),
+        ' の前に立っていた。',
+      ]);
+      await printAndWait(
+        '頬にはまだ薄い赤が残っているが、微笑んで二歩下がった。',
+      );
+      printButton('「戻ろう。」（好感+10）', 1);
+      printButton('「もしかして……もう少し遅く戻っても……」（恋慕+1）', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        await printAndWait([
+          chara.get_colored_name(),
+          ' は ',
+          you.get_colored_name(),
+          ' の温かい手を掴み、安心して歩いた。',
+        ]);
+        await you.say_and_wait('さっきの感触は、いったい何だったんだ……', true);
+      } else {
+        await chara.say_and_wait('もう少し……');
+        await chara.say_and_wait('つまり……');
+        await printAndWait([
+          '顔を赤らめた ',
+          chara.get_colored_name(),
+          ' を前に、',
+          you.get_colored_name(),
+          ' はただ笑った。',
+        ]);
+        await printAndWait([
+          '今日は、',
+          chara.get_colored_name(),
+          ' をもう少し遊ばせてやろう。',
+        ]);
+      }
+      return ret;
+    };
+    f.title = '土手の散歩';
+    return f;
+  })(),
+
+  // [번역 대상] reject
+  reject: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (you) => {
+      await printAndWait(
+        'なぜか最近、学園を歩いているとひそひそ話がついてくる。',
+      );
+      await printAndWait([
+        you.get_colored_name(),
+        ' が探ってみると、いつの間にか薄情な',
+        you.sex_code === 1 ? 'クズ男' : 'クズ女',
+        '扱いされていた！？',
+      ]);
+      printButton('「違う、やってない！」', 1);
+      await input();
+    };
+    f.title = '濡れ衣だ、濡れ衣！';
+    return f;
+  })(),
+
+  // [번역 대상] sakura_regret
+  sakura_regret: (() => {
+    /**
+     * @author Mr.E.
+     * @param {CharaTalk} chara キャラ
+     * @param {PrintedSpan} callname キャラからプレイヤーへの呼び方
+     */
+    const f = async (chara, callname) => {
+      await printAndWait([
+        '夜、ベッドの ',
+        chara.get_colored_name(),
+        ' は布団に自分を隠している',
+      ]);
+      println();
+      await chara.say_and_wait([
+        callname,
+        '、どうして……私の愛を受けてくれないの……',
+      ]);
+      println();
+      await chara.say_and_wait([
+        'あの綺麗な記憶は、全部、私たちが一緒に作ったのに……',
+      ]);
+      println();
+      await chara.say_and_wait(['本当に……寂しいよ……']);
+      println();
+      await printAndWait([
+        chara.sex,
+        'の気づかないところで、枕が静かに濡れた。',
+      ]);
+      println();
+    };
+    f.title = '桜の遺憾';
+    return f;
+  })(),
+
+  // [번역 대상] sick
+  sick: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (you) => {
+      await printAndWait([
+        you.get_colored_name(),
+        ' は起き抜けから頭が重く、眠気が取れず、とにかく全身がおかしい。',
+      ]);
+      printButton('「くそっ、気合いで乗り切る！」', 1);
+      printButton('「電話で休みを取って、医者に行こう……」', 2);
+      return [await input()];
+    };
+    f.title = '無常なる病';
+    return f;
+  })(),
+
+  // [번역 대상] trainer_race
+  trainer_race: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} aoi 桐生院葵
+     */
+    const f = async (you, aoi) => {
+      await printAndWait([
+        'トレセン学園へ向かう途中、ポスターが一枚、風に煽られて ',
+        you.get_colored_name(),
+        ' の顔にぺたりと張りついた。',
+      ]);
+      await printAndWait([
+        '剥がして見ると、トレーナー限定の',
+        get_random_entry(['短距離走', '水泳', '登山']),
+        '大会らしい。体力に自信がなくても、当日は公式のサポートがある、と書いてある。出るか？',
+      ]);
+      printButton(
+        '（試して損はなさそうだ）（体力＆気力-25%、賞品が手に入るかも）',
+        1,
+      );
+      printButton('（忙しすぎて、出てる暇ない——！）', 2);
+      const ret = await input();
+      if (ret === 1) {
+        await printAndWait(
+          '得体の知れない鍼灸を受けたあと、なぜかあっさり優勝し、主催側の賞品までもらった！',
+        );
+        await printAndWait(
+          'だが、順調すぎて背筋が寒い……実験台にされたみたいだ……',
+        );
+      } else {
+        await printAndWait([
+          'あとで聞くと、サポートなしで ',
+          aoi.get_colored_name(),
+          ' が優勝したらしい。',
+        ]);
+        await printAndWait('やっぱり、あの人は鬼のように強い……');
+      }
+      return [ret];
+    };
+    f.title = '風に舞うポスター';
+    return f;
+  })(),
+
+  // [번역 대상] we_are_one
+  we_are_one: (() => {
+    /**
+     * @author Mr.E.
+     * @param {CharaTalk} chara
+     * @param {CharaTalk} you
+     * @param {PrintedSpan} callname
+     */
+    const f = async (chara, you, callname) => {
+      await printAndWait([
+        'トレーナー室に戻ると、',
+        chara.get_colored_name(),
+        ' は頭にタオルをのせたままソファから立ち上がり、にこにこと ',
+        you.get_colored_name(),
+        ' を見ている。',
+      ]);
+      println();
+      await chara.say_and_wait([
+        '今日の私の動き、なかなかだったでしょ。',
+        callname,
+        ' は～ちゃんとご褒美をくれるよね？',
+      ]);
+      printButton('「今日はよく頑張った。休んで、出かけよう！」', 1);
+      print('（やる気-1、好感+50）');
+      printButton('「で、どんなご褒美がいい？」', 2);
+      const ret = [await input()];
+      if (ret[0] === 2) {
+        await printAndWait([
+          'つい冗談で聞き返したのに、予想外の答えが返ってきた。',
+        ]);
+        println();
+        await chara.say_and_wait([
+          callname,
+          ' の『お嫁さん』になりたいんだけど、どう？',
+        ]);
+        println();
+        await printAndWait([
+          '目の前のウマ娘はにやにやし、そう言いながら ',
+          you.get_colored_name(),
+          ' の手を',
+          chara.sex,
+          'の体へ導く。',
+        ]);
+        println();
+        await chara.say_and_wait([
+          '私たちは一心同体でしょ？ こんなとき、同じこと考えてるはずだよね？ とにかく ',
+          you.get_colored_name(),
+          ' が何を言っても、もう我慢できない！！！',
+        ]);
+        println();
+        await printAndWait([
+          '尻尾で扉に鍵をかけ、',
+          you.get_colored_name(),
+          ' を抱きかかえて隣のソファへ飛び込んだ。',
+        ]);
+        println();
+        await chara.say_and_wait(['「ベール」を剥いで、妻みたいに扱って～']);
+        println();
+        await printAndWait([
+          you.get_colored_name(),
+          ' が気づいたときには、もう遅かった。',
+        ]);
+        println();
+        printButton('「落ち着いて。他にやることもあるだろ……」', 1);
+        printButton(
+          'ベール代わりのタオルを乱暴に引き剥がし、ベッドの主が誰かを教えてやる！',
+          2,
+        );
+        ret.push(await input());
+        if (ret[1] === 1) {
+          await printAndWait([
+            you.get_colored_name(),
+            ' の拒絶を聞いても、抱きついたウマ娘の笑顔は変わらない。',
+          ]);
+          await chara.say_and_wait(
+            'いらない？ まだ息が合ってないんだね。分かった、ずっとすれば、一心同体になるでしょ？',
+          );
+        }
+      }
+      return ret;
+    };
+    f.title = '「」心「」体';
+    return f;
+  })(),
+
+  // [번역 대상] work_over
+  work_over: (() => {
+    /** @author 雞雞 */
+    const f = async () => {
+      await printAndWait('トレーナーは高給だが、楽な仕事ではない。');
+      await printAndWait([
+        '担当の',
+        get('flag:角色性别') === 1 ? 'ウマ郎' : 'ウマ娘',
+        'のトレーニング以外にも、学園事務、記者会見、財務、研究報告の執筆と、雑務は尽きない。',
+      ]);
+      println();
+      await printAndWait(
+        '今日もエナジードリンクで体を支え、執務室の机の下で眠る一日だ。',
+      );
+      printButton('「床が硬い……」', 1);
+      await input();
+    };
+    f.title = '無常なる残業';
+    return f;
+  })(),
 };

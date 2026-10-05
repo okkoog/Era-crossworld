@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/edu-2.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file サイレンススズカ - 育成
 # @author 牛蛙煲
 train:
@@ -61,7 +60,7 @@ train_fail:
     content: 「만약 너한테 정말 무슨 일이라도 생기면, 난 평생 죄책감을 가질 거야.」
   - 그 말을 듣자 스즈카는 더 이상 고집을 부리지 않고, 고개를 숙인 채 순순히 %YOU%의 부축을 받으며 보건실로 향했다.
 
-# [번역 대상] train_additional — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] train_additional
 train_additional:
   - acc: 1
     content: 「스즈카, 이제 쉬어도 돼.」
@@ -296,7 +295,7 @@ begin_race_miss:
     - %YOU%은(는) 이마의 땀을 닦으며 %CHARA%에게 열심히 설명했다.
     - %CHARA%는 미간을 찌푸린 채 고개를 끄덕였고, 일단은 그 설명을 받아들인 모양이다.
 
-# [번역 대상] new_year_classical — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] new_year_classical
 new_year_classical:
   - %YOU%은(는) 트레이닝실에 지루하게 앉아 이따금 벽에 걸린 시계를 쳐다보았다.
   - acc: 1
@@ -365,7 +364,7 @@ new_year_classical:
   - こうして%YOU%と %CHARA% は、クラシック級の最初の目標——弥生賞を定めた。
 
 # 初めてのG1前
-# [번역 대상] race_clothe — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] race_clothe
 race_clothe:
   title: 승부복
   lines:
@@ -458,7 +457,7 @@ race_clothe:
 
 # 弥生賞出走後
 # やる気+1
-# [번역 대상] secret_base — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] secret_base
 secret_base:
   title: 비밀기지
   lines:
@@ -555,7 +554,7 @@ secret_base:
     - 心が動き、見えない隔たりがひとつ、崩れた気がした。
 
 # クラシック級の祭り
-# [번역 대상] turn_overcast — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] turn_overcast
 turn_overcast:
   title: 맑음 뒤 흐림
   lines:
@@ -673,7 +672,7 @@ turn_overcast:
         - %CHARA%는 잠꼬대를 하듯 대답하고는, 넋이 나간 듯 %YOU%를 따라 숙소로 돌아갔다. # 컨디션-2
 
 # 夏合宿終了
-# [번역 대상] turn_cloudy — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] turn_cloudy
 turn_cloudy:
   title: 흐리고 구름 낀
   lines:
@@ -833,7 +832,7 @@ turn_cloudy:
         - %YOU%은(는) %CHARA%의 뒤를 따르며, 왠지 모를 형용할 수 없는 답답함을 느꼈다.
 
 # 神戸新聞杯入着
-# [번역 대상] kobe_hai_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kobe_hai_end
 kobe_hai_end:
   title: 흐림 뒤 맑음
   lines:
@@ -920,7 +919,7 @@ kobe_hai_lose:
     - %YOU%은(는) 순간 무슨 말을 해야 할지 몰라, 그저 녹화 영상을 끄고 스즈카의 주의를 돌리려 애썼다.
 
 # クラシック級10月第1週
-# [번역 대상] first_step — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] first_step
 first_step:
   title: 운명적인 첫발
   lines:
@@ -963,7 +962,7 @@ first_step:
     - 이렇게 %YOU%과(와) 스즈카는 최종 목표인 텐노상(가을)과 그 전초전인 킨코상을 확정했다.
 
 # -失意/悲しみ
-# [번역 대상] new_year_senior — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] new_year_senior
 new_year_senior:
   - 오늘은 시니어급의 첫날이자, %YOU%과(와) %CHARA%가 만난 지 3년째가 되는 날이다.
   - 지난 일 년 동안 스즈카는 %YOU%의 세심한 지도 아래 다양한 중거리 레이스를 섭렵하며 명성 높은 도주 %UMA%로 성장했다.
@@ -1103,7 +1102,7 @@ new_year_senior:
       - 스즈카의 돌발 행동에 의아함은 더 커졌지만, 생각할 겨를도 없이 %YOU%은(는) 스즈카를 뒤따라 신사를 빠져나왔다.
 
 # 金鯱賞3着以内
-# [번역 대상] kink_sho_3 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kink_sho_3
 kink_sho_3:
   title: 재기
   lines:
@@ -1120,7 +1119,7 @@ kink_sho_3:
     - %YOU%은(는) 진심으로 스즈카를 칭찬했다.
 
 # 金鯱賞4着以下
-# [번역 대상] kink_sho_4 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kink_sho_4
 kink_sho_4:
   title: 잠복
   lines:
@@ -1148,7 +1147,7 @@ kink_sho_4:
         - 「はい、%CALLNAME%。今言うのは場違いかもしれませんが、今回のレースも、きちんと楽しめていました。」
     - %YOU%은(는) 고개를 끄덕였다. 적어도 스즈카의 멘탈이 무너지지 않은 것만으로도 다행이다. 그렇다면 지금부터 힘을 비축해 기회를 노린다면, 다시 날아오르는 것도 불가능한 일은 아닐 것이다……
 
-# [번역 대상] kink_sho_miss — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] kink_sho_miss
 kink_sho_miss:
   title: 결석
   lines:
@@ -1177,7 +1176,7 @@ kink_sho_miss:
     - %YOU%은(는) 서둘러 고개를 저으며 그 생각을 머릿속에서 몰아냈다.
 
 # シニア級3月第3週
-# [번역 대상] second_step — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] second_step
 second_step:
   title: 운명의 두 번째 발걸음
   lines:
@@ -1223,7 +1222,7 @@ second_step:
     - acc: 1
       content: 「멋진 선택이야, 스즈카. 너라면 분명 좋은 성적을 낼 수 있을 거야.」
 
-# [번역 대상] takz_kin — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin
 takz_kin:
   title: 선전포고
   lines:
@@ -1287,7 +1286,7 @@ takz_kin:
           content: %CHARA%
         - 「시간이 다 됐어, 다들. 시작하자!」
 
-# [번역 대상] takz_kin_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin_win
 takz_kin_win:
   title: 선취
   lines:
@@ -1422,7 +1421,7 @@ takz_kin_3:
     - color: %COLOR%
       content: %CHARA%와 %A_NAME%이(가) 함께 고개를 끄덕였다. 세 명의 %UMA%는 모두 상대의 눈에서 승리를 향한 갈망을 읽었다.
 
-# [번역 대상] takz_kin_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] takz_kin_lose
 takz_kin_lose:
   title: 뒤처짐
   lines:
@@ -1446,7 +1445,7 @@ takz_kin_lose:
     - color: %COLOR%
       content: %CHARA%는 자조 섞인 미소를 지었다.
 
-# [번역 대상] summer_end — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] summer_end
 summer_end:
   - 세월은 화살과 같아, 어느새 시니어 시즌의 여름 합숙도 끝나가고 있었다.
   - 클래식 시즌의 전례가 있었기에, %YOU%은(는) 합숙 과정 내내 스즈카의 정신 상태를 면밀히 살폈다.
@@ -1492,7 +1491,7 @@ summer_end:
     content: 「그래, 스즈카라면 분명히 잘해낼 거라고 믿어.」
 
 # シニア級10月第2週終了
-# [번역 대상] curse — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] curse
 curse:
   title: 저주
   lines:
@@ -1668,7 +1667,7 @@ curse:
         - 「지켜봐 주세요, %CALLNAME%. 압도적인 속도로 그 저주를 박살 내 버릴게요. 반드시요!」
 
 # シニア級10月第3週開始
-# [번역 대상] bad_omen — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] bad_omen
 bad_omen:
   title: 불길한 징조
   lines:
@@ -1761,7 +1760,7 @@ bad_omen:
     - 그러나 한참을 뒤척여도 눈을 감기만 하면 그 처참한 꿈의 광경이 떠올랐다.
 
 # 【不吉な予兆】のあと
-# [번역 대상] choice — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] choice
 choice:
   title: 선택
   lines:
@@ -1974,7 +1973,7 @@ choice:
 # シニア級10月第4週開始
 # 回避せず、好感が好意未満
 # 以降編成から外れる。シニア級終了後に復帰、脚の古傷
-# [번역 대상] wing_clipped — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] wing_clipped
 wing_clipped:
   title: 부러진 날개
   lines:
@@ -2053,7 +2052,7 @@ wing_clipped:
     - 구급차는 금방 떠났고 레이스도 이미 끝난 지 오래였다. 관중들조차 오늘 일어난 참극을 떠들며 퇴장하기 시작했다.
     - %YOU%은(는) 아무것도 느끼지 못한 채, 구급차가 사라진 방향을 멍하니 바라보며 그 자리에 서 있었다.
 
-# [번역 대상] tenn_sho — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho
 tenn_sho:
   title: 무사히 돌아오겠다는 약속
   lines:
@@ -2110,7 +2109,7 @@ tenn_sho:
         - 스즈카는 계속 뒤를 돌아보며 경기장으로 향했고, 그 모습은 점점 작아지다 마침내 완전히 사라졌다.
         - %YOU%은(는) 한참 동안 %SEX%의 뒷모습을 응시했다.
 
-# [번역 대상] tenn_sho_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_win
 tenn_sho_win:
   title: 비상
   lines:
@@ -2327,7 +2326,7 @@ tenn_sho_win:
         - %YOU%은(는) 스즈카를 향해 손을 흔들었고, 마음을 짓누르던 천 근 무게의 돌덩이가 내려앉는 기분이었다.
         - 가을 텐노상, 해냈구나.
 
-# [번역 대상] tenn_sho_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_lose
 tenn_sho_lose:
   title: 잘못 없음
   lines:
@@ -2442,7 +2441,7 @@ tenn_sho_lose:
         - 「네!」
     - %YOU%은(는) 마치 승리자라도 된 것처럼 스즈카를 데리고 도쿄 경기장을 떠났다.
 
-# [번역 대상] tenn_sho_miss — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] tenn_sho_miss
 tenn_sho_miss:
   title: 결장
   lines:
@@ -2513,7 +2512,7 @@ tenn_sho_miss:
             - 「네, 그렇게……」 # 스즈카 주도의 우마뾰이
 
 # シニア級11月第1週
-# [번역 대상] third_step_win — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] third_step_win
 third_step_win:
   title: 운명의 세 번째 발걸음·새로운 출발
   lines:
@@ -2555,7 +2554,7 @@ third_step_win:
         - 「그러니까 %CALLNAME%, 지금까지 저를 믿고 지지해 주신 것, 그리고 저를 진심으로 걱정해 주신 것에 대한 감사의 뜻으로 이 방패를 받아주세요.」
     - とても真剣な表情を見て、仕方なく%SEX%の楯を受け取った。
 
-# [번역 대상] third_step_lose — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] third_step_lose
 third_step_lose:
   title: 운명의 세 번째 발걸음·졌지만 잘 싸웠다
   lines:
@@ -2584,7 +2583,7 @@ third_step_lose:
     - acc: 1
       content: 「괜찮아, 스즈카. 나에게는 네가 무사한 것이 그 무엇보다 중요하니까……」
 
-# [번역 대상] third_step_miss — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] third_step_miss
 third_step_miss:
   title: 운명의 세 번째 발걸음·모든 길은 하나로
   lines:
@@ -2626,7 +2625,7 @@ third_step_miss:
 
 # シニア級11月第1週
 # 折れた翼のあと
-# [번역 대상] ending — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] ending
 ending:
   title: 운명의 종착점
   lines:
@@ -2680,7 +2679,7 @@ ending:
     - そのあと長く、%YOU%と鈴鹿は何も言わなかった。主治医に病室から出されるまで。
 
 # 脚の古傷ルート以外
-# [번역 대상] christmas — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] christmas
 christmas:
   lines:
     - 책상 앞에 앉아 있던 %YOU%은(는) 무심결에 고개를 들어 창밖을 보았다.
@@ -2757,7 +2756,7 @@ christmas:
     - 그렇게 %YOU%과(와) 스즈카는 스즈카의 생애 마지막 크리스마스를 준비하기 시작했다.
 
 # 脚の古傷ルート
-# [번역 대상] hope — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] hope
 hope:
   title: 희망
   lines:
@@ -2830,7 +2829,7 @@ hope:
     - 子供のように雪片を追う鈴鹿を見て、胸の中はさまざまな味が混ざった。
 
 # 全勝エンディング
-# [번역 대상] invincible — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] invincible
 invincible:
   title: 전승
   lines:
@@ -2845,7 +2844,7 @@ invincible:
     - 만약 스즈카를 만나지 못했다면, 자신의 삶이 이토록 다채로울 수 있었을까?
 
 # 脚の古傷なし、非一着が2以下
-# [번역 대상] better_ending — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] better_ending
 better_ending:
   title: 성공과 명성
   lines:
@@ -2857,7 +2856,7 @@ better_ending:
     - 이런 상황을 마주할 때마다, %YOU%은(는) 트레이너로서의 직업 인생이 거의 완벽에 가까워졌음을 느낀다.
 
 # 脚の古傷あり、非一着が1以下
-# [번역 대상] good_ending — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_ending
 good_ending:
   title: 꺾인 날개의 천사
   lines:
@@ -2881,7 +2880,7 @@ normal_ending:
     - 어떤 의미에서는 서로에게 잘 어울리며, 큰 공도 과도 없는 결과니 이 또한 괜찮지 않을까?
 
 # 鈴鹿が宝塚記念／金鯱賞を欠場したうえで脚を負傷した場合
-# [번역 대상] crazy_fan — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] crazy_fan
 crazy_fan:
   title: 뜻밖의 비극
   lines:
@@ -2941,7 +2940,7 @@ crazy_fan:
 
 # 徹夜のあとで発生
 # スピード+5、根性+15
-# [번역 대상] run_together — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] run_together
 run_together:
   title: 併走
   lines:

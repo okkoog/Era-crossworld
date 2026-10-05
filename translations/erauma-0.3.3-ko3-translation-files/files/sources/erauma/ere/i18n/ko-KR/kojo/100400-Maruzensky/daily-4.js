@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/daily-4.js
-// 대상 함수/속성: good_morning, o_r_fishing, o_r_walking, o_s_arcade, o_s_dating, o_s_drawing, o_s_ktv, o_s_movie, o_s_restaurant, o_s_shopping, out_church, s_a_dating, s_a_tree_hollow, select, select_Self_contempt, select_after_recruit, select_by_wind, select_girls_blue, select_good_end, select_happiness_day, select_sister_annoyance, select_true_end, talk
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file マルゼンスキー - 日常
  * @author 黑奴一号
@@ -16,7 +14,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] good_morning — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] good_morning
   good_morning(maru, you, callname) {
     const buffer = [];
     if (era.get('base:4:体力') < era.get('maxbase:4:体力') / 3) {
@@ -114,7 +112,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select
   select(maru, you, callname) {
     const buffer = [];
     if (era.get('base:4:体力') < era.get('maxbase:4:体力') / 3) {
@@ -220,7 +218,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_after_recruit — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_after_recruit
   select_after_recruit(maru, you, callname) {
     maru.say(
       `ハイ〜${you.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'}、私は ${maru.name} よ。`,
@@ -233,7 +231,7 @@ module.exports = {
     );
   },
   /** @param {CharaTalk} maru マルゼンスキー */
-  // [번역 대상] select_sister_annoyance — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_sister_annoyance
   select_sister_annoyance(maru) {
     maru.say('もっと大きな舞台で走ると、気持ちまでキラキラするわね♪');
     maru.say(`何かあったら、必ず${maru.elder_sibling_sex_title}に相談してね？`);
@@ -243,14 +241,14 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_girls_blue — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_girls_blue
   select_girls_blue(maru, callname) {
     maru.say('膝が、前よりずっと痛い。', true);
     maru.say('あとどれくらい持つのかしら。', true);
     maru.say(`少なくとも、${callname} には悟られないように。`, true);
   },
   /** @param {CharaTalk} maru マルゼンスキー */
-  // [번역 대상] select_true_end — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_true_end
   select_true_end(maru) {
     maru.say('同じ後悔を、二度としないために。');
     maru.say('少なくとも、迷っている後輩たちに、参考になる道を残すために。');
@@ -262,7 +260,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_good_end — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_good_end
   select_good_end(maru, you, callname) {
     maru.say(
       `苦しさも、孤独も、${callname} と一緒なら、たいしたものじゃないみたい。`,
@@ -281,7 +279,7 @@ module.exports = {
    * @param {number} wind マルゼンスキー育成用変数 wind の値
    * @returns {boolean} wind が特定値なら本文を出したので true、そうでなければ続行
    */
-  // [번역 대상] select_by_wind — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_by_wind
   select_by_wind(maru, you, callname, wind) {
     switch (wind) {
       case 1:
@@ -322,7 +320,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_Self_contempt — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_Self_contempt
   select_Self_contempt(maru, callname) {
     maru.say(`どうして、そんなに沈んでるの？`);
     maru.say('早く元気出して！');
@@ -332,7 +330,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_happiness_day — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_happiness_day
   select_happiness_day(maru, callname) {
     maru.say(`真っ青な空、新しい芝。なんだか懐かしい感じがするわね。`);
     maru.say(`あら、${callname}、いつ来たの。`);
@@ -401,7 +399,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] talk — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] talk
   async talk(maru, callname) {
     const buffer = [];
     if (era.get('cflag:4:育成回合计时') < 3 * 48) {
@@ -650,7 +648,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
   /** @param {CharaTalk} maru マルゼンスキー */
-  // [번역 대상] s_a_tree_hollow — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_tree_hollow
   async s_a_tree_hollow(maru) {
     const buffer = [];
     buffer.push(
@@ -669,7 +667,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] s_a_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_dating
   async s_a_dating(maru, callname) {
     const buffer = [];
     buffer.push(
@@ -701,7 +699,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_r_fishing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_r_fishing
   async o_r_fishing(maru, callname) {
     const buffer = [];
     buffer.push(
@@ -722,7 +720,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_r_walking — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_r_walking
   async o_r_walking(maru, callname) {
     const buffer = [];
     buffer.push(
@@ -742,7 +740,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_arcade — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_arcade
   async o_s_arcade(maru, you, callname) {
     const buffer = [];
     buffer.push(
@@ -775,7 +773,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_drawing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_drawing
   async o_s_drawing(maru, you, callname) {
     await maru.say_and_wait(`${callname} も運試し、してみる？`);
     await era.printAndWait(`${maru.name} は商店街近くの抽選機を指した`);
@@ -837,7 +835,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_ktv — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_ktv
   async o_s_ktv(maru, you, callname) {
     await maru.say_and_wait(`${callname}、この最新の流行歌、聞いてみて`);
     await era.printAndWait([
@@ -852,7 +850,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_movie — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_movie
   async o_s_movie(maru, you, callname) {
     const buffer = [];
     buffer.push(
@@ -914,7 +912,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] out_church — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] out_church
   async out_church(maru, darley, godolphin, byerley, you, callname) {
     darley.name = '優しい女神';
     godolphin.name = '賢い女神';
@@ -1027,7 +1025,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] o_s_restaurant — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_restaurant
   async o_s_restaurant(maru, you) {
     const buffer = [];
     buffer.push(
@@ -1059,7 +1057,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_dating
   async o_s_dating(maru, you, callname) {
     const buffer = [];
     buffer.push(
@@ -1083,7 +1081,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_shopping — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_shopping
   async o_s_shopping(maru, callname) {
     const buffer = [];
     buffer.push(

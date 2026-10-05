@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/daily-7.js
-// 대상 함수/속성: basement_end, good_morning, o_c_pray, o_r_fishing, o_r_walking, o_s_arcade, o_s_dating, o_s_drawing, o_s_ktv, o_s_movie, o_s_restaurant, o_s_shopping, s_a_dating, s_a_tree_hollow, s_r_lunch, select_awake, slave_end, talk
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file ゴールドシップ - 日常
  * @author 雞雞
@@ -17,7 +15,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {number} b_escape 地下室からの脱出手段。0 のときは通常
    */
-  // [번역 대상] good_morning — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] good_morning
   good_morning(gs, b_escape) {
     if (b_escape > 0) {
       switch (b_escape) {
@@ -96,7 +94,7 @@ module.exports = {
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    * @param {number|false} b_escape 地下室からの脱出手段。0 は通常、false はプレイヤーが寝ているため該当台詞なし
    */
-  // [번역 대상] select_awake — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] select_awake
   select_awake(gs, callname, b_escape) {
     if (b_escape > 0) {
       switch (b_escape) {
@@ -161,7 +159,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] talk — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] talk
   async talk(gs) {
     if (era.get('base:7:体力') < 0.45 * era.get('maxbase:7:体力')) {
       if (Math.random() < 0.5) {
@@ -311,7 +309,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] s_a_tree_hollow — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_tree_hollow
   async s_a_tree_hollow(gs) {
     await era.printAndWait([
       'と ',
@@ -333,7 +331,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] s_a_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_dating
   async s_a_dating(gs) {
     await era.printAndWait([
       'と ',
@@ -355,7 +353,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] s_r_lunch — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_r_lunch
   async s_r_lunch(gs) {
     await era.printAndWait([
       'と ',
@@ -377,7 +375,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_r_fishing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_r_fishing
   async o_r_fishing(gs) {
     await era.printAndWait([
       'と ',
@@ -403,7 +401,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_r_walking — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_r_walking
   async o_r_walking(gs) {
     await era.printAndWait([
       'と ',
@@ -432,7 +430,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_arcade — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_arcade
   async o_s_arcade(gs, callname) {
     await era.printAndWait([
       'と ',
@@ -452,7 +450,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_drawing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_drawing
   async o_s_drawing(gs, callname) {
     await era.printAndWait([
       'と ',
@@ -477,7 +475,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_ktv — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_ktv
   async o_s_ktv(gs, callname) {
     await era.printAndWait([
       'と ',
@@ -504,7 +502,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_movie — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_movie
   async o_s_movie(gs, callname) {
     await era.printAndWait([
       'と ',
@@ -532,7 +530,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {number} dice 祈りの出目。0-1 の小数、小さいほど良い
    */
-  // [번역 대상] o_c_pray — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_c_pray
   async o_c_pray(gs, you, dice) {
     await gs.say_and_wait([
       { color: gold_color, content: 'はっ——ひょいひょい！' },
@@ -613,7 +611,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_s_restaurant — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_restaurant
   async o_s_restaurant(gs) {
     await era.printAndWait([
       'と ',
@@ -639,7 +637,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_s_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_dating
   async o_s_dating(gs) {
     await era.printAndWait([
       'と ',
@@ -664,7 +662,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_shopping — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_shopping
   async o_s_shopping(gs, callname) {
     await era.printAndWait([
       'と ',
@@ -708,7 +706,7 @@ module.exports = {
       ]);
     }
   },
-  // [번역 대상] slave_end — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] slave_end
   slave_end: (() => {
     const title = '金の奴隷';
     /**
@@ -791,7 +789,7 @@ module.exports = {
     f.title = title;
     return f;
   })(),
-  // [번역 대상] basement_end — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] basement_end
   basement_end: (() => {
     const title = '愛の檻';
     /**

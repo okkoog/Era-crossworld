@@ -1,5 +1,4 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/107100-Mejiro-Ardan/daily-71.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロアルダン - 日常
 # @author 洛洛
 good_morning:
@@ -534,7 +533,7 @@ s_a_dating:
             content: %CHARA%
           - 「%CALLNAME%? 너무 긴장하신 것 같아요. 자~ 저와 함께 심호흡을 하며 긴장을 풀어보아요.」
 
-# [번역 대상] s_r_lunch — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] s_r_lunch
 s_r_lunch:
   - random: true
     lines:
@@ -553,7 +552,7 @@ s_r_lunch:
       - 식사 시간은 예전보다 조금 더 길어졌을지 모른다.
       - 하지만 두 사람은 서로와 함께하는 이 시간을 더없이 소중히 여기고 있었다.
 
-# [번역 대상] o_r_fishing — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_r_fishing
 o_r_fishing:
   - random: true
     lines:
@@ -706,7 +705,7 @@ o_s_dating:
           - 「후훗~ 제 사랑🎵 긴장하셨나요?」
       - 당신의 긴장을 알아챈 듯, 아르당은 장난기 어린 목소리로 물어보며 팔짱을 더욱 단단히 조여왔다.
 
-# [번역 대상] o_s_shopping — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] o_s_shopping
 o_s_shopping:
   - random: true
     lines:
@@ -724,7 +723,7 @@ o_s_shopping:
             content: %CHARA%
           - 「저편의 매장에서 세일 행사를 진행하는 모양이에요. 같이 가보실래요?」
 
-# [번역 대상] good_night_normal — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] good_night_normal
 good_night_normal:
   sync: true
   lines:
@@ -785,7 +784,7 @@ good_night_normal:
                   content: %CHARA%
                 - 「잘 자셔요, 여신님들께서 제게 보내주신 소중한 보물.」
 
-# [번역 대상] cl_new_year — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_new_year
 cl_new_year:
   title: 新年
   lines:
@@ -806,7 +805,7 @@ cl_new_year:
       content: 「もちろん～」
     - %YOU%はアルダンの誘いを受け、一緒に神社を訪れる。互いを思う願いをかけたあと、新年の小さな遊びも一緒に楽しんだ。
 
-# [번역 대상] cl_valentine — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_valentine
 cl_valentine:
   title: バレンタイン
   lines:
@@ -828,7 +827,7 @@ cl_valentine:
     - acc: 1
       content: 「ありがとう、アルダン。」
 
-# [번역 대상] cl_fans — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_fans
 cl_fans:
   title: ファン感謝祭
   lines:
@@ -848,7 +847,7 @@ cl_fans:
         - 「……ふふ、%CALLNAME%の言い方は、いつも面白くて……それでいて、私を励ましてくれます。」
     - そのあとのファン感謝祭は、滞りなく終わった。
 
-# [번역 대상] cl_temple_fair — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_temple_fair
 cl_temple_fair:
   title: 縁日
   lines:
@@ -873,7 +872,7 @@ cl_temple_fair:
         - 「ええ。体の都合で、こうした催しにはあまり参加できませんでした。でも今は、%CALLNAME%のおかげで、以前やりたかったことができるんです。」
     - %YOU%はアルダンの手を引き、一緒に肝試しへ入る。アルダンは%YOU%のそばでずっと幸せそうに笑い、時おり視線を%YOU%へ向けている。
 
-# [번역 대상] cl_halloween — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_halloween
 cl_halloween:
   title: ハロウィン
   lines:
@@ -898,7 +897,7 @@ cl_halloween:
           content: %CHARA%
         - 「ふふ、では初擁を差し上げますね、%CALLNAME%🎵」
 
-# [번역 대상] cl_christmas — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] cl_christmas
 cl_christmas:
   title: クリスマス
   lines:
@@ -915,7 +914,7 @@ cl_christmas:
     - %YOU%とアルダンはプラネタリウムへ行き、一緒に星を観る。
     - 別れ際、来年のクリスマスも一緒に過ごそうと約束して、幸せな一日が終わった。
 
-# [번역 대상] birthday — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] birthday
 birthday:
   title: 誕生日
   lines:
@@ -937,7 +936,7 @@ birthday:
 
 # 恋慕が依存
 # 一度きり
-# [번역 대상] birthday_dependence — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] birthday_dependence
 birthday_dependence:
   title: 誕生日
   lines:

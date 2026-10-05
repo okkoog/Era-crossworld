@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/daily.js
-// 대상 함수/속성: birthday_normal, cl_christmas, cl_palace, cl_temple_fair, cl_valentine, get_gn_sex_message, gn_sex_accept, gn_sex_force, gn_sex_no, gn_sex_reject, gn_sex_yes, good_morning, load_talk, o_c_pray, o_s_arcade, o_s_dating, o_s_drawing, o_s_ktv, o_s_movie, o_s_restaurant, o_s_shopping, oc_great_luck, oc_remove_train_debuff, office_cook, office_study, s_a_dating, s_a_tree_hollow, s_r_lunch
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
  * @file 日常の地の文
  * @author 雞雞
@@ -22,7 +20,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {CharaTalk} minoru
    */
-  // [번역 대상] good_morning — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] good_morning
   good_morning(chara, you, minoru) {
     const buffer = [
       /** @author 雞雞 */
@@ -584,7 +582,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] get_gn_sex_message — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] get_gn_sex_message
   get_gn_sex_message: (chara, you) => [
     '忙しい一日が終わり、',
     you.get_colored_name(),
@@ -594,16 +592,16 @@ module.exports = {
     chara.get_colored_name(),
     ' はもじもじしながら、一緒に寝ないかと誘ってきた……',
   ],
-  // [번역 대상] gn_sex_yes — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_yes
   gn_sex_yes: '受け入れる',
-  // [번역 대상] gn_sex_no — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_no
   gn_sex_no: '断る',
   /**
    * @author 雞雞
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] gn_sex_accept — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_accept
   async gn_sex_accept(chara, you) {
     await era.printAndWait([
       'まわりの温かい視線のなか、頬を赤らめた ',
@@ -619,7 +617,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {PrintedSpan} callname
    */
-  // [번역 대상] gn_sex_force — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_force
   async gn_sex_force(chara, you, callname) {
     await era.printAndWait([
       'その瞬間、',
@@ -635,7 +633,7 @@ module.exports = {
    * @author 雞雞
    * @param {CharaTalk} chara
    */
-  // [번역 대상] gn_sex_reject — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] gn_sex_reject
   async gn_sex_reject(chara) {
     await era.printAndWait([
       chara.get_colored_name(),
@@ -681,7 +679,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] office_study — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] office_study
   async office_study(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -820,7 +818,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] office_cook — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] office_cook
   async office_cook(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -891,7 +889,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] s_a_tree_hollow — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_tree_hollow
   async s_a_tree_hollow(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -912,7 +910,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] s_a_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_a_dating
   async s_a_dating(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -926,7 +924,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] s_r_lunch — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] s_r_lunch
   async s_r_lunch(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -966,7 +964,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_arcade — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_arcade
   async o_s_arcade(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -980,7 +978,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_drawing — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_drawing
   async o_s_drawing(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -994,7 +992,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_ktv — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_ktv
   async o_s_ktv(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -1008,7 +1006,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_movie — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_movie
   async o_s_movie(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -1023,7 +1021,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {number} dice 祈祷掷骰结果，0-1 之间的小数，越小越好
    */
-  // [번역 대상] o_c_pray — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_c_pray
   async o_c_pray(chara, you, dice) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -1047,7 +1045,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {number} dice 祈祷掷骰结果，0-0.05 之间的小数，这里根据数值计算大成功的类型
    */
-  // [번역 대상] oc_great_luck — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] oc_great_luck
   async oc_great_luck(chara, dice) {
     // FLAGNAME:122 = 强奸抵抗
     if (dice < 0.0001 && era.get('flag:122') === 1) {
@@ -1073,7 +1071,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} chara */
-  // [번역 대상] oc_remove_train_debuff — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] oc_remove_train_debuff
   oc_remove_train_debuff(chara) {
     era.print([
       '【',
@@ -1086,7 +1084,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_restaurant — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_restaurant
   async o_s_restaurant(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -1100,7 +1098,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_dating — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_dating
   async o_s_dating(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -1114,7 +1112,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] o_s_shopping — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] o_s_shopping
   async o_s_shopping(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -1141,7 +1139,7 @@ module.exports = {
     f.title = '새해';
     return f;
   })(),
-  // [번역 대상] cl_valentine — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_valentine
   cl_valentine: (() => {
     /**
      * @author 雞雞
@@ -1165,7 +1163,7 @@ module.exports = {
     f.title = '발렌타인데이';
     return f;
   })(),
-  // [번역 대상] cl_palace — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_palace
   cl_palace: (() => {
     /**
      * @author 天马闪光蹄
@@ -1301,7 +1299,7 @@ module.exports = {
     f.title = '팬 대감사제';
     return f;
   })(),
-  // [번역 대상] cl_temple_fair — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_temple_fair
   cl_temple_fair: (() => {
     /**
      * @author 天马闪光蹄
@@ -1416,7 +1414,7 @@ module.exports = {
     f.title = '할로윈';
     return f;
   })(),
-  // [번역 대상] cl_christmas — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] cl_christmas
   cl_christmas: (() => {
     /**
      * @author 雞雞
@@ -1454,7 +1452,7 @@ module.exports = {
    * @param chara
    * @param you
    */
-  // [번역 대상] birthday_normal — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] birthday_normal
   async birthday_normal(chara, you) {
     await era.printAndWait([
       chara.get_colored_name(),
@@ -1632,7 +1630,7 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] load_talk — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] load_talk
   async load_talk(chara, you) {
     // CFLAGNAME:81 = 妊娠阶段
     // CFLAGNAME:57 = 扩展变量

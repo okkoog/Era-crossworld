@@ -1,11 +1,10 @@
-# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-# 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/mejiro/cum-events.kojo
+# 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 # @file メジロの呼び声 - 霧の探索イベント
 # @author イーウィヤ
 # @author 99
 
 # 好事件
-# [번역 대상] g_water — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] g_water
 g_water:
   title: 甘い泉水
   lines:
@@ -27,7 +26,7 @@ g_water:
         - %YOU%과(와) %CHARA%은(는) 어디선가 본 듯한 음수대를 발견하고 물을 떠서 조금 마셨다.
     - 시원한 물이 갈증 나는 목을 타고 넘어가자 두 사람의 정신이 맑아졌다. (체력+)
 
-# [번역 대상] g_lost_and_found — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] g_lost_and_found
 g_lost_and_found:
   title: 遺失物
   lines:
@@ -41,7 +40,7 @@ g_lost_and_found:
       lines:
         - %YOU%은(는) 분실물 보관소에서 %YOU%의 이름이 적힌 포인트 카드를 찾아냈다. (「은총」+%REWARD%)
 
-# [번역 대상] g_clothe — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] g_clothe
 g_clothe:
   title: 身だしなみ
   lines:
@@ -55,7 +54,7 @@ g_clothe:
       lines:
         - 두 사람은 공중화장실에서 간단히 상태를 정리했다. (성욕-)
 
-# [번역 대상] g_chair — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] g_chair
 g_chair:
   title: 木陰のベンチ
   lines:
@@ -95,7 +94,7 @@ g_chair:
           lines:
             - 두 사람은 잠시 대화를 나누었다. (성욕-)
 
-# [번역 대상] g_bus — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] g_bus
 g_bus:
   title: 公共交通
   lines:
@@ -110,7 +109,7 @@ g_bus:
       lines:
         - %YOU%과(와) %CHARA%은(는) 도착한 전차에 올라탔고, 이내 종착역에서 내렸다. (추가 전진 1회)
 
-# [번역 대상] g_lucky — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] g_lucky
 g_lucky:
   title: 幸運の報酬
   lines:
@@ -140,7 +139,7 @@ g_lucky:
             - 자극적인 맛이 %YOU%의 정신을 번쩍 들게 했다…… (%YOU%체력+)
 
 # 普通事件
-# [번역 대상] n_walk_through — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] n_walk_through
 n_walk_through:
   title: ただの通り抜け
   lines:
@@ -153,7 +152,7 @@ n_walk_through:
       lines:
         - 두 사람은 손을 잡고 좁은 골목을 통과했다.
 
-# [번역 대상] n_walk — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] n_walk
 n_walk:
   title: 街歩き
   lines:
@@ -166,7 +165,7 @@ n_walk:
       lines:
         - 두 사람은 함께 밝고 깨끗한 길가를 거닐었다.
 
-# [번역 대상] n_shortcut — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] n_shortcut
 n_shortcut:
   title: 林の近道
   lines:
@@ -181,7 +180,7 @@ n_shortcut:
       lines:
         - 두 사람은 계속해서 큰길로 전진하는 것을 선택했다.
 
-# [번역 대상] n_street_food — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] n_street_food
 n_street_food:
   title: 屋台
   lines:
@@ -194,7 +193,7 @@ n_street_food:
     - acc: 2
       content: 다음에 먹는다
 
-# [번역 대상] n_arcade — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] n_arcade
 n_arcade:
   title: 抽選ゲーム
   lines:
@@ -223,7 +222,7 @@ n_arcade:
         - acc: 2
           content: 하지 않는다
 
-# [번역 대상] n_promotion — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] n_promotion
 n_promotion:
   title: 店の宣伝
   lines:
@@ -253,7 +252,7 @@ n_promotion:
           content: 역시 그만둔다
 
 # 坏事件
-# [번역 대상] b_pet_anal — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_pet_anal
 b_pet_anal:
   title: 尻を掴む
   lines:
@@ -272,7 +271,7 @@ b_pet_anal:
         - %YOU%은(는) 결국 아무 일도 없었던 것으로 하기로 했다.
         - %YOU%과(와) 몰래 웃고 있는 %CHARA%은(는) 차례로 노점을 떠났다. (%CHARA% 성욕++)
 
-# [번역 대상] b_hug — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_hug
 b_hug:
   title: 不意の抱擁
   lines:
@@ -291,7 +290,7 @@ b_hug:
         - %YOU%은(는) 즉시 %CHARA%을(를) 일으켜 세웠고, %CHARA%도 그저 수줍은 미소를 지으며 할 말이 있는 듯 없는 듯 고개를 끄덕였다.
         - 이 무해한 해프닝 끝에 두 사람은 손을 잡고 골목을 빠져나왔다. (%CHARA% 성욕++)
 
-# [번역 대상] b_pet_leg — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_pet_leg
 b_pet_leg:
   title: 太ももを撫でる
   lines:
@@ -309,7 +308,7 @@ b_pet_leg:
         - %YOU%은(는) 손을 뻗어 만지고 싶은 욕망을 참아냈고, %CHARA%은(는) 약간 의아하면서도 실망스러운 듯 %YOU%을(를) 바라보았다.
         - 한동안 앉아 있은 뒤, 두 사람은 다시 길을 떠났다. (%CHARA% 성욕++)
 
-# [번역 대상] b_movie — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_movie
 b_movie:
   title: 街頭上映
   lines:
@@ -325,7 +324,7 @@ b_movie:
       lines:
         - %YOU%은(는) %CHARA%의 동작을 살짝 피했고, 그 후 두 사람은 평범하게 영화 장면을 감상했다. (%CHARA% 성욕++)
 
-# [번역 대상] b_cafe — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_cafe
 b_cafe:
   title: カフェ
   lines:
@@ -341,7 +340,7 @@ b_cafe:
       lines:
         - %CHARA%은(는) 실망한 기색으로 %YOU%을(를) 따라 카페에서 멀어졌다. (%CHARA% 성욕++)
 
-# [번역 대상] b_lucky_sukebe — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_lucky_sukebe
 b_lucky_sukebe:
   title: 幸運な痴漢？
   lines:
@@ -359,7 +358,7 @@ b_lucky_sukebe:
         - %YOU%은(는) 재빨리 소리를 내어 주의를 주었고, 비록 신체의 민감한 부위를 만지는 것은 피할 수 없었지만, %CHARA%은(는) 안정적으로 %YOU%을(를) 받아냈다.
         - 하지만 그 후, 얼굴이 약간 붉어진 %CHARA%은(는) 억지로 %YOU%을(를) 부축하며 아주 긴 거리를 걸어갔다. (%CHARA% 성욕++)
 
-# [번역 대상] b_rain — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_rain
 b_rain:
   title: 突然の雨
   lines:
@@ -377,7 +376,7 @@ b_rain:
         - 매혹적인 %CHARA%과(와) 사랑을 나누고 싶은 마음이 굴뚝같았지만, %YOU%은(는) 행동을 절제했다.
         - 수상한 「비」는 오래 지속되지 않았고, 그 후 두 사람은 빠르게 골목을 떠났다. (%CHARA% 성욕++)
 
-# [번역 대상] b_ero_item — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_ero_item
 b_ero_item:
   title: 振動する玩具
   lines:
@@ -400,7 +399,7 @@ b_ero_item:
         - %YOU%은(는) 어쩔 수 없이 %CHARA%과(와) 함께 길가 구석으로 몸을 숨겨, 옷 위로 장난감을 작동시켜 %CHARA%의 「흥분」을 달래주었다.
         - 작은 전동 장난감은 금세 배터리가 다 되었지만, %CHARA%은(는) 만족하지 못한 듯했다…… (%CHARA% 성욕++)
 
-# [번역 대상] b_advance — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_advance
 b_advance:
   title: 理由のない挑発
   lines:
@@ -419,7 +418,7 @@ b_advance:
         - %CHARA%에게 욕망을 분출하고 싶은 충동을 억지로 참으며, %YOU%은(는) %CHARA%을(를) 힘껏 밀쳐냈다.
         - %YOU%은(는) %CHARA%을(를) 데리고 계속해서 앞으로 나아갔다…… (%CHARA% 성욕++)
 
-# [번역 대상] b_blow_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_blow_job
 b_blow_job:
   title: 露天の口奉仕
   lines:
@@ -436,7 +435,7 @@ b_blow_job:
       lines:
         - %YOU%은(는) 어떻게든 %CHARA%을(를) 일으켜 세웠고, %CHARA%이(가) 어느 정도 진정된 후 그곳을 떠났다. (%CHARA% 성욕++)
 
-# [번역 대상] b_anal_item — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_anal_item
 b_anal_item:
   title: 後穴の玩具
   lines:
@@ -459,7 +458,7 @@ b_anal_item:
         - %YOU%은(는) 어쩔 수 없이 %CHARA%을(를) 데리고 근처 골목으로 들어가, 장난감을 이용해 후혈 자위를 시켜줌으로써 %CHARA%이(가) 「이성」을 찾게 도와주었다.
         - 얼마 후, %YOU%은(는) 호흡이 가빠진 %CHARA%을(를) 데리고 골목을 나왔지만, %CHARA%은(는) 담백한 절정만으로는 만족하지 못한 듯했다…… (%CHARA% 성욕++)
 
-# [번역 대상] b_foot_job — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+# [번역 대상] b_foot_job
 b_foot_job:
   title: 隠れた遊び
   lines:

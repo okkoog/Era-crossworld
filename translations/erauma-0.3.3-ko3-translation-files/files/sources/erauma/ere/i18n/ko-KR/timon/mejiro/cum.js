@@ -1,6 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
-// 원본 경로: sources/erauma/ere/i18n/ko-KR/timon/mejiro/cum.js
-// 대상 함수/속성: leave_misty
+// 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 const {
   get,
   input,
@@ -133,7 +131,7 @@ module.exports = {
   },
 
   // Partial reuse: the changed middle failure line stays on the current Japanese text.
-  // [번역 대상] leave_misty — 함수/속성 전체 문맥에서 남은 원문을 번역
+  // [번역 대상] leave_misty
   async leave_misty(chara, you, vehicle, success) {
     if (success) {
       if (typeof vehicle === 'string') {
@@ -411,4 +409,52 @@ module.exports = {
       '뒤를 돌아보니, 메지로 시티는 다시 안개에 휩싸여 있었다……',
     );
   },
+
+  // [번역 대상] calling_buttons
+  calling_buttons: ['メ', 'ジ', 'ロ', 'が', '呼', 'ぶ'],
+
+  // [번역 대상] city_bs_boob_down_template
+  city_bs_boob_down_template: '胸を小さくする（5「恩寵」、いまは %CUP% Cup）',
+
+  // [번역 대상] city_bs_boob_up_template
+  city_bs_boob_up_template: '胸を大きくする（5「恩寵」、いまは %CUP% Cup）',
+
+  // [번역 대상] city_bs_ero_deeper
+  city_bs_ero_deeper: '性器の色素沈着を増やす（5「恩寵」）',
+
+  // [번역 대상] city_bs_ero_deeper_limit_tip
+  city_bs_ero_deeper_limit_tip: 'すでに浅黒い性器だ',
+
+  // [번역 대상] city_bs_ero_shallower
+  city_bs_ero_shallower: '性器の色素沈着を薄くする（5「恩寵」）',
+
+  // [번역 대상] city_bs_ero_shallower_limit_tip
+  city_bs_ero_shallower_limit_tip: 'すでに桃色の性器だ',
+
+  // [번역 대상] city_bs_height_down_template
+  city_bs_height_down_template: '%HEIGHT%cm まで低くする（10「恩寵」）',
+
+  // [번역 대상] city_bs_height_up_template
+  city_bs_height_up_template: '%HEIGHT%cm まで高くする（10「恩寵」）',
+
+  // [번역 대상] city_bs_penis_bigger_woman_template
+  city_bs_penis_bigger_woman_template:
+    'ふたなり化する（10「恩寵」、いまは %SIZE%）',
+
+  // [번역 대상] city_bs_skin_deeper_template
+  city_bs_skin_deeper_template: '日焼け（5「恩寵」、いまは %SKIN%）',
+
+  // [번역 대상] city_bs_skin_shallower_template
+  city_bs_skin_shallower_template: '美白（5「恩寵」、いまは %SKIN%）',
+
+  // [번역 대상] city_mg_trained_talent_template
+  city_mg_trained_talent_template: '最高感度まで調教できる部位を増やす%PRICE%',
+
+  // [번역 대상] get_header
+  get_header: (chara, location) => [
+    chara.get_colored_name(),
+    ' と ',
+    location,
+    ' にいる',
+  ],
 };
