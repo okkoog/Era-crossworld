@@ -5,15 +5,15 @@ module.exports = class extends (
   /** @type {KojoFile} */
   recruit = require('#/i18n/ko-KR/kojo/904100-Godolphin-Barb/rec-341.kojo');
 
-  // [번역 대상] bt_pray
-  bt_pray = '「神よ、どうか憐れみを……」';
+  // [번역 완료] bt_pray
+  bt_pray = '「신이시여, 부디 자비를……」';
 
-  // [번역 대상] buff
-  buff = '愛';
+  // [번역 완료] buff
+  buff = '사랑';
 
-  // [번역 대상] buff_desc
+  // [번역 완료] buff_desc
   buff_desc = (buff, buff2) =>
-    `チームメンバーの賢さトレーニング効果+${buff}%。トレーニングで得るスキルPt+${buff2}%。`;
+    `팀원의 지능 트레이닝 효과+${buff}%. 트레이닝으로 얻는 스킬 Pt+${buff2}%。`;
 
   // 한국어 작업 모듈 연결: ero
   ero = require("#/i18n/ko-KR/kojo/904100-Godolphin-Barb/ero-341.kojo");

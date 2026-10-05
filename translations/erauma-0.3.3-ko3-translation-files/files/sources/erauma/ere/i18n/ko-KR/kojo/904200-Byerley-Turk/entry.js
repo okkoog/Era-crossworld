@@ -5,15 +5,15 @@ module.exports = class extends (
   /** @type {KojoFile} */
   recruit = require('#/i18n/ko-KR/kojo/904200-Byerley-Turk/rec-342.kojo');
 
-  // [번역 대상] bt_pray
-  bt_pray = '「女神さま、お助けください。」';
+  // [번역 완료] bt_pray
+  bt_pray = '「여신님, 도와주세요.」';
 
-  // [번역 대상] buff
-  buff = '信';
+  // [번역 완료] buff
+  buff = '믿음';
 
-  // [번역 대상] buff_desc
+  // [번역 완료] buff_desc
   buff_desc = (buff) =>
-    `チームメンバーのスタミナと根性のトレーニング効果+${buff}%。`;
+    `팀원의 스태미나와 근성 트레이닝 효과+${buff}%。`;
 
   // 한국어 작업 모듈 연결: ero
   ero = require("#/i18n/ko-KR/kojo/904200-Byerley-Turk/ero-342.kojo");

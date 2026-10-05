@@ -6,15 +6,15 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: recruit
   recruit = require('#/i18n/ko-KR/kojo/904000-Darley-Arabian/rec-340.kojo');
 
-  // [번역 대상] bt_pray
-  bt_pray = '「ああ、女神さま、お助けください——」';
+  // [번역 완료] bt_pray
+  bt_pray = '「아아, 여신님, 도와주세요——」';
 
-  // [번역 대상] buff
-  buff = '望';
+  // [번역 완료] buff
+  buff = '소망';
 
-  // [번역 대상] buff_desc
+  // [번역 완료] buff_desc
   buff_desc = (buff) =>
-    `チームメンバーのスピードとパワーのトレーニング効果+${buff}%。`;
+    `팀원의 스피드와 파워 트레이닝 효과+${buff}%。`;
 
   // 한국어 작업 모듈 연결: ero
   ero = require("#/i18n/ko-KR/kojo/904000-Darley-Arabian/ero-340.kojo");
