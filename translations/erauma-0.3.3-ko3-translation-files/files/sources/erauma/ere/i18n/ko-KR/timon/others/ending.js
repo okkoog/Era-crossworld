@@ -187,7 +187,7 @@ ko.punishment2 = async (you, date, uma, they) => {
   );
 };
 
-ko.punishment3 = // [번역 대상] punishment3
+ko.punishment3 = // [번역 완료] punishment3
   async (you, uma, they) => {
   era.setOffset(6);
   era.setWidth(12);
@@ -242,11 +242,11 @@ ko.punishment3 = // [번역 대상] punishment3
     ]);
   } else {
     await era.printAndWait([
-      'これからの ',
+      '이제부터 ',
       you.get_colored_name(),
-      ' の務めは、劣った穴で神聖な因子を受け、',
+      '의 책무는 열등한 구멍으로 신성한 인자를 받아들여,',
       they,
-      'との優れた子孫を産むことだ！',
+      '와(과) 우수한 후손을 낳는 것이다!',
     ]);
   }
   await era.printAndWait([
@@ -275,7 +275,7 @@ module.exports = ko;
 module.exports = {
   ...module.exports,
 
-  // [번역 대상] basement_end
+  // [번역 완료] basement_end
   basement_end: (() => {
     /**
      * @author 雞雞
@@ -285,36 +285,36 @@ module.exports = {
     const f = async (chara, you) => {
       era.setOffset(6);
       era.setWidth(12);
-      await era.printAndWait('トレセンの、どの探知機にも映らない地下室で……');
+      await era.printAndWait('트레센의 어떤 탐지기에도 잡히지 않는 지하실에서……');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は手足を縛る縄を必死にほどこうとしたが、自分を締めつけるだけだった。',
+        '은(는) 손발을 묶은 밧줄을 필사적으로 풀어보려 했지만, 오히려 자신을 더 옥죄었을 뿐이었다.',
       ]);
       await era.printAndWait([
         chara.get_colored_name(),
-        ' はベッドの縁に座り、',
+        '은(는) 침대 가장자리에 앉아,',
         you.get_colored_name(),
-        ' に嫣然と微笑み、優しく世話をした。',
+        '에게 생긋 미소 지으며 다정히 돌봐주었다.',
       ]);
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         you.get_colored_name(),
-        ' の胸にあるのは、未知の未来への深い恐怖だけだった……',
+        '의 가슴속에 있는 것은 알 수 없는 미래에 대한 깊은 공포뿐이었다……',
       ]);
       await era.printAndWait([
         chara.get_colored_name(),
-        ' の愛に囚われ、',
+        '의 사랑에 사로잡혀,',
         you.get_colored_name(),
-        ' は結末を迎えた……',
+        '은(는) 결말을 맞이했다……',
       ]);
       era.setWidth(24);
       era.setOffset(0);
     };
-    f.title = '情愛の牢獄';
+    f.title = '애정의 감옥';
     return f;
   })(),
 
-  // [번역 대상] crazy_fan_end
+  // [번역 완료] crazy_fan_end
   crazy_fan_end: (() => {
     /**
      * @author 雞雞
@@ -326,42 +326,42 @@ module.exports = {
       era.setWidth(12);
       if (era.get(`relation:${chara.id}:0`) < 0) {
         await era.printAndWait([
-          '出走でも取材でも、',
+          '출주에서도 취재에서도, ',
           you.get_colored_name(),
-          ' と担当の険悪さは衆目の知るところだった。その険悪さが担当の成長を妨げているという声は止まらず、校側もこの組み合わせに堪忍袋の緒が切れ始めていた……だが、彼らよりさらに耐性のない者たちがいた。',
+          '와(과) 담당의 험악한 관계는 이미 모두가 알고 있었다. 그 불화가 담당의 성장을 방해한다는 말이 끊이지 않았고, 학원 측도 이 조합에 인내심이 바닥나기 시작했다…… 하지만 그들보다 더 참지 못한 자들이 있었다.',
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' が怠りすぎたのか、担当',
+          '이(가) 너무 게을렀던 것인지, 담당 ',
           chara.uma_sex_title,
-          'の天賦が足りなかったのか。勝利はいつまでも遠いままだった。校側もこの組み合わせに堪忍袋の緒が切れ始めていた……だが、彼らよりさらに耐性のない者たちがいた。',
+          '의 재능이 부족했던 것인지. 승리는 언제나 멀기만 했다. 학원 측도 이 조합에 인내심이 바닥나기 시작했다…… 하지만 그들보다 더 참지 못한 자들이 있었다.',
         ]);
       }
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         chara.get_colored_name(),
-        ' へ渡すハチミツケーキを片手に、大雨の道をひとり歩いていた。背後から急な足音がし、それから腰に錐のような痛みが走った。',
+        '에게 건넬 벌꿀 케이크를 한 손에 들고 폭우 속 길을 홀로 걷고 있었다. 뒤에서 급한 발소리가 들리더니, 이내 허리에 송곳으로 찌르는 듯한 통증이 퍼졌다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は地面に押し倒され、背後の者は背中へ刺し続けた。',
+        '은(는) 땅바닥에 쓰러졌고, 뒤에 있던 자는 계속해서 등을 찔렀다.',
         you.get_colored_name(),
-        ' が動かなくなるまで。',
+        '이(가) 움직이지 않게 될 때까지.',
       ]);
       await era.printAndWait(
-        'ケーキ箱を包んだビニール袋は、雨粒に激しく叩かれ、叩かれ、叩かれ続けた……',
+        '케이크 상자를 감싼 비닐봉지는 빗방울에 세차게 얻어맞고, 또 얻어맞고, 계속해서 얻어맞았다……',
       );
-      await era.printAndWait('怒れるファンの報復を受け、結末を迎えた……');
+      await era.printAndWait('분노한 팬의 보복을 받고, 결말을 맞이했다……');
       era.setWidth(24);
       era.setOffset(0);
     };
-    f.title = 'ファン襲撃';
+    f.title = '팬의 습격';
     return f;
   })(),
 
-  // [번역 대상] slave_end
+  // [번역 완료] slave_end
   slave_end: (() => {
     /**
      * @author 雞雞
@@ -372,31 +372,31 @@ module.exports = {
       era.setOffset(6);
       era.setWidth(12);
       await era.printAndWait([
-        '金に腐った ',
+        '돈에 타락한 ',
         you.get_colored_name(),
-        ' は、選んではならない道へ足を踏み入れた——自尊を捨て、自分の生徒から金を借りる……',
+        '은(는) 선택해서는 안 될 길에 발을 들였다——자존심을 버리고, 자신의 학생에게 돈을 빌리는 길……',
       ]);
-      await era.printAndWait('だが運命の贈り物には、みな裏で値がついている。');
+      await era.printAndWait('하지만 운명의 선물에는 언제나 보이지 않는 대가가 붙어 있다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' の借入は、雪だるま式の複利のなかで、ついに ',
+        '의 빚은 눈덩이처럼 불어나는 복리 속에서 마침내 ',
         you.get_colored_name(),
-        ' が耐えうる重さを超えた。',
+        '이(가) 감당할 수 있는 한계를 넘어섰다.',
       ]);
       await era.printAndWait([
-        'あとは、',
+        '이제는 ',
         you.get_colored_name(),
-        ' が代価を返す番だ……',
+        '이(가) 대가를 치를 차례다……',
       ]);
       await era.printAndWait([
-        '金の関係に囚われた ',
+        '금전 관계에 얽매인 ',
         you.get_colored_name(),
-        ' は、結末を迎えた……',
+        '은(는) 결말을 맞이했다……',
       ]);
       era.setWidth(24);
       era.setOffset(0);
     };
-    f.title = '金の奴隷';
+    f.title = '돈의 노예';
     return f;
   })(),
 };
