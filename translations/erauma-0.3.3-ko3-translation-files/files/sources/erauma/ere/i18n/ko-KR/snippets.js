@@ -5,7 +5,7 @@ const akuochi = require('#/data/color-const')["akuochi"];
 module.exports = {
   ...require("#/i18n/ja-JP/snippets"),
 
-  // [번역 대상] degeneration_to_evil
+  // [번역 완료] degeneration_to_evil
   async degeneration_to_evil(bt_yes, bt_no, change_color = true) {
     const flag = era.get('flag:恶堕');
     era.printButton(bt_yes, 1, {
@@ -14,7 +14,7 @@ module.exports = {
       disabled: flag === 1,
     });
     if (!flag) {
-      era.print('（これを選ぶと、以降の関連イベントで受け入れる態度になる）', {
+      era.print('(이것을 선택하면 이후 관련 이벤트에서 받아들이는 태도를 보이게 된다)', {
         color: akuochi[1],
       });
     }
@@ -24,7 +24,7 @@ module.exports = {
       disabled: flag === 2,
     });
     if (!flag) {
-      era.print('（これを選ぶと、以降の関連イベントで拒む態度になる）', {
+      era.print('(이것을 선택하면 이후 관련 이벤트에서 거부하는 태도를 보이게 된다)', {
         color: akuochi[0],
       });
     }
