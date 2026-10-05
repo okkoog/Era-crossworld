@@ -4,40 +4,40 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/105200-Haru-Urara/ero-52"),
 
-  // [번역 대상] zero_stamina
+  // [번역 완료] zero_stamina
   async zero_stamina(urara, you) {
     if (Math.random() < 0.5) {
-      await urara.say_and_wait('……あっ……あっ……');
+      await urara.say_and_wait('……앗……앗……');
       if (era.get('flag:主导权') === 0) {
         await era.printAndWait([
-          '壊された人形のように、気絶した ',
+          '망가진 인형처럼, 기절한 ',
           urara.get_colored_name(),
-          ' が ',
+          '이(가) ',
           you.get_colored_name(),
-          ' の腕の中で、止まらず痙攣している',
+          '의 품 안에서 계속 경련하고 있다',
         ]);
       } else {
         await era.printAndWait([
-          '壊された人形のように、気絶した ',
+          '망가진 인형처럼, 기절한 ',
           urara.get_colored_name(),
-          ' が止まらず痙攣している',
+          '이(가) 계속 경련하고 있다',
         ]);
       }
     } else {
       await urara.say_and_wait('……');
       if (era.get('flag:主导权') === 0) {
         await era.printAndWait([
-          '全身が力なく解け、',
+          '온몸의 힘이 풀려,',
           you.get_colored_name(),
-          ' にいじられ尽くした ',
+          '에게 온몸을 농락당한 ',
           urara.get_colored_name(),
-          ' は、もうすっかり気を失っている',
+          '은(는) 이미 완전히 정신을 잃고 있다',
         ]);
       } else {
         await era.printAndWait([
-          '全身が力なく解け、',
+          '온몸의 힘이 풀려,',
           urara.get_colored_name(),
-          ' はもうすっかり気を失っている',
+          '은(는) 이미 완전히 정신을 잃고 있다',
         ]);
       }
     }
