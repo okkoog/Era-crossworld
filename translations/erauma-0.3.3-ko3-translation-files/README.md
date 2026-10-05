@@ -34,4 +34,4 @@
 - residual 원본은 [기존 보존 커밋](https://github.com/okkoog/Era-crossworld/tree/e19eef1dfffbf7df3a1e7fdd59449f048ec32146/translations/erauma-0.3.3-ko3-untranslated)과 로컬 원본에 유지되어 있습니다.
 - 파일별 체크섬과 원래 KO 해시는 `manifest.json`, 누락 확인은 `coverage.json`, 연결 확인은 `routing-verification.json`에 있습니다.
 
-이번 반영은 번역 작업 파일의 구조 수정입니다. 새 한국어 번역을 쓰거나 현재 실행판을 교체하지 않았습니다. Emuera 배포본 생성은 번역 완료 후 기존 빌드 절차를 사용합니다.
+작업 파일 구조 생성 시점에는 새 한국어 번역을 쓰거나 현재 실행판을 교체하지 않았습니다. 이후 번역 진행분은 `coverage.json`과 `manifest.json`에 반영합니다. Emuera 배포본 생성은 번역 완료 후 기존 빌드 절차를 사용합니다.

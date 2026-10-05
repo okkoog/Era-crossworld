@@ -93,7 +93,7 @@ function __inputMessage(kind){
     'ja-JP':['選択肢をクリックするか、[番号]を入力してください。','入力形式を確認してください。'],
     'zh-CN':['请点击选项，或输入 [编号]。','请输入符合要求的内容。'],
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    'en-US':['Click a choice or enter its [number].','Please check the required input format.']
+    'en-US':['선택지를 클릭하거나 [번호]를 입력하세요.','필요한 입력 형식을 확인하세요.']
   };
   return (messages[language]||messages['en-US'])[kind==='pattern'?1:0];
 }

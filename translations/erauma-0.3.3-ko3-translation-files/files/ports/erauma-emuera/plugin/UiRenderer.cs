@@ -162,7 +162,7 @@ public sealed class UiRenderer : IDisposable
                 if(long.TryParse(value,out long id))accelerator=id;
                 string prefix=value.Length==0?"":"["+value+"] ";text=prefix+text;
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-                string title=Text(settings,"title",disabled?"Unavailable":"");
+                string title=Text(settings,"title",disabled?"사용할 수 없음":"");
                 body=Escape(prefix)+body;
                 body=disabled?"<nonbutton title='"+Escape(title)+"'><font color='#7D8795'>"+StripFont(body)+"</font></nonbutton>":"<button value='"+Escape(value)+"' title='"+Escape(title)+"'>"+body+"</button>";
                 if(disabled)accelerator=null;
