@@ -92,10 +92,10 @@ module.exports = class extends JaTimon {
   base_guides = proxy_kojo_js(require("#/i18n/ko-KR/timon/guides/base"));
 
   // [번역 대상] bt_god_love_event_fuck_me
-  bt_god_love_event_fuck_me = '自ら神の子を宿す';
+  bt_god_love_event_fuck_me = '스스로 신의 아이를 잉태한다';
 
   // [번역 대상] bt_god_love_event_preg_me
-  bt_god_love_event_preg_me = '腹の子を神の子にする';
+  bt_god_love_event_preg_me = '뱃속의 아이를 신의 아이로 만든다';
 
   // 한국어 작업 모듈 연결: ero_child
   ero_child = proxy_kojo_js(require("#/i18n/ko-KR/timon/child/ero"));
@@ -563,7 +563,7 @@ module.exports = class extends JaTimon {
   get_it_office_cook = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' と一緒にご飯を作って食べた】',
+    '과(와) 함께 밥을 만들어 먹었다】',
   ];
 
   // [번역 대상] get_it_office_game
@@ -577,28 +577,28 @@ module.exports = class extends JaTimon {
   get_it_office_gift = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' に小さな贈り物をした】',
+    '에게 작은 선물을 했다】',
   ];
 
   // [번역 대상] get_it_office_prepare
   get_it_office_prepare = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' のレース前準備を手伝った】',
+    '의 레이스 전 준비를 도왔다】',
   ];
 
   // [번역 대상] get_it_office_rest
   get_it_office_rest = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' と一緒に休んだ】',
+    '과(와) 함께 쉬었다】',
   ];
 
   // [번역 대상] get_it_office_study
   get_it_office_study = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' の学習を指導した】',
+    '의 학습을 지도했다】',
   ];
 
   // [번역 대상] get_it_pregnant_slave_punish
@@ -645,7 +645,7 @@ module.exports = class extends JaTimon {
   ];
 
   // [번역 대상] get_it_talk
-  get_it_talk = (chara) => ['【', chara.get_colored_name(), ' に声をかけた】'];
+  get_it_talk = (chara) => ['【', chara.get_colored_name(), '에게 말을 걸었다】'];
 
   // [번역 대상] get_it_train_lonely
   get_it_train_lonely = (chara, train) => [
@@ -776,13 +776,13 @@ module.exports = class extends JaTimon {
     '【現役ウマ娘の隠し子スキャンダルが、各界で取り沙汰されている】';
 
   // [번역 대상] it_self_cook
-  it_self_cook = '【ひとりでご飯を作って食べた】';
+  it_self_cook = '【혼자서 밥을 만들어 먹었다】';
 
   // [번역 대상] it_self_game
-  it_self_game = '【ひとりでゲームをした】';
+  it_self_game = '【혼자서 게임을 했다】';
 
   // [번역 대상] it_self_rest
-  it_self_rest = '【ひとりで休んだ】';
+  it_self_rest = '【혼자서 쉬었다】';
 
   // [번역 대상] it_sell_fish_template
   it_sell_fish_template = '【釣った魚を売り、%MONEY% ウマコインになった】';
