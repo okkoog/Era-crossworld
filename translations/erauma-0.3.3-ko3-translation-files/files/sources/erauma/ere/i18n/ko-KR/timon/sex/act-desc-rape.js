@@ -198,25 +198,25 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] force_hand_and_blow_job
+  // [번역 완료] force_hand_and_blow_job
   async force_hand_and_blow_job(attacker, defender, is_first) {
     if (is_first)
       await printAndWait([
         '【',
         attacker.get_colored_name(),
-        ' は強引に肉棒で ',
+        '은(는) 억지로 육봉을 ',
         defender.get_colored_name(),
-        ' の両手を押し分け、口へ挿し入れた】',
+        '의 두 손을 밀어 벌리고, 입 안에 밀어 넣었다】',
       ]);
     else
       await printAndWait([
         '【',
         attacker.get_colored_name(),
-        ' は肉棒で ',
+        '은(는) 육봉으로 ',
         defender.get_colored_name(),
-        ' の手を叩きながら、',
+        '의 손을 쳐내면서,',
         defender.get_colored_name(),
-        ' の唇と舌を掻き回した】',
+        '의 입술과 혀를 휘저었다】',
       ]);
   },
 };

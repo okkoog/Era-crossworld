@@ -2600,23 +2600,23 @@ module.exports = {
   },
 
 
-  // [번역 대상] relax
+  // [번역 완료] relax
   async relax(attacker) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は呼吸を整えようとした】',
+      '은(는) 호흡을 가다듬으려 했다】',
     ]);
   },
 
-  // [번역 대상] sleep
+  // [번역 완료] sleep
   async sleep(attacker) {
     const buffer = [
       () =>
         printAndWait([
           '【',
           attacker.get_colored_name(),
-          ' は反応しなかった】',
+          '은(는) 반응하지 않았다】',
         ]),
     ];
     if (get(`status:${attacker.id}:沉睡`) > 0) {
@@ -2624,7 +2624,7 @@ module.exports = {
         printAndWait([
           '【',
           attacker.get_colored_name(),
-          ' は静かに眠っている】',
+          '은(는) 조용히 잠들어 있다】',
         ]),
       );
     }
@@ -2634,13 +2634,13 @@ module.exports = {
           printAndWait([
             '【',
             attacker.get_colored_name(),
-            ' は少し重い呼吸をしている】',
+            '은(는) 조금 무거운 숨을 쉬고 있다】',
           ]),
         () =>
           printAndWait([
             '【',
             attacker.get_colored_name(),
-            ' は眠りのなかで甘い吐息を漏らしている】',
+            '은(는) 잠든 채 달콤한 숨소리를 흘리고 있다】',
           ]),
       );
     }
