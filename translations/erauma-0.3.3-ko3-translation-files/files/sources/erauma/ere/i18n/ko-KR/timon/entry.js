@@ -122,24 +122,24 @@ module.exports = class extends JaTimon {
   get_it_arrive_location = (vehicle, location) => [
     '【',
     vehicle,
-    'は ',
+    '은(는) ',
     location,
-    ' に着いた】',
+    '에 도착했다】',
   ];
 
   // [번역 대상] get_it_basement_me
   get_it_basement_me = (chara, you) => [
     you.get_colored_name(),
-    ' の頼みを聞き、',
+    '의 부탁을 듣고,',
     chara.get_colored_name(),
-    ' は少し心を動かしたようだ……',
+    '은(는) 조금 마음이 움직인 듯하다……',
   ];
 
   // [번역 대상] get_it_birthday
   get_it_birthday = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' に誕生日おめでとうを伝えた】',
+    '에게 생일 축하를 전했다】',
   ];
 
   // [번역 대상] get_it_bs_awake
@@ -268,16 +268,16 @@ module.exports = class extends JaTimon {
   get_it_celebration = (chara, celebration) => [
     '【',
     chara.get_colored_name(),
-    ' と一緒に ',
+    '과(와) 함께 ',
     celebration,
-    ' を祝った】',
+    '을(를) 축하했다】',
   ];
 
   // [번역 대상] get_it_chara_not_in_recruit
   get_it_chara_not_in_recruit = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' はトレーニング場にいないようだ】',
+    '은(는) 트레이닝장에 없는 듯하다】',
   ];
 
   // [번역 대상] get_it_chara_rape_in_sleeping
@@ -292,7 +292,7 @@ module.exports = class extends JaTimon {
   // [번역 대상] get_it_check_love
   get_it_check_love = (chara) => [
     chara.get_colored_name(),
-    ' は、ふたりの関係を改めて見つめ直すつもりらしい……',
+    '은(는) 두 사람의 관계를 다시 한번 돌아볼 생각인 듯하다……',
   ];
 
   // [번역 대상] get_it_flatter
@@ -317,11 +317,11 @@ module.exports = class extends JaTimon {
   get_it_goto_location = (chara, vehicle, location) => [
     '【',
     chara.get_colored_name(),
-    ' と一緒に',
+    '과(와) 함께 ',
     vehicle,
-    'で ',
+    '로 ',
     location,
-    ' へ向かった】',
+    '에 갔다】',
   ];
 
   // [번역 대상] get_it_hb_info
@@ -343,18 +343,18 @@ module.exports = class extends JaTimon {
   // [번역 대상] get_it_home_sex
   get_it_home_sex = (chara, you) => [
     chara.get_colored_name(),
-    ' は ',
+    '은(는) ',
     you.get_colored_name(),
-    'と、夜に家で会う約束をした……',
+    '와(과) 밤에 집에서 만나기로 약속했다……',
   ];
 
   // [번역 대상] get_it_in_recruit
   get_it_in_recruit = (you, uma) => [
-    '【トレーニング場で何人かの',
+    '【트레이닝장에서 몇 명의 ',
     uma,
-    'を見かけた。誰が ',
+    '을(를) 발견했다. 누가 ',
     you.get_colored_name(),
-    ' の目を引いたのだろう？】',
+    '의 눈길을 끌었을까?】',
   ];
 
   // [번역 대상] get_it_income_annal_bonus
@@ -405,16 +405,16 @@ module.exports = class extends JaTimon {
 
   // [번역 대상] get_it_no_chara_in_recruit
   get_it_no_chara_in_recruit = (uma) => [
-    '【トレーニング場に目を引く',
+    '【트레이닝장에 눈길을 끄는 ',
     uma,
-    'はいない】',
+    '은(는) 없다】',
   ];
 
   // [번역 대상] get_it_npc_sleep
   get_it_npc_sleep = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' は体力が持たず、休むために戻る】',
+    '은(는) 체력이 버티지 못해 쉬러 돌아갔다】',
   ];
 
   // [번역 대상] get_it_nt_back_info_from_foreign
@@ -570,7 +570,7 @@ module.exports = class extends JaTimon {
   get_it_office_game = (chara) => [
     '【',
     chara.get_colored_name(),
-    ' と一緒にゲームをした】',
+    '과(와) 함께 게임을 했다】',
   ];
 
   // [번역 대상] get_it_office_gift
@@ -628,20 +628,20 @@ module.exports = class extends JaTimon {
   get_it_recruit_disabled = (you, uma) => [
     '【',
     you.get_colored_name(),
-    ' にはすでに十分な担当がいる。ほかの',
+    '에게는 이미 충분한 담당이 있다. 다른 ',
     uma,
-    'は ',
+    '은(는) ',
     you.get_colored_name(),
-    ' の募集には応じないだろう】',
+    '의 모집에 응하지 않을 것이다】',
   ];
 
   // [번역 대상] get_it_self_goto_location
   get_it_self_goto_location = (vehicle, location) => [
-    '【ひとりで',
+    '【혼자서 ',
     vehicle,
-    'で ',
+    '로 ',
     location,
-    ' へ向かった】',
+    '에 갔다】',
   ];
 
   // [번역 대상] get_it_talk
@@ -698,7 +698,7 @@ module.exports = class extends JaTimon {
   get_npc_celebration = (celebration) => `${celebration}을(를) 축하한다`;
 
   // [번역 대상] it_back_office
-  it_back_office = '【引き返した】';
+  it_back_office = '【돌아갔다】';
 
   // [번역 대상] it_bs_battle_escape
   it_bs_battle_escape = '【機関の解除に成功】';
@@ -725,7 +725,7 @@ module.exports = class extends JaTimon {
   it_bs_strike_success = '【奇襲成功】';
 
   // [번역 대상] it_force_back_office
-  it_force_back_office = '【誰もいないようだ……引き返した】';
+  it_force_back_office = '【아무도 없는 듯하다…… 돌아갔다】';
 
   // [번역 대상] it_hb_let_dad_name
   it_hb_let_dad_name = '父親に名付けさせる';
@@ -833,7 +833,7 @@ module.exports = class extends JaTimon {
   rec_km_l = '恋';
 
   // [번역 대상] rec_km_r
-  rec_km_r = '募';
+  rec_km_r = '모';
 
   // [번역 대상] report_invincible_g1
   report_invincible_g1 = (uma) => [
