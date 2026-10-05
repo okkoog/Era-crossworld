@@ -64,30 +64,30 @@ tied_heart:
             - 「ほんま、えげつない大人やな……」
         - %CHARA%は舌打ちし、気が進まなそうに両腕で%YOU%の首を抱き、深い接吻を迎えた。
 
-# [번역 대상] mark_pleasure
+# [번역 완료] mark_pleasure
 mark_pleasure:
   - if: d.level === 1
     color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ちょ、ちょっと待って、体……体が熱い……変や……」
+      - 「자, 잠깐만, 몸이…… 몸이 뜨겁다…… 이상하데이……」
   - if: d.level === 2
     color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「……はぁ……あの……もう一回……してもええか？」
+      - 「……하아…… 저기…… 한 번만 더…… 해도 되나?」
   - if: d.level === 3
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「ちびども、ごめんやで。わし、もうこの人から離れられへんらしい……」
-      - %CHARA% の体は、完全に堕ちた。
+          - 「꼬맹이들아, 미안하데이. 내는 이제 이 사람한테서 못 떨어지겠는갑다……」
+      - %CHARA%의 몸은 완전히 타락했다.
 
-# [번역 대상] mark_meek
+# [번역 완료] mark_meek
 mark_meek:
   - if: d.level === 1
     lines:
@@ -95,36 +95,36 @@ mark_meek:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「はぁ……はぁ……」
-      - %CHARA% の上気した顔が近づき、背中をいくつかの快感が這うのが分かる……
+          - 「하아…… 하아……」
+      - 상기된 %CHARA%의 얼굴이 가까워지고, 등을 따라 몇 줄기의 쾌감이 기어가는 것이 느껴진다……
   - if: d.level === 2
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME% が喜んでくれるんやったら、わしも嬉しいし……」
-      - %CHARA% は貧しい体を寄せて、ゆっくりと下へ移動し、
-      - 胸、脇腹、太もも、そして快感を感じさせるあらゆる場所を行き来して擦りつける。
+          - 「%CALLNAME%가 좋아해 준다믄, 내도 기쁘고……」
+      - %CHARA%는 빈약한 몸을 바짝 붙인 채 천천히 아래로 내려가며,
+      - 가슴, 옆구리, 허벅지, 그리고 쾌감을 느끼게 하는 모든 곳을 오가며 몸을 비빈다.
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「やから……%CALLNAME% の好きなところ、もっと教えてくれへんか……？」
+          - 「그러니까…… %CALLNAME%가 좋아하는 데, 더 알려주면 안 되나……?」
   - if: d.level === 3
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「なあ、次はわしに何させたいん？何したらええん？」
-      - %CHARA% の柔らかい脚が、生き物のように %YOU% の腰に絡みつく。
-      - %SEX%の両脚はゆっくりと、慌てず、だが獲物がちょうど逃げられない力で、%YOU% の下半身を擦り続ける……
+          - 「있제, 다음엔 내한테 뭐 시키고 싶노? 뭐 하면 되노?」
+      - %CHARA%의 부드러운 다리가 살아 있는 것처럼 %YOU%의 허리에 감겨 든다.
+      - %SEX%의 두 다리는 천천히, 서두르지 않으면서도 먹잇감이 빠져나가지 못할 정도의 힘으로 %YOU%의 하반신을 계속 비빈다……
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「今やったら、わしに何したってもええで❤️」
+          - 「지금은 내한테 뭘 해도 괜찮데이❤️」
 
 mark_pain:
   - if: d.level === 1
@@ -154,7 +154,7 @@ mark_shame:
         content: %CHARA%
       - 「그게 내랑 무슨 상관이고…… 그냥 니 악취미 아이가, 이 썩을 로리콘 자슥아!」
 
-# [번역 대상] mark_hate
+# [번역 완료] mark_hate
 mark_hate:
   - if: d.level === 1
     color: %COLOR%
@@ -168,8 +168,8 @@ mark_hate:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「金出したからって、わしを玩具みたいに好き勝手できる思うなよ！」
-      - %CHARA% の冷たい視線の奥に、怒りが滲んでいる。
+          - 「돈 냈다고 내를 장난감처럼 맘대로 할 수 있다 생각하지 마라!」
+      - %CHARA%의 차가운 시선 깊숙이 분노가 배어 있다.
   - if: d.level === 3
     lines:
       - color: %COLOR%
@@ -177,5 +177,5 @@ mark_hate:
           - fontWeight: bold
             content: %CHARA%
           - 「참말로 몬된 어른이네……」
-      - %CHARA% の冷たい瞳には何もなく、%YOU% の姿は %CHARA% の目にまったく映っていない。
+      - %CHARA%의 차가운 눈동자에는 아무것도 없고, %YOU%의 모습은 %CHARA%의 눈에 전혀 비치지 않는다.
       - 타마모 크로스는 입술을 한번 다시더니, 못 이기는 척 두 팔로 %당신%의 목을 감싸 안으며 깊은 입맞춤을 받아들였다.

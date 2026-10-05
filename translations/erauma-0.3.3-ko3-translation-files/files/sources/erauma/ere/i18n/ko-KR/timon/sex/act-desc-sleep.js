@@ -333,91 +333,91 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] cowgirl
+  // [번역 완료] cowgirl
   async cowgirl(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は眠る ',
+      '은(는) 잠든 ',
       defender.get_colored_name(),
-      ' に跨り、秘部で肉棒を咥え込んだ】',
+      '의 위에 올라타 음부로 육봉을 받아들였다】',
     ]);
   },
 
-  // [번역 대상] cowgirl_anal_sex
+  // [번역 완료] cowgirl_anal_sex
   async cowgirl_anal_sex(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は眠る ',
+      '은(는) 잠든 ',
       defender.get_colored_name(),
-      ' に跨り、尻穴で肉棒を咥え込んだ】',
+      '의 위에 올라타 항문으로 육봉을 받아들였다】',
     ]);
   },
 
-  // [번역 대상] doggy_style
+  // [번역 완료] doggy_style
   async doggy_style(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' はうつ伏せの ',
+      '은(는) 엎드려 잠든 ',
       defender.get_colored_name(),
-      ' に覆い被さり、秘部を犯した】',
+      '의 위에 올라타 음부를 범했다】',
     ]);
   },
 
-  // [번역 대상] doggy_style_anal_sex
+  // [번역 완료] doggy_style_anal_sex
   async doggy_style_anal_sex(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' はうつ伏せの ',
+      '은(는) 엎드려 잠든 ',
       defender.get_colored_name(),
-      ' に覆い被さり、尻穴を犯した】',
+      '의 위에 올라타 항문을 범했다】',
     ]);
   },
 
-  // [번역 대상] missionary
+  // [번역 완료] missionary
   async missionary(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は眠る ',
+      '은(는) 잠든 ',
       defender.get_colored_name(),
-      ' に覆い被さり、秘部を犯した】',
+      '의 위에 올라타 음부를 범했다】',
     ]);
   },
 
-  // [번역 대상] missionary_anal_sex
+  // [번역 완료] missionary_anal_sex
   async missionary_anal_sex(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は眠る ',
+      '은(는) 잠든 ',
       defender.get_colored_name(),
-      ' に覆い被さり、尻穴を犯した】',
+      '의 위에 올라타 항문을 범했다】',
     ]);
   },
 
-  // [번역 대상] stimulate_glans_by_anal
+  // [번역 완료] stimulate_glans_by_anal
   async stimulate_glans_by_anal(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は尻穴で、眠る ',
+      '은(는) 항문으로, 잠든 ',
       defender.get_colored_name(),
-      ' のそそり立つ肉棒を咥え込んだ】',
+      '의 발기한 육봉을 받아들였다】',
     ]);
   },
 
-  // [번역 대상] stimulate_glans_by_virgin
+  // [번역 완료] stimulate_glans_by_virgin
   async stimulate_glans_by_virgin(attacker, defender) {
     await printAndWait([
       '【',
       attacker.get_colored_name(),
-      ' は秘部で、眠る ',
+      '은(는) 음부로, 잠든 ',
       defender.get_colored_name(),
-      ' のそそり立つ肉棒を咥え込んだ】',
+      '의 발기한 육봉을 받아들였다】',
     ]);
   },
 };
