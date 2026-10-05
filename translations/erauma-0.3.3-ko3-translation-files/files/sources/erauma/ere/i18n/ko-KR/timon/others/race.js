@@ -450,14 +450,14 @@ module.exports = {
   in_race_orgasm_info:
     '【레이스 도중 공개적으로 절정에 이른 행위가 사회 각계에서 큰 파문을 일으켰다】',
 
-  // [번역 대상] full_speed_push_reports
+  // [번역 완료] full_speed_push_reports
   full_speed_push_reports: [
-    (contestants) => [...contestants, ' が全力でスパート！'],
-    (contestants) => [...contestants, ' が最後の勝利へ、さらに加速！'],
+    (contestants) => [...contestants, '이(가) 전력으로 스퍼트!'],
+    (contestants) => [...contestants, '이(가) 마지막 승리를 향해 더욱 가속합니다!'],
     (contestants) => [
-      '限界を超えろ！',
+      '한계를 넘어라!',
       ...contestants,
-      ' はまだ加速している！',
+      '은(는) 아직도 가속하고 있습니다!',
     ],
   ],
 };

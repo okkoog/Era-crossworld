@@ -12,7 +12,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {boolean} new_save 新規セーブかどうか
    */
-  // [번역 대상] game_start
+  // [번역 완료] game_start
   async game_start(minoru, you, new_save) {
     await era.printAndWait([
       you.get_colored_name(),
@@ -22,7 +22,7 @@ module.exports = {
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は、最終面接の面接官のひとりだとすぐに気づいた。',
+      '은(는) 최종 면접의 면접관 중 한 명이었다는 것을 곧 알아차렸다.',
     ]);
     era.println();
     if (!new_save) {
@@ -52,7 +52,7 @@ module.exports = {
       you.adult_sex_title,
       ".",
     ]);
-    await minoru.say_as_unknown_and_wait('理事長秘書の駿川たづなです。');
+    await minoru.say_as_unknown_and_wait('이사장 비서 하야카와 타즈나입니다.');
     await minoru.say_and_wait("트레센 학원에 오신 것을 환영합니다.");
     await minoru.say_and_wait(
       "업무에 더 빨리 적응하실 수 있도록 조언과 지원을 아끼지 않겠습니다.",
@@ -145,7 +145,7 @@ module.exports = {
    * @param {CharaTalk} you
    * @param {boolean} has_recruit
    */
-  // [번역 대상] recruit_end
+  // [번역 완료] recruit_end
   async recruit_end(minoru, you, has_recruit) {
     era.drawLine();
     if (has_recruit) {
@@ -163,7 +163,7 @@ module.exports = {
       ]);
       await era.printAndWait([minoru.get_colored_name(), "가 살짝 고개를 숙였다."]);
       await minoru.say_and_wait(
-        '駿川、トレーナーさんと担当の三年間が武運長久でありますよう、心よりお祈りいたします。',
+        '하야카와는 트레이너님과 담당 우마무스메의 3년 동안 무운이 함께하기를 진심으로 기원하겠습니다.',
       );
     } else {
       await era.printAndWait([
@@ -202,7 +202,7 @@ module.exports = {
       await minoru.say_and_wait(
         "이미 마음에 둔 학생이 있으시다면 이사장님께 부탁해 보셔도 되겠네요.",
       );
-      await era.printAndWait('ふたりはトレーニング場を離れた。');
+      await era.printAndWait('두 사람은 트레이닝장을 떠났다.');
     }
   },
   /**
