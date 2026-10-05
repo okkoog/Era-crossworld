@@ -9,7 +9,7 @@ var __inputConfig={};
 var __timers=new Map(),__timerId=0;
 function setTimeout(callback,milliseconds=0,...args){
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  if(typeof callback!=='function')throw Error('Timer callback must be a function');
+  if(typeof callback!=='function')throw Error('타이머 콜백은 함수여야 합니다');
   const id=++__timerId,delay=Number(milliseconds);
   __timers.set(id,{due:__now()+(Number.isFinite(delay)?Math.max(0,delay):0),callback,args});
   return id;
@@ -35,14 +35,14 @@ function __text(value) {
     if (value.isDivider) return ' | ';
     if ('content' in value) return __text(value.content);
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    throw new Error('Unsupported rich text object');
+    throw new Error('지원하지 않는 리치 텍스트 객체입니다');
   }
   return String(value ?? '');
 }
 function __key(key) {
   key = String(key).toLowerCase();
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  if (!/^(global|flag):\d+$/.test(key)) throw new Error('Unsupported variable path: '+key);
+  if (!/^(global|flag):\d+$/.test(key)) throw new Error('지원하지 않는 변수 경로: '+key);
   return key;
 }
 const __api = {
@@ -60,13 +60,13 @@ const __api = {
   println(content='') { __emit('line',__text(content),0); },
   printButton(content,accelerator,config={}) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    if (!Number.isSafeInteger(accelerator)) throw new Error('Button accelerator must be integer');
+    if (!Number.isSafeInteger(accelerator)) throw new Error('버튼 단축키는 정수여야 합니다');
     if (!config.disabled) __emit('button',__text(content),accelerator);
   },
   input(config={}) {
     // Electron directs input to the newest inputKey. Older non-awaited promises stay unresolved.
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    if (__pending&&!config.game) throw new Error('Concurrent input is not supported');
+    if (__pending&&!config.game) throw new Error('동시 입력은 지원되지 않습니다');
     __inputConfig=config;
     __inputRule=config.useRule!==false && config.rule ? new RegExp('^'+config.rule+'$') : null;
     __state='input';
@@ -76,16 +76,16 @@ const __api = {
   async waitAnyKey() { await this.input(); },
   async saveData(slot) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    if(slot!==0) throw new Error('Probe supports slot 0 only');
+    if(slot!==0) throw new Error('점검 기능은 슬롯 0만 지원합니다');
     __save(JSON.stringify({format:'erauma-compat-probe-v1',values:__values,global0:__readGlobal()}));
     return true;
   },
   async loadData(slot) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    if(slot!==0) throw new Error('Probe supports slot 0 only');
+    if(slot!==0) throw new Error('점검 기능은 슬롯 0만 지원합니다');
     const save=JSON.parse(__load());
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    if(save.format!=='erauma-compat-probe-v1') throw new Error('Not a compatibility probe save');
+    if(save.format!=='erauma-compat-probe-v1') throw new Error('호환성 점검용 세이브가 아닙니다');
     __values=Object.assign(Object.create(null),save.values); __writeGlobal(save.global0); return true;
   }
 };
