@@ -20,7 +20,7 @@ join_3p:
   - acc: 2
     content: 「이번에는…… 좀 힘들겠어」
 
-# [번역 대상] join_3p_accept
+# [번역 완료] join_3p_accept
 join_3p_accept:
   - color: %L_COLOR%
     content:
@@ -32,14 +32,14 @@ join_3p_accept:
       - fontWeight: bold
         content: %CHARA%
       - 「앗, 대단히 감사합니다!」
-  - %YOU% の空いているほうの手をしっかり握り、上半身を肩に寄せる。
+  - %YOU%의 빈손을 꼭 잡고, 상반신을 어깨에 기대어 온다.
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
       - 「그럼 저희…… 다 함께 가보실까요❤」
 
-# [번역 대상] join_3p_force
+# [번역 완료] join_3p_force
 join_3p_force:
   - color: %COLOR%
     content:
@@ -61,7 +61,7 @@ join_3p_force:
       - fontWeight: bold
         content: %LOVER%
       - 「%L_CALLNAME%도 불만 없지?」
-  - 口ではおとなしく聞いているのに、両手に妙な力が入り始めている。
+  - 입으로는 얌전히 듣고 있지만, 두 손에는 묘하게 힘이 들어가기 시작한다.
   - 이런 상황이 되자, %YOU%도 %LOVER%의 의도를 알아차릴 수밖에 없었다.
   - %CHARA%는 숨을 깊이 들이쉬고는 다가와, 붙잡혀 있던 %YOU%의 팔을 부드럽게 해방해 주었다.
   - color: %COLOR%
@@ -70,7 +70,7 @@ join_3p_force:
         content: %CHARA%
       - 「그럼 저희도 다 함께 가요～」
 
-# [번역 대상] join_3p_reject
+# [번역 완료] join_3p_reject
 join_3p_reject:
   - color: %COLOR%
     content:
@@ -82,7 +82,7 @@ join_3p_reject:
       - fontWeight: bold
         content: %CHARA%
       - 「얌전히, 계속 기다리고 있을게요……」
-  - 両手をそっと重ね、少し遠慮がちに一礼すると、寂しげな後ろ姿で去っていく。
+  - 두 손을 살며시 모으고 조금 조심스럽게 인사한 뒤, 쓸쓸한 뒷모습을 보이며 떠나간다.
   - color: %L_COLOR%
     content:
       - fontWeight: bold

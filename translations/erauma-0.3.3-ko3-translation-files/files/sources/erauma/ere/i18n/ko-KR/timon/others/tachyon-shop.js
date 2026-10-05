@@ -168,7 +168,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname タキオンからプレイヤーへの呼び名
    */
-  // [번역 대상] start_first
+  // [번역 완료] start_first
   async start_first(tachyon, you, callname) {
     await tachyon.say_and_wait(['이런, 이거 ', callname, ' 아닌가?']);
     await printAndWait([
@@ -203,7 +203,7 @@ module.exports = {
     printButton('솔직하게 대답한다', 1);
     printButton('고개를 저어 거절한다', 2);
     if ((await input()) === 1) {
-      print('相手の名前を入力：');
+      print('상대의 이름을 입력:');
       let _default = false;
       switch (await input()) {
         case '爱丽速子':
@@ -282,7 +282,7 @@ module.exports = {
             await tachyon.say_and_wait('칫…… 거절하는 건가? 뭐 됐네.');
             await printAndWait([
               tachyon.get_colored_name(),
-              ' はがっかりしてため息をつき、白衣の内側を探り始めた',
+              '은(는) 실망한 듯 한숨을 쉬고, 흰 가운 안쪽을 뒤지기 시작했다',
             ]);
             await tachyon.say_and_wait([
               '그렇다면…… 이걸 주겠네, ',

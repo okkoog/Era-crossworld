@@ -237,7 +237,7 @@ office_game:
             content: %CHARA%
           - 「전 게임엔 통 소질이 없나 봐요……」
 
-# [번역 대상] office_gift
+# [번역 완료] office_gift
 office_gift:
   - random: true
     lines:
@@ -269,7 +269,7 @@ office_gift:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「いつか、た～っぷりお返しいたしますわよ～」
+          - 「언젠가, 자～안뜩 보답해 드릴게요～」
   - random: true
     lines:
       - color: %COLOR%
@@ -451,10 +451,10 @@ o_s_cinema:
             content: %CHARA%
           - 「로맨스 영화는…… 어떠신가요?」
 
-# [번역 대상] out_church
+# [번역 완료] out_church
 out_church:
   - 뚜렷한 목적지 없이 둘이서 도로를 거닐다 보니, 마침 트레센 학원 뒷산으로 이어지는 오솔길 앞에 다다랐다.
-  - 上の神社を見て、%CHARA%と %YOU% は、ついでも縁だと山頂へ向かった。
+  - 위쪽의 신사를 본 %CHARA%와 %YOU%은(는), 이왕 온 김에 인연이라 생각하고 산 정상으로 향했다.
   - acc: 1
     content: 「네가 한번 뽑아봐.」
   - 방울 소리가 텅 빈 신사 경내에 청아하게 울려 퍼지는 가운데, %CHARA%는 통 안에서 제비 하나를 무심코 집어 들었다.
@@ -510,7 +510,7 @@ o_s_shopping:
             content: %CHARA%
           - 「무언가 사시려는 건가요? 저도 %CALLNAME%께 소박한 선물 하나쯤은 해드릴 수 있답니다오～」
 
-# [번역 대상] good_night
+# [번역 완료] good_night
 good_night:
   sync: true
   lines:
@@ -523,7 +523,7 @@ good_night:
             - fontWeight: bold
               content: %CHARA%
             - 「%CALLNAME%, 부디 푹 쉬시길 바랄게요～」
-        - %CHARA%を寮の前まで送ると、%CHARA%は振り返って入り口に背を向け、%YOU%へ素直にお辞儀をしてから、ゆっくり寮へ入っていった。
+        - %CHARA%를 기숙사 앞까지 바래다주자, %CHARA%는 돌아서 입구를 등지고 %YOU%에게 정중히 인사한 뒤 천천히 기숙사 안으로 들어갔다.
     - if: era.get('status:0:10') === 0 && (era.get('status:74:10') > 0 || era.get('status:74:39') > 0)
       lines:
         - 깊이 잠든 %CHARA%는 %YOU%의 등에 업혀 기숙사로 돌아왔다는 사실조차 인지하지 못했으나, 주변을 맴도는 %YOU%의 체취 속에서 옅은 미소를 지어 보였다.

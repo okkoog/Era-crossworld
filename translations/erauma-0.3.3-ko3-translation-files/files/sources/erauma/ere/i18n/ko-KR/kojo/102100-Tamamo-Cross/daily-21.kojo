@@ -19,7 +19,7 @@ select:
               content: %CHARA%
             - 「컨디션은 좀 어떻나? 밥은 뭇고? 밥 묵고 가만히 있으믄 소 된다 카더라! 아하하!」
 
-# [번역 대상] good_morning
+# [번역 완료] good_morning
 good_morning:
   sync: true
   lines:
@@ -31,7 +31,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALL_45%のポケット、一体どうなっとんねん……？なんで無限にアメ出てくんねん！？怖いわ……！」
+            - 「%CALL_45% 주머니는 대체 우째 된 기고……? 와 사탕이 끝도 없이 나오노!? 무섭데이……!」
     - random: true
       lines:
         - color: %COLOR%
@@ -458,7 +458,7 @@ office_study:
             content: %CHARA%
           - 「아 내 안 잤다, 안 잤다니까네……」
 
-# [번역 대상] office_rest
+# [번역 완료] office_rest
 office_rest:
   - random: true
     lines:
@@ -466,7 +466,7 @@ office_rest:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - （%YOURSEX%の寝顔、ちょっと可愛いな……）
+          - （%YOURSEX% 자는 얼굴, 쪼매 귀엽네……）
   - random: true
     lines:
       - color: %COLOR%

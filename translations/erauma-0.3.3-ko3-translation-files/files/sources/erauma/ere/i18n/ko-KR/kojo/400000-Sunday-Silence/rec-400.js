@@ -13,7 +13,7 @@ module.exports = {
    * @param {PrintedSpan} call_coffee
    * @param {string} title
    */
-  // [번역 대상] rec
+  // [번역 완료] rec
   async rec(ss, coffee, you, call_coffee, title) {
     await era.printAndWait([
       '조금 쌀쌀한 이른 아침, ',
@@ -224,7 +224,7 @@ module.exports = {
     await ss.say_and_wait('어때? 이제 내 이름 기억했어?');
     era.printButton(`「${ss.actual_name}, 정말 예쁜 이름이야」`, 1);
     era.printButton(
-      `「君は${coffee.actual_name}じゃないの？」（おすすめしない）`,
+      `「너는 ${coffee.actual_name} 아니야?」(추천하지 않음)`,
       2,
     );
     if ((await era.input()) === 1) {
