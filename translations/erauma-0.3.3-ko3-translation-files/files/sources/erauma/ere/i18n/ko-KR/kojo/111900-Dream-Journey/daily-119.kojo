@@ -2,7 +2,7 @@
 # @file ドリームジャーニー - 日常
 # @author 幽白書
 # @author Claude (翻訳)
-# [번역 대상] select_after_basement
+# [번역 완료] select_after_basement
 select_after_basement:
   sync: true
   lines:
@@ -10,14 +10,14 @@ select_after_basement:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ん？%CALLNAME%……怖くないのですか？たとえば、前のことが、また起きても。」
+        - 「응? %CALLNAME%…… 무섭지 않으신가요? 예를 들어, 예전 일이 또 일어나더라도요.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「……ふふ。あなたは、本当に優しい人ですね。」
+        - 「……후후. 당신은 정말 다정한 분이네요.」
 
-# [번역 대상] good_morning
+# [번역 완료] good_morning
 good_morning:
   sync: true
   lines:
@@ -30,7 +30,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALLNAME%……お仕事は忙しいでしょうが、休みも忘れないでください。」
+            - 「%CALLNAME%…… 일이 바쁘시겠지만, 쉬는 것도 잊지 말아 주세요.」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -43,7 +43,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALLNAME%、今日はあまり元気がなさそうですね……よければ、お仕事も手伝わせてください？」
+            - 「%CALLNAME%, 오늘은 별로 기운이 없어 보이네요…… 괜찮으시다면, 일도 도와드릴까요?」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -57,7 +57,7 @@ good_morning:
             - fontWeight: bold
               content: %CHARA%
             - 「%CALLNAME%……」
-        - %CHARA% は何も言わず、ただ優しく %YOU% をマッサージする。
+        - %CHARA%는 아무 말 없이, 그저 다정하게 %YOU%을(를) 마사지한다.
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -71,7 +71,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALLNAME% は、今日もお元気ですね。」
+            - 「%CALLNAME%은(는), 오늘도 건강하시네요.」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -84,14 +84,14 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「お待たせしました、%CALLNAME%……ふふ。」
+            - 「기다리셨죠, %CALLNAME%…… 후후.」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「笑顔が……可愛い、ですか？……%CALLNAME% が喜ぶなら、もう少し、笑ってみますね。」
+            - 「웃는 얼굴이…… 귀엽다고요?…… %CALLNAME%이(가) 기뻐하신다면, 조금 더 웃어볼게요.」
 
-# [번역 대상] good_morning_after_basement
+# [번역 완료] good_morning_after_basement
 good_morning_after_basement:
   sync: true
   lines:
@@ -99,19 +99,19 @@ good_morning_after_basement:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「どうしました、%CALLNAME%？」
+        - 「무슨 일이신가요, %CALLNAME%?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「顔色が、よくありませんね……もしかして、外に出ない時間が長すぎて、外の世界が怖くなってしまったのですか？」
+        - 「안색이 좋지 않네요…… 혹시 너무 오래 밖에 나가지 않아서, 바깥세상이 무서워진 건가요?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「大丈夫、大丈夫……私のそばにいれば……怖いことなんて、ありません……」
+        - 「괜찮아요, 괜찮아요…… 제 곁에 있으면…… 무서운 일 같은 건 없어요……」
 
-# [번역 대상] end_talk
+# [번역 완료] end_talk
 end_talk:
   # FLAGNAME:36 = 変態行為
   - if: era.get('flag:36') === 0
@@ -121,10 +121,10 @@ end_talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%、わかりましたか？これが盲信の結末です……ゆっくり休んでください。戻るまで、私があとのことは整えておきます。」
+          - 「%CALLNAME%, 이제 아시겠나요? 이것이 맹신의 결말이에요…… 푹 쉬세요. 돌아오실 때까지, 나머지는 제가 정리해 둘게요.」
       - if: era.get('love:119') >= 75
         color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%、わかりましたか？これが盲信の結末です……でも、あなたはここで諦めたりしないでしょう？おもてなしは用意してあります。いつでも、お帰りを待っています。」
+          - 「%CALLNAME%, 이제 아시겠나요? 이것이 맹신의 결말이에요…… 하지만 당신은 여기서 포기하지 않으시겠죠? 대접할 준비는 해두었습니다. 언제든 돌아오시길 기다릴게요.」
