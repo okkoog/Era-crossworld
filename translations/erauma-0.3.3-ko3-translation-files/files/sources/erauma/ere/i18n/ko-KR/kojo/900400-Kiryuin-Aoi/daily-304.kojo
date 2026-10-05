@@ -1,14 +1,14 @@
 # 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 
-# [번역 대상] npc_talk_about_meek
+# [번역 완료] npc_talk_about_meek
 npc_talk_about_meek:
-  - %CHARA% は、特に変わったことはないと言う。
-  - ただ、もし %YOU% が%H_UMA%に二度目の機会を与える方法を見つけたら、どうか %H_NAME% の悔いを晴らしてほしい、と付け加えた。
+  - %CHARA%은(는) 특별히 달라진 것은 없다고 말했다.
+  - 다만 %YOU%이(가) %H_UMA%에게 두 번째 기회를 줄 방법을 찾는다면, 부디 %H_NAME%의 한을 풀어주길 바란다고 덧붙였다.
 
-# [번역 대상] npc_talk_about_meek_in_edu
+# [번역 완료] npc_talk_about_meek_in_edu
 npc_talk_about_meek_in_edu:
   - if: d.debuff > 0
-    content: %YOU% は %CHARA% としばらく話し合い、%H_NAME% への理解を深めた。
+    content: %YOU%은(는) %CHARA%와(과) 한동안 이야기를 나누며 %H_NAME%에 대한 이해를 깊게 했다.
   - if: '!d.debuff'
-    content: %CHARA% は、もう %YOU% に伝える新しい情報はないと言う。
+    content: %CHARA%은(는) 이제 %YOU%에게 전할 새로운 정보는 없다고 말했다.
 

@@ -2,16 +2,16 @@
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/102500-Manhattan-Cafe/ero-25"),
 
-  // [번역 대상] ero_start
+  // [번역 완료] ero_start
   async ero_start(coffee, callname, c_call_t) {
-    await coffee.say_and_wait([c_call_t, '、ここに伏せてもらえますか……？']);
+    await coffee.say_and_wait([c_call_t, '、여기에 엎드려 주시겠어요……?']);
     await coffee.say_and_wait(
-      'ええ、その姿勢です。土下座のまま、お尻をこちらへ……',
+      '네, 그 자세예요. 엎드려 절한 자세 그대로, 엉덩이를 이쪽으로……',
     );
     await coffee.say_and_wait([
-      'もう ',
+      '이제 ',
       callname,
-      ' に愛される価値もないのですから……無機物の台として、そこにいてください……',
+      '에게 사랑받을 가치도 없으니까…… 무기물 받침대로서 거기에 있어 주세요……',
     ]);
   },
 };
