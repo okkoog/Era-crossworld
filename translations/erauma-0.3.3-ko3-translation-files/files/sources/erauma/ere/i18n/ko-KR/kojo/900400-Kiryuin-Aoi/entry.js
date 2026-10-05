@@ -6,12 +6,12 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: recruit
   recruit = require('#/i18n/ko-KR/kojo/900400-Kiryuin-Aoi/rec-304.kojo');
 
-  // [번역 대상] buff
-  buff = 'トレーナー名門';
+  // [번역 완료] buff
+  buff = '트레이너 명문';
 
-  // [번역 대상] buff_desc
+  // [번역 완료] buff_desc
   buff_desc = (buff) =>
-    `トレーナー称号のトレーニング成功率・効果補正が1段階上がり、見守り時のトレーニング効果+${buff}%。`;
+    `트레이너 칭호의 트레이닝 성공률·효과 보정이 1단계 올라가고, 지켜보기 시 트레이닝 효과+${buff}%。`;
 
   // 한국어 작업 모듈 연결: daily
   daily = require("#/i18n/ko-KR/kojo/900400-Kiryuin-Aoi/daily-304.kojo");
@@ -19,9 +19,9 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: edu
   edu = require("#/i18n/ko-KR/kojo/900400-Kiryuin-Aoi/edu-304.kojo");
 
-  // [번역 대상] npc_talk_about_meek
-  npc_talk_about_meek = 'ハッピーミークの話';
+  // [번역 완료] npc_talk_about_meek
+  npc_talk_about_meek = '해피 미크 이야기';
 
-  // [번역 대상] npc_talk_about_trainer
-  npc_talk_about_trainer = 'トレーナーの仕事の話';
+  // [번역 완료] npc_talk_about_trainer
+  npc_talk_about_trainer = '트레이너 업무 이야기';
 };
