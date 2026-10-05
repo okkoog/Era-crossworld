@@ -23,43 +23,43 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: ero
   ero = proxy_kojo_js(require("#/i18n/ko-KR/kojo/100300-Tokai-Teio/ero-3.js"));
 
-  // [번역 대상] hurt
-  hurt = '脚部負傷！';
+  // [번역 완료] hurt
+  hurt = '다리 부상!';
 
-  // [번역 대상] hurt_desc
+  // [번역 완료] hurt_desc
   hurt_desc =
-    '重い脚の怪我。三女神でも完治できない。トレーニング効果-20%、体力・気力上限-200、消費+10%、ストレス取得+10%。目標レースで1着以外は名声-5。着外はストレス+25%、名声-10。';
+    '심각한 다리 부상. 삼여신도 완치할 수 없다. 트레이닝 효과-20%, 체력·기력 상한-200, 소비+10%, 스트레스 획득+10%. 목표 레이스에서 1착이 아니면 명성-5. 착외 시 스트레스+25%, 명성-10.';
 
   // 한국어 작업 모듈 연결: love
   love = proxy_kojo_js(
     require("#/i18n/ko-KR/kojo/100300-Tokai-Teio/love-3.js"),
   );
 
-  // [번역 대상] notify_leg_hurt
+  // [번역 완료] notify_leg_hurt
   notify_leg_hurt = (teio, s_hurt) => [
     '【',
     teio.get_colored_name(),
-    ' が ',
+    '이(가) ',
     s_hurt,
-    ' を発症した！】',
+    '을(를) 앓기 시작했다!】',
   ];
 
-  // [번역 대상] report_arim_kin
+  // [번역 완료] report_arim_kin
   report_arim_kin = (teio) => [
     teio,
-    { color: teio.color, content: '、奇跡の復活！' },
+    { color: teio.color, content: ', 기적의 부활!' },
   ];
 
-  // [번역 대상] report_long_dis
+  // [번역 완료] report_long_dis
   report_long_dis = (teio) => [
     {
       color: teio.color,
-      content: '限界を超えて、世界の果てへ——',
+      content: '한계를 넘어, 세계의 끝으로——',
     },
     teio,
     {
       color: teio.color,
-      content: ' がまた一つ勝った！',
+      content: '이(가) 또 하나의 승리를 거뒀다!',
     },
   ];
 };

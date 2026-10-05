@@ -10,27 +10,27 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/100200-Silence-Suzuka/
   // 한국어 작업 모듈 연결: recruit
   recruit = require('#/i18n/ko-KR/kojo/100200-Silence-Suzuka/rec-2.kojo');
 
-  // [번역 대상] debuff1
-  debuff1 = 'つらい';
+  // [번역 완료] debuff1
+  debuff1 = '괴로움';
 
-  // [번역 대상] debuff1_desc
-  debuff1_desc = 'やる気上限が1段階下がる。';
+  // [번역 완료] debuff1_desc
+  debuff1_desc = '의욕 상한이 1단계 내려간다.';
 
-  // [번역 대상] debuff2
-  debuff2 = '失意';
+  // [번역 완료] debuff2
+  debuff2 = '실의';
 
-  // [번역 대상] debuff2_desc
-  debuff2_desc = 'やる気上限が2段階下がる。';
+  // [번역 완료] debuff2_desc
+  debuff2_desc = '의욕 상한이 2단계 내려간다.';
 
-  // [번역 대상] debuff3
-  debuff3 = '古傷の脚';
+  // [번역 완료] debuff3
+  debuff3 = '고질적인 다리 부상';
 
-  // [번역 대상] debuff3_desc
-  debuff3_desc = '定められた終点。';
+  // [번역 완료] debuff3_desc
+  debuff3_desc = '정해진 종착점.';
 
-  // [번역 대상] report_begin_race
+  // [번역 완료] report_begin_race
   report_begin_race = (suzuka) => [
     suzuka,
-    { color: suzuka.color, content: ' が鮮やかに初勝利！' },
+    { color: suzuka.color, content: '이(가) 멋지게 첫 승리!' },
   ];
 };
