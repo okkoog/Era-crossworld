@@ -369,19 +369,19 @@ module.exports = async () => {
       },
       {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-        c: () => 'Check Lan Lib',
+        c: () => '언어 라이브러리 검사',
         async h() {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-          era.print('check if the library you input has all content:');
+          era.print('입력한 언어 라이브러리에 모든 내용이 있는지 확인합니다:');
           const lan = await era.input();
           if (!lan_list.includes(lan)) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-            await era.printAndWait(`No such language! ${lan}`);
+            await era.printAndWait(`해당 언어가 없습니다! ${lan}`);
             return;
           }
           if (lan === 'zh-CN') {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-            await era.printAndWait('Do not need to check the zh-CN library!');
+            await era.printAndWait('zh-CN 라이브러리는 검사할 필요가 없습니다!');
             return;
           }
 
@@ -390,16 +390,16 @@ module.exports = async () => {
               const _path = `${k} <- ${key_path}`;
               if (!(k in aim_lib)) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-                era.print(`[WARN] miss: ${_path}`, { color: buff_colors[3] });
+                era.print(`[WARN] 누락: ${_path}`, { color: buff_colors[3] });
               } else if (aim_lib[k] === cn_lib[k]) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-                era.print(`[WARN] miss or equal: ${_path}`, {
+                era.print(`[WARN] 누락 또는 동일: ${_path}`, {
                   color: buff_colors[1],
                 });
               } else if (typeof cn_lib[k] !== typeof aim_lib[k]) {
                 era.print(
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-                  `[ERROR] not same type: ${_path} (${typeof aim_lib[k]} -> ${typeof cn_lib[k]})`,
+                  `[ERROR] 형식 불일치: ${_path} (${typeof aim_lib[k]} -> ${typeof cn_lib[k]})`,
                   { color: el_danger_color },
                 );
               } else if (
@@ -412,7 +412,7 @@ module.exports = async () => {
             for (const k in aim_lib) {
               if (!(k in cn_lib)) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-                era.print(`[WARN] unused: ${k} <- ${key_path}`, {
+                era.print(`[WARN] 미사용: ${k} <- ${key_path}`, {
                   color: adaptability_colors.at(-2),
                 });
               }
@@ -421,7 +421,7 @@ module.exports = async () => {
 
           do_check(`${lan}-entrypoint`, i18n(lan), i18n('zh-CN'));
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-          era.printButton('End', 1);
+          era.printButton('종료', 1);
           await era.input();
         },
       },

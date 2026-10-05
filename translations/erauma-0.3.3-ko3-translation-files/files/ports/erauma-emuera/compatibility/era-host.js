@@ -92,24 +92,24 @@ const __api = {
 var era = new Proxy(__api,{get(target,key){
   if (key in target) return target[key];
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  throw new Error('Unimplemented Era API: '+String(key));
+  throw new Error('구현되지 않은 Era API: '+String(key));
 }});
 function __start(fn) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  if (__state==='running'||__state==='input') throw new Error('Session is already running');
+  if (__state==='running'||__state==='input') throw new Error('세션이 이미 실행 중입니다');
   __state='running'; __error=''; __exitRequested=false;
   fn().then(()=>{__state='done';},error=>{if(__exitRequested){__state='done';return;}__state='error';__error=String(error)+'\n'+String(error.stack||'');});
 }
 function __resume(text) {
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  if(!__pending) throw new Error('No pending input');
+  if(!__pending) throw new Error('대기 중인 입력이 없습니다');
   if(__inputConfig.game&&!__inputConfig.any&&text===''){
     if(__inputConfig.options?.length===1)text=String(__inputConfig.options[0]);
     else {__feedback(__inputMessage('choice'));return;}
   }
   if(__inputRule && !__inputRule.test(text)){
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-    if(__inputConfig.game)__feedback(__inputMessage('pattern'));else __emit('line','Input does not match the required pattern.',0);
+    if(__inputConfig.game)__feedback(__inputMessage('pattern'));else __emit('line','입력이 필요한 형식과 일치하지 않습니다.',0);
     return;
   }
   if(__inputConfig.game && !__inputRule && __inputConfig.useRule!==false && __inputConfig.options?.length && !__inputConfig.options.includes(Number(text))){__feedback(__inputMessage('choice'));return;}

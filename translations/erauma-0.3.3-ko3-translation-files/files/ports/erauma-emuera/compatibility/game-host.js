@@ -11,7 +11,7 @@ function __resolve(name,parent='') {
   else if(name.startsWith('.')) name=parent.slice(0,parent.lastIndexOf('/')+1)+name;
   const parts=[];
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  for(const p of name.split('/')) { if(p==='..') {if(!parts.length)throw Error('Module traversal');parts.pop();}else if(p&&p!=='.')parts.push(p); }
+  for(const p of name.split('/')) { if(p==='..') {if(!parts.length)throw Error('모듈 경로 탐색 오류');parts.pop();}else if(p&&p!=='.')parts.push(p); }
   name=parts.join('/');
   if(!/\.(js|json)$/.test(name))name+='.js';
   return name;
@@ -40,7 +40,7 @@ function __require(name,parent='') {
         const exported=__require('language-packs/'+language+'/entry');
         const entry=typeof exported==='function'?new exported():exported;
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-        if(!entry||typeof entry!=='object')throw Error('Invalid language pack: '+language);
+        if(!entry||typeof entry!=='object')throw Error('잘못된 언어 팩: '+language);
         extra[language]=entry;
         return entry;
       }
@@ -53,11 +53,11 @@ function __require(name,parent='') {
     }
     return module.exports;
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  } catch(error) { delete __cache[id];throw new Error('Module '+id+': '+error.message); }
+  } catch(error) { delete __cache[id];throw new Error('모듈 '+id+': '+error.message); }
 }
 var console={log:(...x)=>__emit('line',x.join(' '),0),debug:()=>{},warn:(...x)=>__emit('diagnostic',x.join(' '),0),error:(...x)=>__emit('diagnostic',x.join(' '),0)};
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-var Buffer={from:(text,encoding)=>{if(encoding!=='utf-8')throw Error('Only UTF-8 save buffer supported');return String(text);}};
+var Buffer={from:(text,encoding)=>{if(encoding!=='utf-8')throw Error('저장 버퍼는 UTF-8만 지원합니다');return String(text);}};
 var __screen=[],__frame=null,__buttonEpoch=0,__notices=[],__inputFeedback='';
 var __presentation={color:'#d7e0eb',align:'left',width:24};
 var __audioState=null,__audioRevision=0,__background={};
@@ -107,7 +107,7 @@ function __render(item) {
   else if(item.type==='progress')__out('line',__text(item.inContent)+' ('+item.percentage+'%) '+__text(item.outContent));
   else if(item.columns)__render(item.columns);
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  else throw Error('Unsupported UI object: '+JSON.stringify(item));
+  else throw Error('지원하지 않는 UI 객체: '+JSON.stringify(item));
 }
 function __chart(chart={}){
   const labels=chart.labels||[],datasets=chart.datasets||[];
@@ -164,7 +164,7 @@ var __game={
       case 'printLineChart':
         __chart(data.data);break;
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-      default:throw Error('Unsupported renderer event: '+kind);
+      default:throw Error('지원하지 않는 렌더러 이벤트: '+kind);
     }
     } finally {__frame=null;}
     if(kind==='replaceText'||kind==='replaceInColRows'){
@@ -214,7 +214,7 @@ original.isEra=true;
 original.delay=function(milliseconds=0){return !__presentationDelays||this.isContinue?Promise.resolve():new Promise(resolve=>setTimeout(resolve,milliseconds));};
 original.proxyKojo=function(kojo){return new Proxy(kojo,{get(target,key){
 // [번역 대상: 실행기 UI] 아래 원문의 문자열만 번역
-  if(target[key]===undefined)return async()=>__emit('diagnostic','[kojo warning] Missing key: '+String(key),0);
+  if(target[key]===undefined)return async()=>__emit('diagnostic','[kojo 경고] 누락된 키: '+String(key),0);
   const fn=(data={})=>target[key](typeof data==='object'?Object.entries(data).filter(e=>typeof e[1]==='string').map(([k,v])=>[new RegExp('%'+k+'%','g'),String(v)]):[],data);
   Object.assign(fn,target[key]);return fn;
 }});};
