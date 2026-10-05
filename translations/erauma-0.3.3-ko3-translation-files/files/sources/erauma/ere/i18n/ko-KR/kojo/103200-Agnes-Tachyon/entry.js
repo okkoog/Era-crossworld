@@ -25,22 +25,22 @@ module.exports = class extends (
     require("#/i18n/ko-KR/kojo/103200-Agnes-Tachyon/ero-32.js"),
   );
 
-  // [번역 대상] limited_tachyon
-  limited_tachyon = '限界で止まった光子';
+  // [번역 완료] limited_tachyon
+  limited_tachyon = '한계에 멈춘 광자';
 
-  // [번역 대상] limited_tachyon_desc
+  // [번역 완료] limited_tachyon_desc
   limited_tachyon_desc = (uma) =>
-    `明るく、熱く、眩しい。だが、それまでだ。これがウマ${uma}アグネスタキオンの限界。トレーニング効果+50%。`;
+    `밝고, 뜨겁고, 눈부시다. 하지만 거기까지다. 이것이 우마${uma}아그네스 타키온의 한계. 트레이닝 효과+50%.`;
 
   // 한국어 작업 모듈 연결: love
   love = proxy_kojo_js(
     require("#/i18n/ko-KR/kojo/103200-Agnes-Tachyon/love-32.js"),
   );
 
-  // [번역 대상] uma_limit
-  uma_limit = (uma) => `${uma}の限界`;
+  // [번역 완료] uma_limit
+  uma_limit = (uma) => `${uma}의 한계`;
 
-  // [번역 대상] uma_limit_desc
+  // [번역 완료] uma_limit_desc
   uma_limit_desc = (uma) =>
-    `${uma}の限界。だが、ウマ${uma}アグネスタキオンの限界ではない。レース時のみ、全能力が極めて大きく上昇する。`;
+    `${uma}의 한계. 하지만 우마${uma}아그네스 타키온의 한계는 아니다. 레이스 시에만 모든 능력이 매우 크게 상승한다.`;
 };

@@ -27,10 +27,10 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/102500-Manhattan-Cafe/
     require("#/i18n/ko-KR/kojo/102500-Manhattan-Cafe/love-25.js"),
   );
 
-  // [번역 대상] report_arim_kin
+  // [번역 완료] report_arim_kin
   report_arim_kin = (cafe) => [
-    '勝ったのは ',
+    '승리한 건 ',
     cafe,
-    '！世代交代は、ここで証明された！',
+    '! 세대교체는 이곳에서 증명되었다!',
   ];
 };

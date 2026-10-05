@@ -11,8 +11,8 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: daily
   daily = proxy_kojo_js(require('#/i18n/ko-KR/kojo/101900-Agnes-Digital/daily-19.js'));
 
-  // [번역 대상] aim_desc
-  aim_desc = 'シニア級1〜6月のG1で3着以内';
+  // [번역 완료] aim_desc
+  aim_desc = '시니어급 1~6월 G1에서 3착 이내';
 
   // 한국어 작업 모듈 연결: edu
   edu = proxy_kojo_js(

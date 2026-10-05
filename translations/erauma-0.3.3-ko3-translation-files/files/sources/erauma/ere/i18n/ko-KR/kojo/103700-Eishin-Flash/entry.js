@@ -7,23 +7,23 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/103700-Eishin-Flash/en
   // 한국어 작업 모듈 연결: recruit
   recruit = proxy_kojo_js(require('#/i18n/ko-KR/kojo/103700-Eishin-Flash/rec-37.js'));
 
-  // [번역 대상] derby
-  derby = '栄光のダービー';
+  // [번역 완료] derby
+  derby = '영광의 더비';
 
-  // [번역 대상] derby_desc
-  derby_desc = '出走時の能力+50%。';
+  // [번역 완료] derby_desc
+  derby_desc = '출주 시 능력+50%.';
 
-  // [번역 대상] distracted
-  distracted = '散漫';
+  // [번역 완료] distracted
+  distracted = '산만함';
 
-  // [번역 대상] distracted_desc
-  distracted_desc = 'トレーニング成功率-5%';
+  // [번역 완료] distracted_desc
+  distracted_desc = '트레이닝 성공률-5%';
 
-  // [번역 대상] duty
-  duty = '為すべきこと';
+  // [번역 완료] duty
+  duty = '해야 할 일';
 
-  // [번역 대상] duty_desc
-  duty_desc = 'トレーニング成功率+5%';
+  // [번역 완료] duty_desc
+  duty_desc = '트레이닝 성공률+5%';
 
   // 한국어 작업 모듈 연결: edu
   edu = proxy_kojo_js(
@@ -35,15 +35,15 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/103700-Eishin-Flash/en
     require("#/i18n/ko-KR/kojo/103700-Eishin-Flash/love-37.js"),
   );
 
-  // [번역 대상] notify_black_treasure
+  // [번역 완료] notify_black_treasure
   notify_black_treasure = (flash) => [
     flash.get_colored_name(),
-    ' は、ここのことが気になっているらしい……次にひとりで出かけて出会ったとき、聞いてみよう',
+    '은(는) 이곳이 신경 쓰이는 모양이다…… 다음에 혼자 외출하다 만나면 물어보자',
   ];
 
-  // [번역 대상] weak
-  weak = '虚弱';
+  // [번역 완료] weak
+  weak = '허약';
 
-  // [번역 대상] week_desc
-  week_desc = 'やる気上限が1段階下がる。';
+  // [번역 완료] week_desc
+  week_desc = '의욕 상한이 1단계 내려간다.';
 };
