@@ -1,0 +1,1280 @@
+# 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+# 원본 경로: sources/erauma/ere/i18n/ko-KR/kojo/108900-Cheval-Grand/rec-89.kojo
+# @file シュヴァルグラン - 募集
+# @author 無奈
+rec0:
+  # 검토 보류: 본문 미복제. HELD_LOCATIONS.md 참조.
+  sync: true
+  lines: []
+
+# [번역 대상] rec1 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+rec1:
+  title: シュヴァルグラン登場！：「抜錨」
+  lines:
+    # 条件：募集イベント一のあと、中庭へ行くとトリガー。
+    - acc: 1
+      content: '「허억…… 하아……」'
+    -
+    - 학원 안을 얼마나 뛰어다니며 찾았을까. 다른 학생들과 트레이너들이 보내는 시선을 따돌리고, %YOU%은(는) 한 손으로 벽을 짚은 채 헐떡이며 안뜰의 그늘진 곳에 멈춰 섰다.
+    - (더, 더는 못 뛰어……)
+    - 트레이너의 업무는 대부분이 서류 작업이라, 마지막으로 이렇게 달려본 게 언제인지조차 기억나지 않았다.
+    - 학원의 절반을 뒤졌는데도 그 하얀 모자는 두 번 다시 보이지 않았다. 대체 무슨 바람이 불어서 %UMA%를 뒤쫓을 생각을 한 건지……
+    - 正直……遺失物係に出せばよかった。それがいちばん確実だ。探しているあいだに相手が遺失物係へ行けば、%YOU%の余計な真似は逆効果になる。
+    -
+    - color: '%COLOR%'
+      content:
+        - (
+        - fontWeight: bold
+          content: %CHARA%
+        - 「역시…… 꿈같은 건…… 나 같은 건 애초에……」)
+    -
+    - さっきの呟きが、ふいに頭に浮かぶ。すれ違っただけの見知らぬ%UMA%なのに、なぜこれほど気になる。
+    - 어쩌면 단순히 열쇠를 돌려주기보다는, 그렇게 의기소침한 말을 내뱉었던 %UMA%가 정말 괜찮은지 확인하고 싶었던 걸지도 모른다……
+    - 그녀의 정체라도 알 수 있다면……
+    -
+    - '(잠깐, 방금 찍어둔 영상이 있잖아.)'
+    -
+    - %YOU%은(는) 번쩍 손뼉을 치며, 곧바로 영상을 꺼내 출전 선수 명단과 대조해 보았다.
+    -
+    - acc: 1
+      content: '「『%CHARA%』…… 인가.」'
+    -
+    - %YOU%は乾いた笑いをこぼす。同じ場所へ逃げてきたのか、運命の出会いなのか。だがすぐ首を横に振る——
+    - 김칫국을 마시기엔 아직 너무 이르다. 트레이너로서, 어찌 한순간의 충동으로 담당 우마무스메를 섣불리 결정할 수 있단 말인가? 옛말에 처음부터 끝까지 신중히 임해야 실패하지 않는다고 했다. 커리어의 첫 담당은 반드시 신중하게 선택해야 한다.
+    - 그래도…… 열쇠를 돌려주면서 겸사겸사 그녀의 사정을 알아보는 정도는 선을 넘는 게 아니겠지?
+    -
+    - acc: 1
+      content: '「우선 쓸데없는 생각은 그만두자.」'
+    -
+    - 따지고 보면, 내가 원한다고 한들 상대가 나를 좋게 봐줄지도 미지수다. %YOU%은(는) 자조적으로 웃으며 고개를 저어 부정적인 감정들을 머릿속에서 털어냈다. 지금 가장 급한 일은 열쇠를 돌려주는 것이다.
+    - 만약 상대가 분실물 센터에 갔다가 「없다」는 대답을 들었다면, 십중팔구 다시 훈련장으로 돌아와 찾고 있을 것이다. 어쩌면 지금 돌아가도 늦지 않았을지도 모른다.
+    - 여기까지 생각이 미치자, %YOU%의 결정은——
+    -
+    - acc: 1
+      key: rec
+      content: '「이제 지쳤어. 이쯤 해두고 분실물 센터에 넘기면 내 할 일은 끝이야.」 (영입 포기)'
+    - acc: 2
+      content: '「훈련장으로 돌아가야 해. 열쇠를 주운 이상 끝까지 책임을 져야지.」'
+      # この選択肢で募集イベント第三段がトリガーされる。
+
+# [번역 대상] rec2 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+rec2:
+  title: シュヴァルグラン登場！：「入海」
+  lines:
+    # 募集イベント第二段のあと、訓練場へ行くとトリガー。
+    - %YOU%이(가) 훈련장으로 돌아왔을 때 하늘에는 이미 땅거미가 지고 있었다. 훈련장 양옆의 가로등이 하나둘 켜지기 시작하며, 마치 밤하늘의 별빛이 내려앉은 듯했다.
+    - 얼마 전까지만 해도 온갖 욕망과 야심으로 가득 찼던 마경은, 지금 이 별빛 아래 고요히 잠들어 있었다.
+    - 今日の募集戦に出た%UMA%以外、生徒の訓練場使用は禁じられている。まばらな場内を見渡せば、あの白い海軍帽はすぐ見つかった——ベンチのそばではなく、コースの上だ。
+    -
+    - color: '%COLOR%'
+      content: '%CHARA% 「하아…… 하아아……!」'
+    -
+    - 短髪の%UMA%の額から大粒の汗が落ち、数滴が薄く赤らんだ頬を伝い、顎で水の粒になる。汗に濡れた栗色の短髪が首筋に貼りついている。
+    - 스타트→가속→스퍼트→급정지→턴→다시 스타트…… %SEX%는 지칠 줄 모르는 듯, 같은 직선 코스를 몇 번이나 왕복하며 달리고 있었다.
+    -
+    - '（이 거리는……）'
+    -
+    - 募集戦での%SEX%の走りを思い出す。案の定、いま往復しているのは、位置取りで負けたあの区間だ。
+    - 체력 안배 실수도 아니고, 흔히 있는 위치 선정 실패와도 달랐다——눈이 마주친 찰나, 그 눈동자 속에 스쳐 지나간 것은 분명 어떤 망설임이었다.
+    -
+    - color: '%COLOR%'
+      content: '%CHARA% 「하아……! 한 번 더… 해야 해……!」'
+    -
+    - 또 한 번의 왕복, 뜨거운 땀을 뻘뻘 흘리며 양 무릎을 짚고 허리를 숙인 %TEEN%.
+    - 설욕하고 싶은 마음, 자신을 증명하고 싶은 갈망…… 강렬한 열망이 확 와닿았다.
+    - 하지만 %SEX%가 달리는 모습에는 말로 다 할 수 없는 묘한 위화감이 있었다. 마치 번뇌에 두 다리가 묶여있는 것처럼.
+    -
+    - acc: 1
+      content: '「……이대로 가다간 다치겠어.」'
+    -
+    - %YOU%은(는) 이 어린 노력가를 유심히 지켜보며, 마치 홀린 듯 시선을 떼지 못했다.
+    - 負けず嫌いな姿には心を動かされる。だが、こんな報復じみたトレーニングは、自分を傷つけるだけだ。
+    - 止めに入ろうとした、そのとき——
+    -
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「아! 슈발 언니 발견——~!」
+    -
+    - ————다른 목소리가 선수를 쳤다.
+    - 이어서 두 명의 %UMA%가 석양의 여운을 받으며 등장했다.
+    -
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……%VIVLOS%, 그리고 %CALL_90%……」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「무슨 일이 있으면 라인으로 말해주면 되는데… 일부러 찾아올 것까지는……」
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「슈발 언니가 레이스 끝나자마자 휙~ 사라져버렸으니까 그렇지! 엄청 걱정했다구~!」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「레이스 끝나고 무슨 일 있었어? 고민이 있으면 우리한테 다 털어놔도 돼.」
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「슈발 언니, 괜찮은 거야……?」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……」
+    -
+    - %CHARA%의 이변을 눈치챈 듯, %VIVLOS%라고 불린 %UMA%가 %SEX%의 팔을 껴안고 고개를 갸웃거리며 해군 모자 아래로 얼굴을 들이밀어 표정을 살피려 했다.
+    - 하지만 그런 걱정 어린 시선에도, %TEEN%는 슬며시 시선을 피했다.
+    -
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「딱히…… 아무 일도……」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「……그렇구나, 의논할 게 생기면 언제든 환영이니까.」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「실은, 엄마 아빠가 오늘 밤에 가족 모임을 하자고 하셔서, 시간 괜찮은지 물어보러 왔어.」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「왜 이렇게 갑자기……」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「아까 엄마가 그러셨는데, 오늘은 슈발의 선발 레이스라는 중요한 날이니까 온 가족이 다 같이 모였으면 좋겠다고 하셨어. 아빠도 오늘 오실 거야.」
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「가자 가자 슈발 언니~♡ 분명 엄청 재밌을 거야.」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「난… 역시 안 갈래……」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「게다가, 나 같은 건 없어도 상관없잖아… 너희 둘만 있으면 충분하잖아……」
+    -
+    - 「상관없다」는 말이 입 밖으로 나오는 순간, %TEEN%는 자신의 말에 찔리기라도 한 듯 아랫입술을 꾹 깨물었고, 마지막 음절은 거의 이 악물고 쥐어짜듯 뱉어냈다.
+    - その様子を見て、%VIVLOS%は急いで寄り、今度は直接%SEX%の腕に抱きついた。
+    -
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「그런 말 하지 마! 슈발 언니. 오늘은 언니가 주인공이라구! 게다가 우리 모두 열심히 한 슈발 언니를 위로해주고 싶단 말이야~!」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「맞아, 오늘 레이스 때 슈발은 정말 멋졌어. 결과는 조금 아쉽지만, 눈부신 활약이었는걸, 슈발.」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……」
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……역시, 난 안 갈래……」
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「なんでよ～～！ あたし、シュヴァお姉ちゃんの学園の話も聞きたかったのに～ %91_CALL_90%！ お姉ちゃんも説得してよ～！」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「……뭐, 그래도 가끔은 이런 날도 있는 법이지.」
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「%91_CALL_90%～！？」
+    - color: '%COLOR_90%'
+      content:
+        - fontWeight: bold
+          content: %VERXINA%
+        - 「가자, %VIVLOS%. 가끔은 슈발에게도 혼자만의 시간이 필요한 거야. 엄마 아빠한테는…… 내가 잘 말씀드릴게.」
+    -
+    - 何か飲み込み、%VERXINA%は%VIVLOS%の肩を抱いて向きを変え、%CHARA%の肩を慰めるように叩いた。
+    -
+    - color: '%COLOR_91%'
+      content:
+        - fontWeight: bold
+          content: %VIVLOS%
+        - 「ん……%91_CALL_90%もうちょっと粘ってよ。ねえ、シュヴァお姉ちゃん、次は絶対来てね。無理しちゃだめだよ……？」
+    -
+    - 言い終えると、%VIVLOS%は心配そうではあったが、笑って%CHARA%に手を振り、小走りに%VERXINA%の背を追った。
+    -
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……미안해.」
+    -
+    - %CHARA%은 두 사람의 뒷모습을 배웅하지 않은 채, 어깨를 떨며 작게 한숨을 내쉬었다.
+    - 멀지 않은 곳에 서서 그 모든 과정을 지켜본 %YOU%은(는), 마음속으로 이미 결론을 내렸다.
+    - 이 아이는 다정하지만 자신감이 부족하고, 섬세하며 예민한 아이라는 것을.
+    - 더 나은 자신이 되기를 갈망하면서도 번뇌에 빠져 있는 아이라는 것을.
+    -
+    - color: '%COLOR%'
+      content:
+        - （
+        - fontWeight: bold
+          content: %CHARA%
+        - 「역시…… 꿈같은 건…… 나 같은 건 애초에……」）
+    -
+    - 한 걸음 내딛기조차 힘겹고 마음속이 온통 미혹으로 가득 차 있음에도, 기어코 이를 악물고 나아가게 만드는——대체 얼마나 뜨거운 꿈이란 말인가.
+    - 하지만 자신이 %SEX%의 꿈을 이룰 수 있도록 지지해 줄 수 있을까? 내 코가 석 자인 %YOU%이(가) 멋대로 오지랖을 부린다면, 두 사람 모두에게 너무 무책임한 처사일지도 모른다.
+    - 다만, %SEX%의 고민은 어쩌면 어느 순간, 누군가 혹은 어떤 일을 계기로 삼아야 할지도 모른다. 만약 모두가 모른 척 내버려 둔다면…… 이 아이의 괴로움은 영영 계속될지도 모른다.
+    - 그렇다면——
+    -
+    # 選択肢1で募集成功、選択肢2でイベント終了。
+    - acc: 1
+      key: rec
+      content: '「정말…… 서툴러서 도저히 눈 뜨고 못 보겠네.」'
+      lines:
+        - 또 한 번 코스를 왕복한 뒤 필사적으로 숨을 몰아쉬는 %TEEN%을(를) 보며, %YOU%은(는) 무의식중에 가슴의 트레이너 배지를 꽉 쥐었다. 금속 모서리가 찔려 손바닥이 아려왔다.
+        - 비록 신인 트레이너로서 이런 쓸데없는 감정이입은 사치일지 모르지만, %SEX%가 또다시 비틀거리며 무릎을 짚었을 때 %YOU%의 발은 생각보다 먼저 움직이고 있었다——
+        -
+        - divider: true
+          content: 시 점 전 환
+          fontSize: 1.5rem
+          position: center
+        -
+        - color: '%COLOR%'
+          content: 私には%CALL_90%と%YOUNGER_SISTER%がいる。
+        - color: '%COLOR%'
+          content: %CALL_90%の名前は%VERXINA%、%YOUNGER_SISTER%の名前は%VIVLOS%。
+        - color: '%COLOR%'
+          content: %THEY%は母みたいに……明るくて華やかで、人と話すのが上手。
+        - color: '%COLOR%'
+          content: %THEY%二人は……私と正反対。
+        -
+        - color: '%COLOR%'
+          content: （女性の親戚「あらあら、%VERXINA%と%VIVLOS%じゃない。今日も華やかで可愛いわね！」）
+        - color: '%COLOR_90%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%VERXINA%
+            - 「후훗…… 칭찬해 주셔서 감사합니다! 엄마가 사주신 옷이에요. 이따가 저희 같이 춤도 출 거예요! 꼭 보러 오세요♪」）
+        - color: '%COLOR%'
+          content: （여성 친척 「어머, 춤을 춰? 정말 우아한 취미네. 아, 슈발짱도 같이 할 거니?」）
+        - color: '%COLOR%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%CHARA%
+            - 「……아, 아니요…… 전 이런 건… 잘 못해서…」）
+        -
+        - color: '%COLOR%'
+          content: ……화려한 그 애들과, 초라한 나.
+        -
+        - color: '%COLOR_90%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%VERXINA%
+            - 「……좋아——! 오늘은 한 세트 더 뛰자!」）
+        - color: '%COLOR_91%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 어린 %VIVLOS%
+            - 「……あたしもあたしも！ %91_CALL_90%待ってよ～」）
+        - color: '%COLOR%'
+          content: （주니어 클럽 코치 「……하하하! 오늘도 활기가 넘치네! 주변 아이들까지 덩달아 의욕이 샘솟고 있잖아!」）
+        - color: '%COLOR%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%CHARA%
+            - 「……푸아—— 하아—— 헤헤……」）
+        - color: '%COLOR%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%CHARA%
+            - 「……레이스, 정말 재밌어…… 세상에 이렇게 즐거운 일이 있는 줄은 몰랐어……! 나도 꼭… 더 강해질 거야!」）
+        - color: '%COLOR%'
+          content: （ジュニアクラブのコーチ「……あっちの姉妹は才能があるな！ %VERXINA%は将来有望、%VIVLOS%も伸びしろだらけの原石だ！」）
+        - color: '%COLOR%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%CHARA%
+            - 「……아……」）
+        - color: '%COLOR%'
+          content:
+            - （
+            - fontWeight: bold
+              content: 幼いころの%CHARA%
+            - 「……그렇지…… 레이스도…… 포기하는 게 낫겠어……」）
+        -
+        - color: '%COLOR%'
+          content: ……中央に立つ%THEY%と、端に立つ私。
+        - color: '%COLOR%'
+          content: 나와 그 두 사람 사이에는 근본적인 차이가 있다…… 나는…… 아무런 매력도 없는, 이건 너무나도 당연하고 절대 변하지 않는 사실……
+        -
+        -
+        - color: '%COLOR%'
+          content: '부러운 마음을 품은 채, 선발 레이스 때의 기억이 다시금 떠올랐다.'
+        - color: '%COLOR%'
+          content: '게이트 안에서 기다리는 시간은 유난히 길었다. 무의식중에 트레이너들이 모여 있는 쪽을 자꾸만 힐끔거렸다. 수십 개의 눈동자가 스포트라이트처럼 나를 훑어보며 평가하고 있다고 생각하니, 금방이라도 내 모든 결점이 까발려질 것만 같았다.'
+        - color: '%COLOR%'
+          content: '긴장감에 압도당하려던 찰나, 문득 내가 동경하던 %UMA%가 떠올랐다. 아무도 주목하지 않는 상황 속에서도 남몰래 실력을 갈고닦아, 마침내 눈부시게 빛을 발했던 그 모습을.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（……레이스에서 좋은 성적을 내면 돼.）'
+        -
+        - color: '%COLOR%'
+          content: '그렇게 작은 용기를 얻어 두 뺨을 찰싹 때린 뒤, 게이트를 박차고 나갔다.'
+        - color: '%COLOR%'
+          content: '하지만 보지 말아야지 다짐할수록 시선은 말을 듣지 않았다——마지막 스퍼트 때, 마침 어떤 트레이너와 눈이 마주치고 말았다. 그 눈빛은 마치…… 이 아이, 너무 긴장한 거 아니야? 라고 말하는 것 같았다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（긴장하면…… 어떻게 되는데?）'
+        -
+        - color: '%COLOR%'
+          content: '긴장하면, 안 좋은 걸까……? 그 생각이 떠오르자마자, 내 동공이 주체할 수 없이 흔들리는 게 느껴졌다. 황급히 고개를 돌렸지만, 오히려 그 행동 때문에 내 불안감만 더 들켜버렸다는 사실을 깨달았다.'
+        - color: '%COLOR%'
+          content: '결국, 눈을 맞추는 것조차 못하는 겁쟁이가 레이스에서 이길 수 있을 리 없지……'
+        - color: '%COLOR%'
+          content: '순간의 망설임은 스퍼트 타이밍을 놓치는 결과로 이어졌고, 예상대로 처참하게 패배하고 말았다.'
+        - color: '%COLOR%'
+          content: '……하지만 최악은 그게 아니었다. 영입 시간이 다가오자, 내겐 도망치고 싶을 정도의 두려움이 밀려왔다.'
+        - color: '%COLOR%'
+          content: '트레이너나 %UMA%나 할 것 없이, 다들 주위 시선은 아랑곳하지 않고 서로를 밀치며 자신이 점찍은 파트너에게 다가가 큰 소리로 자기를 어필하고 있었다.'
+        - color: '%COLOR%'
+          content: '어떻게 나를 어필해야 할지 몰랐던 나는 그 분위기에 적응하지 못하고 결국 도망쳐버렸다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（……%CALL_90%%THEY%や、キタサンさん%THEY%なら、すぐ馴染んで、うまくやるんだろうな。）'
+        -
+        - color: '%COLOR%'
+          content: '%CALL_90%なら……絶対に勝つ。%VIVLOS%なら、自分から動けるはず。'
+        - color: '%COLOR%'
+          content: 'どうして%THEY%はあんなに強くて、勇敢なのに……私はいつもこんなに臆病なの。不思議で、全然分からない。'
+        - color: '%COLOR%'
+          content: '……무엇보다, 너무 부럽다.'
+        - color: '%COLOR%'
+          content: '나도 언젠가 그 애들처럼 반짝반짝 빛날 수 있을까? 아니, 애초에 그 애들 곁에 서는 것조차 감당할 수나 있을까?'
+        - color: '%COLOR%'
+          content: '……그럴 리가. 사랑받기는커녕, 나를 걱정해 주는 가족을 질투하기나 하는 나 같은 우마무스메는 미움만 받을 게 뻔해.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（나 같은 애를…… 영입해 줄 트레이너가 있을 리 없잖아……）'
+        -
+        - color: '%COLOR%'
+          content: '하지만…… 사실 마지막에, 아주 작은 기회가 있긴 했다.'
+        - color: '%COLOR%'
+          content: '내가 훈련장 구석으로 도망쳐 열기 가득한 그 다른 세계를 멀찍이서 바라보고 있을 때, 아까 눈이 마주쳤던 그 트레이너가 나를 찾아와 말을 걸어주었다.'
+        - color: '%COLOR%'
+          content: '그런데 난 머릿속이 새하얘져서, 너무나도 무례한 태도로 또다시 도망치고 말았다.'
+        - color: '%COLOR%'
+          content: '……그래도, 이번에는 레이스 때의 긴장감이 다 가시지 않은 탓도 있지만, 입 밖으로 꺼내기 부끄러운 이유가 하나 더 있었다————'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - ' （……아까 아주 살짝 봤는데…… %YOURSEX%의 시선이, 왠지 내 가슴 쪽을 엄청 뚫어져라 쳐다보는 것 같았어……）'
+        -
+        - color: '%COLOR%'
+          content: '그때를 떠올리니 다시 얼굴이 화끈거렸다.'
+        - color: '%COLOR%'
+          content: '그 트레이너는 나를 위아래로 훑어보더니, 마지막엔 가슴 쪽에 시선을 멈췄다. 우울함에 수치심까지 겹쳐, 나는 참지 못하고 도망쳐버렸다.'
+        - color: '%COLOR%'
+          content: 'でも見方を変えれば……あのとき隠さず、知らないふりして胸を%YOURSEX%に見せていたら……契約できてた……？'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - ' （……）'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - ' （……///）'
+        -
+        - color: '%COLOR%'
+          content: '아아아아무리 생각해도 그그그그건 안 되지!! 나나나나 지금 무슨 생각을 하는 거야!!'
+        - color: '%COLOR%'
+          content: '트레이너에게 영입되려면 레이스 성적으로 증명해야지, 다른 걸로 해선 안 되잖아……! 게다가 내 몸을 파는 짓 같은 건 절대 할 수 없다고!'
+        - color: '%COLOR%'
+          content: '만약 진짜로 그런 방법으로 계약했다간…… 분명 매일같이 내 가슴만 징그럽게 쳐다볼 테고, 별의별 짓을 다 당할지도 몰라…… 매일 성희롱당하는 일상을 상상하는 것만으로도 머리가 이상해질 것 같아……!'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（でも、こんな私にとって……あれが人生で唯一の募集の機会だったのかも……）'
+        -
+        - color: '%COLOR%'
+          content: '그래도 다시 생각해 보면, 가슴 말고 여자로서의 매력이 하나도 없는 나는, 금방 질려서 버림받고 결국 다시 혼자가 되겠지……'
+        - color: '%COLOR%'
+          content: '생각하면 할수록 서러움이 밀려와, 당장이라도 눈물이 터져 나올 것 같았다.'
+        - color: '%COLOR%'
+          content: '레이스에서 이기지도 못하고, 매력도 없는, 이렇게 쓸모없는 내가…… 위대한 %UMA%가 되겠다고 큰소리치다니……'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「설마 내 가치는…… 가슴밖에 없는 걸까……」'
+        -
+        - color: '%COLOR%'
+          content: '길게 한숨을 내쉬고는 가만히 웃음소리가 들려오던 곳을 흘끗 보았다…… 어? 방금까지 있던 %UMA%들이 사라졌네?'
+        - color: '%COLOR%'
+          content: '그렇다면, 난 더 뛸 수 있어.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「……됐어, 계속 달리자……」'
+        - acc: 1
+          content: '「수고했어.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「꺄앗!!!」'
+        -
+        - color: '%COLOR%'
+          content: '등 뒤에서 갑자기 누군가 말을 거는 바람에, 나는 순간 허리를 꼿꼿이 세웠고 꼬리와 귀가 바짝 섰다.'
+        - color: '%COLOR%'
+          content: '황급히 뒷걸음질을 몇 번 친 뒤 몸을 돌렸다.'
+        - color: '%COLOR%'
+          content: '눈앞의 %YOURPHY%을 살폈다. 비록 한 번 스쳐 지나갔을 뿐이지만, 틀림없이 아까 경기장에서 도망쳐 벤치에 앉아있을 때 만났던 그 트레이너였다.'
+        - color: '%COLOR%'
+          content: '우, 우연인가? 아니면……? 거기까지 생각이 미치자, 나도 모르게 경계심이 치솟았다.'
+        -
+        - acc: 1
+          content: '「트레이닝 하느라 수고했어. 수분 보충 좀 하는 게 어때?」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「아…… 아, 아니에요, 괜찮아요……」'
+        - acc: 1
+          content: '「자, 사양하지 말고.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「에, 아, 네…… 고, 고맙습니다……」'
+        -
+        - color: '%COLOR%'
+          content: '그 트레이너는 미소를 지으며 물 한 병을 내밀었다. 물을 받을 때 살짝 망설이긴 했지만, 그 과정 내내 %YOURSEX%는 내 눈을 똑바로 응시했을 뿐, 내 가슴 쪽을 쳐다보려는 기색은 전혀 없었다.'
+        - color: '%COLOR%'
+          content: '그와 동시에 메마른 입술과 바짝 타오르는 목이 재촉하는 바람에, %YOURSEX%의 손에서 물을 받아 뚜껑을 열고 단숨에 마셔버렸다.'
+        - color: '%COLOR%'
+          content: '아, 아뿔싸…… 나 너무 씩씩하게 마셔버린 거 아닐까……'
+        -
+        - acc: 1
+          content: '「나는 %YOURNAME%(이)야. 편하게 불러도 돼.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「아…… 저…… 저는 %CHARA%이에요…… %CALLNAME%이라고 불러도, 될까요?」'
+        - acc: 1
+          content: '「아, 그럼. 나도 슈발이라고 불러도 괜찮을까?」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「네, 네에……」'
+        -
+        - color: '%COLOR%'
+          content: '내 앞의 트레이너는 여전히 다정하고 상냥한 모습이었다…… 역시 내 오해였구나. 누가 나한테 그런 불순한 생각을 품겠어……'
+        - color: '%COLOR%'
+          content: '게다가 이 %CALLNAME%, 아주 다정한 사람 같으니까 좋은 사람일 거야.'
+        - color: '%COLOR%'
+          content: '%YOURSEX%에게 감사 인사를 전한 뒤, 미안한 마음을 안고 먼저 말을 걸어보기로 했다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「저기, %CALLNAME%, 어, 어떻게 제가 여기 있는 줄 아셨나요……」'
+        - acc: 1
+          content: '「어떻게 알았냐니…… 그야 아까 마주친 이후로 오늘 하루 종일 네 정보를 찾아다녔거든.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「하, 하루 종일 제 정보를 찾아다녔다고요……?」'
+        -
+        - color: '%COLOR%'
+          content: '에, 보통은 한 번 마주친 사람의 정보를 알아내려고 하루 종일이나 시간을 쓰나? 어, 어쩐지 좀 이상한데……'
+        - color: '%COLOR%'
+          content: '하지만 눈앞의 %CALLNAME%이 너무나도 당연하다는 표정을 짓고 있는데…… 혹시 이상한 건 나인 건가……?'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「저, 저기…… 제 정보에…… 무슨 신경 쓰이는 부분이라도 있었나요……?」'
+        - acc: 1
+          content: '「뭐, 오늘은 도저히 못 찾을 것 같아서 네가 몇 반인지 기숙사는 어딘지 알아봐 두려고 했지. 하하, 운이 좋았다고 해야 하나……」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「서, 설마 기숙사 문 앞에서 계속 절 기다리려고 하셨어요!?」'
+        -
+        - color: '%COLOR%'
+          content: '아니아니아니아니! 이 흐름은 진짜 이상하잖아! ..! 방금 한 말은 완전 스토커나 할 법한 행동이잖아……!'
+        - color: '%COLOR%'
+          content: '……서, 설마 그건가!? 내 가슴에 그렇게까지 집착하는 건가!?'
+        - color: '%COLOR%'
+          content: '내 가슴이 %CALL_90%나 %VIVLOS%보다 아주 쪼~금 더 크다는 건 알지만…… 그, 그렇다고 이렇게까지 환장할 필요는 없잖아!?'
+        - color: '%COLOR%'
+          content: '거기까지 생각이 미치자, 나는 나도 모르게 두 손으로 가슴을 가려버렸다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「서, 설마…… 아까 못 봐서 그러시는 건가요……?」'
+        - acc: 1
+          content: '「……못 봤냐고? 아, 이걸 말하는 건가.」'
+        -
+        - color: '%COLOR%'
+          content: '눈앞의 트레이너는 조금 의아한 듯 고개를 갸웃거렸지만, 내가 가슴을 가리는 동작을 보자 무언가 떠오른 것 같았다.'
+        -
+        - acc: 1
+          content: '「그 부분이라면 미안하지만, 방금 영상으로 이미 확인했어.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「영상이요!?!?」'
+        -
+        - color: '%COLOR%'
+          content: '서, 설마 녹화하신 건가요!?'
+        - color: '%COLOR%'
+          content: '에? 도, 도대체 언제? 마주친 지 5분도 안 됐는데, 설마 내가 전혀 눈치채지 못한 사이에 몰래 찍은 건가!?'
+        - color: '%COLOR%'
+          content: '트레센 학원에 이 정도의 벼, 변태가 있을 줄이야…… 게다가 당당하게 내 눈앞에 나타나다니…… 이건 마치……'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（마, 마치 내 약점을 쥐고 있다는 듯이……!）'
+        -
+        - color: '%COLOR%'
+          content: '그 생각이 드는 순간, 수없이 봤던 소…… 대충 순정 만화라고 할 수 있는 것들의 장면이 머릿속에 떠올랐고, 뺨을 타고 식은땀이 흘러내렸다.'
+        - color: '%COLOR%'
+          content: '그리고 그 트레이너는 내 이상을 눈치챈 것인지, 의아한 표정으로 나에게 한 걸음씩 다가왔다.'
+        -
+        - acc: 1
+          content: '「괜찮아?」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「……아와와와왓……」'
+        -
+        - color: '%COLOR%'
+          content: '그걸 의식한 순간, 가뜩이나 지쳐 있던 나는 다리에 힘이 풀려 뒤로 넘어지고 말았다.'
+        - color: '%COLOR%'
+          content: '하지만 엉덩이가 땅에 닿기 직전, 누군가 내 손을 잡아끌었다.'
+        - color: '%COLOR%'
+          content: '고개를 들자, 눈앞에는 살짝 미간을 찌푸린 채 걱정스러운 표정을 한 트레이너가 있었다.'
+        -
+        - acc: 1
+          content: '「오옷, 위험했네.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「꺄앗…… 저기…… 죄, 죄송해요……」'
+        - acc: 1
+          content: '「사과할 필요 없어, 그것보다 꽤 지쳤지? 계속 서서 얘기하게 해서 미안한데, 저쪽에서 같이 『휴식』이라도 취하는 건 어때?」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「……! 휴, 휴식이라니…… 서, 설마……」'
+        - acc: 1
+          content: '「벤치에 좀 앉아서, 겸사겸사 아까 찍은 영상도 같이 보자.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「보, 보여주시는 건가요!?」'
+        -
+        - color: '%COLOR%'
+          content: '여, 역시 그런 거였어……! 분명 부끄러운 영상이 찍힌 게 틀림없어……! 그래서 나한테 보여주고, 혀, 협박하려고……!'
+        - color: '%COLOR%'
+          content: '옷 갈아입을 때인가……? 마, 만약 그런 거라면…… 영상에 찍힌 건 나 혼자가 아닐 텐데……!'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「우으……」'
+        -
+        - color: '%COLOR%'
+          content: '어쩐지 조금 거친 그 손에서 전해지는 온기가 금세 내 온몸으로 퍼져나가, 몸이 뜨거워질 정도였다.'
+        - color: '%COLOR%'
+          content: '……! 설마 아까 그 물에, 이상한 거라도 탄 건가!?'
+        - color: '%COLOR%'
+          content: '……맞아, 분명 그럴 거야. 안 그러면 고작 %YOURPHY%의 손에 닿았다는 이유만으로 이렇게 얼굴이 뜨거워질 리가 없잖아!'
+        - color: '%COLOR%'
+          content: 'こんなに用意してるなんて……最悪の場合……少なくとも%CALL_90%と%VIVLOS%は守らないと。'
+        -
+        - acc: 1
+          content: '「아, 맞다. 하마터면 이걸 잊을 뻔했네.」'
+        -
+        - color: '%COLOR%'
+          content: '눈앞의 트레이너는 갑자기 무언가 깨달은 듯한 표정을 짓더니, %YOURSEX%의 오른손은 여전히 내 손을 단단히 받친 채, 왼손을 제복 주머니에 넣어 무언가를 찾고 있었다.'
+        - color: '%COLOR%'
+          content: '%YOURSEX%가 그 차가운 금속 물체를 내 손바닥에 살며시 올려놓자, 차가운 촉감이 손바닥에 전해졌다…… 이거, 대체 무슨 이상한 물건인 걸까……!'
+        - color: '%COLOR%'
+          content: '순간 수많은 가능성이 머릿속으로 밀려 들어왔고, 으으으으와아아아아앗, 내 얼굴은 지금 분명 새빨갛게 달아올랐을 것이다. 나는 서둘러 고개를 돌리고, 빈손으로 모자챙을 꾹 눌러 쓴 채 아랫입술을 깨물며 뜨거워진 뺨을 숨기려 애썼다.'
+        -
+        - acc: 1
+          content: '「이거, 돌려줄게.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「저, 저는 어떻게 되든 상관없으니까…… 제, 제발 걔네들한테는—— 응? 에?」'
+        -
+        - color: '%COLOR%'
+          content: '%CALLNAME%가 말을 마치고 양손을 거두자, 내 손바닥 위에는 열쇠꾸러미 하나가 놓여 있었다.'
+        - color: '%COLOR%'
+          content: '……에? 열쇠꾸러미?'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「에? 이건……? 이, 이건 제 열쇠?」'
+        -
+        - color: '%COLOR%'
+          content: '나는 황급히 내 주머니를 더듬어 보았고, 역시나 텅 비어 있었다.'
+        - color: '%COLOR%'
+          content: '언제 떨어뜨린 거지…… 아, 아까 벤치에서 도망쳤을 때인가?'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「아…… %CALLNAME%…… 설마 이걸 제게 전해주시려고…… 그래서……」'
+        - acc: 1
+          content: '「응, 맞아.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「그, 그럼 영상은……」'
+        - acc: 1
+          content: '「응? 선발 레이스 때 찍은 영상인데.」'
+        -
+        - color: '%COLOR%'
+          content: '오, 오해였구나…… 아니지, 애초에 내가 생각했던 그런 게 진짜 일어날 리가 없잖아!'
+        - color: '%COLOR%'
+          content: '하지만, 내 상상력이 이렇게 풍부했었나…… 뺨이 점점 더 뜨거워졌다. 부끄러워서인지, 아니면 내 혼자만의 착각에 대한 수치심 때문인지 분간이 되지 않았다.'
+        - color: '%COLOR%'
+          content: '순식간에 그런 망상을 펼치다니…… 쥐, 쥐구멍에라도 숨고 싶어……!'
+        -
+        - acc: 1
+          content: '「괜찮아? 얼굴이 좀 붉어진 것 같은데……」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「엣! 저, 전 괜찮아요!」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「아아앗! 그것보다! 트! %CALLNAME%! 지, 지도를 시작해 주실 수 있나요!」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「오, 오늘 레이스에서 제가 부족했던 점을 알고 싶어요!」'
+        -
+        - color: '%COLOR%'
+          content: '당신을 스토커로 착각했다느니…… 그런 말을 어떻게 꺼내겠어……!'
+        - color: '%COLOR%'
+          content: '하지만…… 정말이지, 또 나 혼자만의 착각이었어. 이번엔 심지어 나를 걱정해 준 트레이너를 이상한 사람으로 취급해 버리다니, %YOURSEX%의 호의를 허투루 만든 내 자신이 너무나도 싫어졌다.'
+        -
+        - acc: 1
+          content: '「……아아, 물론이지. 오늘 레이스를 보니까——」'
+        -
+        - color: '%COLOR%'
+          content: '%YOURSEX%는 잠시 말을 멈추더니, 이내 미소를 지었다.'
+        - color: '%COLOR%'
+          content: '오늘 하루 종일 실패만 겪었지만, 다행히도 마지막에 우연히 %CALLNAME%의 도움을 받게 되었으니, 이것으로 나의 부족한 점을 더욱 분명히 깨닫고 한 걸음 더 나아갈 수 있을 것이다.'
+        -
+        - acc: 1
+          content: '「——너는 정말 재능이 있는 아이라는 걸 단번에 알 수 있었어.」'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「에?」'
+        -
+        - color: '%COLOR%'
+          content: '잘못된 점을 지적해 주길 기대하고 있었는데, 돌아온 것은 칭찬의 말이었다.'
+        -
+        - acc: 1
+          content: '「스타트 때 그토록 빠른 반응 속도로 선두를 차지하고, 그 후의 정확한 위치 선정까지 곁들여지다니, 넌 확실히 재능이 있어!」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「에!? 무슨……」'
+        - acc: 1
+          content: '「게다가, 중반부의 시야 장악력도 말이야, 내가 보기엔 그 조에서 네가 단연코 최고였어!」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「꺄!? 저…… 저기, 자, 잠깐만요!」'
+        -
+        - color: '%COLOR%'
+          content: '%CALLNAME%가 숨결이 느껴질 정도로 가까이 얼굴을 들이밀었다…… 부정적인 감정 덕분에 간신히 식었던 뺨이 다시 달아오르기 시작했다.'
+        - color: '%COLOR%'
+          content: '그의 시선을 피하기 위해 나는 고개를 돌리고, 혼잣말처럼 중얼거렸다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「전…… 전 그렇게 대단하지 않아요……」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（だめだめ、そんな謙遜、%YOURSEX%の認めを否定してるだけ……）'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「지금처럼…… 눈을 마주치는 것조차 제대로 못하는…… 저 같은 건……」'
+        -
+        - color: '%COLOR%'
+          content: '이것이 그의 호의를 거절하는 일이라는 걸 머리로는 알면서도, 자기 비하의 말은 도무지 멈출 기미가 보이지 않았다.'
+        - color: '%COLOR%'
+          content: '%YOURSEX%の瞳がわずかに見開かれ、口元の笑みが潮のように引く。顔を逸らしたとき、喉が一度動いて、顎を撫でて黙った。'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（말실수했어……）'
+        -
+        - color: '%COLOR%'
+          content: '심장이 덜컥 내려앉고 손끝이 차갑게 식어갔다. %CALLNAME%가 침묵하는 몇 초 동안, "만약 그때"라는 수많은 생각들이 머릿속에서 폭발했다. %YOURSEX%의 살짝 찌푸린 미간이 그 어떤 질책보다도 가슴을 옥죄었다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（그냥 %YOURSEX%의 말에 고개만 끄덕였으면 됐을 텐데…… 한 번쯤은 믿어볼 수도 있었을 텐데……）'
+        -
+        - color: '%COLOR%'
+          content: '어느새 손톱이 손바닥을 파고들었지만, 그깟 통증은 가슴속의 먹먹함에 비하면 아무것도 아니었다. 지금쯤 %YOURSEX%도 눈앞의 우마무스메가 사실은 전혀 사랑스럽지 않은 귀찮은 녀석이라는 걸 알아차렸겠지?'
+        - color: '%COLOR%'
+          content: '基本の返事すらできない%UMA%なのに……相手は私の気持ちを慮って、すぐには去らず、傷つけない言い方を探している……%YOURSEX%は、本当に優しい人だ。'
+        - color: '%COLOR%'
+          content: '하지만…… 더 이상 %YOURSEX%의 시간을 낭비할 필요는 없어…… 선생님이 더 곤란해지기 전에, 내가 먼저 끝내자.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「저기…… %CALLNAME%, 오늘은 정말 감사했습니다……」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「열쇠를 돌려주려고, 저 같은 애한테 이렇게 많은 시간을 써주시다니…… 역시 일찍 쉬시는 게……」'
+        - acc: 1
+          content: '「……미안, 시간을 조금만 더 내줄 수 있을까.」'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「아…… 네……」'
+        -
+        - color: '%COLOR%'
+          content: '%YOURSEX%의 말을 듣고, 나는 풀밭에 털썩 주저앉아 무릎을 끌어안고 얼굴을 파묻었다.'
+        -
+        - acc: 1
+          content: '「솔직히 무슨 말을 해야 할지 전혀 정리가 안 됐지만, 이렇게 노력가에다 섬세한 %CHARA%을 놓치지 않기 위해서, 어떻게 해야 할지 진지하게 고민해 봐야겠어.」'
+        -
+        - color: '%COLOR%'
+          content: '역시…… 나 같은 애보다는…… %CHARA%이라는 아이가 더 낫겠지.'
+        - color: '%COLOR%'
+          content: '노력가에다 섬세하다니…… 나도 그런 %UMA%가 될 수 있었으면 좋았을 텐데……'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '（……응?）'
+        -
+        - color: '%COLOR%'
+          content: '자, 잠깐만?'
+        - color: '%COLOR%'
+          content: '%YOURSEX%は、今、何て言った？'
+        - color: '%COLOR%'
+          content: '%YOURSEX%は……%CHARA%を募集する、って！？'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「에에에에에에엣!? 슈, %CHARA%이라면 절 말씀하시는 건가요?」'
+        - acc: 1
+          content: '「응? %CHARA%은 너 아니었어?」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「저, 제가 %CHARA%인데요……」'
+        -
+        - color: '%COLOR%'
+          content: '자기가 누군지조차 헷갈려 하는 나를 보며, %CALLNAME%은 내 앞머리를 넘기고 손으로 체온을 재며 말했다…… 너무 피곤해서 그런 거 아니냐고.'
+        - color: '%COLOR%'
+          content: '처음 만난 사람 치고는 이 거리감이 조금 미묘하다고 느꼈지만…… 지금은 그걸 신경 쓸 때가 아닌 것 같다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「하, 하지만 저는 레이스에서 졌는걸요……?」'
+        - acc: 1
+          content: '「일시적인 승패는 아무것도 증명하지 못해. 하지만 내가 본 너의 빛나는 장점은 거짓말을 하지 않지.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「전…… 전 겁쟁이에, 음침하고…… 자격지심도 심한 %UMA%예요……」'
+        - acc: 1
+          content: '「내 눈엔 겸손하고 독립적이며…… 게다가 다양한 의견을 새겨듣고 스스로를 더욱 강하게 만들 줄 아는 너의 모습만 보였어.」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「하, 하지만, 절 선택하셔도 정말 괜찮은가요? 저보다 훨씬 더 나은 선택지가 많을 텐데……」'
+        -
+        - color: '%COLOR%'
+          content: '하하하, %CALLNAME%는 손을 떼며 웃었다. 나는 그 웃음소리에 약간 의아해져 고개를 들어 %YOURSEX%의 얼굴을 바라보았다.'
+        - color: '%COLOR%'
+          content: '%YOURSEX%는 손가락으로 자신의 코를 가리키며, 쓴웃음을 지은 채 말을 이었다.'
+        -
+        - acc: 1
+          content: '「정말 공교롭게도, 내가 아직 신인 트레이너라서 다른 애들의 훈련을 본 적이 없거든. 그래서 다른 사람들은 전혀 몰라.」'
+        -
+        - color: '%COLOR%'
+          content: '에엣!? 설마 그런 이유인가요?'
+        -
+        - acc: 1
+          content: '「그러니까, 이 신인 트레이너에게 네 꿈을 들려줄 영광을 주지 않을래?」'
+        -
+        - color: '%COLOR%'
+          content: '나의 꿈……'
+        - color: '%COLOR%'
+          content: '삼관 %UMA%를 꺾고, 숨겨져 있던 자신의 빛을 내뿜으며 하늘을 향해 포효하던 그 %UMA%.'
+        - color: '%COLOR%'
+          content: '그때 가슴속에서 벅차오르던 열정은, 지금까지도 잊을 수 없다.'
+        - color: '%COLOR%'
+          content: '나는 %SEX%처럼—— 그런 「위대한 %UMA%」가 되고 싶어.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「저, 저는…… 위, 위…… 위대한……」'
+        -
+        - color: '%COLOR%'
+          content: '나 지금 뭐 하는 거지…… 내 꿈조차 제대로 입 밖으로 내지 못하다니.'
+        - color: '%COLOR%'
+          content: '나 같은 애가, 위대한 %UMA%가 되기를 꿈꾸다니……'
+        -
+        - acc: 1
+          content: '「지금 당장 말하지 못해도 괜찮아, 언젠가는 할 수 있을 테니까.」'
+        -
+        - color: '%COLOR%'
+          content: '마치 한 줄기 빛이 비쳐 들어온 것 같았다.'
+        - color: '%COLOR%'
+          content: '내 마음속을 줄곧 뒤덮고 있던 먹구름이 조금 걷힌 기분이었다.'
+        - color: '%COLOR%'
+          content: '고개를 들자, 반짝이는 두 눈동자가 보였다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「하지만…… 전 아무것도 제대로 하는 게 없어서…… 분명 %CALLNAME%의 발목을 잡고 말 거예요……」'
+        - acc: 1
+          content: '「그렇지 않아, 넌 다정하고 매사에 진지하게 노력하는 아이니까.」'
+        -
+        - color: '%COLOR%'
+          content: '정말 이상하다.'
+        - color: '%COLOR%'
+          content: '전혀 모르는 사람에게 칭찬을 받았을 뿐인데, 어쩐지 구원받은 듯한 기분이 든다.'
+        - color: '%COLOR%'
+          content: '그 눈동자에 비친 내 두 눈 속에도, 마치 같은 빛이 반짝이고 있는 것 같았다.'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「제 꿈은…… 현실성도 없고…… 분명…… 실패할 거예요……」'
+        - acc: 1
+          content: '「그렇지 않아. 네 자신을 믿지 못하겠다면, 나를 믿어.」'
+        -
+        - color: '%COLOR%'
+          content: '나는 내 자신이 싫다.'
+        - color: '%COLOR%'
+          content: '나약하고, 자격지심에 빠져 있으며, 성적조차 내지 못하는…… 앞으로도 이런 나를 좋아하게 될 일은 없을 거라 생각했다.'
+        - color: '%COLOR%'
+          content: '하지만 그럼에도 불구하고.'
+        -
+        - acc: 1
+          content: '「나는, 너를 믿고 있어.」'
+        -
+        - color: '%COLOR%'
+          content: '믿고 싶어졌다.'
+        - color: '%COLOR%'
+          content: 'あの人がここまで信じてくれるなら、少しでも応えたい……それが本音だ。'
+        - color: '%COLOR%'
+          content: '頬の熱が溢れる寸前で、%YOURSEX%の褒めを遮るように、少し焦って誘いへ応えた。'
+        -
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「아, 알겠어요…… 그, 그만 좀 하실래요……」'
+        - color: '%COLOR%'
+          content:
+            - fontWeight: bold
+              content: '%CHARA%'
+            - '「크흠…… %CALLNAME%…… 자, 잘 부탁드립니다…… 부디…… 제, 저의 트레이너가 되어주세요!」'
+        - acc: 1
+          content: '「아아, 함께 꿈을 이뤄보자! 슈발!」'
+        -
+        - color: '%COLOR%'
+          content: '이곳이 나의 새로운 출발점.'
+        - color: '%COLOR%'
+          content: '나와 %CALLNAME%가 처음 만난 곳.'
+        - color: '%COLOR%'
+          content: '……'
+    - acc: 2
+      content: '「선생님께서 그러셨지…… 멘탈이 약한 %UMA%가 제일 다루기 힘드니 재능이 아무리 뛰어나도 신중해야 한다고.」 (영입 포기)'
+      lines:
+        - '%YOU%은(는) 고개를 저으며 훈련장을 떠났다.'
+
+# [번역 대상] beginning — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+beginning:
+  title: シュヴァルグラン登場！：「……開端」
+  lines:
+    # 条件：チームにウマ娘がいる、または名声が100超
+    - 오후의 햇살이 훈련장의 잔디 위로 쏟아지며, 금빛 양탄자를 깔아 놓았다.
+    - %YOU%은(는) 북적이는 인파 속을 여유롭게 거닐며, 종종 스쳐 지나가는 인사에 미소로 답했다.
+    - 청춘의 활기로 가득 찬 %UMA%들의 얼굴은 평소와 다름없었고, %YOU%에게 선발 레이스란 늘 이렇게 시끌벅적한 느낌이었다.
+    -
+    - (……이게 바로 『사람은 영원히 젊을 수 없지만, 언제나 젊은 사람은 있다』는 거겠지.)
+    -
+    - 추억이 밀물처럼 밀려왔다. 그 시절의 신인 트레이너가, 지금은 다른 사람들의 입에 오르내리는 %TITLE%가 되었다. 만약 그때의 나에게 지금의 성공을 알려준다면, 놀라서 말문이 막히지 않을까?
+    - 지금까지 걸어온 길을 떠올려보니 마음이 뭉클해졌지만, 아직 그럴 나이는 아니니 벌써부터 『나때는 말이야——』 같은 말을 꺼내기엔 너무 이르다.
+    -
+    - acc: 1
+      content: '「빨리 집합 장소로 가야겠군.」'
+    -
+    - 멀리 흩어졌던 상념을 거두고, %YOU%은(는) 정장을 입은 채 말없이 서 있는 남녀노소 무리에게로 시선을 돌렸다—— 시커먼 모습이 마치 한 무리의 먹구름 같았다.
+    - %YOU%が近づくと、顔は覚えているが名前の出ない後輩が挨拶する。礼を返しつつ、今日の同僚兼ライバルを見る——若い新顔が増え、古い顔は一様に硬い。空気は明るくない。
+    -
+    - (……무슨 상황이지.)
+    -
+    - 他のトレーナーが開けた道を最前列まで行き、隣のエリートトレーナーに一言聞こうとしたところで、遠くの笛が間の悪いタイミングで鳴る。皆、揃ってコースを見た。
+    - %UMA%들이 게이트를 박차고 나오자, 눈부신 햇살 아래서 유독 돋보이는 하얀색 해군 모자가 %YOU%의 시선을 사로잡았다.
+    -
+    - (설마 눈에 잘 띄게 하려고 일부러 쓴 건가? 그렇다면 꽤 영리한데.)
+    -
+    - 이 정도까지 궁리할 줄 안다면, 적어도 머리가 잘 돌아가는 아이라는 건 확실했다.
+    - 속으로 슬그머니 평가를 높이면서, %YOU%은(는) 모자를 쓴 이 %UMA%에게 흥미가 생겨 주의 깊게 관찰하기 시작했다.
+    -
+    - 균형 잡힌 다리에, 달릴 때 보폭도 넓고, 동작이 군더더기 없이 깔끔했다. 정상급처럼 폭발적인 힘이 넘치는 건 아니었지만, 모든 동작이 정석에 가까웠다.
+    - 코너를 돌 때도 %TEEN%의 발걸음은 여전히 안정적이었고, 다른 %UMA%들처럼 균형을 잃는 일도 없었다. 속도가 아주 빠른 편은 아니었지만, 달리는 폼이 매우 탄탄해 보여 기본기를 갈고닦기 위해 꽤 노력했음을 알 수 있었다.
+    - レースはすぐ最終直線へ。このままなら……勝てる、と%YOU%が判断した、その短い一瞬。期待していた%UMA%が、集団の後方へ落ちた。
+    -
+    - acc: 1
+      content: '「……경쟁심이 부족한 건가.」'
+    -
+    - %YOU%は惜しみつつ他の出走%UMA%を見渡し、ストップウォッチを押して、%THEY%がゴールするのを見送る。
+    - この組は水準が落ちる。海軍帽の%UMA%だけがいい。だが後ろのトレーナーたちはもう押し寄せ、上位三頭を囲んでいた。
+    -
+    - color: '#cccccc'
+      content: '신인 트레이너 A「나를 한 번 고려해 줘! 트레이너 학교에서 중거리 %UMA% 육성을 전공했다구!」'
+    - color: '#cccccc'
+      content: '베테랑 트레이너 B「우리 쪽도 생각해 봐! 난 맞춤형 훈련 계획을 짜는 데 능숙해! 반드시 레이스에서 이기게 해줄게!!」'
+    - color: '#cccccc'
+      content: '신인 트레이너 C「너를 중심으로 팀을 꾸려서, 장차 아주 훌륭한 병합 훈련 상대를 제공해 줄 수 있어!!!」'
+    -
+    - acc: 1
+      content: '「……」'
+    -
+    - 新人が着順だけで適性を測るのは分かる。驚くのは、古株まで争いに加わっていることだ。上位でも時計は、彼らの線には届いていないはずなのに——
+    -
+    - (……아, 그런 거였군.)
+    -
+    - %YOU%은(는) 문득 이 트레이너들의 팀에 병합 훈련을 뛰어줄 상대가 마땅치 않다는 사실을 떠올렸다.
+    - 굳은 표정을 지으면서도 기어이 신인들과 경쟁하려 드는 이유는, 저 늙은 여우들의 말마따나 「『비료』의 질도 매우 중요하기 때문」이겠지.
+    -
+    - (정말 인정머리 없네.)
+    -
+    - 상황 파악도 못한 채, 베테랑 트레이너에게 영입 제의를 받았다고 우쭐해하는 몇몇 %UMA%들을 보며, %YOU%은(는) 속으로 조금 안쓰럽다는 생각이 들었다.
+    - 하지만 다시 생각해 보면, 연공서열의 산물이라 할지라도 이 자리까지 올라온 자들은 결국 후각이 예민한 늙은 여우들이었다.
+    - 최근 몇 년간 학원이 실력 있는 신인 트레이너들에게 투자하는 자원 비율이 매년 증가하고 있다는 사실을 간파하고, 한정된 시간 안에 최대한 많은 실적을 내어 자신의 자리를 지키기 위해 체면을 깎고 들어가는 이 방법은 제법 현명한 전략이라 할 수 있다.
+    -
+    - acc: 1
+      content: '「……뭐, 발등에 불이 떨어졌으니 오죽하겠어.」'
+    -
+    - 마음 한구석이 찔리면서도 묘하게 고소하다는 생각에, %YOU%은(는) 어깨를 으쓱하며 잡념을 떨쳐냈다.
+    - 어찌 됐든 남의 일이니 내가 끼어들 이유도 없고, 오지랖 부리지 말고 내 담당부터 영입하는 것이 우선이다.
+    - 本題だ。逸れた思考を戻し、選手名簿を出して、あの%UMA%の情報と突き合わせる。
+    -
+    - acc: 1
+      content: '「『%CHARA%』이라…… 어라, 어디 갔지?」'
+    -
+    - 俯いたすきに、さっきまでいた%UMA%がいなくなっている。人波を探しても、見つからない。
+    - もういいか、と思ったところで、またあの目立つ海軍帽のおかげで、訓練場の隅に%SEX%を捉えた。
+    -
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - '「하아……」'
+    -
+    - %SEX%の様子を見るに、負けたせいで募集の場にも出たくないらしい。
+    - ……하지만 조금 얌체 같은 소리를 하자면, 저기 혼자 떨어져 있으니 다른 트레이너들과 피곤하게 경쟁할 일은 덜었다.
+    - 그렇게 생각하며, %YOU%은(는) 우선 근처의 자판기부터 들르기로 했다.
+    -
+    - acc: 1
+      content: '「……」'
+    -
+    - だがキャロットジュースを二本持って%TEEN%の背へ近づいたとき、足が止まった。
+    - 落ち込みに沈んだ小さな%UMA%は、他人の接近に気づかない。深く俯いたせいで、細い首筋が無防備に出ている。栗色の短髪は汗に濡れ、白いうなじに張りついている。
+    - 그것을 알아차림과 동시에, 사춘기 %TEEN% 특유의 향기가 코끝을 스쳤다.
+    - 흙내음과 땀 냄새가 섞여 있음에도 여전히 선명하게 느껴지는—— 그 「%CHILD%의 향기」가, 무의식적이지만 정확하게 %YOURPHY%의 가장 본능적인 부분을 자극하고 있었다.
+    - 조금씩…… 마음속에서 끊임없이 검은 욕망이 솟아올랐고, 그 욕망을 %TEEN%에게 분출하고 싶다는, 충동이————
+    -
+    - (크흠, 정말이지…… 지금은 아직 대낮이라고.)
+    -
+    - 자신이 조금 지나치게 달아올랐음을 깨달은 %YOU%은(는), 체육복 깃에서 시선을 거두고 자신은 담당을 영입하러 왔다는 사실을 속으로 되뇌었다.
+    -
+    - color: '%COLOR%'
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - '「……역시…… 꿈 같은 건, 애초에……」'
+    -
+    - %TEEN%의 중얼거림은 마치 머리에 찬물을 끼얹은 듯, %YOU%의 정신을 번쩍 들게 했다.
+    - 그래…… 이것이 바로 따분한 현실이다. 헛된 꿈만 꾼다고 이뤄지는 세상이 아닌 것이다.
+    - 과거에도 그랬고, 오늘도, 그리고 미래에도 그럴 것이다.
+    - 이 아이는 남다른 재능을 가졌지만, 만약 경쟁심이 부족하다면 경기장이라는 전쟁터에서 발붙이기 매우 어려울 것이다.
+    - 강인한 멘탈 역시 실력의 일부이기에, 트레이너로서 신중하게 고민해 봐야 한다.
+    - 이런저런 생각 끝에, %YOU%은(는) 결정했다————
+    - acc: 1
+      key: rec
+      content: '이런 아이는 조금만 잘 이끌어준다면, 틀림없이 자신의 재능을 활짝 꽃피울 수 있을 거야.'
+      lines:
+        - 이런 성격이 마음에 걸리긴 하지만, 명색이 %TITLE%니 이 정도는 아무 문제 없을 거야.
+      # 募集
+    - acc: 2
+      content: '……こういう子は、%SEX%に何をしても、人には言わないだろう。'
+      lines:
+        - 어른의 특권을 조금만 휘두르면 최상급 퀄리티의 육체를 마음대로 굴릴 수 있다니. 트레이너란 정말이지 끝내주는 직업이 아닐 수 없다.
+        - ……뭐, 질리기 전까지의 이야기지만.
+      # 募集
+    - acc: 3
+      content: '그냥 다음 선발 레이스나 보러 가자. (영입 포기)'
+
+# [번역 대상] beginning2 — 대사/분기 블록 전체 문맥에서 남은 원문을 번역
+beginning2:
+  - 決めた%YOU%はベンチの端に座る。%TEEN%が存在に気づいて驚くように振り返った瞬間、キャロットジュースはもう%SEX%の前にあった。
+  -
+  - acc: 1
+    content: '「아까 레이스는 수고했어. 뭐라도 마시면서 수분 좀 보충해.」'
+  -
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「……엣!…… 아……!」'
+  -
+  - %TEEN%が反応する前に%YOU%は手を離す。滑る瓶を受け止めようと慌てて屈んだとき、ゆったりした袖が肘まで落ち、日焼けの境の淡いピンクの肌が見えた。
+  - 안도의 한숨을 내쉰 %SEX%는 얼굴을 붉힌 채 뾰로통한 기색으로 손등으로 턱의 땀방울을 닦아냈다. 다른 한 손으로는 반바지 자락을 꽉 움켜쥐고 있었다. 손끝이 허벅지의 연한 살을 파고드는 것조차 모르는 듯했다.
+  -
+  - acc: 1
+    content: '「자, 사양하지 말고.」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「……아…… 네…… 가, 감사합니다.」'
+  -
+  - %YOU%의 재촉에 못 이겨 조심스레 병뚜껑을 따는 %TEEN%를 지켜보았다. 병 입구가 입술에 닿자 주황색 액체가 몇 방울 흘러나왔고, 그것은 턱을 타고 흘러내려 거칠게 오르내리는 가슴팍 위로 떨어졌다.
+  - 땀에 흠뻑 젖은 천 사이로 풋풋한 굴곡이 어렴풋이 비쳐 보였고, 그곳에 손가락을 파묻으면 어떤 촉감일지 상상하지 않을 수 없었다.
+  - 가장 보수적인 디자인의 체육복을 입고 있음에도, 억지로 꾸며 입은 다른 %UMA%들보다 훨씬 더 입이 떡 벌어지게 만드는 이 갭 차이는 참으로 재미있는 사실이다.
+  -
+  - (……정말이지, 방비가 너무 허술하잖아. 몹쓸 짓을 당해도 할 말 없겠는데.)
+  -
+  - 이른바 「받은 게 있으면 거절하기 힘들다」는 말처럼, 거절할 줄 몰라 덥석 물건을 받아버리면 그 뒤에 이어지는 요구를 거절하기란 훨씬 어려워지는 법. 이건 %TITLE%의 작은 잔꾀라고 해두자.
+  - 수분을 보충한 %CHILD%는, 조금 진정이 되었는지 기어들어 가는 목소리로 입을 열었다.
+  -
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「저, 저기…… %CALLNAME%께선 저에게…… 무슨 일로 오신 건가요……?」'
+  - acc: 1
+    content: '「아아…… 아까 치른 레이스에 대해서, 너한테 하고 싶은 말이 좀 있어서.」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「……엣…… 그건.」'
+  -
+  - %CHILD%의 귀가 순식간에 축 처졌다. 마치 판사의 선고를 기다리는 죄수 같은 모습이다…… 그렇게까지 풀이 죽을 필요는 없을 텐데.
+  - 하지만 기대감으로 쉴 새 없이 흔들리는 꼬리를 보니, 저토록 솔직한 반응은 큰 도움이 될 것 같다.
+  -
+  - acc: 1
+    content: '「——너는 정말 재능이 있는 아이라는 걸 단번에 알 수 있었어.」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「에?」'
+  - acc: 1
+    content: '「스타트 때 그토록 빠른 반응 속도로 선두를 차지하고, 그 후의 정확한 위치 선정까지 곁들여지다니, 넌 확실히 재능이 있어!」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「에!? 뭣……」'
+  - acc: 1
+    content: '「게다가, 중반부의 시야 장악력도 말이야, 내가 보기엔 그 조에서 네가 단연코 최고였어!」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「꺄!? 저…… 저기, 자, 잠깐만요!」'
+  -
+  - %YOU%은(는) 마치 다듬어지지 않은 원석을 발견하여 벅차오른 듯, 일부러 목소리에 적당한 흥분을 섞어 말했다.
+  - 예상과 완전히 엇나간 대답 때문인지, 얼굴이 새빨개진 %CHILD%는 순식간에 갈피를 잡지 못하고 허둥지둥했다.
+  - 역시 반응을 이끌어내려면 과장하는 게 최고라 생각하며, %YOU%은(는) 영입 제의를 건넸다.
+  -
+  - acc: 1
+    content: '「그럼, 단도직입적으로 말할게—— 내 팀에 들어올 생각 없어?」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「……」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「하, 하지만 저는 레이스에서 졌는걸요……?」'
+  - acc: 1
+    content: '「일시적인 승패는 아무것도 증명하지 못해. 하지만 내가 본 너의 빛나는 장점은 거짓말을 하지 않지.」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「전…… 전 겁쟁이에, 음침하고…… 자격지심도 심한 %UMA%예요……」'
+  - acc: 1
+    content: '「그럼 우리 같이 밝게 성격을 바꿔서, 레이스에서 이겨보자!」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「하, 하지만, 절 선택하셔도 정말 괜찮은가요? 저보다 훨씬 더 나은 선택지가 많을 텐데……」'
+  - acc: 1
+    content: '「……그렇구나.」'
+  -
+  - 羞恥なのは分かる。だが何度も拒まれるとさすがに苛立つ。そのとき、悪戯が浮かんだ。
+  - %YOU%은(는) 곧바로 실망한 표정을 지으며 자신의 음료수를 집어 들고 자리에서 일어났다. 입으로는…… 정 싫다면 어쩔 수 없지, 라고 말하며.
+  -
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「……! 자, 잠깐만요……!」'
+  -
+  - 옷깃이 잡힌 것을 느낀 순간, %YOU%은(는) %TEEN%가 볼 수 없는 각도에서 흡족한 미소를 지었다.
+  - 역시 상상했던 대로 재미있는 반응이다. 앞으로 「지도」해 줄 부분이 꽤나 많을 것 같다.
+  -
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「시, 싫다는 뜻이 아니었어요……! 오히려, 그게…… 부디 저를 당신의 담당 %UMA%로 삼아주세요……!」'
+  - color: '%COLOR%'
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - '「……비, 비록 대단한 %UMA%도 아니고 부족하지만…… 하, 하지만, 저기, 괘, 괜찮으시다면 잘 부, 부탁드립니다……!」'
+  - acc: 1
+    content: '「응, 기꺼이.」'
+  -
+  - 원하던 대답을 이끌어낸 %YOU%은(는) 미소 지으며 뒤돌아보았고, 이어서 계약 체결에 관한 몇 가지 사항을 간단히 덧붙였다.
+  - %YOU%이(가) 몸을 돌려 떠날 때, 등 뒤에서 작은 동물이 물을 핥아먹는 듯한 훌쩍이는 소리가 들려왔다—— 그 당근 주스는 마침내 바닥을 보이고 말았다.
