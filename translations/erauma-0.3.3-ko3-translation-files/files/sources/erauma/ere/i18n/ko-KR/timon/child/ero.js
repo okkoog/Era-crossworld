@@ -2,12 +2,12 @@
 module.exports = {
   ...require("#/i18n/ja-JP/timon/child/ero"),
 
-  // [번역 대상] estrus_for_slave
+  // [번역 완료] estrus_for_slave
   async estrus_for_slave(child, callname) {
     await child.say_and_wait([
-      'はぁ……はぁ……どうしてだろう、',
+      '하아……하아…… 왜 이러지,',
       callname,
-      'を見ると、下が熱くて苦しい……もう……我慢できない！',
+      '을(를) 보면 아래가 뜨겁고 괴로워…… 이제…… 못 참겠어!',
     ]);
   },
 };

@@ -252,43 +252,43 @@ module.exports = {
     }
   },
 
-  // [번역 대상] talk_2
+  // [번역 완료] talk_2
   async talk_2(child, you, callname) {
     const temp = [];
     // TALENTNAME:35 = 腋毛成长
     if (era.get(`talent:${child.id}:35`)) {
-      temp.push('わきに毛が生えてきた……');
+      temp.push('겨드랑이에 털이 나기 시작했어……');
     }
     // TALENTNAME:36 = 阴毛成长
     if (era.get(`talent:${child.id}:36`)) {
-      temp.push('下に毛が生えてきた……');
+      temp.push('아래쪽에도 털이 나기 시작했어……');
     }
     if (child.sex_code !== 1) {
-      temp.push('胸が大きくなった……');
+      temp.push('가슴이 커졌어……');
       // TALENTNAME:32 = 泌乳
       if (era.get(`talent:${child.id}:32`)) {
-        temp.push('白いものが流れてきた……');
+        temp.push('하얀 게 나오기 시작했어……');
       }
     }
     if (child.sex_code > 0) {
-      temp.push('下が大きくなった……');
+      temp.push('아래쪽이 커졌어……');
     }
     await child.say_and_wait([
       callname,
-      '……体の調子がちょっと変で……あの、',
+      '……몸 상태가 좀 이상해서…… 저기,',
       get_random_entry(temp),
     ]);
   },
 
-  // [번역 대상] talk_estrus
+  // [번역 완료] talk_estrus
   async talk_estrus(child, you, callname) {
-    child.say(['はぁ……はぁ……', callname, '……熱いよ……これが発情期……？']);
+    child.say(['하아……하아……', callname, '……더워…… 이게 발정기……?']);
     await era.printAndWait([
-      'そのあと、',
+      '그 후,',
       you.get_colored_name(),
-      ' は急いで ',
+      '은(는) 급히 ',
       child.get_colored_name(),
-      ' に発情抑制剤を買いに走った。',
+      '에게 발정 억제제를 사러 달려갔다.',
     ]);
   },
 };
