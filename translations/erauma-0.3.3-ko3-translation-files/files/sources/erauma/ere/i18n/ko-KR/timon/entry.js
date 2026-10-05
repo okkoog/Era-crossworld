@@ -695,7 +695,7 @@ module.exports = class extends JaTimon {
   ];
 
   // [번역 대상] get_npc_celebration
-  get_npc_celebration = (celebration) => `${celebration}を祝う`;
+  get_npc_celebration = (celebration) => `${celebration}을(를) 축하한다`;
 
   // [번역 대상] it_back_office
   it_back_office = '【引き返した】';
@@ -788,31 +788,31 @@ module.exports = class extends JaTimon {
   it_sell_fish_template = '【釣った魚を売り、%MONEY% ウマコインになった】';
 
   // [번역 대상] npc_accept_task
-  npc_accept_task = '依頼を受ける';
+  npc_accept_task = '의뢰를 받는다';
 
   // [번역 대상] npc_bye
-  npc_bye = 'さようなら';
+  npc_bye = '작별 인사';
 
   // [번역 대상] npc_out
-  npc_out = 'デート';
+  npc_out = '데이트';
 
   // [번역 대상] npc_recruit_in_school
-  npc_recruit_in_school = '「一緒に頑張ろう！」（募集）';
+  npc_recruit_in_school = '「같이 힘내자!」(모집)';
 
   // [번역 대상] npc_recruit_out_school
-  npc_recruit_out_school = '「力を貸してほしい！」（募集）';
+  npc_recruit_out_school = '「힘을 빌려줘!」(모집)';
 
   // [번역 대상] npc_retry_task
-  npc_retry_task = 'もう一度挑む';
+  npc_retry_task = '다시 도전한다';
 
   // [번역 대상] npc_select
-  npc_select = '誰と話す？';
+  npc_select = '누구와 이야기할까?';
 
   // [번역 대상] npc_sex
-  npc_sex = '求愛';
+  npc_sex = '구애';
 
   // [번역 대상] npc_talk
-  npc_talk = '雑談';
+  npc_talk = '잡담';
 
   // [번역 대상] rec_km_b
   rec_km_b = '監';
@@ -837,29 +837,29 @@ module.exports = class extends JaTimon {
 
   // [번역 대상] report_invincible_g1
   report_invincible_g1 = (uma) => [
-    '強い者は強い、強い者は強い！',
+    '강한 자는 강하다, 역시 강하다!',
     uma,
-    ' 無傷でG1を制した！',
+    '은(는) 상처 하나 없이 G1을 제패했다!',
   ];
 
   // [번역 대상] report_invincible_three_crowns
   report_invincible_three_crowns =
-    'これは無敗三冠！ ウマ娘史に消えない大記録が達成された！！！';
+    '이것이 무패 삼관! 우마무스메 역사에 지워지지 않을 대기록이 달성되었다!!!';
 
   // [번역 대상] report_tenn_sho
   report_tenn_sho = (uma) => [
-    'ここに、府中の秋の魔物は ',
+    '이로써 후추의 가을 마물은 ',
     uma,
-    ' に討たれた！',
+    '에게 토벌되었다!',
   ];
 
   // [번역 대상] report_tenn_spr
-  report_tenn_spr = '春の長距離の王が誕生した！';
+  report_tenn_spr = '봄 장거리의 왕이 탄생했다!';
 
   // [번역 대상] strange
-  strange = '疎遠';
+  strange = '소원함';
 
   // [번역 대상] strange_desc
   strange_desc = (debuff) =>
-    `まだお互いによく知らない……トレーニング効果-${debuff}%。関係を改善するか、担当トレーナーに相談すると、この状態は和らぐ。`;
+    `아직 서로를 잘 모른다…… 트레이닝 효과 -${debuff}%. 관계를 개선하거나 담당 트레이너와 상담하면 이 상태가 완화된다.`;
 };
