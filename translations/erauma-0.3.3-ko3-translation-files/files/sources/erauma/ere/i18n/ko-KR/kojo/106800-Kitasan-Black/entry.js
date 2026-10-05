@@ -20,8 +20,8 @@ module.exports = class extends (
     require("#/i18n/ko-KR/kojo/106800-Kitasan-Black/love-68.js"),
   );
 
-  // [번역 대상] report_arim_kin
+  // [번역 완료] report_arim_kin
   report_arim_kin = (kita) => [
-    { color: kita.color, content: 'これぞ！巨星の、幕引きだ！' },
+    { color: kita.color, content: '이것이 바로! 거성의 막이 내리는 순간이다!' },
   ];
 };

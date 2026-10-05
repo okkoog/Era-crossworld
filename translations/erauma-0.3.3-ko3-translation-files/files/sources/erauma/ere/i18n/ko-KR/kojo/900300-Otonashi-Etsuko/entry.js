@@ -9,12 +9,12 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: love
   love = require("#/i18n/ko-KR/kojo/900300-Otonashi-Etsuko/love-303.kojo");
 
-  // [번역 대상] npc_func
-  npc_func = '許可を増やす（募集）';
+  // [번역 완료] npc_func
+  npc_func = '모집 허가를 늘린다';
 
-  // [번역 대상] reporter
-  reporter = '専属記者';
+  // [번역 완료] reporter
+  reporter = '전속 기자';
 
-  // [번역 대상] reporter_desc
-  reporter_desc = (buff) => `名声取得+${buff}%、名声低下-${buff}%。`;
+  // [번역 완료] reporter_desc
+  reporter_desc = (buff) => `명성 획득+${buff}%, 명성 감소-${buff}%。`;
 };
