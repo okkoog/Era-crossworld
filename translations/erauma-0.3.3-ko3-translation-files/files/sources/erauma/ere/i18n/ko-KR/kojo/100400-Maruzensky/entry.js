@@ -20,6 +20,6 @@ module.exports = class extends (
     require("#/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js"),
   );
 
-  // [번역 대상] mygo
-  mygo = '迷い';
+  // [번역 완료] mygo
+  mygo = '망설임';
 };
