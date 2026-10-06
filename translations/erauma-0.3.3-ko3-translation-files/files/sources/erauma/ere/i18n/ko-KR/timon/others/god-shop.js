@@ -184,7 +184,7 @@ ko.pray_money_buff = async (you, finish_cb) => {
 };
 
 
-ko.pray_your_power = // [번역 대상] pray_your_power
+ko.pray_your_power = // [번역 완료] pray_your_power
   async (
   you,
   god,
@@ -196,11 +196,11 @@ ko.pray_your_power = // [번역 대상] pray_your_power
 ) => {
   print('（어떤 부분을 개선해야 할까?）');
   print('머릿속에 이런 의문이 떠올랐다...');
-  printButton('スピード（+80）', 0, { disabled: disabled_list[0] });
-  printButton('スタミナ（+80）', 1, { disabled: disabled_list[1] });
-  printButton('パワー（+80）', 2, { disabled: disabled_list[2] });
-  printButton('根性（+80）', 3, { disabled: disabled_list[3] });
-  printButton('賢さ（+80）', 4, { disabled: disabled_list[4] });
+  printButton('스피드（+80）', 0, { disabled: disabled_list[0] });
+  printButton('스태미나（+80）', 1, { disabled: disabled_list[1] });
+  printButton('파워（+80）', 2, { disabled: disabled_list[2] });
+  printButton('근성（+80）', 3, { disabled: disabled_list[3] });
+  printButton('지능（+80）', 4, { disabled: disabled_list[4] });
   printButton('아마 전부……（무작위 능력치+100）', 5);
   printButton('더 이상 강해질 필요는 없을지도……', 99);
   const ret = [await input(), 0];
@@ -290,7 +290,7 @@ ko.pray_your_power = // [번역 대상] pray_your_power
         ]);
     }
   } else {
-    await god.say_as_unknown_and_wait('これからも、頑張れ……');
+    await god.say_as_unknown_and_wait('앞으로도 힘내라……');
     await printAndWait('그런 목소리가 들리는 것 같다.');
     println();
     await finish_cb();
@@ -359,7 +359,7 @@ ko.pray_heal = async (chara, god, you, uma, chara_react, finish_cb) => {
   return ret;
 };
 
-ko.common_start_pray = // [번역 대상] common_start_pray
+ko.common_start_pray = // [번역 완료] common_start_pray
   (chara, you) => {
   if (chara.id > 0) {
     print([
@@ -371,7 +371,7 @@ ko.common_start_pray = // [번역 대상] common_start_pray
   } else {
     print([
       you.get_colored_name(),
-      ' はひとり、三女神像の前で静かに祈った……',
+      '은(는) 홀로 세 여신상 앞에서 조용히 기도했다……',
     ]);
   }
 };
@@ -424,19 +424,19 @@ ko.start_with_no_god = async (you, god) => {
 };
 
 
-ko.pray_over_limit = // [번역 대상] pray_over_limit
+ko.pray_over_limit = // [번역 완료] pray_over_limit
   async (chara, you, uma, limited, cost) => {
   print([
     '（',
     limited,
-    ' 項目もの能力が極まった ',
+    '개 항목의 능력이 한계에 도달한 ',
     chara.get_colored_name(),
-    ' に、さらに限界を求めるのか？）',
+    '에게 더 높은 한계를 요구할 것인가?）',
     { isBr: 1 },
-    '頭の中に、そんな問いが浮かぶ……',
+    '머릿속에 그런 질문이 떠올랐다……',
   ]);
-  printButton(`同意する（${cost} 名声、トレーニング補正-10%）`, 1);
-  printButton('もう少し、歩みを緩めてもいい', 2);
+  printButton(`동의한다（${cost} 명성, 트레이닝 보정-10%）`, 1);
+  printButton('조금은 속도를 늦춰도 괜찮다', 2);
   const ret = await input();
   if (ret === 1) {
     if (chara.id > 0) {
@@ -490,56 +490,56 @@ ko.pray_over_limit = // [번역 대상] pray_over_limit
     ]);
   } else {
     await printAndWait([
-      '自分と',
+      '자신과 ',
       uma,
-      'たちが過ごした数えきれない日々を思い出す……',
+      '들이 함께 보낸 셀 수 없는 나날을 떠올렸다……',
     ]);
-    await printAndWait('祈りを終え、ゆっくりと目を開けた。');
+    await printAndWait('기도를 마치고 천천히 눈을 떴다.');
   }
   return ret;
 };
 
 
-ko.pray_money = // [번역 대상] pray_money
+ko.pray_money = // [번역 완료] pray_money
   async (you, uma, finish_cb) => {
   print(
-    '（では、だいたいいくらくらい欲しい？）\n頭の中に、突然そんな問いが浮かぶ……',
+    '（그럼, 대략 얼마나 필요하지?）\n머릿속에 갑자기 그런 질문이 떠올랐다……',
   );
   const honour = get('flag:当前声望');
-  printButton('250 ウマコインでいい……（50 名声）', 1, {
+  printButton('250 우마코인이면 돼……（50 명성）', 1, {
     disabled: honour <= 50,
   });
-  printButton('500 ウマコインでいい……（100 名声）', 2, {
+  printButton('500 우마코인이면 돼……（100 명성）', 2, {
     disabled: honour <= 100,
   });
-  printButton('750 ウマコインでいい……（150 名声）', 3, {
+  printButton('750 우마코인이면 돼……（150 명성）', 3, {
     disabled: honour <= 150,
   });
-  printButton('1,000 ウマコインでいい……（200 名声）', 4, {
+  printButton('1,000 우마코인이면 돼……（200 명성）', 4, {
     disabled: honour <= 200,
   });
-  printButton('やめておく', 99);
+  printButton('그만둔다', 99);
   const ret = await input();
   switch (ret) {
     case 1:
     case 2:
       await printAndWait([
         you.get_colored_name(),
-        ' は、手にした金で',
+        '은(는) 손에 넣은 돈으로 ',
         uma,
-        'にトレーニング機材を買う光景を思い浮かべる……',
+        '에게 트레이닝 장비를 사 주는 모습을 떠올렸다……',
       ]);
       await finish_cb();
       println();
       await printAndWait([
-        'ほどなく、',
+        '얼마 지나지 않아 ',
         you.get_colored_name(),
-        ' は学園から連絡を受けた。指導の仕方が怪我につながりかねない、とのことだった。',
+        '은(는) 학원에서 연락을 받았다. 지도 방식이 부상으로 이어질 수 있다는 내용이었다.',
       ]);
       await printAndWait([
-        '続けて ',
+        '이어서 ',
         (250 * ret).toString(),
-        ' ウマコインが送られ、トレーニング方針を改めるよう求められた……',
+        ' 우마코인이 지급되었고, 트레이닝 방침을 개선하라는 요청을 받았다……',
       ]);
       break;
     case 3:
@@ -551,28 +551,28 @@ ko.pray_money = // [번역 대상] pray_money
       await finish_cb();
       println();
       await printAndWait([
-        'ほどなく、',
+        '얼마 지나지 않아 ',
         you.get_colored_name(),
-        ' は学園から特別手当として ',
+        '은(는) 학원에서 특별 수당으로 ',
         (250 * ret).toString(),
-        ' ウマコインを受け取った。',
+        ' 우마코인을 받았다.',
       ]);
       await printAndWait([
-        'ただし、トレセン学園のトレーナーとして、これ以上おかしな噂を立てないこと、が条件らしい……',
+        '단, 트레센 학원의 트레이너로서 더 이상 이상한 소문을 만들지 않는 것이 조건인 듯하다……',
       ]);
   }
   return ret;
 };
 
-ko.leave = // [번역 대상] leave
+ko.leave = // [번역 완료] leave
   async (chara, you, has_prayed) => {
   if (chara.id > 0) {
     if (has_prayed) {
       await printAndWait([
         chara.get_colored_name(),
-        ' と ',
+        '과(와) ',
         you.get_colored_name(),
-        ' は一緒に三女神像を離れた。',
+        '은(는) 함께 세 여신상을 떠났다.',
       ]);
     } else {
       await printAndWait([
@@ -586,13 +586,13 @@ ko.leave = // [번역 대상] leave
   } else if (has_prayed) {
     await printAndWait([
       you.get_colored_name(),
-      ' は振り返り、トレーナールームのほうへ向かった。',
+      '은(는) 돌아서서 트레이너실 쪽으로 향했다.',
     ]);
   } else {
     await printAndWait([
-      '三女神像に軽く礼拝してから、',
+      '세 여신상에 가볍게 예를 올린 뒤, ',
       you.get_colored_name(),
-      ' は振り返り、トレーナールームのほうへ向かった。',
+      '은(는) 돌아서서 트레이너실 쪽으로 향했다.',
     ]);
   }
 };
@@ -602,103 +602,103 @@ module.exports = ko;
 module.exports = {
   ...module.exports,
 
-  // [번역 대상] borrow_money
+  // [번역 완료] borrow_money
   async borrow_money(god, you) {
     const honour = get('flag:当前声望');
     if (honour < 50) {
-      return await printAndWait('名声が足りない');
+      return await printAndWait('명성이 부족하다');
     }
-    print('いくらのウマコインが欲しい？');
-    printButton('400 ウマコイン（50 名声）', 1);
-    printButton('800 ウマコイン（100 名声）', 2, { disabled: honour < 100 });
-    printButton('1200 ウマコイン（150 名声）', 2, { disabled: honour < 150 });
-    printButton('1600 ウマコイン（200 名声）', 2, { disabled: honour < 200 });
-    printButton('やめておく', 99);
+    print('우마코인이 얼마나 필요한가?');
+    printButton('400 우마코인（50 명성）', 1);
+    printButton('800 우마코인（100 명성）', 2, { disabled: honour < 100 });
+    printButton('1200 우마코인（150 명성）', 2, { disabled: honour < 150 });
+    printButton('1600 우마코인（200 명성）', 2, { disabled: honour < 200 });
+    printButton('그만둔다', 99);
     const ret = await input();
     if (ret === 99) {
       await printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         god.get_colored_name(),
-        ' へウマコインを祈るのを諦めた……',
+        '에게 우마코인을 바라는 기도를 포기했다……',
       ]);
     } else {
       await printAndWait([
         you.get_colored_name(),
-        ' はトレセンから追加手当 ',
+        '은(는) 트레센에서 추가 수당 ',
         { color: money_color, content: (400 * ret).toLocaleString() },
-        ' ウマコインの通知を受け取った……ただし、その文面には見下すようなニュアンスがあった……',
+        ' 우마코인 지급 통지를 받았다…… 다만 문면에는 어딘가 깔보는 듯한 뉘앙스가 묻어 있었다……',
       ]);
     }
     return ret;
   },
 
-  // [번역 대상] bt_pray
-  bt_pray: '女神に祈る',
+  // [번역 완료] bt_pray
+  bt_pray: '여신에게 기도한다',
 
-  // [번역 대상] get_target_entry_heal
-  get_target_entry_heal: (name, cost) => `${name}（${cost} 名声）`,
+  // [번역 완료] get_target_entry_heal
+  get_target_entry_heal: (name, cost) => `${name}（${cost} 명성）`,
 
-  // [번역 대상] get_target_entry_over_limit
+  // [번역 완료] get_target_entry_over_limit
   get_target_entry_over_limit: (name, cost) =>
-    `${name}（-${cost} 名声、トレーニング補正-10%）`,
+    `${name}（-${cost} 명성, 트레이닝 보정-10%）`,
 
-  // [번역 대상] handle_pray_end
+  // [번역 완료] handle_pray_end
   handle_pray_end(god, you, has_prayed) {
     if (has_prayed) {
       print([
         god.get_colored_name(),
-        ' は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' の願いを叶えた',
+        '의 소원을 이루어 주었다',
       ]);
     } else {
       print([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         god.get_colored_name(),
-        ' への祈りを諦めた……',
+        '에게 올리던 기도를 포기했다……',
       ]);
     }
   },
 
-  // [번역 대상] handle_pray_honour_buff
+  // [번역 완료] handle_pray_honour_buff
   async handle_pray_honour_buff() {
-    print('本当に？');
+    print('정말로?');
     printButton(
-      `確定（名声獲得+${get('global:声望加成')}%→${get('global:声望加成') + 1}%）`,
+      `확정（명성 획득+${get('global:声望加成')}%→${get('global:声望加成') + 1}%）`,
       1,
     );
-    printButton('やめておく', 2);
+    printButton('그만둔다', 2);
     return await input();
   },
 
-  // [번역 대상] handle_pray_money_buff
+  // [번역 완료] handle_pray_money_buff
   async handle_pray_money_buff() {
-    print('本当に？');
+    print('정말로?');
     printButton(
-      `確定（ウマコイン獲得+${get('global:金钱加成')}%→${get('global:金钱加成') + 1}%）`,
+      `확정（우마코인 획득+${get('global:金钱加成')}%→${get('global:金钱加成') + 1}%）`,
       1,
     );
-    printButton('やめておく', 2);
+    printButton('그만둔다', 2);
     return await input();
   },
 
-  // [번역 대상] handle_pray_over_limit
+  // [번역 완료] handle_pray_over_limit
   handle_pray_over_limit(chara) {
-    print([chara.get_colored_name(), ' は限界を超えたようだ']);
+    print([chara.get_colored_name(), '은(는) 한계를 넘어선 듯하다']);
   },
 
-  // [번역 대상] handle_pray_your_power
+  // [번역 완료] handle_pray_your_power
   async handle_pray_your_power(disabled_list, random_select) {
-    print('どの能力が欲しい？');
-    printButton('スピード（+80）', 0, { disabled: disabled_list[0] });
-    printButton('スタミナ（+80）', 1, { disabled: disabled_list[1] });
-    printButton('パワー（+80）', 2, { disabled: disabled_list[2] });
-    printButton('根性（+80）', 3, { disabled: disabled_list[3] });
-    printButton('賢さ（+80）', 4, { disabled: disabled_list[4] });
-    printButton('どれでもいい！（ランダム能力+100）', 5);
-    printButton('やめておく', 99);
+    print('어떤 능력이 필요한가?');
+    printButton('스피드（+80）', 0, { disabled: disabled_list[0] });
+    printButton('스태미나（+80）', 1, { disabled: disabled_list[1] });
+    printButton('파워（+80）', 2, { disabled: disabled_list[2] });
+    printButton('근성（+80）', 3, { disabled: disabled_list[3] });
+    printButton('지능（+80）', 4, { disabled: disabled_list[4] });
+    printButton('아무거나 괜찮아!（무작위 능력치+100）', 5);
+    printButton('그만둔다', 99);
     const ret = [await input(), 0];
     ret[1] = ret[0];
     if (ret[0] === 5) {
@@ -707,25 +707,25 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] no_targets
-  no_targets: '条件を満たす対象がいない',
+  // [번역 완료] no_targets
+  no_targets: '조건을 만족하는 대상이 없다',
 
-  // [번역 대상] pray_heal_no_need
+  // [번역 완료] pray_heal_no_need
   async pray_heal_no_need(chara, you, finish_cb) {
     await printAndWait([
-      '女神さまが、これからも ',
+      '여신님께서 앞으로도 ',
       chara.get_colored_name(),
-      ' の健康を守ってくださるよう祈る……',
+      '의 건강을 지켜 주시길 기도한다……',
     ]);
     println();
     await finish_cb();
     println();
-    await printAndWait('三女神像は、いまも静かに立っている……');
+    await printAndWait('세 여신상은 지금도 조용히 서 있다……');
   },
 
-  // [번역 대상] pray_select
-  pray_select: '何を祈る？',
+  // [번역 완료] pray_select
+  pray_select: '무엇을 기도할까?',
 
-  // [번역 대상] select_target
-  select_target: '対象を選んでください',
+  // [번역 완료] select_target
+  select_target: '대상을 선택해 주세요',
 };
