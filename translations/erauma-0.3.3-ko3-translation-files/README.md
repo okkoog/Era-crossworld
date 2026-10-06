@@ -1,5 +1,20 @@
 # EraUma 0.3.3-ko3 최종 한국어 override 작업 파일
 
+## 작업 인수인계 / 현재 진행 상태
+
+- 마지막 갱신: 2026-10-07
+- 작업 단위: **앞으로 3파일씩**
+- 진행 판단 기준: `coverage.json` / `manifest.json`의 숫자보다 **실제 파일에 남아 있는 `[번역 대상]` 마커를 우선 확인**한다.
+- 마지막 완료 배치:
+  1. `files/sources/erauma/ere/i18n/ko-KR/race/races.js` — commit `d610b387`
+  2. `files/sources/erauma/ere/i18n/ko-KR/chara/titles.js` — commit `7ffc87dd`
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/104400-Sweep-Tosho/rec-44.kojo` — commit `be7fe8b8`
+  4. `files/sources/erauma/ere/i18n/ko-KR/kojo/110000-Wonder-Acute/rec-100.js` — commit `817cc2f3`
+  5. `files/sources/erauma/ere/i18n/ko-KR/kojo/105000-Narita-Taishin/rec-50.kojo` — commit `cf21532d`
+- 위 5파일은 재검사 시 `[번역 대상]` **0개** 확인 완료.
+- 다음 작업: 실제 파일을 다시 확인해 아직 `[번역 대상]`이 남아 있는 파일 중 **다음 3파일**을 선택해 번역한다.
+- 매 배치 종료 시 이 섹션의 **마지막 완료 배치 / 다음 작업 지점**을 반드시 갱신한다.
+
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
 
 ## 번역 방법
