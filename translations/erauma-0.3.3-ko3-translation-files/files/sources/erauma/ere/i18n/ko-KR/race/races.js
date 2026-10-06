@@ -236,135 +236,135 @@ module.exports = class extends I18nRaces {
   180 = 'BC 클래식';
   181 = '스위트피 스테이크스';
 
-  // [번역 대상] c_america
-  c_america = '美';
+  // [번역 완료] c_america
+  c_america = '미';
 
-  // [번역 대상] c_arab
-  c_arab = '阿';
+  // [번역 완료] c_arab
+  c_arab = '아';
 
-  // [번역 대상] c_china
-  c_china = '中';
+  // [번역 완료] c_china
+  c_china = '중';
 
-  // [번역 대상] c_france
-  c_france = '法';
+  // [번역 완료] c_france
+  c_france = '불';
 
-  // [번역 대상] d_atamasa
-  d_atamasa = '头差';
+  // [번역 완료] d_atamasa
+  d_atamasa = '머리 차';
 
-  // [번역 대상] d_bashin_template
-  d_bashin_template = '%DIS% 马身';
+  // [번역 완료] d_bashin_template
+  d_bashin_template = '%DIS%마신';
 
-  // [번역 대상] d_day
-  d_day = '昼';
+  // [번역 완료] d_day
+  d_day = '낮';
 
-  // [번역 대상] d_hanasa
-  d_hanasa = '鼻差';
+  // [번역 완료] d_hanasa
+  d_hanasa = '코 차';
 
-  // [번역 대상] d_kubisa
-  d_kubisa = '颈差';
+  // [번역 완료] d_kubisa
+  d_kubisa = '목 차';
 
-  // [번역 대상] d_night
-  d_night = '夜';
+  // [번역 완료] d_night
+  d_night = '밤';
 
-  // [번역 대상] d_oosa
-  d_oosa = '大差';
+  // [번역 완료] d_oosa
+  d_oosa = '대차';
 
-  // [번역 대상] first_contestant
-  first_contestant = '头马';
+  // [번역 완료] first_contestant
+  first_contestant = '선두마';
 
-  // [번역 대상] m_bad
-  m_bad = '不良';
+  // [번역 완료] m_bad
+  m_bad = '불량';
 
-  // [번역 대상] m_heavy
-  m_heavy = '重';
+  // [번역 완료] m_heavy
+  m_heavy = '중';
 
-  // [번역 대상] m_semi
-  m_semi = '稍重';
+  // [번역 완료] m_semi
+  m_semi = '다소 무거움';
 
-  // [번역 대상] m_well
-  m_well = '良';
+  // [번역 완료] m_well
+  m_well = '양호';
 
-  // [번역 대상] no_result
-  no_result = '未出走';
+  // [번역 완료] no_result
+  no_result = '미출주';
 
-  // [번역 대상] no_win
-  no_win = '未胜利';
+  // [번역 완료] no_win
+  no_win = '미승리';
 
-  // [번역 대상] r_bad_start
-  r_bad_start = '出迟！';
+  // [번역 완료] r_bad_start
+  r_bad_start = '출발 지연!';
 
-  // [번역 대상] r_start
-  r_start = '出闸！';
+  // [번역 완료] r_start
+  r_start = '출발!';
 
-  // [번역 대상] result_template
-  result_template = '%RANK%着';
+  // [번역 완료] result_template
+  result_template = '%RANK%착';
 
-  // [번역 대상] s_a_nige
-  s_a_nige = '逃';
+  // [번역 완료] s_a_nige
+  s_a_nige = '도';
 
-  // [번역 대상] s_a_okimi
-  s_a_okimi = '追';
+  // [번역 완료] s_a_okimi
+  s_a_okimi = '추';
 
-  // [번역 대상] s_a_sashi
-  s_a_sashi = '差';
+  // [번역 완료] s_a_sashi
+  s_a_sashi = '차';
 
-  // [번역 대상] s_a_senko
-  s_a_senko = '先';
+  // [번역 완료] s_a_senko
+  s_a_senko = '선';
 
-  // [번역 대상] s_blocked
-  s_blocked = '阻挡！';
+  // [번역 완료] s_blocked
+  s_blocked = '막힘!';
 
-  // [번역 대상] s_temptation
-  s_temptation = '焦躁！';
+  // [번역 완료] s_temptation
+  s_temptation = '초조!';
 
-  // [번역 대상] sim
-  sim = '模拟赛';
+  // [번역 완료] sim
+  sim = '모의전';
 
-  // [번역 대상] slope_down
-  slope_down = '下坡';
+  // [번역 완료] slope_down
+  slope_down = '내리막';
 
-  // [번역 대상] slope_up
-  slope_up = '上坡';
+  // [번역 완료] slope_up
+  slope_up = '오르막';
 
-  // [번역 대상] summary_tip_template
-  summary_tip_template = '%RACE% 战 %WIN% 胜';
+  // [번역 완료] summary_tip_template
+  summary_tip_template = '%RACE%전 %WIN%승';
 
-  // [번역 대상] t_baltimore
-  t_baltimore = '宾利高';
+  // [번역 완료] t_baltimore
+  t_baltimore = '볼티모어';
 
-  // [번역 대상] t_bashang
-  t_bashang = '从化';
+  // [번역 완료] t_bashang
+  t_bashang = '충화';
 
-  // [번역 대상] t_chantilly
-  t_chantilly = '尚蒂伊';
+  // [번역 완료] t_chantilly
+  t_chantilly = '샹티이';
 
-  // [번역 대상] t_kentucky
-  t_kentucky = '丘吉尔园';
+  // [번역 완료] t_kentucky
+  t_kentucky = '처칠 다운스';
 
-  // [번역 대상] t_meydan
-  t_meydan = '迈丹';
+  // [번역 완료] t_meydan
+  t_meydan = '메이단';
 
-  // [번역 대상] t_new_york
-  t_new_york = '贝蒙园';
+  // [번역 완료] t_new_york
+  t_new_york = '벨몬트 파크';
 
-  // [번역 대상] t_playground
-  t_playground = '训练场';
+  // [번역 완료] t_playground
+  t_playground = '트레이닝장';
 
-  // [번역 대상] t_shatin
-  t_shatin = '沙田';
+  // [번역 완료] t_shatin
+  t_shatin = '샤틴';
 
-  // [번역 대상] t_st_cloud
-  t_st_cloud = '圣克劳德';
+  // [번역 완료] t_st_cloud
+  t_st_cloud = '생클루';
 
-  // [번역 대상] w_cloudy
-  w_cloudy = '阴';
+  // [번역 완료] w_cloudy
+  w_cloudy = '흐림';
 
-  // [번역 대상] w_rain
-  w_rain = '雨';
+  // [번역 완료] w_rain
+  w_rain = '비';
 
-  // [번역 대상] w_snow
-  w_snow = '雪';
+  // [번역 완료] w_snow
+  w_snow = '눈';
 
-  // [번역 대상] w_sunny
-  w_sunny = '晴';
+  // [번역 완료] w_sunny
+  w_sunny = '맑음';
 };
