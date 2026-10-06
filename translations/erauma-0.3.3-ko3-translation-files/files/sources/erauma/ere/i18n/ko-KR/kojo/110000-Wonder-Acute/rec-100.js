@@ -4,186 +4,186 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/110000-Wonder-Acute/rec-100"),
 
-  // [번역 대상] rec_rooftop
+  // [번역 완료] rec_rooftop
   async rec_rooftop(acute, taste, minoru, you) {
     await era.printAndWait(
-      '黄昏の屋上で、すべてをしばらく忘れさせてくれる煙草に、つい手が伸びる。',
+      '황혼의 옥상에서, 모든 걸 잠시 잊게 해 줄 담배에 무심코 손이 간다.',
     );
-    await era.printAndWait('ポケットを探る。');
-    await era.printAndWait('——何もない。');
+    await era.printAndWait('주머니를 뒤진다.');
+    await era.printAndWait('——아무것도 없다.');
     era.drawLine();
     await era.printAndWait(
-      '黄昏の夕陽の下、一機の飛行機が空の果てを進み、オレンジ色の直線を残していく。',
+      '황혼의 노을 아래, 비행기 한 대가 하늘 끝을 향해 날아가며 주황빛 직선을 남긴다.',
     );
     await era.printAndWait(
-      '欄干に凭れて空を見る。これほど自由だったことも、これほど息苦しかったこともない。',
+      '난간에 기대어 하늘을 바라본다. 이렇게 자유로웠던 적도, 이렇게 숨 막혔던 적도 없었다.',
     );
     await era.printAndWait([
-      'かつて百二十一億という途方もない借金を背負ったとき、',
+      '예전에 121억이라는 터무니없는 빚을 떠안았을 때, ',
       taste.get_colored_name(),
-      ' が ',
+      '이(가) ',
       you.get_colored_name(),
-      ' を引き受け、トレーナーとして返済地獄を潜り抜け、その穴を埋めさせてくれた。',
+      '을(를) 맡아 주었고, 트레이너로서 빚 갚기의 지옥을 헤쳐 나가며 그 구멍을 메우게 해 주었다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は思う。今でも、',
+      '은(는) 생각한다. 지금도 ',
       taste.get_colored_name(),
-      ' は ',
+      '은(는) ',
       you.get_colored_name(),
-      ' を信じてくれているのかもしれない、と。',
+      '을(를) 믿고 있을지도 모른다고.',
     ]);
     await era.printAndWait([
       taste.get_colored_name(),
-      ' だけでなく、',
+      '뿐만 아니라 ',
       minoru.get_colored_name(),
-      '、そして他の担当',
+      ', 그리고 다른 담당 ',
       acute.uma_sex_title,
-      'たちも……',
+      '들도…… ',
       you.get_colored_name(),
-      ' は思う。',
+      '은(는) 생각한다. ',
       acute.couple_title,
-      'はまだ ',
+      '은(는) 아직 ',
       you.get_colored_name(),
-      ' に期待している、と。',
+      '에게 기대를 걸고 있다고.',
     ]);
-    await era.printAndWait('だが、その期待は重荷でもあるのではないか。');
+    await era.printAndWait('하지만 그 기대가 오히려 짐이 되어 버린 것은 아닐까.');
     await era.printAndWait([
-      '突き詰めれば、',
+      '따지고 보면 ',
       you.get_colored_name(),
-      ' もただの【凡人】にすぎない。',
+      '도 그저 【범인】일 뿐이다.',
     ]);
     await era.printAndWait(
-      '何もかもを完璧にはこなせない。これほどの厚望を受ける器ではない。世間で必死に足掻き、できれば後ろへ逃げだしたいとすら思う、ごく普通の【凡人】なのではなかったか。',
+      '모든 일을 완벽하게 해낼 수는 없다. 이렇게 큰 기대를 받아낼 그릇도 아니다. 세상 속에서 필사적으로 발버둥 치면서, 가능하다면 뒤로 도망치고 싶다고까지 생각하는 평범한 【범인】이 아니었던가.',
     );
     await you.say_and_wait('……………………');
     await you.say_and_wait('…………');
     await you.say_and_wait('……');
-    await you.say_and_wait('逃げたい……な。', true);
-    era.printButton('「はぁ……（溜息）」', 1);
+    await you.say_and_wait('도망치고 싶네……', true);
+    era.printButton('「하아……(한숨)」', 1);
     await era.input();
     await acute.say_as_unknown_and_wait(
-      'あらあら……溜息ばかりついていると、福が逃げてしまいますよ？',
+      '어머어머…… 한숨만 계속 쉬면 복이 달아난답니다?',
     );
     await era.printAndWait([
-      'そのとき、',
+      '그때 ',
       you.get_colored_name(),
-      'の前に現れたのは、夕陽と同じ色に輝く',
+      '의 앞에 나타난 것은 노을과 같은 빛깔로 빛나는 ',
       acute.uma_sex_title,
-      'だった。',
+      '였다.',
     ]);
     await era.printAndWait([
-      'トレセン学園の屋上、落日の余暉の中。',
+      '트레센 학원의 옥상, 저무는 해의 잔광 속에서. ',
       you.get_colored_name(),
-      ' は声のした方へそっと振り返る。終始穏やかに微笑む',
+      '은(는) 목소리가 들린 쪽으로 조용히 고개를 돌렸다. 줄곧 온화하게 미소 짓는 ',
       acute.uma_sex_title,
-      'が、',
+      '이(가) ',
       you.get_colored_name(),
-      ' の眼前に浮かんだ。',
+      '의 눈앞에 모습을 드러냈다.',
     ]);
     await era.printAndWait(
-      `${acute.sex}の身には、漫画にしか出てきそうな特別な輝きはない。それでも${acute.sex}の姿は、忘れがたい。`,
+      `${acute.sex}의 몸에는 만화에서나 볼 법한 특별한 빛 같은 것은 없다. 그래도 ${acute.sex}의 모습은 이상할 만큼 잊기 어렵다.`,
     );
     await era.printAndWait(
-      `なぜなら${acute.sex}は——この落日に、あまりにも馴染んでいたから。`,
+      `왜냐하면 ${acute.sex}은(는)——이 저녁놀에 너무나도 자연스럽게 녹아들어 있었으니까.`,
     );
     await acute.say_as_unknown_and_wait(
-      'あらあら……そんな、困った顔をしないでくださいね。',
+      '어머어머…… 그렇게 곤란한 표정 짓지 마세요.',
     );
     await acute.say_as_unknown_and_wait(
-      'わたしの名前はワンダーアキュート……ええ——はじめまして、ですよね？',
+      '제 이름은 원더 어큐트…… 네——처음 뵙는 거 맞지요?',
     );
     await acute.say_and_wait(
-      'ごめんなさいね、いきなり声をかけて、驚かせてしまいましたか？ 泣き出しそうな顔をされていたので、つい心配になって。',
+      '미안해요, 갑자기 말을 걸어서 놀라게 했나요? 금방이라도 울 것 같은 얼굴을 하고 계셔서, 저도 모르게 걱정이 돼서요.',
     );
     await acute.say_and_wait(
-      '学園の悪い子にいじめられたのですか？ それとも職場でのいじめ？ あるいは、ただお腹が空いただけ、でしょうか？',
+      '학원의 나쁜 아이한테 괴롭힘이라도 당했나요? 아니면 직장 내 괴롭힘? 그것도 아니면, 그냥 배가 고픈 걸까요?',
     );
     await acute.say_and_wait(
-      'お腹が空いているなら……ほら、たくあんですよ～ 遠慮せず、手づかみでどうぞ～',
+      '배가 고프다면…… 자, 단무지랍니다～ 사양하지 말고 손으로 집어 드세요～',
     );
     await era.printAndWait(
-      `終始穏やかに微笑み、夕陽と同塵する${acute.sex}は、後ろからたくあんを盛ったガラス皿を取り出した。`,
+      `줄곧 온화하게 웃으며 노을과 하나가 된 듯한 ${acute.sex}은(는) 뒤에서 단무지를 담은 유리 접시를 꺼냈다.`,
     );
     await era.printAndWait(
-      '愛想でも、取り入りでも、もちろん日常のファン対応でもない——',
+      '붙임성도, 아부도, 물론 평소의 팬 서비스도 아니다——',
     );
     await era.printAndWait([
-      'ちょうどよい、近づきすぎず離れすぎない距離。',
+      '딱 알맞게, 너무 가깝지도 멀지도 않은 거리. ',
       acute.sex,
-      'はガラス皿を載せた手を伸ばし、たくあんを ',
+      '은(는) 유리 접시를 받친 손을 뻗어 단무지를 ',
       you.get_colored_name(),
-      ' の前へ差し出した。',
+      '의 앞에 내밀었다.',
     ]);
-    await era.printAndWait(`気がつけば、${you.name} も右手を伸ばしていた。`);
-    await era.printAndWait('ポリ、ポリ、ポリ、ポリ——');
-    await era.printAndWait('少し苦くて、それでも意外なほど歯応えのいい味。');
-    await era.printAndWait('お腹は空いていなかったのに……なぜか——');
-    await era.printAndWait('止まらない、そんな気がした。');
+    await era.printAndWait(`정신을 차려 보니 ${you.name}도 오른손을 뻗고 있었다.`);
+    await era.printAndWait('오독, 오독, 오독, 오독——');
+    await era.printAndWait('조금 쌉싸래하면서도 의외로 씹는 맛이 좋은 맛.');
+    await era.printAndWait('배가 고픈 것도 아니었는데…… 어째서인지——');
+    await era.printAndWait('멈출 수 없을 것만 같았다.');
     await era.printAndWait(
-      '最初は指先で、一番上の、いちばん乾いた一片の端を摘み、口元へ運び、歯で噛む。',
+      '처음에는 손끝으로 맨 위의, 가장 말라 있는 한 조각 끝을 집어 입으로 가져가 이로 베어 물었다.',
     );
     await era.printAndWait(
-      '次は指先で一片の真ん中を挟み、そのまま口へ放り込んで噛む。',
+      '다음에는 손끝으로 한 조각의 가운데를 집어 그대로 입에 던져 넣고 씹었다.',
     );
-    await era.printAndWait('最後は、何枚もまとめて掴み、一気に口へ運ぶ。');
-    await era.printAndWait('食べるほどに、渇きが増す。');
-    await era.printAndWait('渇くほどに、なぜか涼やかになる。');
+    await era.printAndWait('마지막에는 여러 장을 한꺼번에 집어 단숨에 입에 넣었다.');
+    await era.printAndWait('먹을수록 갈증이 더해진다.');
+    await era.printAndWait('갈증이 심해질수록 이상하게도 속은 시원해진다.');
     await era.printAndWait([
-      'ガラス皿のたくあんは、あっという間に ',
+      '유리 접시에 있던 단무지는 순식간에 ',
       you.get_colored_name(),
-      ' の腹へ収まった。',
+      '의 배 속으로 사라졌다.',
     ]);
-    await acute.say_and_wait('あらあら……豪快な食べ方ですね～');
-    await era.printAndWait('終始穏やかで静かな顔に、笑みがひとつ増えた。');
-    await acute.say_and_wait('どうでした、おいしかったですか？');
-    era.printButton('「……あ、うん。」', 1);
+    await acute.say_and_wait('어머어머…… 참 호쾌하게 드시네요～');
+    await era.printAndWait('늘 온화하고 차분하던 얼굴에 미소가 하나 더 번졌다.');
+    await acute.say_and_wait('어땠나요, 맛있었어요?');
+    era.printButton('「……아, 응.」', 1);
     await era.input();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は黙って頷き、箱ごとたいらげたことへの詫びを、胸の奥へ飲み込んだ。',
+      '은(는) 말없이 고개를 끄덕이며, 한 접시를 통째로 먹어 치운 것에 대한 사과를 가슴속으로 삼켰다.',
     ]);
     await acute.say_and_wait(
-      'おいしいなら、よかったです～ それでは、座りましょう。',
+      '맛있었다면 다행이에요～ 그럼, 앉도록 해요.',
     );
     await era.printAndWait([
       acute.get_colored_name(),
-      ' という名の',
+      '이라는 이름의 ',
       acute.teen_sex_title,
-      'は、屋上の壁に凭れ、夕陽を受けて腰を下ろした。',
+      '은(는) 옥상 벽에 기대어 노을을 받으며 자리에 앉았다.',
     ]);
     await era.printAndWait(
-      `${acute.sex}は座りながら、傍らの空き地を軽く叩く。`,
+      `${acute.sex}은(는) 앉은 채로 옆의 빈자리를 가볍게 두드린다.`,
     );
     await acute.say_and_wait(
-      '困ったときは、ひとりでいるのはよくありませんよ～',
+      '힘들 때 혼자 있는 건 좋지 않답니다～',
     );
     await acute.say_and_wait(
-      '時間はまだたくさんありますから。何かあれば、ゆっくり話してくださいね～',
+      '시간은 아직 많으니까요. 무슨 일이 있으면 천천히 이야기해 주세요～',
     );
     era.drawLine();
-    await era.printAndWait('あの日、日が沈む前。');
+    await era.printAndWait('그날, 해가 지기 전.');
     await era.printAndWait([
       you.get_colored_name(),
-      ' は、夕陽と同じ色に輝く',
+      '은(는) 노을과 같은 색으로 빛나는 ',
       acute.teen_sex_title,
-      '——のちに ',
+      '——훗날 ',
       you.get_colored_name(),
-      ' の担当となる',
+      '의 담당이 될 ',
       acute.teen_sex_title,
-      '、',
+      ', ',
       acute.get_colored_name(),
-      '。',
+      '와(과).',
     ]);
-    await era.printAndWait('たくさん、たくさんの話をした——');
+    await era.printAndWait('많이, 정말 많은 이야기를 나누었다——');
     era.println();
     await era.printAndWait([
       acute.get_colored_name(),
-      ' のトレーナーになった！',
+      '의 트레이너가 되었다!',
     ]);
   },
 
-  // [번역 대상] rec_start
+  // [번역 완료] rec_start
   async rec_start(
     acute,
     you,
@@ -202,112 +202,112 @@ module.exports = {
     },
   ) {
     await you.say_and_wait(
-      '……うちの門前に木が二本ある。一本は棗の木で、もう一本も棗の木だ。',
+      '……우리 집 문 앞에는 나무가 두 그루 있다. 한 그루는 대추나무고, 다른 한 그루도 대추나무다.',
       true,
     );
     await you.say_and_wait(
-      '悪い。この名言を引いたのは、文人の言葉で気どりたかったわけじゃない。',
+      '미안. 이 명문을 인용한 건 문인의 말을 빌려 폼을 잡고 싶어서가 아니다.',
       true,
     );
     await you.say_and_wait(
-      'ただ、何か言いたかっただけだ……あるいは、本当に言うことがなかっただけかもしれない。',
+      '그냥 뭔가 말하고 싶었을 뿐이다…… 아니면 정말 할 말이 없었던 걸지도 모르겠다.',
       true,
     );
     await you.say_and_wait(
-      '仕事の疲れが、トレーナーとしての自信を押し潰したのか？',
+      '일의 피로가 트레이너로서의 자신감을 짓눌러 버린 걸까?',
       true,
     );
     await you.say_and_wait(
-      '立て続けのレースが、重すぎる圧力になったのか？',
+      '연달아 이어지는 레이스가 너무 무거운 압박이 된 걸까?',
       true,
     );
     await you.say_and_wait(
       [
-        'それとも、真心を傾けた',
+        '아니면 진심을 쏟아부은 ',
         acute.uma_sex_title,
-        'に、トレーナーとしてどこまで距離を取るべきか決めきれず、結局お互いを傷つけてしまったのか？',
+        '에게 트레이너로서 어디까지 거리를 둬야 할지 정하지 못해, 결국 서로에게 상처를 주고 만 걸까?',
       ],
       true,
     );
     await you.say_and_wait(
-      '全部そうかもしれない……どれでもないかもしれない。',
+      '전부 맞을지도 모른다…… 아니면 어느 것도 아닐지도 모른다.',
       true,
     );
     era.drawLine();
     if (nn) {
       await nn.ct.used_to_say_and_wait(
-        'はいはい、普通の人間なんだから、疲れるのも当然でしょ。',
+        '그래그래, 평범한 인간이니까 지치는 것도 당연하잖아.',
       );
     }
     if (tannhauser) {
       await tannhauser.ct.used_to_say_and_wait([
-        '大丈夫だよ、',
+        '괜찮아, ',
         tannhauser.cl,
-        '～元気出して～',
+        '～ 기운 내～',
       ]);
     }
     if (mcqueen) {
       await mcqueen.ct.used_to_say_and_wait([
-        'まあ……とにかく、一緒に紅茶でもいかがかしら、',
+        '뭐…… 일단 같이 홍차라도 한잔하시겠어요, ',
         mcqueen.cl,
-        '？',
+        '?',
       ]);
     }
     if (gs) {
       await gs.ct.used_to_say_and_wait([
-        'おっ、',
+        '오, ',
         gs.cl,
-        '～ラーメン一丁、どうだァ？',
+        '～ 라멘 한 그릇 어때애?',
       ]);
     }
     if (ardan) {
       await ardan.ct.used_to_say_and_wait([
-        '大丈夫ですわ、',
+        '괜찮답니다, ',
         ardan.cl,
-        '！ 目白家の財力があれば——',
+        '! 메지로 가문의 재력만 있다면——',
       ]);
     }
     if (halo) {
       await halo.ct.used_to_say_and_wait([
-        'おーっほっほっほ！ 凡人の目など気になさるな。いついかなる時も、あなたの才能と姿は、この ',
+        '오―홋홋홋홋! 범인들의 시선 따위 신경 쓰지 마세요. 언제 어디서든 당신의 재능과 모습은 이 ',
         halo.ct.name,
-        ' が認めて差し上げますわ！',
+        '이(가) 인정해 드리겠어요!',
       ]);
     }
     if (oguri) {
-      await oguri.ct.used_to_say_and_wait(['……', oguri.cl, '、お腹空いた。']);
+      await oguri.ct.used_to_say_and_wait(['……', oguri.cl, ', 배고프다.']);
     }
     if (tama) {
       await tama.ct.used_to_say_and_wait([
-        'ほら、',
+        '자, ',
         tama.cl,
-        '。これお好み焼きや。お前と ',
+        '. 이거 오코노미야키다. 니랑 ',
         tama.cl,
-        ' の分、作ったんや。食べたら元気出るで。',
+        ' 몫까지 만들어 왔다. 먹고 기운 내라.',
       ]);
     }
     if (grass) {
       await grass.ct.used_to_say_and_wait([
-        'ふふっ～かわいいわね、',
+        '후훗～ 귀엽네요, ',
         grass.cl,
         '～',
       ]);
     }
     if (tachyon) {
       await tachyon.ct.used_to_say_and_wait([
-        'おや、',
+        '이런, ',
         tachyon.cl,
-        '！ そんなに気になるなら、すべてを忘れられる薬を試してみるかい？ タダだよ～',
+        '! 그렇게 신경 쓰인다면 모든 걸 잊게 해 주는 약을 시험해 보겠나? 공짜라고～',
       ]);
     }
     if (coffee) {
       await coffee.ct.used_to_say_and_wait([
-        '……このまま続けていると、',
+        '……이대로 계속하면, ',
         coffee.cl,
-        '……殺されるわよ？',
+        '……죽을지도 몰라요?',
       ]);
     }
     era.drawLine();
-    await era.printAndWait('屋上で、一本吸うか……');
+    await era.printAndWait('옥상에서 한 대 피울까……');
   },
 };
