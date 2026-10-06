@@ -1,4 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+// 번역 작업용 전체 원본 파일. [번역 완료]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
 // 원본 경로: sources/erauma/ere/event/edu/edu-factory.js
 // 대상 함수/속성: $statement:49
 const CustomizedEdu = require('#/event/edu/edu-common');
@@ -59,7 +59,7 @@ cons_dict[400] = require('#/event/edu/edu-400');
 // GENERATED END
 
 console.log(
-  '角色育成口上注册完毕!',
+  '캐릭터 육성 대사 등록 완료!',
   (new Date().getTime() - current).toLocaleString(),
   'ms',
 );

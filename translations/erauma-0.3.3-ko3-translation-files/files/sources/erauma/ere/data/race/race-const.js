@@ -1,4 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+// 번역 작업용 전체 원본 파일. [번역 완료]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
 // 원본 경로: sources/erauma/ere/data/race/race-const.js
 // 대상 함수/속성: $statement:189
 const { bonus_params, id2bonus } = require('#/data/race/race-attr-bonus');
@@ -575,7 +575,7 @@ race_infos.forEach((e) => {
 race_infos[race_enum.begin_race] = require('#/data/race/race-begin-race');
 
 console.log(
-  '比赛信息注册完毕!',
+  '레이스 정보 등록 완료!',
   (new Date().getTime() - current).toLocaleString(),
   'ms',
 );
