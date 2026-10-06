@@ -159,333 +159,333 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] bt_fund
-  bt_fund: '投資（1,000 ウマコイン単位）',
+  // [번역 완료] bt_fund
+  bt_fund: '투자（1,000 우마코인 단위）',
 
-  // [번역 대상] bt_ransom
-  bt_ransom: '換金',
+  // [번역 완료] bt_ransom
+  bt_ransom: '환금',
 
-  // [번역 대상] fund_confirm
-  fund_confirm: 'いくら投資する？',
+  // [번역 완료] fund_confirm
+  fund_confirm: '얼마나 투자할까?',
 
-  // [번역 대상] fund_reject
+  // [번역 완료] fund_reject
   async fund_reject(bryne, callname) {
     await bryne.say_and_wait([
-      '悪いけど、',
+      '미안하지만, ',
       callname,
-      '、資金が足りないんじゃない？ うちの経路には 1,000 ウマコイン未満の小口投資を受ける機関はないよ……',
+      ', 자금이 부족한 것 같은데? 우리 쪽에는 1,000 우마코인 미만의 소액 투자를 받아 주는 기관이 없어……',
     ]);
   },
 
-  // [번역 대상] fund_result
+  // [번역 완료] fund_result
   async fund_result(bryne, new_funds, income) {
     await printAndWait([
       bryne.get_colored_name(),
-      ' へ ',
+      '에게 ',
       new_funds,
-      ' ウマコインを追加し、毎週の収益は合計 ',
+      ' 우마코인을 추가로 투자해, 매주 수익은 합계 ',
       income,
-      ' ウマコインになった。',
+      ' 우마코인이 되었다.',
     ]);
   },
 
-  // [번역 대상] fund_summary
+  // [번역 완료] fund_summary
   fund_summary(bryne, funds, income) {
     print([
-      'いま ',
+      '현재 ',
       bryne.get_colored_name(),
-      ' へ ',
+      '에게 ',
       funds,
-      ' ウマコインを預けており、毎週 ',
+      ' 우마코인을 맡겨 두었고, 매주 ',
       income,
-      ' ウマコインの収益がある。',
+      ' 우마코인의 수익이 있다.',
     ]);
   },
 
-  // [번역 대상] get_ransom_confirm
+  // [번역 완료] get_ransom_confirm
   get_ransom_confirm(funds) {
-    return ['いくら換金する？ 投資済みは ', funds, ' ウマコイン：'];
+    return ['얼마나 환금할까? 투자액은 ', funds, ' 우마코인:'];
   },
 
-  // [번역 대상] get_sc_buttons
+  // [번역 완료] get_sc_buttons
   get_sc_buttons: () =>
     get('flag:初见重复育成') === 1
       ? {
-          yes: '「そのために来た」',
-          no: '「……もう十分だ」',
+          yes: '「그걸 위해 왔다」',
+          no: '「……이제 충분해」',
         }
       : {
-          yes: '先へ進む',
-          no: 'ここで引き返す',
+          yes: '앞으로 나아간다',
+          no: '여기서 돌아간다',
         },
 
-  // [번역 대상] get_star_drew_selected
-  get_star_drew_selected: (name) => `${name} [指名済み]`,
+  // [번역 완료] get_star_drew_selected
+  get_star_drew_selected: (name) => `${name} [지명 완료]`,
 
-  // [번역 대상] get_ur_trainer_reward
+  // [번역 완료] get_ur_trainer_reward
   get_ur_trainer_reward(total, money, g1_wins, all_wins) {
     return [
-      '年度チーム総勝鞍：',
+      '연간 팀 총 승리 수: ',
       total,
       { isBr: true },
-      '年度チーム総賞金：',
+      '연간 팀 총 상금: ',
       money,
-      ' ウマコイン',
+      ' 우마코인',
       { isBr: true },
-      '年度チーム G1 勝鞍：',
+      '연간 팀 G1 승리 수: ',
       g1_wins,
       { isBr: true },
-      '年度チーム重賞勝鞍：',
+      '연간 팀 중상 승리 수: ',
       all_wins,
     ];
   },
 
-  // [번역 대상] get_ur_uma_reward
+  // [번역 완료] get_ur_uma_reward
   get_ur_uma_reward(total, money, g1_wins, all_wins) {
     return [
-      '年度総勝鞍：',
+      '연간 총 승리 수: ',
       total,
       { isBr: true },
-      '年度総賞金：',
+      '연간 총 상금: ',
       money,
-      ' ウマコイン',
+      ' 우마코인',
       { isBr: true },
-      '年度 G1 勝鞍：',
+      '연간 G1 승리 수: ',
       g1_wins,
       { isBr: true },
-      '年度重賞勝鞍：',
+      '연간 중상 승리 수: ',
       all_wins,
     ];
   },
 
-  // [번역 대상] grand_live_header
-  grand_live_header: '来年、次のレースでグランドライブが開催される：',
+  // [번역 완료] grand_live_header
+  grand_live_header: '내년에는 다음 레이스에서 그랜드 라이브가 개최된다: ',
 
-  // [번역 대상] ransom_result
+  // [번역 완료] ransom_result
   async ransom_result(ransomed, funds, income) {
-    print([' ', ransomed, ' ウマコインを換金した。']);
+    print([' ', ransomed, ' 우마코인을 환금했다.']);
     if (typeof funds === 'object') {
       await printAndWait([
-        'まだ ',
+        '아직 ',
         funds,
-        ' ウマコインあり、毎週 ',
+        ' 우마코인이 남아 있으며, 매주 ',
         income,
-        ' ウマコインの収益がある。',
+        ' 우마코인의 수익이 있다.',
       ]);
     }
   },
 
-  // [번역 대상] sc_event_former
+  // [번역 완료] sc_event_former
   async sc_event_former(you) {
     if (get('flag:初见重复育成') === 1) {
-      await printAndWait('夜は深く、人は寝静まっている。');
+      await printAndWait('밤은 깊고, 사람들은 모두 잠들었다.');
       await printAndWait([
         you.get_colored_name(),
-        ' はひとり、トレセンの学園中心へ向かった。',
+        '은(는) 홀로 트레센 학원 중앙으로 향했다.',
       ]);
-      await printAndWait('三女神の像が、そこに穏やかに立っている。');
+      await printAndWait('세 여신상이 그곳에 고요히 서 있다.');
       await printAndWait([
         you.get_colored_name(),
-        ' は深く息を吸い、泉のほとりへ歩み、先に書いた手紙を捧げて水へ投じた。',
+        '은(는) 깊게 숨을 들이쉬고 샘가로 걸어가, 미리 써 둔 편지를 바치듯 물속에 던졌다.',
       ]);
       await printAndWait([
-        '池に映る月がふっと揺れ、幽かな光が漂う。',
+        '연못에 비친 달이 살짝 흔들리고 희미한 빛이 떠돈다. ',
         you.get_colored_name(),
-        ' は、いくつかの声が同時に頭の中で響くのを感じた——',
+        '은(는) 몇 개의 목소리가 동시에 머릿속에서 울리는 것을 느꼈다——',
       ]);
       await printAndWait(
-        '人生は無常。先を行く勇者も、世代を治めた覇者も、領域を制した帝王も、その道が必ずしも順風であるとは限らない。光も闇も、ついには夢幻の泡影。',
+        '인생은 무상하다. 앞서 나아간 용자도, 시대를 평정한 패자도, 영역을 제패한 제왕도 그 길이 언제나 순탄한 것은 아니다. 빛도 어둠도 결국은 꿈과 환상처럼 덧없다.',
       );
       await printAndWait(
-        'だが悪夢は去り、美夢も叶う。浮沫のなかにも、掬い取って残したいものがある。',
+        '하지만 악몽은 지나가고, 좋은 꿈은 이루어지기도 한다. 물거품 같은 순간 속에서도 건져 올려 남기고 싶은 것이 있다.',
       );
-      await you.say_as_unknown_and_wait('では、あなたの決意を聞かせて。');
+      await you.say_as_unknown_and_wait('그럼, 당신의 결의를 들려줘.');
     } else {
       await printAndWait([
         you.get_colored_name(),
-        ' は、またこの場所へ戻ってきた。',
+        '은(는) 다시 이곳으로 돌아왔다.',
       ]);
       await printAndWait([
-        'これは……何度目だろう。',
+        '이건…… 몇 번째일까. ',
         you.get_colored_name(),
-        ' の記憶は、奇妙にぼやけていく。',
+        '의 기억은 이상하게 흐릿해져 간다.',
       ]);
-      await printAndWait('だが、それが肝要ではない……');
+      await printAndWait('하지만 그게 중요한 건 아니다……');
       await printAndWait([
         you.get_colored_name(),
-        ' が胸に思うことこそ、必要なのだ。',
+        '이(가) 가슴속에 품은 것이야말로 필요한 것이다.',
       ]);
     }
   },
 
-  // [번역 대상] sc_event_latter
+  // [번역 완료] sc_event_latter
   async sc_event_latter(you) {
     if (get('flag:初见重复育成') === 1) {
       await printAndWait([
         you.get_colored_name(),
-        ' は像の顔へ視線を上げ、真に動くかのような三対の瞳を見つめ、頭を下げて礼をした。',
+        '은(는) 여신상의 얼굴로 시선을 들어 정말 살아 움직이는 듯한 세 쌍의 눈동자를 바라보고 고개 숙여 예를 올렸다.',
       ]);
-      await printAndWait('それから、光彩が咲いた——');
-      await printAndWait('「次」の真実を追う時が来た。');
+      await printAndWait('그리고 빛이 피어났다——');
+      await printAndWait('「다음」의 진실을 좇을 때가 왔다.');
     } else {
       await printAndWait([
         you.get_colored_name(),
-        ' は三女神の塑像を見た。水霧が彼女たちの顔をぼかし、',
+        '은(는) 세 여신의 조각상을 바라봤다. 물안개가 그녀들의 얼굴을 흐릿하게 가리고, ',
         you.get_colored_name(),
-        ' は何かをしようと口を開き、手を伸ばしかけて——',
+        '은(는) 무언가 하려는 듯 입을 열고 손을 뻗으려다가——',
       ]);
-      await printAndWait('眼前のすべてが歪んだ。');
-      await printAndWait('すぐに元へ戻り、何も起きなかったかのようだ。');
+      await printAndWait('눈앞의 모든 것이 일그러졌다.');
+      await printAndWait('곧 원래대로 돌아와 아무 일도 없었던 것처럼 보인다.');
       await printAndWait('……');
-      await printAndWait('すべてはいつもどおり……あるいは、違うのか？');
-      await printAndWait('自分は……何をしたのだったか。');
+      await printAndWait('모든 것은 평소대로…… 아니면, 다른 건가?');
+      await printAndWait('나는…… 무엇을 했던 거지.');
     }
   },
 
-  // [번역 대상] sc_event_name
-  sc_event_name: '「夢」',
+  // [번역 완료] sc_event_name
+  sc_event_name: '「꿈」',
 
-  // [번역 대상] sc_limit_template
-  sc_limit_template: '再び育成するキャラを選んでください（最大 %LIMIT% 名）',
+  // [번역 완료] sc_limit_template
+  sc_limit_template: '다시 육성할 캐릭터를 선택해 주세요（최대 %LIMIT%명）',
 
-  // [번역 대상] sc_name_inherited_template
-  sc_name_inherited_template: '%NAME%（継承済み）',
+  // [번역 완료] sc_name_inherited_template
+  sc_name_inherited_template: '%NAME%（계승 완료）',
 
-  // [번역 대상] sd_f_title_image
-  sd_f_title_image: '専用調教立ち絵：キャラが調教中に持つ独自の立ち絵表現。',
+  // [번역 완료] sd_f_title_image
+  sd_f_title_image: '전용 조교 스탠딩 일러스트: 캐릭터가 조교 중 표시하는 고유 스탠딩 일러스트.',
 
-  // [번역 대상] sd_f_title_kojo_b
+  // [번역 완료] sd_f_title_kojo_b
   sd_f_title_kojo_b:
-    '地下室口上：キャラがプレイヤーを拉致・監禁したときに発動する専用劇情と本文。',
+    '지하실 대사: 캐릭터가 플레이어를 납치·감금했을 때 발동하는 전용 시나리오와 본문.',
 
-  // [번역 대상] sd_f_title_kojo_d
+  // [번역 완료] sd_f_title_kojo_d
   sd_f_title_kojo_d:
-    '日常口上：キャラが日常の交流や祭事で発動する専用劇情と本文。',
+    '일상 대사: 캐릭터가 일상 교류나 행사에서 발동하는 전용 시나리오와 본문.',
 
-  // [번역 대상] sd_f_title_kojo_ed
+  // [번역 완료] sd_f_title_kojo_ed
   sd_f_title_kojo_ed:
-    '育成口上：キャラが育成の過程で展開する専用イベントと物語。',
+    '육성 대사: 캐릭터의 육성 과정에서 전개되는 전용 이벤트와 이야기.',
 
-  // [번역 대상] sd_f_title_kojo_er
-  sd_f_title_kojo_er: '調教口上：キャラが調教の性愛で発動する専用劇情と本文。',
+  // [번역 완료] sd_f_title_kojo_er
+  sd_f_title_kojo_er: '조교 대사: 캐릭터의 조교 중 성애 상황에서 발동하는 전용 시나리오와 본문.',
 
-  // [번역 대상] sd_f_title_kojo_l
+  // [번역 완료] sd_f_title_kojo_l
   sd_f_title_kojo_l:
-    '恋慕口上：キャラの恋慕が特定段階へ上がったときに発動する専用劇情とイベント。',
+    '연모 대사: 캐릭터의 연모가 특정 단계에 도달했을 때 발동하는 전용 시나리오와 이벤트.',
 
-  // [번역 대상] sd_f_title_kojo_r
-  sd_f_title_kojo_r: '募集口上：キャラがチーム加入時に発動する専用劇情と本文。',
+  // [번역 완료] sd_f_title_kojo_r
+  sd_f_title_kojo_r: '모집 대사: 캐릭터가 팀에 합류할 때 발동하는 전용 시나리오와 본문.',
 
-  // [번역 대상] star_drew
+  // [번역 완료] star_drew
   async star_drew(taste, you, chara, changed) {
-    taste.say(['抉 択！ 学園に ', chara, ' さんとの接触を手伝わせるか？']);
-    printButton('「超 得！！」', 1);
-    printButton('「待 て！！」', 2);
+    taste.say(['선 택! 학원에 ', chara, ' 씨와 접촉하도록 도와달라고 할까?']);
+    printButton('「대 득!!」', 1);
+    printButton('「잠 깐!!」', 2);
     const ret = await input();
     if (ret === 1) {
       await taste.say_and_wait([
-        '激 熱！',
+        '열 광!',
         chara,
-        ' さんは近いうちトレーニング場へよく来る。しっかり掴まえろ！',
+        ' 씨는 가까운 시일 내 트레이닝장에 자주 올 거다. 확실히 붙잡아!',
       ]);
       if (changed) {
         await taste.say_and_wait([
-          '不 快！ だが ',
+          '불 쾌! 하지만 ',
           you.get_colored_actual_name(),
-          ' トレーナー、次はよく考えてから決めてほしい！',
+          ' 트레이너, 다음에는 잘 생각하고 결정하길 바란다!',
         ]);
       }
     } else {
-      await taste.say_and_wait('憤 怒！ 考えてから来い！');
+      await taste.say_and_wait('분 노! 생각하고 다시 와!');
     }
     return ret;
   },
 
-  // [번역 대상] star_drew_all_chara
-  star_drew_all_chara: '指名できるキャラ',
+  // [번역 완료] star_drew_all_chara
+  star_drew_all_chara: '지명 가능한 캐릭터',
 
-  // [번역 대상] star_drew_bt_filter_image
-  star_drew_bt_filter_image: '立ち絵',
+  // [번역 완료] star_drew_bt_filter_image
+  star_drew_bt_filter_image: '스탠딩 일러스트',
 
-  // [번역 대상] star_drew_bt_filter_kojo_b
-  star_drew_bt_filter_kojo_b: '地下室',
+  // [번역 완료] star_drew_bt_filter_kojo_b
+  star_drew_bt_filter_kojo_b: '지하실',
 
-  // [번역 대상] star_drew_bt_filter_kojo_d
-  star_drew_bt_filter_kojo_d: '日常',
+  // [번역 완료] star_drew_bt_filter_kojo_d
+  star_drew_bt_filter_kojo_d: '일상',
 
-  // [번역 대상] star_drew_bt_filter_kojo_ed
-  star_drew_bt_filter_kojo_ed: '育成',
+  // [번역 완료] star_drew_bt_filter_kojo_ed
+  star_drew_bt_filter_kojo_ed: '육성',
 
-  // [번역 대상] star_drew_bt_filter_kojo_er
-  star_drew_bt_filter_kojo_er: '調教',
+  // [번역 완료] star_drew_bt_filter_kojo_er
+  star_drew_bt_filter_kojo_er: '조교',
 
-  // [번역 대상] star_drew_bt_filter_kojo_l
-  star_drew_bt_filter_kojo_l: '恋慕',
+  // [번역 완료] star_drew_bt_filter_kojo_l
+  star_drew_bt_filter_kojo_l: '연모',
 
-  // [번역 대상] star_drew_bt_filter_kojo_r
-  star_drew_bt_filter_kojo_r: '募集',
+  // [번역 완료] star_drew_bt_filter_kojo_r
+  star_drew_bt_filter_kojo_r: '모집',
 
-  // [번역 대상] star_drew_chara_id_input
-  star_drew_chara_id_input: '指名したいキャラ ID を入力してください',
+  // [번역 완료] star_drew_chara_id_input
+  star_drew_chara_id_input: '지명할 캐릭터 ID를 입력해 주세요',
 
-  // [번역 대상] star_drew_chara_name_input
-  star_drew_chara_name_input: '指名したいキャラ名を入力してください',
+  // [번역 완료] star_drew_chara_name_input
+  star_drew_chara_name_input: '지명할 캐릭터 이름을 입력해 주세요',
 
-  // [번역 대상] star_drew_duplicate
+  // [번역 완료] star_drew_duplicate
   async star_drew_duplicate(taste, chara) {
     await taste.say_and_wait([
-      '提 醒！',
+      '알 림!',
       chara.get_colored_name(),
-      ' さんはすでにトレーニング場で待っている！',
+      ' 씨는 이미 트레이닝장에서 기다리고 있다!',
     ]);
   },
 
-  // [번역 대상] star_drew_filter_image
-  star_drew_filter_image: '専用調教立ち絵',
+  // [번역 완료] star_drew_filter_image
+  star_drew_filter_image: '전용 조교 스탠딩 일러스트',
 
-  // [번역 대상] star_drew_filter_kojo_template
-  star_drew_filter_kojo_template: '%KOJO% 口上',
+  // [번역 완료] star_drew_filter_kojo_template
+  star_drew_filter_kojo_template: '%KOJO% 대사',
 
-  // [번역 대상] star_drew_filter_template
-  star_drew_filter_template: '%FILTERS% を持つキャラ',
+  // [번역 완료] star_drew_filter_template
+  star_drew_filter_template: '%FILTERS% 보유 캐릭터',
 
-  // [번역 대상] star_drew_intro
+  // [번역 완료] star_drew_intro
   star_drew_intro(taste) {
     taste.say(
-      '告 知！ まだ入団していないが天賦のある子について、学園は実績のあるトレーナーが直接指名して指導することを認める！ ただし衆を納得させる名声が必要だ！',
+      '공 지! 아직 입단하지 않았지만 재능 있는 아이에 대해, 학원은 실적 있는 트레이너가 직접 지명해 지도하는 것을 허용한다! 단, 모두를 납득시킬 만한 명성이 필요하다!',
     );
     taste.say(
-      '注 意！ 指名したとしても、相手とはきちんと一から付き合ってほしい！',
+      '주 의! 지명하더라도 상대와는 제대로 처음부터 관계를 쌓아 가길 바란다!',
     );
   },
 
-  // [번역 대상] star_drew_limited
+  // [번역 완료] star_drew_limited
   async star_drew_limited(taste) {
     await taste.say_and_wait(
-      '不 解！ あなたのチームにはもう十分なメンバーがいる！',
+      '불 가! 당신의 팀에는 이미 충분한 멤버가 있다!',
     );
   },
 
-  // [번역 대상] star_drew_no_one
+  // [번역 완료] star_drew_no_one
   async star_drew_no_one(taste) {
-    await taste.say_and_wait('疑 惑！ 該当者なし！');
+    await taste.say_and_wait('의 혹! 해당자 없음!');
   },
 
-  // [번역 대상] star_drew_options
-  star_drew_options: ['一覧から選ぶ', '名前で指名', 'ID で指名', '考え直す'],
+  // [번역 완료] star_drew_options
+  star_drew_options: ['목록에서 선택', '이름으로 지명', 'ID로 지명', '다시 생각한다'],
 
-  // [번역 대상] star_drew_other_chara
-  star_drew_other_chara: 'その他のキャラ',
+  // [번역 완료] star_drew_other_chara
+  star_drew_other_chara: '기타 캐릭터',
 
-  // [번역 대상] star_drew_wrong_date
+  // [번역 완료] star_drew_wrong_date
   async star_drew_wrong_date(taste) {
-    await taste.say_and_wait('疑 惑！ いまは担当を募集する時期ではない！');
+    await taste.say_and_wait('의 혹! 지금은 담당을 모집할 시기가 아니다!');
   },
 
-  // [번역 대상] ur_alternative_reporter
-  ur_alternative_reporter: '司会',
+  // [번역 완료] ur_alternative_reporter
+  ur_alternative_reporter: '사회자',
 
-  // [번역 대상] ura_reward
+  // [번역 완료] ura_reward
   ura_reward: (() => {
     /**
      * URA 表彰式
@@ -516,29 +516,29 @@ module.exports = {
       uma_list_cb,
     ) => {
       await report([
-        '各',
+        '각 ',
         uma,
-        'ファンの皆さん、こんばんは！ 皆さんが心待ちにしていた年に一度の祭典、URA表彰式の始まりです！',
+        ' 팬 여러분, 안녕하세요! 모두가 기다리던 1년에 한 번뿐인 축제, URA 시상식을 시작하겠습니다!',
       ]);
       await report([
-        '例年どおり、大会側は複数の賞を設け、最高の競技水準で精彩を届けてくれた各',
+        '예년과 마찬가지로 대회 측은 여러 상을 마련해, 최고의 경기 수준으로 멋진 모습을 보여 준 각 ',
         uma,
-        'と、その陰で支えてきたトレーナーの皆さんへ敬意を表します！',
+        '와(과), 그 뒤에서 뒷받침해 온 트레이너 여러분께 경의를 표합니다!',
       ]);
       if (is_etusko) {
         await report([
-          '今年も私、',
+          '올해도 저, ',
           etusko.get_colored_actual_name(),
-          ' が司会を務めます。どうぞよろしくお願いいたします！',
+          '이(가) 사회를 맡겠습니다. 잘 부탁드립니다!',
         ]);
       }
       println();
       await report([
-        '表彰に入る前に、',
+        '시상에 들어가기 전에, ',
         year,
-        ' 年の G1 で輝いた',
+        '년 G1에서 빛난 ',
         uma,
-        'たちを振り返りましょう！',
+        '들을 되돌아보겠습니다!',
       ]);
       println();
       if (typeof uma_list_cb.g1 === 'function') {
@@ -547,40 +547,40 @@ module.exports = {
       } else {
         await printAndWait(
           [
-            '（何人かの選手の名。残念ながら ',
+            '（몇몇 선수의 이름. 아쉽게도 ',
             you.get_colored_name(),
-            ' のチームメンバーはいない）',
+            '의 팀 멤버는 없다）',
           ],
           { align: 'center' },
         );
       }
       println();
-      await report('改めて、各選手の尽力に感謝します！');
+      await report('다시 한번, 모든 선수의 노력에 감사드립니다!');
       println();
-      await report('では早速、注目の各賞を発表しましょう！');
+      await report('그럼 바로, 주목할 각 부문의 수상자를 발표하겠습니다!');
       println();
-      await report('まずは……本年度《最優秀トレーナープライズ》！');
+      await report('먼저…… 올해의 《최우수 트레이너상》!');
       println();
       if (typeof uma_list_cb.best_trainer === 'function') {
         uma_list_cb.best_trainer();
         await waitAnyKey();
         await report([
           you.get_colored_actual_name(),
-          'トレーナーの尽力は、誰の目にも明らかです！',
+          ' 트레이너의 노력은 누구의 눈에도 분명합니다!',
         ]);
       } else {
         if (typeof uma_list_cb.default_best_trainer === 'string') {
           await report([
             uma_list_cb.default_best_trainer,
-            'トレーナーの尽力は、誰の目にも明らかです！',
+            ' 트레이너의 노력은 누구의 눈에도 분명합니다!',
           ]);
         } else {
-          await report('本年度は基準を満たす候補がいませんでした……');
-          await report('残念です。来年こそ、受賞の幸運を期待しましょう！');
+          await report('올해는 기준을 충족한 후보가 없었습니다……');
+          await report('아쉽군요. 내년에는 꼭 수상의 행운이 있기를 기대하겠습니다!');
         }
       }
       println();
-      await report('続いて……本年度《最優秀ジュニアプライズ》！');
+      await report('이어서…… 올해의 《최우수 주니어상》!');
       println();
       if (typeof uma_list_cb.junior === 'function') {
         uma_list_cb.junior();
@@ -588,19 +588,19 @@ module.exports = {
       } else {
         await printAndWait(
           [
-            '（ジュニア級を終えたばかりの選手の名と写真。残念ながら ',
+            '（주니어급을 막 마친 선수의 이름과 사진. 아쉽게도 ',
             you.get_colored_name(),
-            ' のチームメンバーではない）',
+            '의 팀 멤버는 아니다）',
           ],
           { align: 'center' },
         );
       }
       println();
       await report(
-        'この選手が、これからもコースで輝き続けることを願っています！',
+        '이 선수가 앞으로도 코스에서 계속 빛나기를 바랍니다!',
       );
       println();
-      await report('次は……本年度《最優秀クラシック級プライズ》！');
+      await report('다음은…… 올해의 《최우수 클래식급상》!');
       println();
       if (typeof uma_list_cb.classic === 'function') {
         uma_list_cb.classic();
@@ -608,17 +608,17 @@ module.exports = {
       } else {
         await printAndWait(
           [
-            '（クラシック級を終えたばかりの選手の名と写真。残念ながら ',
+            '（클래식급을 막 마친 선수의 이름과 사진. 아쉽게도 ',
             you.get_colored_name(),
-            ' のチームメンバーではない）',
+            '의 팀 멤버는 아니다）',
           ],
           { align: 'center' },
         );
       }
       println();
-      await report('もう中核を担う風格が出てきましたね！');
+      await report('이제 팀의 중핵을 맡을 만한 관록이 느껴지네요!');
       println();
-      await report('そして……本年度《最優秀シニア級プライズ》！');
+      await report('그리고…… 올해의 《최우수 시니어급상》!');
       println();
       if (typeof uma_list_cb.senior === 'function') {
         uma_list_cb.senior();
@@ -626,22 +626,22 @@ module.exports = {
       } else {
         await printAndWait(
           [
-            '（シニア級を終えたばかりの選手の名と写真。残念ながら ',
+            '（시니어급을 막 마친 선수의 이름과 사진. 아쉽게도 ',
             you.get_colored_name(),
-            ' のチームメンバーではない）',
+            '의 팀 멤버는 아니다）',
           ],
           { align: 'center' },
         );
       }
       println();
-      await report('疑いようもなく、百戦錬磨の古強者です！');
+      await report('의심할 여지 없는 백전노장의 강자입니다!');
       println();
       await report([
-        '最後！ 本年度いちばん速く、いちばん高く、いちばん強い歴史の一瞬です！ 数多の名馬の列に、唯一無二の印を残した',
+        '마지막입니다! 올해 가장 빠르고, 가장 높고, 가장 강했던 역사의 한순간! 수많은 명마의 행렬에 유일무이한 흔적을 남긴 ',
         uma,
-        '……果たして誰か？！',
+        '……과연 누구일까요?!',
       ]);
-      await report(['《年度代表', uma, '》。この最終の栄誉は——']);
+      await report(['《연도 대표 ', uma, '》。 이 마지막 영예의 주인공은——']);
       println();
       if (typeof uma_list_cb.uoty === 'function') {
         uma_list_cb.uoty();
@@ -649,21 +649,21 @@ module.exports = {
       } else {
         await printAndWait(
           [
-            '（ある選手の名と写真。残念ながら ',
+            '（어느 선수의 이름과 사진. 아쉽게도 ',
             you.get_colored_name(),
-            ' のチームメンバーではない）',
+            '의 팀 멤버는 아니다）',
           ],
           { align: 'center' },
         );
       }
       println();
-      await report('いま、最強は決しました！');
+      await report('지금, 최강이 결정되었습니다!');
       println();
       await report(
-        '本日はご来場ありがとうございました。来年、またお会いしましょう！',
+        '오늘 찾아와 주셔서 감사합니다. 내년에 다시 뵙겠습니다!',
       );
     };
-    f.title = 'URA 表彰式';
+    f.title = 'URA 시상식';
     return f;
   })(),
 };
