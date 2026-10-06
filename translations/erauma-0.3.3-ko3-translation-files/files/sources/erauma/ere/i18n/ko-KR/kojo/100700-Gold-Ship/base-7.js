@@ -5,123 +5,123 @@ const chara_colors = require('#/data/chara-colors').chara_colors[7];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/100700-Gold-Ship/base-7"),
 
-  // [번역 대상] ask_release_agree
+  // [번역 완료] ask_release_agree
   async ask_release_agree(gs, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' が帰りたいと切り出すと、椅子の背に凭れて ',
+      '이(가) 돌아가고 싶다고 말을 꺼내자, 의자 등받이에 기대어 ',
       you.get_colored_name(),
-      ' と一緒にゲームしていた ',
+      '와(과) 함께 게임을 하던 ',
       gs.get_colored_name(),
-      ' は、眉を寄せた。',
+      '은(는) 눈살을 찌푸렸다.',
     ]);
     era.println();
-    await gs.say_and_wait('あーー？');
+    await gs.say_and_wait('아——?');
     await gs.say_and_wait(
-      'ここ水清くて砂やわらかくて風涼しくて水ひんやり、なんでわざわざ外に出る必要あんの？',
+      '여기 물도 맑고 모래도 부드럽고 바람도 시원하고 물도 차가운데, 굳이 왜 밖에 나가야 하는데?',
     );
     era.println();
     await era.printAndWait([
       gs.get_colored_name(),
-      ' は少し考え、気が進まなそうに呟いた。',
+      '은(는) 잠시 생각하더니 내키지 않는 듯 중얼거렸다.',
     ]);
     era.println();
-    await gs.say_and_wait('まったく、手がかかるやつだ……');
-    await gs.say_and_wait('じゃあ、市場で買い物済ませたら戻るとするか。');
+    await gs.say_and_wait('정말, 손이 많이 가는 녀석이라니까……');
+    await gs.say_and_wait('그럼 시장에서 장 보고 돌아가자고.');
     await gs.say_and_wait([
       {
         color: chara_colors[1],
-        content: 'あ、そうだ……生きてるウナギに赤飯がいい！',
+        content: '아, 맞다…… 살아 있는 장어에 팥밥이 좋아!',
       },
     ]);
     era.println();
     await era.printAndWait([
-      'そのあと ',
+      '그 뒤 ',
       gs.get_colored_name(),
-      ' は、やっと地上に出られた ',
+      '은(는) 마침내 지상으로 나온 ',
       you.get_colored_name(),
-      ' に、うまい晩飯を一食ぶん追加で奢らせてから、ようやく正式に解放してくれた。',
+      '에게 맛있는 저녁 한 끼를 추가로 얻어먹고 나서야 비로소 정식으로 풀어주었다.',
     ]);
   },
 
-  // [번역 대상] ask_release_reject
+  // [번역 완료] ask_release_reject
   async ask_release_reject(gs, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' が帰りたいと切り出すと、椅子の背に凭れて ',
+      '이(가) 돌아가고 싶다고 말을 꺼내자, 의자 등받이에 기대어 ',
       you.get_colored_name(),
-      ' と一緒にゲームしていた ',
+      '와(과) 함께 게임을 하던 ',
       gs.get_colored_name(),
-      ' は、眉を寄せた。',
+      '은(는) 눈살을 찌푸렸다.',
     ]);
     era.println();
-    await gs.say_and_wait('あーー？');
+    await gs.say_and_wait('아——?');
     await gs.say_and_wait(
-      'ここ水清くて砂やわらかくて風涼しくて水ひんやり、なんでわざわざ外に出る必要あんの？',
+      '여기 물도 맑고 모래도 부드럽고 바람도 시원하고 물도 차가운데, 굳이 왜 밖에 나가야 하는데?',
     );
     era.println();
     await era.printAndWait([
-      'たぶんこの話を避けたいのだろう、',
+      '아마 이 이야기를 피하고 싶은 것인지,',
       gs.get_colored_name(),
-      ' は一瞬で、画面の激しい戦況へ意識を戻した。',
+      '은(는) 순식간에 화면 속 격렬한 전투로 시선을 돌렸다.',
     ]);
     era.println();
-    await gs.say_and_wait('くだんねえこと言ってないで、虫の巣の暴君を倒せよ！');
-    await gs.say_and_wait('ああああ範囲技くらった——！');
+    await gs.say_and_wait('쓸데없는 소리 말고 벌레 둥지의 폭군이나 잡아!');
+    await gs.say_and_wait('아아아아 범위기 맞았다——!');
     era.println();
     await era.printAndWait([
       gs.get_colored_name(),
-      ' が飽きたくなるまで、ここからは出られそうにない。',
+      '이(가) 질릴 때까지는 여기서 나갈 수 없을 것 같다.',
     ]);
   },
 
-  // [번역 대상] ask_time
+  // [번역 완료] ask_time
   async ask_time(gs, you, cur_time, security_level) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '은(는) ',
       gs.get_colored_name(),
-      ' に、いまの時刻を尋ねた……',
+      '에게 지금 시각을 물었다……',
     ]);
     era.println();
     await gs.say_and_wait([
-      { color: chara_colors[1], content: 'イマナンジ？' },
+      { color: chara_colors[1], content: '지금 몇 시?' },
     ]);
     if (security_level > 3) {
-      await gs.say_and_wait('カジノに時計がねえ理由、知ってるか？');
-      await gs.say_and_wait('知らない？ じゃあ、いま知ったな。');
+      await gs.say_and_wait('카지노에 시계가 없는 이유, 아냐?');
+      await gs.say_and_wait('몰라? 그럼 이제 알았네.');
     } else {
       await gs.say_and_wait([
-        { color: chara_colors[1], content: 'トゥトゥ～～' },
+        { color: chara_colors[1], content: '뚜뚜~~' },
       ]);
       await gs.say_and_wait([
         {
           color: chara_colors[1],
-          content: `ただいまの時刻は～～${cur_time}～～`,
+          content: `현재 시각은~~${cur_time}~~`,
         },
       ]);
     }
   },
 
-  // [번역 대상] find_escape
+  // [번역 완료] find_escape
   find_escape(gs, you) {
     era.print([
       you.get_colored_name(),
-      ' は落ち着かない足取りで、暗い通路を進んでいく……',
+      '은(는) 불안한 걸음으로 어두운 통로를 나아간다……',
     ]);
     era.println();
-    gs.say([{ color: chara_colors[1], content: 'ふっ……はっ……ふっ……はっ……' }]);
+    gs.say([{ color: chara_colors[1], content: '후…… 하…… 후…… 하……' }]);
     era.println();
     era.print([
-      '出口の手前で、',
+      '출구 바로 앞에서,',
       you.get_colored_name(),
-      ' は荒い息遣いを聞いた。',
+      '은(는) 거친 숨소리를 들었다.',
     ]);
-    era.print('その大きさたるや、わざと演じてるんじゃないかと思えるほどだ。');
+    era.print('그 소리가 어찌나 큰지 일부러 연기하는 게 아닐까 싶을 정도다.');
     era.print([
-      'そして目を刺す赤い光が灯る。なんと黒仮面に赤い光剣、ダースベイダー風の ',
+      '그리고 눈을 찌르는 붉은 빛이 켜진다. 무려 검은 가면에 붉은 광선검, 다스 베이더풍의 ',
       gs.get_colored_name(),
-      ' が、もうずっと待ち構えていたのだァ！',
+      '이(가) 한참 전부터 기다리고 있었던 것이다아!',
     ]);
   },
 };
