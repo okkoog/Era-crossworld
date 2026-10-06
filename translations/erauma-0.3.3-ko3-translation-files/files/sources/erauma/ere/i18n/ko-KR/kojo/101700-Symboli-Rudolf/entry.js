@@ -10,103 +10,103 @@ module.exports = class extends (
   // 한국어 작업 모듈 연결: daily
   daily = proxy_kojo_js(require('#/i18n/ko-KR/kojo/101700-Symboli-Rudolf/daily-17.js'));
 
-  // [번역 대상] crush
-  crush = '心酔';
+  // [번역 완료] crush
+  crush = '심취';
 
-  // [번역 대상] crush_desc
-  crush_desc = '抑えきれない想いが、もう隠せない。初期恋慕+40、恋慕取得+20%。';
+  // [번역 완료] crush_desc
+  crush_desc = '억누를 수 없는 마음을 더는 숨길 수 없다. 초기 연모+40, 연모 획득+20%.';
 
   // 한국어 작업 모듈 연결: edu
   edu = proxy_kojo_js(
     require("#/i18n/ko-KR/kojo/101700-Symboli-Rudolf/edu-17.js"),
   );
 
-  // [번역 대상] emperor
-  emperor = '皇帝';
+  // [번역 완료] emperor
+  emperor = '황제';
 
-  // [번역 대상] emperor_desc
+  // [번역 완료] emperor_desc
   emperor_desc =
-    'ここに君臨せよ。跪け。トレーニング成功率+5%、効果+4%、出走時の能力+2%。この姿で7ターン活動するごとに [精神損傷] を1層得る。';
+    '여기에 군림하라. 무릎 꿇어라. 트레이닝 성공률+5%, 효과+4%, 출주 시 능력+2%. 이 모습으로 7턴 활동할 때마다 [정신 손상] 1스택을 얻는다.';
 
-  // [번역 대상] fallen
-  fallen = '神経衰弱！';
+  // [번역 완료] fallen
+  fallen = '신경쇠약!';
 
-  // [번역 대상] fallen_desc
-  fallen_desc = 'もう、取り返しはつかない……ルナの出走時能力-8%。';
+  // [번역 완료] fallen_desc
+  fallen_desc = '이제 돌이킬 수 없다…… 루나의 출주 시 능력-8%.';
 
-  // [번역 대상] intention
-  intention = '心術';
+  // [번역 완료] intention
+  intention = '심법';
 
-  // [번역 대상] intention_desc
-  intention_desc = '測る必要はない。ただ服せ。好感取得-20%、恋慕上限40。';
+  // [번역 완료] intention_desc
+  intention_desc = '헤아릴 필요는 없다. 그저 복종하라. 호감 획득-20%, 연모 상한 40.';
 
   // 한국어 작업 모듈 연결: love
   love = proxy_kojo_js(
     require("#/i18n/ko-KR/kojo/101700-Symboli-Rudolf/love-17.js"),
   );
 
-  // [번역 대상] moral_damage
-  moral_damage = (c) => `精神損傷${c === 1 ? '' : `(${c})`}`;
+  // [번역 완료] moral_damage
+  moral_damage = (c) => `정신 손상${c === 1 ? '' : `(${c})`}`;
 
-  // [번역 대상] moral_damage_desc
+  // [번역 완료] moral_damage_desc
   moral_damage_desc = (c, debuff, buff) =>
-    `ルナのトレーニング効果-${debuff}%、皇帝のトレーニング効果+${buff}%${c < 6 ? '。6層の [精神損傷] で [神経衰弱] を得る' : ''}。`;
+    `루나의 트레이닝 효과-${debuff}%、황제의 트레이닝 효과+${buff}%${c < 6 ? '。6스택의 [정신 손상]에서 [신경쇠약]을 얻는다' : ''}。`;
 
-  // [번역 대상] notify_get_worse
+  // [번역 완료] notify_get_worse
   notify_get_worse = (luna) => [
     luna.get_colored_name(),
-    ' の精神状態が、さらに悪化した……',
+    '의 정신 상태가 더욱 악화되었다……',
   ];
 
-  // [번역 대상] notify_punish_for_avoid
+  // [번역 완료] notify_punish_for_avoid
   notify_punish_for_avoid = (emperor, race) => [
     emperor.get_colored_name(),
-    ' は ',
+    '은(는) ',
     race,
-    ' への不出走を、極めて不快に思っている……',
+    '에 출주하지 않은 것을 몹시 불쾌하게 여기고 있다……',
   ];
 
-  // [번역 대상] notify_punish_for_important
+  // [번역 완료] notify_punish_for_important
   notify_punish_for_important = (emperor, race) => [
     emperor.get_colored_name(),
-    ' は ',
+    '은(는) ',
     race,
-    ' の敗北を、極めて不快に思っている……',
+    '에서 패배한 것을 몹시 불쾌하게 여기고 있다……',
   ];
 
-  // [번역 대상] pa_button
-  pa_button = '日月交替';
+  // [번역 완료] pa_button
+  pa_button = '일월 교대';
 
-  // [번역 대상] pa_notify_keep
+  // [번역 완료] pa_notify_keep
   pa_notify_keep = (chara) => [
-    '来週、',
+    '다음 주, ',
     chara.get_colored_name(),
-    ' は ',
+    '은(는) ',
     chara.get_colored_name(),
-    ' の姿を保とうとする……',
+    '의 모습을 유지하려 한다……',
   ];
 
-  // [번역 대상] pa_notify_transform
+  // [번역 완료] pa_notify_transform
   pa_notify_transform = (chara, aim) => [
-    '来週、',
+    '다음 주, ',
     chara.get_colored_name(),
-    ' は ',
+    '은(는) ',
     aim.get_colored_name(),
-    ' の姿へ変わろうとする……',
+    '의 모습으로 변하려 한다……',
   ];
 
-  // [번역 대상] r_fallen
-  r_fallen = '神経衰弱';
+  // [번역 완료] r_fallen
+  r_fallen = '신경쇠약';
 
-  // [번역 대상] report_kiku_sho
+  // [번역 완료] report_kiku_sho
   report_kiku_sho = (luna) => [
-    { color: luna.color, content: '京都の曇天の下、大きな赤い花が咲き誇る！' },
+    { color: luna.color, content: '교토의 흐린 하늘 아래, 커다란 붉은 꽃이 활짝 피어난다!' },
   ];
 
-  // [번역 대상] self_destruct
-  self_destruct = '自壊';
+  // [번역 완료] self_destruct
+  self_destruct = '자괴';
 
-  // [번역 대상] self_destruct_desc
+  // [번역 완료] self_destruct_desc
   self_destruct_desc =
-    '宿命への抗いが、自らを壊す。トレーニング成功率-5%、効果-8%、出走時の能力-5%。';
+    '숙명에 맞서려는 저항이 스스로를 무너뜨린다. 트레이닝 성공률-5%, 효과-8%, 출주 시 능력-5%.';
 };
