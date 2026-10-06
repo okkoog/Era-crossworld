@@ -1,4 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+// 번역 작업용 전체 원본 파일. [번역 완료]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
 // 원본 경로: sources/erauma/ere/event/queue.js
 // 대상 함수/속성: $statement:3
 const era = require('#/era-electron');
@@ -77,7 +77,7 @@ module.exports = {
    */
   add_event(stage, event) {
     if (!event || event.chara_id === undefined || event.type === undefined) {
-      era.logger.error('无效的事件对象！');
+      era.logger.error('유효하지 않은 이벤트 객체!');
       return;
     }
     if (!queue) {
