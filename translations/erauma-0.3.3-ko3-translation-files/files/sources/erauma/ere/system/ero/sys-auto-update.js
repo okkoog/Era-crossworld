@@ -1,4 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+// 번역 작업용 전체 원본 파일. [번역 완료]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
 // 원본 경로: sources/erauma/ere/system/ero/sys-auto-update.js
 // 대상 함수/속성: $statement:20
 const era = require('#/era-electron');
@@ -187,7 +187,7 @@ function sys_auto_update(cid) {
     }
   } while (cand_list.length > 0);
   era.logger.debug(
-    `角色 ${cid} 性技学习完毕！\n${Object.entries(u_rec)
+    `캐릭터 ${cid} 성기술 학습 완료!\n${Object.entries(u_rec)
       .map(([aid, add_level]) => `${i18n().tb_abl[aid]}+${add_level}`)
       .join('，')}`,
   );

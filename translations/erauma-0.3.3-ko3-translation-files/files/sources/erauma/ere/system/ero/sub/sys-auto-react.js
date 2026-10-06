@@ -1,4 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+// 번역 작업용 전체 원본 파일. [번역 완료]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
 // 원본 경로: sources/erauma/ere/system/ero/sub/sys-auto-react.js
 // 대상 함수/속성: $statement:12
 const era = require('#/era-electron');
@@ -57,7 +57,7 @@ async function sys_auto_react(shown) {
     const dice =
       resist_ratio >= 1 ? 100 : resist_ratio <= 0 ? 0 : Math.random();
     era.logger.debug(
-      `角色 ${lover} 反抗：${(resist_ratio * 100).toFixed(2)}%；掷骰：${(dice * 100).toFixed(2)}`,
+      `캐릭터 ${lover} 저항: ${(resist_ratio * 100).toFixed(2)}%; 주사위: ${(dice * 100).toFixed(2)}`,
     );
     if (dice < resist_ratio) {
       action = ero_hooks.resist;
@@ -75,7 +75,7 @@ async function sys_auto_react(shown) {
     }
   }
   era.logger.debug(
-    `角色 ${lover} 思考反应结束！${(new Date().getTime() - current).toLocaleString()}ms`,
+    `캐릭터 ${lover} 반응 판단 완료! ${(new Date().getTime() - current).toLocaleString()}ms`,
   );
   await run_custom_ero(lover, action, {
     attacker: lover,

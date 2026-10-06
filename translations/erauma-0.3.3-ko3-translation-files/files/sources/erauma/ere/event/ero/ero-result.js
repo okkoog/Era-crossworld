@@ -1,4 +1,4 @@
-// 번역 작업용 전체 원본 파일. [번역 대상]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
+// 번역 작업용 전체 원본 파일. [번역 완료]으로 표시된 함수/블록의 남은 원문만 번역합니다. 이미 한국어인 문구, 함수명, 변수, 조건, 치환 토큰은 유지합니다.
 // 원본 경로: sources/erauma/ere/event/ero/ero-result.js
 // 대상 함수/속성: $statement:20, $statement:23
 const era = require('#/era-electron');
@@ -46,7 +46,7 @@ const handlers = {};
 ].forEach((f) => f(handlers));
 
 console.log(
-  '调教指令通用结果函数注册完毕!',
+  '조교 명령 공통 결과 함수 등록 완료!',
   (new Date().getTime() - current).toLocaleString(),
   'ms',
 );
