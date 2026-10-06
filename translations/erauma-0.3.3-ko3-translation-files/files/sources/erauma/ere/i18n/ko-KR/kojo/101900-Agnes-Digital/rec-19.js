@@ -7,7 +7,7 @@
 const era = require('#/era-electron');
 
 module.exports = {
-  // [번역 대상] rec_start
+  // [번역 완료] rec_start
   rec_start: (() => {
     /**
      * @param {CharaTalk} digital
@@ -42,9 +42,9 @@ module.exports = {
         await era.printAndWait(`당연하다. ${you.name}은(는) 백 명 중 한 명꼴이라는 중앙 트레이너니까. ${you.name}은(는) 자랑스럽게 응원봉을 거두어들였다.`, );
         await you.say_and_wait("그런데 궁금한 게 있는데, 넌 왜 선발 레이스에 참가하지 않은거야?");
         await digital.say_and_wait(
-          `え？ 私？ いやいや、私なんてどこにでもいる普通の${digital.uma_sex_title}${
+          `에? 저요? 아니아니, 저는 어디에나 있는 평범한 ${digital.uma_sex_title}${
             digital.name
-          }だよ。レース場に立つような${digital.uma_sex_title}じゃない。`,
+          }일 뿐이에요. 레이스장에 설 만한 ${digital.uma_sex_title}가 아니에요.`,
         );
         await era.printAndWait(`${digital.sex}는 자신은 전혀 어울리지 않는다는 듯 격렬하게 양손을 흔들었다.`, );
       } else {
@@ -54,20 +54,20 @@ module.exports = {
         await digital.say_and_wait("히익?");
         await you.say_and_wait("너는 선발 레이스에 참가 안 하는 거야?");
         await digital.say_and_wait(
-          `おかしいおかしい！ 私はただの普通の${digital.uma_sex_title}${
+          `아니에요, 아니라고요! 저는 그냥 평범한 ${digital.uma_sex_title}${
             digital.name
-          }だよ、こんなふうに${
+          }일 뿐이에요. 이렇게 ${
             digital.couple_title
-          }の邪魔しちゃだめ！ デジは遠くから見てるだけでいいの！ 天上人みたいな${digital.uma_sex_title}は遠視専用！`,
+          }를 방해하면 안 돼요! 디지는 멀리서 바라보는 것만으로 충분해요! 천상인 같은 ${digital.uma_sex_title}들은 멀리서 감상하는 전용이라구요!`,
         );
         await era.printAndWait(`${digital.sex}는 고개를 세차게 가로저었다.`, );
       }
       await era.printAndWait(
-        `${you.name} には${digital.sex}の言いたいことがよくわからない。${
+        `${you.name}은(는) ${digital.sex}가 무슨 말을 하는지 잘 이해할 수 없었다.${
           digital.sex
-        }は${digital.uma_sex_title}が大好きそうなのに、近づこうとしない。しかも${
+        }는 ${digital.uma_sex_title}를 무척 좋아하는 것 같은데도 가까이 다가가려 하지 않는다. 게다가 ${
           digital.sex
-        }自身も${digital.uma_sex_title}だ。`,
+        } 자신도 ${digital.uma_sex_title}다.`,
       );
       await you.say_and_wait(`왜 참가해서 가까운 거리에서 ${digital.couple_title}들을 관찰할 생각은 안 하는 거야?`, );
       await digital.say_and_wait("에? 그 말씀도 일리가 있긴 한데…… 하지만 전 데뷔하고 싶지 않아요.", );
@@ -84,7 +84,7 @@ module.exports = {
     f.title = "변태다! 변…… 변태인가? (전편)";
     return f;
   })(),
-  // [번역 대상] rec_end
+  // [번역 완료] rec_end
   rec_end: (() => {
     /**
      * @param {CharaTalk} digital
@@ -115,7 +115,7 @@ module.exports = {
       await digital.say_and_wait("에? 특수한 용어가 나왔나요? 음, 간단히 말하자면……", );
       await era.printAndWait(`${digital.sex}는 ${digital.uma_sex_title}에 대한 사랑, 어떻게 좋아하게 되었는지, 그리고 그 사랑 때문에 얼마나 노력해서 트레센에 합격했는지 쉴 새 없이 떠들기 시작했다. 그러다 데뷔를 결심했을 때 갑자기 깨달은 것이……`, );
       await digital.say_and_wait("보시다시피 전 잔디와 더트 적성이 모두 괜찮아요. 하지만 둘 다 가능하기 때문에 선택하기가 너무 어려운 거예요! 하나를 선택하면 다른 하나를 포기해야 하니까요!", );
-      await era.printAndWait(`デジは仕方なさそうに両手を広げた。`);
+      await era.printAndWait(`디지는 어쩔 수 없다는 듯 두 손을 펼쳤다.`);
       await digital.say_and_wait(`모든 ${digital.uma_sex_title}짱들은 각자의 마장에서 저마다의 매력이 있다구요! 전부 너무 고귀하다고요!`, );
       await digital.say_and_wait("전 도저히 받아들일 수 없었어요! 그래서 각오를 버리고, 아무것도 선택하지 않기로 했답니다!", );
       await digital.say_and_wait("아하하하하!");
