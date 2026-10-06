@@ -24,114 +24,114 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] o_c_pray
+  // [번역 완료] o_c_pray
   async o_c_pray(you, dice) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで神社へ祈願に行く。',
+      '은(는) 혼자 신사에 기원하러 갔다.',
     ]);
     if (dice < 0.5) {
-      await printAndWait('吉のおみくじが出た！ 来た甲斐はあった。');
+      await printAndWait('길(吉) 운세가 나왔다! 온 보람이 있었다.');
     } else {
       await printAndWait(
-        '凶のおみくじが出た！ この数日は尻尾を巻いておとなしくしていよう……',
+        '흉(凶) 운세가 나왔다! 며칠 동안은 꼬리를 말고 얌전히 지내자……',
       );
     }
   },
 
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで川辺へ釣りに行く。ボウズだけは避けたいところだ。',
+      '은(는) 혼자 강변으로 낚시를 갔다. 빈손만은 피하고 싶다.',
     ]);
   },
 
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで川辺を散歩し、特にすることもなくしばらく時を過ごした。',
+      '은(는) 혼자 강변을 산책하며 특별히 하는 일 없이 한동안 시간을 보냈다.',
     ]);
   },
 
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで商店街のゲームセンターへ行く。何をやって暇をつぶそうか。',
+      '은(는) 혼자 상점가의 게임센터에 갔다. 뭘 하며 시간을 때울까.',
     ]);
   },
 
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで商店街のくじ引きへ行く。いいものが当たれ！',
+      '은(는) 혼자 상점가의 뽑기 행사에 갔다. 좋은 게 당첨돼라!',
     ]);
   },
 
-  // [번역 대상] o_s_ero_item
+  // [번역 완료] o_s_ero_item
   async o_s_ero_item(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで商店街へ行き、目立たないピンクの小さな店へ真っ直ぐ向かった……',
+      '은(는) 혼자 상점가로 가서 눈에 띄지 않는 분홍색 작은 가게로 곧장 향했다……',
     ]);
   },
 
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで商店街のカラオケへ行く。こんな退屈なことを、なぜしているのだろう……',
+      '은(는) 혼자 상점가의 노래방에 갔다. 이런 따분한 일을 왜 하고 있는 걸까……',
     ]);
   },
 
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで商店街の映画館へ行く。人混みの中で浮いている感じが、どうしても拭えない。',
+      '은(는) 혼자 상점가의 영화관에 갔다. 사람들 속에서 혼자 붕 뜬 듯한 느낌을 도저히 떨칠 수 없다.',
     ]);
   },
 
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで駅前で食事をする。お気に入りの店は、いつもの味のままだった。',
+      '은(는) 혼자 역 앞에서 식사를 했다. 단골 가게는 언제나 같은 맛이었다.',
     ]);
   },
 
-  // [번역 대상] o_s_shopping
+  // [번역 완료] o_s_shopping
   async o_s_shopping(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで駅前のデパートを歩き、買い物リストを確認する。',
+      '은(는) 혼자 역 앞 백화점을 돌아다니며 장보기 목록을 확인했다.',
     ]);
   },
 
-  // [번역 대상] office_cook
+  // [번역 완료] office_cook
   async office_cook(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりでトレーナー室で料理をする。たまには自分へのご褒美に、揚げ物でも作ろう。',
+      '은(는) 혼자 트레이너실에서 요리를 했다. 가끔은 자신에게 주는 보상으로 튀김이라도 만들어 보자.',
     ]);
   },
 
-  // [번역 대상] school_atrium
+  // [번역 완료] school_atrium
   async school_atrium(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで中庭へ行き、特にすることもなくしばらく時を過ごした。',
+      '은(는) 혼자 중정으로 가서 특별히 하는 일 없이 한동안 시간을 보냈다.',
     ]);
   },
 
-  // [번역 대상] school_rooftop
+  // [번역 완료] school_rooftop
   async school_rooftop(you) {
     await printAndWait([
       you.get_colored_name(),
-      ' はひとりで屋上へ上がり、「禁煙学園」の看板を無視して一服するか考える。',
+      '은(는) 혼자 옥상에 올라가 「금연 학원」 표지판을 무시하고 한 대 피울지 고민했다.',
     ]);
   },
 };
