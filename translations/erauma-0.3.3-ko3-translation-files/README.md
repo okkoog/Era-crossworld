@@ -25,7 +25,7 @@
   3. **3/3:** 대상 21~30 완료, commit `2e7570de`; 해당 10구간 일본어 가나 literal 0 / JS 구문 정상.
   - 최종 전체 재검사: **2550줄 / 30/30 완료 / `[번역 대상]` 0 / `[번역 완료]` 30 / 일본어 가나 literal 0 / 한자-only 일본어 literal 후보 0 / JS 구문 정상**. 현재 blob `dd7d0540f4a891772cc56d83d0da8702be342849`.
 - 순서상 `101700-Symboli-Rudolf/entry.js`는 실제 확인 결과 이미 `[번역 대상]` 0 / `[번역 완료]` 20 상태라 건너뛴다.
-- **현재 체크포인트:** **번역 작업 일시 중단 / 구버전 한국어 재사용 전수조사 진행 중.** `[번역 대상]` 안에 '구버전 KR이 없어서 새 번역이 필요한 부분'과 '구버전 KR이 있으나 구조 차이 때문에 자동 이식되지 않은 부분'이 섞여 있음이 확인되었다. 따라서 `Agnes-Digital/edu-19.js` 번역은 보류하고, [TRANSLATION_REUSE_AUDIT.md](TRANSLATION_REUSE_AUDIT.md)의 3자 대조(old KR ↔ current ja-JP ↔ live ko3)를 우선한다. 현재 엄격 최소 미반영 확정치는 **727 작업 단위**(daily/rec 414 + timon 130 + 기록 밖 edu 1차 확정 183)이며, 기록 밖 kojo 후보에 대한 3자 대조를 계속 진행 중이다.
+- **현재 체크포인트:** **번역 작업 일시 중단 / 구버전 한국어 재사용 전수조사 진행 중.** `[번역 대상]` 안에 '구버전 KR이 없어서 새 번역이 필요한 부분'과 '구버전 KR이 있으나 구조 차이 때문에 자동 이식되지 않은 부분'이 섞여 있음이 확인되었다. 따라서 `Agnes-Digital/edu-19.js` 번역은 보류하고, [TRANSLATION_REUSE_AUDIT.md](TRANSLATION_REUSE_AUDIT.md)의 3자 대조(old KR ↔ current ja-JP ↔ live ko3)를 우선한다. 현재 엄격 최소 미반영 확정치는 **994 작업 단위**(daily/rec 414 + timon 130 + 기록 밖 edu 누적 확정 450)이다. edu 2차 감사에서 Mayano Top Gun 56 C + Manhattan Cafe 41 C + Rice Shower 43 C + Agnes Tachyon 87 C + Eishin Flash 40 C = **267 C**를 추가 확정했으며, 원래 기록 밖 kojo 후보 1,205 중 아직 미조사 후보는 **750파트**(edu 364 + love 171 + ero 215)다.
 - **Gold-Ship 대형 파일 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **27/27 완료**, 최종 residual cleanup commit `a0db3897`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 27 / 본문 일본어 가나 literal 0 / JS 구문 정상.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
 - **기존 번역 재개 지점은 감사 완료 전 보류한다.** 기존 순서 정보는 아래에 보존하되, 현재 실제 다음 작업은 `TRANSLATION_REUSE_AUDIT.md`의 전수조사다.
