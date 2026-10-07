@@ -8342,7 +8342,7 @@ module.exports = {
       await era.printAndWait(
         `의외로 아직 자유롭게 숨을 쉴 수 있고 자신의 심장박동도 느껴진다.`,
       );
-      await era.printAndWait(`出口はどこ？ 어떻게 하면 좋을까? 죽는 건가?`);
+      await era.printAndWait(`출구는 어디지? 어떻게 하면 좋을까? 죽는 건가?`);
       await era.printAndWait(
         `그런 질문들이 머릿속을 떠돌며 의식을 거의 집어삼킬 듯하다.`,
       );
@@ -9242,7 +9242,7 @@ module.exports = {
         `모처럼 시간이 빈 ${you.name}도 이 기회에 이곳저곳 돌아다니며 쌓인 압박을 충분히 풀었다.`,
       );
       await era.printAndWait(
-        `${maru.name}は${
+        `${maru.name}은(는) ${
           you.name
         }의 담당 ${maru.uma_sex_title}로서 지금은 후배들의 무대를 보고 있다.`,
       );
@@ -9255,7 +9255,7 @@ module.exports = {
       era.printButton(`「고개를 끄덕인다」`, 1);
       await era.input();
       await era.printAndWait(
-        `${you.name}は${
+        `${you.name}은(는) ${
           maru.name
         }의 곁에 서서 눈앞의 무대에서 ${maru.uma_sex_title}들이 필사적으로 가장 아름다운 모습을 보여주는 것을 바라봤다.`,
       );
@@ -9620,7 +9620,7 @@ module.exports = {
         `지난해 ${maru.name}과(와) 팬들의 포위를 피하려 급히 도망치다가 우연히 이 오솔길을 발견했다.`,
       );
       await era.printAndWait(
-        `当時の${
+        `당시의 ${
           maru.sex
         }은(는) 정말 즐거워 보였다…… 아니야, 레이스장에서와는 다른 종류의 즐거움이다.`,
       );
