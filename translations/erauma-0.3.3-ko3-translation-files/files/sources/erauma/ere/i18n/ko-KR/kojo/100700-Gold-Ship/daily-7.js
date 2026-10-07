@@ -375,19 +375,19 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、釣りに行った……',
+      '은(는) 낚시하러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
         {
           color: gold_color,
           content:
-            '釣りに必要なのは精神力……自分との戦いだ！ 池の主を釣り上げたとき、アタシの心は『塩素』に勝ったんだぜ！',
+            '낚시에 필요한 건 정신력…… 자기 자신과의 싸움이다! 연못의 주인을 낚아 올렸을 때 내 마음은 『염소』를 이긴 거라고!',
         },
       ]);
     } else {
@@ -395,25 +395,25 @@ module.exports = {
         {
           color: gold_color,
           content:
-            'ふっふ～服の下に防弾チョッキ着てるからな。天上から銛が落ちようがサーモンが落ちようが、傷一つねえぜ！',
+            '후후~ 옷 밑에 방탄조끼 입고 있으니까. 하늘에서 작살이 떨어지든 연어가 떨어지든 상처 하나 안 난다구!',
         },
       ]);
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、散歩に行った……',
+      '은(는) 산책하러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
         {
           color: gold_color,
           content:
-            'やば、部屋で飼ってる画用紙を預け忘れた！ あーあ、アタシがいないと寂しがるのに……',
+            '큰일, 방에서 키우는 도화지를 맡겨두는 걸 깜빡했네! 아~ 내가 없으면 외로워할 텐데……',
         },
       ]);
     } else {
@@ -421,7 +421,7 @@ module.exports = {
         {
           color: gold_color,
           content:
-            'コースの向こうの空を眺めれば、この身の故郷・黄金星が見えるんじゃ……ほっほっほ……',
+            '코스 너머 하늘을 바라보면 이 몸의 고향・황금성이 보일지도 모르지…… 허허허……',
         },
       ]);
     }
@@ -430,19 +430,19 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(gs, callname) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、ゲーセンへ行った……',
+      '은(는) 오락실에 갔다……',
     ]);
     if (Math.random() < 0.5) {
-      await gs.say_and_wait('おら！ 一爪でこいつら全部掴んで……なくなった！？');
+      await gs.say_and_wait('오라! 한 번에 이 녀석들 전부 집어서…… 없어졌어!?');
     } else {
       await gs.say_and_wait([
         callname,
-        '！ 弾切れだ、カバーしてくれ！ うおっ！',
+        '! 탄 떨어졌다, 엄호해줘! 우왓!',
       ]);
     }
   },
@@ -450,24 +450,24 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(gs, callname) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、くじを引きに行った……',
+      '은(는) 뽑기를 하러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
         callname,
         {
-          content: '！ 金出せ、アタシの10連の心はもう止まらねえ！！！',
+          content: '! 돈 내놔, 내 10연차의 마음은 이제 멈출 수 없어!!!',
           color: gold_color,
         },
       ]);
     } else {
       await gs.say_and_wait(
-        '超小型潜水艦でタイタニックの残骸を探検する旅行券、当たんねえかな？',
+        '초소형 잠수함으로 타이타닉 잔해를 탐험하는 여행권, 안 걸리려나?',
       );
     }
   },
@@ -475,26 +475,26 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(gs, callname) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、カラオケへ行った……',
+      '은(는) 노래방에 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
-        '誰もが君に瞳を奪われる～♪ 君こそ完璧で究極の～',
+        '누구나 너에게 시선을 빼앗겨~♪ 너야말로 완벽하고 궁극의~',
         {
-          content: 'ゲッター！！！',
+          content: '겟타!!!',
           color: gold_color,
         },
       ]);
     } else {
       await gs.say_and_wait([
-        'いまの若いのはニコニコ超組曲すら知らねえ……',
+        '요즘 젊은 것들은 니코니코 초조곡도 모른다니까……',
         callname,
-        ' はまだまだ坊ちゃん……',
+        '은(는) 아직 애송이구만……',
       ]);
     }
   },
@@ -502,24 +502,24 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(gs, callname) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、映画を見に行った……',
+      '은(는) 영화를 보러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
-        'おっ！ クロフネパパが出てる映画じゃねえか？',
+        '오! 쿠로후네 아빠가 나오는 영화잖아?',
         callname,
-        ' も見るか？',
+        '도 볼래?',
       ]);
     } else {
       await gs.say_and_wait([
-        '最近のヒーロー映画、つまんねえな……',
+        '요즘 히어로 영화, 재미없네……',
         {
-          content: 'そうだ、『帰ってきたゴールドシップ』撮るか！',
+          content: '그래, 『돌아온 골드 쉽』이나 찍을까!',
           color: gold_color,
         },
       ]);
