@@ -153,132 +153,132 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] crazy_fan_end
+  // [번역 완료] crazy_fan_end
   crazy_fan_end: (() => {
-    const title = 'ファンの襲撃';
+    const title = '팬의 습격';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
-      await era.printAndWait('土砂降りの雨、長く鳴るサイレン。');
+      await era.printAndWait('쏟아지는 폭우, 길게 울리는 사이렌.');
       await era.printAndWait([
-        '果てしないように見える通りは好奇の通行人で満ち、',
+        '끝없이 이어지는 듯한 거리는 호기심 어린 행인들로 가득하고,',
         you.get_colored_name(),
-        ' は担架に押さえられ、絶望を書いた両目を見開いたまま、',
+        '은(는) 들것에 고정된 채 절망이 새겨진 두 눈을 크게 뜨고,',
         gs.sex,
-        'がパトカーへ乗るのを見送った。',
+        '이(가) 경찰차에 타는 모습을 바라봤다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は刺された劇痛をこらえ、声を振り絞って「これは',
+        '은(는) 찔린 격통을 견디며 목소리를 쥐어짜 「이건',
         gs.sex,
-        'のせいじゃない！」と叫ぶ。',
+        ' 탓이 아니야!」라고 외친다.',
       ]);
       era.println();
       await era.printAndWait([
         gs.get_colored_name(),
-        ' が血に全身を染めた姿は、まるで',
+        '이(가) 피로 온몸을 물들인 모습은 마치',
         gs.sex,
-        'が誇りにしている勝負服を着ているようだった。',
+        '이(가) 자랑스럽게 여기는 승부복을 입고 있는 듯했다.',
       ]);
       era.println();
-      await era.printAndWait('こうなるべきではなかった。');
+      await era.printAndWait('이렇게 되어서는 안 됐다.');
       await era.printAndWait([
-        'トレーナーの失敗を、',
+        '트레이너의 실패를,',
         gs.uma_sex_title,
-        'が背負うべきではない。',
+        '이(가) 짊어져서는 안 된다.',
       ]);
       await era.printAndWait([
         gs.uma_sex_title,
-        'の常人離れした肉体は、こういう場所で使うものではない。',
+        '의 인간을 초월한 육체는 이런 곳에서 쓸 것이 아니다.',
         gs.couple_title,
-        'はコースの上で、楽しく競い合えばよかった。',
+        '은(는) 코스 위에서 즐겁게 경쟁하기만 하면 됐다.',
       ]);
       await era.printAndWait([
-        'たとえば ',
+        '예를 들어 ',
         gs.get_colored_name(),
-        ' が ',
+        '이(가) ',
         you.get_colored_name(),
-        ' のために自制を失い、',
+        '을(를) 위해 자제력을 잃고,',
         you.get_colored_name(),
-        ' を刺そうとした狂人を殴りつけて、路上に一条の、あまりにも美しい赤い絨毯を作るようなことは、あってはならなかった。',
+        '을(를) 찌르려던 광인을 때려 길 위에 너무도 아름다운 붉은 융단 한 줄을 만드는 일은 있어서는 안 됐다.',
       ]);
       era.println();
-      await era.printAndWait('いったい……どこで、間違えたのか……');
+      await era.printAndWait('대체…… 어디서 잘못된 걸까……');
       era.println();
       await era.printAndWait([
-        '怒ったファンの報復を受け、',
+        '분노한 팬의 보복을 받아,',
         you.get_colored_name(),
-        ' は結末を迎えた……',
+        '은(는) 결말을 맞았다……',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] hope_sta_win
+  // [번역 완료] hope_sta_win
   hope_sta_win: (() => {
-    const title = 'エデンへの道';
+    const title = '에덴으로 가는 길';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       const ret = [];
-      await era.printAndWait('無事に完走した！');
+      await era.printAndWait('무사히 완주했다!');
       era.println();
       await era.printAndWait(
-        'この調子なら、来年のクラシック級でもゴールドシップの活躍が見られそうだ。',
+        '이 기세라면 내년 클래식급에서도 골드 쉽의 활약을 볼 수 있을 것 같다.',
       );
       era.println();
 
-      era.printButton('「お疲れ！」', 1);
+      era.printButton('「수고했어!」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        'これならエイヒレの蒲焼も嫉妬する香りだぜ——嗅いでみろ？',
+        '이 정도면 가오리 지느러미 장어구이도 질투할 향기다——맡아볼래?',
       );
       era.println();
       await era.printAndWait(
-        `汗だくの ${gs.name} が近づき、${you.name} に自分の汗の匂いを嗅がせる……`,
+        `땀투성이인 ${gs.name}이(가) 다가와 ${you.name}에게 자기 땀 냄새를 맡게 한다……`,
       );
       era.println();
-      await gs.say_and_wait('どうだ？ 陸を制した次は海まで掌中に収めたぜ～');
-      era.printButton('「たしかに、いい匂いだ……」（恋慕+2）', 1);
-      era.printButton('「でもこれは陸上のレースだぞ……」（好感+10）', 2);
+      await gs.say_and_wait('어때? 육지를 제패한 다음엔 바다까지 손에 넣었다고~');
+      era.printButton('「확실히 좋은 냄새네……」 (연모+2)', 1);
+      era.printButton('「그런데 이건 육상 레이스잖아……」 (호감+10)', 2);
       ret.push(await era.input());
       await era.printAndWait([
         gs.get_colored_name(),
-        ' は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' を選手通路の壁へ押し、自分も ',
+        '을(를) 선수 통로 벽으로 밀고, 자신도 ',
         you.get_colored_name(),
-        ' に背を預けた。',
+        '에게 등을 기댔다.',
         gs.sex,
-        'は力を抜き、今にも倒れそうだ。',
+        '은(는) 힘을 풀어 금방이라도 쓰러질 듯하다.',
         you.get_colored_name(),
-        ' は仕方なく……',
+        '은(는) 어쩔 수 없이……',
       ]);
       era.println();
-      era.printButton('（ゴールドシップの腰を抱えて支える）（恋慕+2）', 1);
-      era.printButton('（肩を貸してゴールドシップを支える）（好感+10）', 2);
+      era.printButton('(골드 쉽의 허리를 안아 지탱한다) (연모+2)', 1);
+      era.printButton('(어깨를 빌려 골드 쉽을 지탱한다) (호감+10)', 2);
       ret.push(await era.input());
       await gs.say_and_wait(
-        `そういえば、トゥインクルシリーズはこれで全部放送終了だよな。本${
-          gs.sex_code === 1 ? '旦那' : 'お嬢'
-        }の熱い勝ち気も、もう出番なしだ……`,
+        `그러고 보니 트윙클 시리즈는 이걸로 전부 방송 종료지. 이 ${
+          gs.sex_code === 1 ? '도련님' : '아가씨'
+        }의 뜨거운 승부욕도 이제 나설 데가 없네……`,
       );
       era.println();
 
       era.printButton(
-        '「いやいや、何言ってんだ。ここからが本番のクラシック級だろ！」',
+        '「아니 아니, 무슨 소리야. 지금부터가 본격적인 클래식급이잖아!」',
         1,
       );
       await era.input();
 
       await era.printAndWait(
-        `そんなやりとりの末、${you.name} と ${gs.name} はゆっくり控え室へ戻った——`,
+        `그런 대화를 나눈 끝에 ${you.name}과(와) ${gs.name}은(는) 천천히 대기실로 돌아갔다——`,
       );
       return [ret];
     };
@@ -286,120 +286,120 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] hoverboard
+  // [번역 완료] hoverboard
   hoverboard: (() => {
-    const title = 'ゴルシ号、爆誕！';
+    const title = '고루시호, 폭탄 탄생!';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       await era.printAndWait(
-        '「ブンブンブン——ブンブンブン——」という騒音が近づいてくる。蚊の羽音ではない。',
+        '「붕붕붕——붕붕붕——」 하는 소음이 가까워진다. 모기 날갯소리는 아니다.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、セグウェイが目の前を走り抜け、その上に見慣れた影が立っているのを見た。',
+        '은(는) 세그웨이가 눈앞을 가로질러 달리고 그 위에 익숙한 그림자가 서 있는 것을 보았다.',
       ]);
       era.println();
       await gs.say_and_wait(
-        '最高速度時速25キロ、出力250ワット！ これがゴルシ号だ！',
+        '최고 속도 시속 25킬로, 출력 250와트! 이것이 고루시호다!',
       );
       era.println();
       await era.printAndWait(
-        'セグウェイはドリフトで止まり、車上の麗しい影が一躍して降り立つ。',
+        '세그웨이는 드리프트하며 멈췄고 차량 위의 아름다운 그림자가 단숨에 뛰어내렸다.',
       );
       await era.printAndWait([
         gs.get_colored_name(),
-        ' は得意げに ',
+        '은(는) 의기양양하게 ',
         you.get_colored_name(),
-        ' へ親指を立てた。',
+        '에게 엄지를 치켜세웠다.',
       ]);
       era.println();
-      era.printButton('「ゴ、ゴルシ号？」', 1);
+      era.printButton('「고, 고루시호?」', 1);
       await era.input();
-      await gs.say_and_wait('まさにゴルシ号、それである！');
+      await gs.say_and_wait('바로 고루시호, 그것이다!');
       await era.printAndWait([
         gs.sex,
-        ' は軽くゴルシ号のハンドルを叩き、誇らしげに ',
+        '은(는) 고루시호의 핸들을 가볍게 두드리며 자랑스럽게 ',
         you.get_colored_name(),
-        ' へ愛車の全貌を見せた。',
+        '에게 애차의 전모를 보여줬다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が寄って眺めると、形はちゃんとしている。上銀下黒、スポークは普通のセグウェイより一回り大きい。',
+        '이(가) 다가가 살펴보니 형태는 제대로 갖춰져 있다. 위는 은색, 아래는 검은색이며 스포크는 보통 세그웨이보다 한 치수 크다.',
       ]);
       await era.printAndWait([
         'だが ',
         you.get_colored_name(),
-        ' はセグウェイに詳しくなく、特注かどうかは判断できない。',
+        '은(는) 세그웨이에 대해 잘 몰라 특주품인지 판단할 수 없다.',
       ]);
       await era.printAndWait([
-        'ただこのセグウェイは',
+        '다만 이 세그웨이는',
         gs.sex,
-        '本人と同じで、金色の部分がほとんど見えない。',
+        ' 본인과 마찬가지로 금색 부분이 거의 보이지 않는다.',
       ]);
       era.println();
-      era.printButton('「で、どこがゴールドなんだ？」', 1);
+      era.printButton('「그래서 어디가 골드인 거야?」', 1);
       await era.input();
-      await gs.say_and_wait('値段。');
+      await gs.say_and_wait('가격.');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は金という字を聞いた瞬間、眉が直立した。',
+        '은(는) 돈이라는 말을 듣는 순간 눈썹이 곤두섰다.',
       ]);
       era.println();
-      era.printButton('「高くないよな？」', 1);
+      era.printButton('「비싼 건 아니지?」', 1);
       await era.input();
 
-      await era.printAndWait('プロの選手は金遣いが荒い、とよく聞く。');
+      await era.printAndWait('프로 선수는 돈을 헤프게 쓴다는 말을 자주 듣는다.');
       await era.printAndWait(
-        '若い選手の多くは収入を得た途端、流行と豪華に身を包み、',
+        '많은 젊은 선수는 수입을 얻자마자 유행과 사치로 몸을 치장하고,',
       );
-      await era.printAndWait('不調が来たときには保障の資金すら残っていない。');
-      await era.printAndWait('トレーナーとして、ちゃんと監督せねばならない。');
+      await era.printAndWait('부진이 찾아왔을 때는 안전망이 될 자금조차 남지 않는다.');
+      await era.printAndWait('트레이너로서 제대로 감독해야 한다.');
       era.println();
-      await era.printAndWait('だが、その心配は余計だった。');
+      await era.printAndWait('하지만 그 걱정은 쓸데없었다.');
       era.println();
       await gs.say_and_wait(
-        'ゴルシが手ずから改造したゴルシ号は値の付けようがねえ、そりゃ高い！',
+        '고루시가 직접 개조한 고루시호는 값을 매길 수가 없지, 당연히 비싸다!',
       );
       era.println();
       await gs.say_and_wait(
-        'だって中から外まで、めちゃくちゃ手間かけて直した愛車だぜ！',
+        '안에서 밖까지 엄청난 공을 들여 손본 애차니까!',
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は少し驚いた。ゴールドシップの思考の跳び方は、やはり凄まじい。',
+        '은(는) 조금 놀랐다. 골드 쉽의 사고가 튀는 방식은 역시 대단하다.',
       ]);
       era.println();
-      era.printButton('「……俺が壊したらどうする？」', 1);
+      era.printButton('「……내가 부수면 어떡할 거야?」', 1);
       await era.input();
       await gs.say_and_wait(
-        '安心しろ！ ゴルシ号の売りは頑丈さだ！ ぶつけても壊れねえ！',
+        '안심해! 고루시호의 장점은 튼튼함이다! 부딪쳐도 안 부서져!',
       );
       era.println();
       await era.printAndWait([
-        'この知識は無数の実践から得たものらしい。ゴルシ号が中から外まで',
+        '이 지식은 무수한 실전에서 얻은 모양이다. 고루시호가 안에서 밖까지',
         gs.sex,
-        'に改装された理由も、それで説明がつく。',
+        '에 의해 개조된 이유도 그것으로 설명된다.',
       ]);
       await era.printAndWait([
-        'このあと、危険から遠ざける大切さをちゃんと教えねばならない。だが……',
+        '이 뒤 위험을 멀리해야 하는 중요성을 제대로 가르쳐야 한다. 하지만……',
       ]);
       await era.printAndWait([
         gs.get_colored_name(),
-        ' が熱意満々で、今にも ',
+        '이(가) 의욕이 넘쳐 당장이라도 ',
         you.get_colored_name(),
-        ' をゴルシ号に縛りつけて走り出しかねない様子を見て、',
+        '을(를) 고루시호에 묶어 달려나갈 듯한 모습을 보고,',
         you.get_colored_name(),
-        ' は',
+        '은(는)',
         gs.sex,
-        'の好意をありがたく受けることにした。',
+        '의 호의를 고맙게 받아들이기로 했다.',
       ]);
       era.println();
-      await era.printAndWait('【ゴルシ号】の借用証を手に入れた！');
+      await era.printAndWait('【고루시호】의 대여증을 손에 넣었다!');
     };
     f.title = title;
     return f;
