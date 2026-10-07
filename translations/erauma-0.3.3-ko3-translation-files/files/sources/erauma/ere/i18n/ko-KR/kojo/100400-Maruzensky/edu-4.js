@@ -100,7 +100,7 @@ module.exports = {
       await era.printAndWait(`${maru.name} 入着。`);
       await maru.say_and_wait(
         `하이! ${callname}, ${
-          maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+          maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
         }인 나의 쿨한 모습, 잘 봤어?`,
       );
       era.printButton(`수고했어.`, 1);
@@ -1381,9 +1381,9 @@ module.exports = {
       );
       await maru.say_and_wait(
         `결국 편지로 타협…… 하지만! ${
-          maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+          maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
         }인 나, 편지로 마음을 전하는 것도 다시 유행하기 시작했다는 걸 알아버렸어! 역시 ${
-          maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+          maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
         }인 나는 계속 유행의 선두를 달리고 있네♪`,
       );
       await maru.say_and_wait(
@@ -1831,7 +1831,7 @@ module.exports = {
 
   // [번역 대상] fall_heaven
   fall_heaven: (() => {
-    const title = 'GOOD END · 낙원에迷い込んだ 여행자';
+    const title = 'GOOD END · 낙원에 길을 잃고 들어온 여행자';
     /**
      * @param {CharaTalk} maru 마루젠 スキー
      * @param {CharaTalk} taste アキカワヤヨイ
@@ -1906,7 +1906,7 @@ module.exports = {
       ]);
       await maru.say_as_passer_by_and_wait(
         '기자 A',
-        '画面の前の観客に、教えていただけますか？',
+        '화면 앞 시청자들에게 말씀해 주실 수 있을까요?',
       );
       await maru.say_and_wait([
         '응, 최근 한 경기로 말하자면 어떤 ',
@@ -1995,7 +1995,7 @@ module.exports = {
       await era.printAndWait([
         ' ',
         maru.get_colored_name(),
-        ' と一旦別れ、',
+        '와(과) 잠시 헤어진 뒤,',
         you.get_colored_name(),
         '은(는) 훈련실에 앉아 있다.',
       ]);
@@ -5395,7 +5395,7 @@ module.exports = {
       await era.input();
       await maru.say_and_wait(
         `그래! ${
-          maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+          maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
         }인 나도 앞으로의 훈련은 스파르타식으로 해야겠네!`,
       );
       era.println();
@@ -6339,7 +6339,7 @@ module.exports = {
         `あら、${callname}、そんなに私を気にかけてるの？`,
       );
       await maru.say_and_wait(
-        `${maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'}な私も、${callname} と素敵な思い出を残したいわ……`,
+        `${maru.sex_code !== 1 ? '아가씨' : '멋진 남자'}な私も、${callname} と素敵な思い出を残したいわ……`,
       );
       await maru.say_and_wait(`ふふ～、明日の予定、もう楽しみね♪`);
       await era.printAndWait(`${maru.name}の機嫌はとてもよさそうだ。`);
@@ -8469,7 +8469,7 @@ module.exports = {
       );
       await maru.say_and_wait(
         `${callname}、祝日も緩まないのね。${
-          maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+          maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
         }な私、そういう頑張り屋さん、好きよ♪`,
       );
       await era.printAndWait(
@@ -8480,7 +8480,7 @@ module.exports = {
       await era.printAndWait(`ところが、${maru.name}はもっと嬉しそうだった。`);
       await maru.say_and_wait(
         `ふふ～、${callname}はそんなに私とデートしたいの？ あら♪${
-          maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+          maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
         }な私の魅力、すごいじゃない⭐`,
       );
       await maru.say_and_wait(
