@@ -2,20 +2,20 @@
 # @file メジロマックイーン - 調教
 # @author 伊兰
 # @author Claude (翻訳)
-# [번역 대상] kiss
+# [번역 완료] kiss
 kiss:
   - %YOU%은(는) 맥퀸과 키스를 나누었다.
   - 마치 입안에서 크림이 수없이 녹아내려 만들어진 각인 같았다. %YOU%은(는) %SEX%와 키스할 때마다 맥퀸의 입안에서 느껴지는 달콤한 맛을 느낄 수 있었다.
   - %YOU%을(를) 입맞춤 속에서 헤어 나오지 못하게 만들었지만, 스스로도 이대로 입술을 떼고 싶지 않았다.
 
-# [번역 대상] french_kiss
+# [번역 완료] french_kiss
 french_kiss:
   - 맥퀸과 설전을 벌였다.
   - %YOU% 본인이 먼저 능동적으로 맥퀸의 혀와 얽혀 들었지만, 맥퀸은 오히려 더욱 열정적으로 변했다.
   - %YOU%와 %SEX%의 능숙한 기술과 일심동체가 된 호흡 덕분에 서로 흥분하기 시작했다.
   - 뿜어내는 숨결은 더욱 가빠지고 뜨거워졌으며, 서로의 몸을 더듬는 손길은 더욱 고조되었다.
 
-# [번역 대상] pet_breast_first
+# [번역 완료] pet_breast_first
 pet_breast_first:
   - %YOU%은(는) 맥퀸을 품에 안고 살결을 따라 %SEX%의 어깨를 천천히 훑으며 아래로 내려갔다.
   - %YOU%이(가) 처음으로 아직 누구에게도 닿은 적 없는 완만한 곡선에 손을 댔을 때, %SEX%의 몸이 움찔하며 굳었다.
@@ -48,7 +48,7 @@ pet_breast_first:
         content: %CHARA%
       - 「이건 전부 위로하려는 수작이잖아요…… 바보.」
 
-# [번역 대상] pet_breast
+# [번역 완료] pet_breast
 pet_breast:
   - random: true
     lines:
@@ -97,7 +97,7 @@ pet_breast:
       - 그 한마디에 맥퀸은 부끄러워 고개를 돌렸고, 시선은 %YOU%과(와) 마주치지 않은 채 입가에는 옅은 미소가 떠올랐다.
 
 # 애무·유두
-# [번역 대상] pet_nipple_first
+# [번역 완료] pet_nipple_first
 pet_nipple_first:
   - %YOU%의 손가락이 가슴 앞을 지나가다 결국 이미 살짝 꼿꼿하게 선 유두에 닿았다.
   - 맥퀸의 몸은 마치 전기에 감전된 듯 튀어 올랐고, 눈을 크게 뜬 채 당황하며 %YOU%을(를) 바라보았다.
@@ -124,9 +124,9 @@ pet_nipple_first:
         content: %CHARA%
       - 「왜…… 이렇게 기분이 좋은 걸까요.」
 
-# [번역 대상] pet_nipple
+# [번역 완료] pet_nipple
 pet_nipple:
-  # TCVARNAME:44 = 発情
+  # TCVARNAME:44 = 발정
   - if: era.get('tcvar:13:44') === 0
     lines:
       - random: true
@@ -186,8 +186,8 @@ pet_nipple:
                 content: %CHARA%
               - 「으으…… 이런 느낌…… 저는 이미…… 너무 이상하게 변해버렸어요…… 당신이 만지기만 하면 바로……♥」
 
-#愛撫・陰核
-# [번역 대상] pet_clitoris_first
+# 애무·음핵
+# [번역 완료] pet_clitoris_first
 pet_clitoris_first:
   - %YOU%은(는) %SEX%의 어깨에 부드럽게 입을 맞추며 매끄러운 허리선을 따라 손을 내렸고, 이윽고 손바닥은 %SEX%의 겹쳐진 다리 사이에 멈췄다.
   - 맥퀸은 겁먹은 표정으로 %YOU%을(를) 바라보며 양손으로 이불을 꽉 쥐었고, 입술은 긴장으로 인해 가볍게 하얘졌다.
@@ -215,7 +215,7 @@ pet_clitoris_first:
   - %YOU%의 동작은 멈추지 않고 오히려 손가락 끝으로 %SEX%의 음핵 끝부분을 살짝 압박했다. 미끄럽고 섬세하며 이미 살짝 딱딱하게 서 있었다.
   - %SEX%는 갑자기 %YOU%의 포옹을 갈구하듯 %YOU%의 품속으로 파고들며 떨리는 숨을 내뱉었다.
 
-# [번역 대상] pet_clitoris
+# [번역 완료] pet_clitoris
 pet_clitoris:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -294,7 +294,7 @@ pet_clitoris:
               - 「우우…… 그렇게 하면 너무 기분 좋아요…… 멈추지 마세요…… 이대로…… 계속 만져주세요……♥」
 
 # 음순 벌리기
-# [번역 대상] prepare_virgin_first
+# [번역 완료] prepare_virgin_first
 prepare_virgin_first:
   - %YOU%이(가) 살며시 맥퀸의 다리를 들어 올리자, %SEX%는 %YOU%의 의도를 눈치챈 듯 즉시 다리를 모으고 양손으로 방어하듯 은밀한 곳을 꽉 가렸다.
   - color: %COLOR%
@@ -322,7 +322,7 @@ prepare_virgin_first:
         content: %CHARA%
       - 「이미…… 메지로 가문의 영애라고는 할 수 없겠네요. 이런 곳까지 전부 당신에게 보여지다니.」
 
-# [번역 대상] prepare_virgin
+# [번역 완료] prepare_virgin
 prepare_virgin:
   - random: true
     lines:
@@ -356,7 +356,7 @@ prepare_virgin:
           - 「시…… 싫어요, 저는 보고 싶지 않아요…… 그런 곳이 그렇게 되어 있는 모습 따위.」
 
 # 손가락 넣기
-# [번역 대상] finger_fuck_first
+# [번역 완료] finger_fuck_first
 finger_fuck_first:
   - %YOU%은(는) 맥퀸의 다리 사이의 음순을 살며시 벌렸고, 이미 젖어있는 입구가 호흡에 맞춰 미세하게 꿈틀거리고 있었다.
   - %YOU%이(가) 손가락 하나를 펴 보이는 동작만 했는데도, 이를 지켜보던 맥퀸이 겁먹은 듯 한마디를 내뱉었다.
@@ -385,7 +385,7 @@ finger_fuck_first:
         content: %CHARA%
       - 「너무 힘주지는 마세요…… 저, 처음이니까…… 정말 울어버릴지도 모른다고요……」
 
-# [번역 대상] finger_fuck
+# [번역 완료] finger_fuck
 finger_fuck:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -516,8 +516,8 @@ finger_fuck:
                 content: %CHARA%
               - 「당신의 손가락은…… 이미 제 손보다 제 안쪽을 더 잘 알고 있어요…… 정말 못됐어……」
 
-#舐陰#
-# [번역 대상] cunnilingus_first
+# 음부 핥기
+# [번역 완료] cunnilingus_first
 cunnilingus_first:
   - %YOU%은(는) 맥퀸의 다리를 살며시 벌리고 천천히 %SEX%의 다리 사이로 머리를 묻었다.
   - %SEX%는 순간 몸이 굳어버렸고, 손으로 급하게 %YOU%의 머리를 밀어냈지만 힘이 너무 약해 아무 소용이 없었다.
@@ -553,7 +553,7 @@ cunnilingus_first:
         content: %CHARA%
       - 「아…… 으으…… 저는 이미…… 당신에게 핥아져서…… 이상해져 버렸어요……♥」
 
-# [번역 대상] cunnilingus
+# [번역 완료] cunnilingus
 cunnilingus:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -643,7 +643,7 @@ cunnilingus:
                 content: %CHARA%
               - 「얼마나 오래 핥든…… 당신 마음대로 하게 해줄게요…… 당신은 내 사람이니까……♥」
 
-# [번역 대상] ask_blow_job
+# [번역 완료] ask_blow_job
 ask_blow_job:
   - 「입에 머금어줘.」
   - 눈앞의 우마무스메에게 걷어차여도 할 말 없는 요청이었지만, 맥퀸은 기다렸다는 듯 %YOU%의 가랑이 사이에 정중히 자리를 잡고 앉았다.
@@ -654,14 +654,14 @@ ask_blow_job:
   - 큰일이다…… %SEX%의 타고난 감각과 기술은 %YOU%이(가) 깜짝 놀랄 만큼 훌륭했다……
   - %YOU%은(는) 쾌락을 연장하기 위해 끊임없이 심호흡하며 몸의 긴장을 풀었다.
 
-# [번역 대상] ask_hand_and_blow_job
+# [번역 완료] ask_hand_and_blow_job
 ask_hand_and_blow_job:
   - 「손과 입을 같이 써줘.」
   - 부탁을 받은 맥퀸은 성기를 입에 문 채 고개를 끄덕이고, 양손의 검지와 중지, 엄지로 「우아하게」 %YOU%의 성기를 위아래로 문질렀다.
   - 「하아…… 하아……」
   - %YOU%의 만족스러운 표정을 보았는지, 봉사하는 맥퀸의 얼굴에 옅은 기쁨의 빛이 서렸다.
 
-# [번역 대상] ask_deep_blow_job
+# [번역 완료] ask_deep_blow_job
 ask_deep_blow_job:
   - 「좀 더 깊게 머금어줘, 불편하면 반응해야 해……」
   - %YOU%은(는) 두 손으로 맥퀸의 머리를 잡고 부드럽게 %SEX%에게 그렇게 말했다.
@@ -670,7 +670,7 @@ ask_deep_blow_job:
   - 이렇게 주의를 주었음에도 불구하고, 무리하는 것을 좋아하는 %SEX%의 성격상 아무리 힘들어도 소리를 내지 않을 것 같았다.
   - 아무래도 %YOU% 스스로가 적당한 정도를 파악해야 할 것 같았다…… 하지만 맥퀸의 구강 구조는 정말로 훌륭했다……
 
-# [번역 대상] ask_tit_job_first
+# [번역 완료] ask_tit_job_first
 ask_tit_job_first:
   - 「가슴으로 해줄 수 있을까?」
   - 맥퀸은 그 말을 듣자마자 온몸이 굳어버렸고, 천천히 고개를 돌려 %YOU%을(를) 쏘아보았다. 귀가 미세하게 떨리는 것이 무엇을 들었는지 믿기지 않는 표정이었다.
@@ -699,7 +699,7 @@ ask_tit_job_first:
       - 「제 이런 가슴이 좋다고 말하는 바보는…… 당신뿐이니까…… 그래서, 그래 서…… 그래서 해드리는 거라고요……」
 
 # 빈유 상태의 특별 대사. 메지로 성 등의 이유로 B컵 정도가 된 이후에는 서술문
-# [번역 대상] ask_tit_job
+# [번역 완료] ask_tit_job
 ask_tit_job:
   - color: %COLOR%
     content:
@@ -717,8 +717,8 @@ ask_tit_job:
       - 「당신은 참 만족하기 쉬운 분이네요…… 하지만 그런 면이 싫지는 않답니다.」
   - 맥퀸은 손가락으로 성기 끝에서 흘러나오는 쿠퍼액을 톡 건드리며 살며시 미소 지었다.
 
-#挿入
-# [번역 대상] lose_virginity
+# 삽입
+# [번역 완료] lose_virginity
 lose_virginity:
   # 가장 좋은 결과, 즉 정상위·후배위·대면좌위·대면입위·배면입위 중 하나에서 처음 이 이벤트가 발생
   # 발생 후에는 다시 발생하지 않음(회차 진행으로 처녀 상태가 돌아온 경우 제외)
@@ -756,8 +756,8 @@ lose_virginity:
         content: %CHARA%
       - 「당신은…… 제게 가장 소중한 사람이에요…… 그러니까…… 비록 아프더라도, 당신과 이어져 있고 싶어요.」
 
-#正常位
-# [번역 대상] missionary
+# 정상위
+# [번역 완료] missionary
 missionary:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -904,8 +904,8 @@ missionary:
           - 결합 부위에서 「푸슉」 하는 소리와 함께 애액의 윤활을 빌려 성기가 맥퀸의 질 가장 깊은 곳까지 단번에 미끄러져 들어갔다.
           - 맥퀸의 몸은 곧바로 활처럼 휘었고, 한꺼번에 큰 자극이 %SEX%에게 몰려든 듯했다.
 
-#後背位
-# [번역 대상] doggy_style
+# 후배위
+# [번역 완료] doggy_style
 doggy_style:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -992,7 +992,7 @@ doggy_style:
                 content: %CHARA%
               - 「좋아요... 뒤에서 당신에게 박히는 기분... 이제 헤어 나올 수 없어요...♥」
 
-# [번역 대상] sitting
+# [번역 완료] sitting
 sitting:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -1070,7 +1070,7 @@ sitting:
           - 한참이 지나서야 맥퀸의 황홀한 눈동자가 트레이너를 바라봤다.
           - 결합 부위의 피스톤 운동은 두 사람의 신체 마찰을 일으키며 맥퀸의 유두가 계속해서 꼿꼿이 서도록 자극했다.
 
-# [번역 대상] standing
+# [번역 완료] standing
 standing:
   - if: era.get('tcvar:13:44') === 0
     lines:
@@ -1132,7 +1132,7 @@ standing:
           - %SEX%는 더 이상 몸을 사리지 않고 허리를 부드럽게 흔들며 %YOU%과(와) 호흡을 맞추었고, 몸은 그 어느 때보다 부드러워졌다.
           - 질 입구는 물을 뱉어내는 동시에 탐욕스럽게 성기를 빨아들였으며, 마치 %YOU%을(를) 영원히 그 안에 가둬두고 싶은 것처럼 보였다.
 
-# [번역 대상] hit_anal_when_doggy_style
+# [번역 완료] hit_anal_when_doggy_style
 hit_anal_when_doggy_style:
   # 후배위에서는 서술문
   - 후배위로 맥퀸과 격렬하게 삽입 운동을 하던 중, %YOU%은(는) 문득 장난기가 발동해 맥퀸의 엉덩이를 강하게 때렸다.
