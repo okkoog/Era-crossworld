@@ -25,10 +25,10 @@
   3. **3/3:** 대상 21~30 완료, commit `2e7570de`; 해당 10구간 일본어 가나 literal 0 / JS 구문 정상.
   - 최종 전체 재검사: **2550줄 / 30/30 완료 / `[번역 대상]` 0 / `[번역 완료]` 30 / 일본어 가나 literal 0 / 한자-only 일본어 literal 후보 0 / JS 구문 정상**. 현재 blob `dd7d0540f4a891772cc56d83d0da8702be342849`.
 - 순서상 `101700-Symboli-Rudolf/entry.js`는 실제 확인 결과 이미 `[번역 대상]` 0 / `[번역 완료]` 20 상태라 건너뛴다.
-- **현재 체크포인트:** **번역 작업 일시 중단 / 구버전 한국어 재사용 전수조사 진행 중.** `[번역 대상]` 안에 '구버전 KR이 없어서 새 번역이 필요한 부분'과 '구버전 KR이 있으나 구조 차이 때문에 자동 이식되지 않은 부분'이 섞여 있음이 확인되었다. 따라서 `Agnes-Digital/edu-19.js` 번역은 보류하고, [TRANSLATION_REUSE_AUDIT.md](TRANSLATION_REUSE_AUDIT.md)의 3자 대조(old KR ↔ current ja-JP ↔ live ko3)를 우선한다. **edu 886 / 886, love 171 / 171 전수조사 완료**. strict old-KR 미반영은 edu **880**, love **171**이며, 현재 전체 엄격 최소 미반영 확정치는 **1,595 작업 단위**(daily/rec 414 + timon 130 + edu 880 + love 171)이다. 기록 밖 kojo 후보 풀은 최소 **1,272파트**(edu 886 + love 171 + ero 215)이며, 현재 남은 미조사 후보는 **ero 215파트**뿐이다.
+- **현재 체크포인트:** **번역 작업 일시 중단 / 구버전 한국어 재사용 전수조사 진행 중.** `[번역 대상]` 안에 '구버전 KR이 없어서 새 번역이 필요한 부분'과 '구버전 KR이 있으나 구조 차이 때문에 자동 이식되지 않은 부분'이 섞여 있음이 확인되었다. 따라서 `Agnes-Digital/edu-19.js` 번역은 보류하고, [TRANSLATION_REUSE_AUDIT.md](TRANSLATION_REUSE_AUDIT.md)의 3자 대조(old KR ↔ current ja-JP ↔ live ko3)를 우선한다. **kojo edu/love/ero 후보 풀은 1,272 / 1,272 실제 대조 완료**했다. strict old-KR 미반영은 edu **880**, love **171**, ero **213**이며, 현재 전체 엄격 최소 미반영 확정치는 **1,808 작업 단위**(daily/rec 414 + timon 130 + edu 880 + love 171 + ero 213)이다. 다음 감사 범위는 `base` 9파일이며, 이후 기록 밖 `daily/rec` 및 general-i18n/entry의 old-source 존재 여부를 확인한다.
 - **Gold-Ship 대형 파일 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **27/27 완료**, 최종 residual cleanup commit `a0db3897`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 27 / 본문 일본어 가나 literal 0 / JS 구문 정상.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
-- **기존 번역 재개 지점은 감사 완료 전 보류한다.** 기존 순서 정보는 아래에 보존하되, 현재 실제 다음 작업은 `TRANSLATION_REUSE_AUDIT.md`의 전수조사다.
+- **기존 번역 재개 지점은 감사 완료 전 보류한다.** 기존 순서 정보는 아래에 보존하되, 현재 실제 다음 작업은 `TRANSLATION_REUSE_AUDIT.md`의 `base` 9파일 old-source 매핑/3자 대조다.
 - 다음 재개 지점(`FILES.md` 순서 기준, 번역 재개 시):
   1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/edu-19.js` — 실제 `[번역 대상]` **32개**, 4275줄. **다음 응답에서는 앞 30개만 처리**: `before_begin_race`부터 `ws_95_48`까지. 완료 즉시 저장·검증·커밋하고 사용자에게 보고한 뒤 응답 종료.
   2. 그 다음 진행 응답에서 같은 파일의 잔여 **2개** `ws_95_6`, `ws_palace`만 처리한 뒤 파일 전체 재검증·커밋·보고.
