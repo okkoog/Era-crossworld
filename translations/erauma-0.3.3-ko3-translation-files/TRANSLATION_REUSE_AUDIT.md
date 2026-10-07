@@ -181,6 +181,102 @@ daily/edu 기록에서 문자열 분할·배열 경계·동적 삽입 차이 때
 
 `base`는 구버전의 동일 `event/base/base-ID` 경로가 없으므로 별도 소스 영역 매핑이 필요하며, 단순히 “구버전 없음”으로 판정하지 않는다.
 
+## 기록 밖 edu 실제 3자 대조 — 1차 확정
+
+현재 live `[번역 대상]`과 구버전 KR 이벤트를 실제 파트 단위로 대조했다. 단순히 같은 ID의 구버전 파일 존재 여부가 아니라, 이벤트 제목·순서·본문을 확인해 대응을 확정한 항목만 아래 수치에 포함한다.
+
+### 이미 live 완료되어 감사 대상에서 제외
+
+`FILES.md`에는 target가 남아 있으나 실제 live ko3에서 target 0인 앞쪽 파일:
+- Silence Suzuka `edu-2.kojo`
+- Tokai Teio `edu-3-give-up.js`, `edu-3-hurt.js`, `edu-3.js`
+- Maruzensky `edu-4.js`
+- Oguri Cap `edu-6.kojo`
+- Gold Ship `edu-7.js`
+- Mejiro McQueen `edu-13.kojo`
+- Symboli Rudolf `edu-17.js`
+
+따라서 이들은 현재 미반영 수에 다시 포함하지 않는다.
+
+### Agnes Digital `edu-19.js`
+
+- live target: **32**
+- 구버전 KR 대응 확정: **31**
+- **C: 31**
+- `ws_palace` 1개는 구버전 전체에서 제목 `世界の旅人`, 등장인물 조합 및 クロフネ/Kurofune 관련 대응을 찾지 못해 **D 후보**로 분리.
+- 31개 C 파트는 현재 블록에 한국어 prose string이 없고 일본어가 그대로 남아 있으며, 구버전 대응 이벤트에는 한국어 본문이 존재한다.
+
+### Seiun Sky `edu-20.kojo`
+
+구버전 edu 트리 전체에 ID 20의 `edu-20` / `edu-events-20`가 존재하지 않는다. 따라서 현재 56파트는 이번 “구버전 KR 미반영” 확정치에서 제외하고 **D 측 후보**로 분류한다.
+
+### Tamamo Cross `edu-21.kojo`
+
+현재 22 target를 구버전의 한국어 이벤트 제목과 의미·본문으로 직접 매핑:
+- **C: 22**
+- B: 0
+
+22개 모두 current visible Korean prose가 없고 일본어가 남아 있으며, 대응 구버전 섹션에는 한국어 본문이 존재한다.
+
+### Mejiro Palmer `edu-64.kojo`
+
+현재 79 최상위 섹션, 구버전 74 섹션. 현재판에서 별도 분리된 `*_notify` 5개를 제외하면 나머지 74개가 구버전 74개와 순서·내용상 대응한다.
+
+직접 대응되는 74 target의 판정:
+- **B: 5**
+- **C: 69**
+
+B 5개:
+- `train`
+- `summer_sex_end`
+- `ak_c46_hug_sex_end`
+- `ak_c46_kiss_sex_end`
+- `party_sex_end`
+
+추가 분리 target인 `important_place_notify`, `golf_notify`, `lottery_notify`, `hot_spring_notify` 4개는 구버전의 본 이벤트에서 분리된 조각인지 추가 판정이 필요하므로 아직 확정치에 넣지 않는다. `rain_notify`는 현재 target가 아니다.
+
+### Mejiro Ardan `edu-71.kojo`
+
+현재 33 최상위 섹션 ↔ 구버전 33 섹션이 순서·이벤트 의미상 대응한다. 현재 target 32개 모두 구버전 한국어 본문이 존재한다.
+
+- **B: 27**
+- **C: 5**
+
+C 5개:
+- `beginning`
+- `beginning2`
+- `gap`
+- `together`
+- `separate_way`
+
+### Mejiro Bright `edu-74.kojo`
+
+현재 target 24개가 구버전에서 같은 이벤트 키로 모두 존재한다.
+- **B: 24**
+- C: 0
+
+각 현재 target 블록에 한국어와 일본어가 함께 남아 있고, 대응 구버전 섹션은 한국어 본문을 보유한다.
+
+### 이번 1차 edu 추가 확정치
+
+새로 엄격 확정된 old-KR 미반영 작업 단위:
+- Agnes Digital: **31 C**
+- Tamamo Cross: **22 C**
+- Mejiro Palmer: **5 B + 69 C = 74**
+- Mejiro Ardan: **27 B + 5 C = 32**
+- Mejiro Bright: **24 B**
+
+합계:
+- **B: 56**
+- **C: 127**
+- **B+C: 183**
+
+기존 엄격 최소 544에 더하면 현재 엄격 최소는:
+
+**544 + 183 = 727 작업 단위**
+
+이 727에는 Palmer의 미확정 notify 4개와 Agnes `ws_palace` D 후보는 포함하지 않는다.
+
 ## 다음 조사 단계
 
 1. 기록 밖 kojo 후보 **1,205파트**를 `FILES.md` 순서로 실제 3자 대조.
@@ -197,8 +293,9 @@ daily/edu 기록에서 문자열 분할·배열 경계·동적 삽입 차이 때
 전수조사 완료 전 **엄격 최소 확정치**:
 - kojo daily/rec 기록 기반 현재 미반영: **414**
 - timon 기록/본문 기반 현재 미반영: **130**
-- 합계: **544 작업 단위**
+- 기록 밖 edu 실제 3자 대조 1차 추가 확정: **183**
+- 합계: **727 작업 단위**
 
 추가로 기록 밖 kojo에서 실제 3자 대조해야 하는 현재 후보: **1,205파트**.
 
-따라서 **544는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 1,205 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
+따라서 **727은 최종 누락량이 아니라 현재까지 증명된 최소치**다. 1,205 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
