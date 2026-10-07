@@ -28,7 +28,7 @@
 - **현재 체크포인트:** **번역 작업 일시 중단 / 구버전 한국어 재사용 전수조사 진행 중.** `[번역 대상]` 안에 '구버전 KR이 없어서 새 번역이 필요한 부분'과 '구버전 KR이 있으나 구조 차이 때문에 자동 이식되지 않은 부분'이 섞여 있음이 확인되었다. 따라서 `Agnes-Digital/edu-19.js` 번역은 보류하고, [TRANSLATION_REUSE_AUDIT.md](TRANSLATION_REUSE_AUDIT.md)의 3자 대조(old KR ↔ current ja-JP ↔ live ko3)를 우선한다. **kojo edu/love/ero 후보 풀 1,272 / 1,272 및 base live 미완료 81 / 81 실제 대조 완료**. strict old-KR 미반영은 edu **880**, love **171**, ero **213**, base **81**이며, 현재 전체 엄격 최소 미반영 확정치는 **1,889 작업 단위**(daily/rec 414 + timon 130 + edu 880 + love 171 + ero 213 + base 81)이다. 다음 감사 범위는 기록 밖 `daily/rec` 및 general-i18n/entry의 old-source 존재 여부 검사다.
 - **Gold-Ship 대형 파일 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **27/27 완료**, 최종 residual cleanup commit `a0db3897`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 27 / 본문 일본어 가나 literal 0 / JS 구문 정상.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
-- **기존 번역 재개 지점은 감사 완료 전 보류한다.** 기존 순서 정보는 아래에 보존하되, 현재 실제 다음 작업은 `TRANSLATION_REUSE_AUDIT.md`의 기록 밖 `daily/rec` 및 general-i18n/entry old-source 존재 여부 검사다.
+- **기존 번역 재개 지점은 감사 완료 전 보류한다.** 기존 순서 정보는 아래에 보존하되, 현재 실제 다음 작업은 `TRANSLATION_REUSE_AUDIT.md`의 character `entry.js` live 실제 미완료 target 재집계 및 old-source 매핑이다.
 - 다음 재개 지점(`FILES.md` 순서 기준, 번역 재개 시):
   1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/edu-19.js` — 실제 `[번역 대상]` **32개**, 4275줄. **다음 응답에서는 앞 30개만 처리**: `before_begin_race`부터 `ws_95_48`까지. 완료 즉시 저장·검증·커밋하고 사용자에게 보고한 뒤 응답 종료.
   2. 그 다음 진행 응답에서 같은 파일의 잔여 **2개** `ws_95_6`, `ws_palace`만 처리한 뒤 파일 전체 재검증·커밋·보고.
