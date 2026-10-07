@@ -4,56 +4,56 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/108500-Daiichi-Ruby/rec-85"),
 
-  // [번역 대상] rec_final
+  // [번역 완료] rec_final
   async rec_final(ruby, you) {
     await ruby.say_as_passer_by_and_wait(
-      '手紙',
-      'トレーナー選抜試験へのご参加、誠にありがとうございました。審査結果は以下のとおり——',
+      '편지',
+      '트레이너 선발 시험에 참가해 주셔서 진심으로 감사드립니다. 심사 결과는 다음과 같습니다——',
     );
-    era.printButton('「……え？」', 1);
+    era.printButton('「……어?」', 1);
     await era.input();
 
     era.print(
-      `${you.name} はその手紙を片手で握りしめ、トレーナー室から駆け出した。`,
+      `${you.name}은(는) 그 편지를 한 손에 움켜쥐고 트레이너실에서 뛰쳐나갔다.`,
     );
     await era.printAndWait(
-      `トレーニング場で ${ruby.name} を見つけ、あなたは${ruby.sex}の名を大声で呼んだ`,
+      `트레이닝장에서 ${ruby.name}을(를) 발견한 당신은 ${ruby.sex}의 이름을 큰 소리로 불렀다`,
     );
 
-    ruby.say('はぁ……そのお顔を見るに、お手紙は届いたようですわね。');
-    era.printButton('「この結果は……」', 1);
+    ruby.say('하아…… 그 표정을 보아하니 편지는 잘 도착한 모양이군요.');
+    era.printButton('「이 결과는……」', 1);
     await era.input();
 
-    era.print(`${ruby.name} は荘重にあなたへ礼をした。`);
+    era.print(`${ruby.name}은(는) 정중하게 당신에게 인사했다.`);
     ruby.say(
-      'これから、どうぞよろしくお願いいたしますわ。互いに励み、きちんと精進いたしましょう。',
+      '앞으로 잘 부탁드리겠습니다. 서로 격려하며 제대로 정진하도록 하죠.',
     );
-    ruby.say('それでは');
-    era.printButton('「この【合格】は？」', 1);
+    ruby.say('그럼');
+    era.printButton('「이 【합격】은요?」', 1);
     await era.input();
 
     await era.printAndWait(
-      `${you.name} は紙面の【合格】が誤りでないと確かめた。だが、なぜ？ 自分の各試験の結果は、よくて平均、台に載せられるものではない。一部を除いて……`,
+      `${you.name}은(는) 종이에 적힌 【합격】이 잘못된 것이 아님을 확인했다. 하지만 왜? 자신의 각 시험 결과는 잘해야 평균, 자랑할 만한 수준은 아니었다. 일부를 제외하면……`,
     );
     era.println();
 
-    ruby.say('あなた以外、誰も残りませんでしたわ。');
-    ruby.say('ほかの方は、みな棄権なさいました。');
+    ruby.say('당신 외에는 아무도 남지 않았답니다.');
+    ruby.say('다른 분들은 모두 기권하셨어요.');
     await ruby.say_and_wait(
-      'ですから、あなたがわたくしのトレーナーに選ばれました。以上ですわ。',
+      '그러므로 당신이 제 트레이너로 선택되었습니다. 이상입니다.',
     );
     era.println();
 
-    era.print('つまり、たまたま残っただけ？');
+    era.print('그러니까 우연히 끝까지 남았을 뿐이라고?');
     await era.printAndWait(
       `${
         you.name
-      } は落胆して肩を落とし、${ruby.child_sex_title} の目の笑みに気づかなかった。`,
+      }은(는) 실망해 어깨를 늘어뜨렸고,${ruby.child_sex_title}의 눈에 어린 미소를 눈치채지 못했다.`,
     );
     era.println();
 
     await era.printAndWait(
-      `まあ、少なくとも ${ruby.name} のトレーナーにはなれたと思い、顔を上げた瞬間——`,
+      `뭐, 적어도 ${ruby.name}의 트레이너가 되기는 했다고 생각하며 고개를 든 순간——`,
     );
     era.println();
 
@@ -62,447 +62,447 @@ module.exports = {
       era.add('relation:85:0', -temp * 10);
       era.add('love:85', temp);
       await ruby.say_and_wait(
-        '最後まで残られましたわね。よくなさいました。未成年少女の下を覗く変態さん。',
+        '끝까지 남으셨군요. 수고하셨어요. 미성년 소녀의 아래를 훔쳐보는 변태 씨.',
       );
     } else {
-      await ruby.say_and_wait('最後まで残られましたわね。よくなさいました。');
+      await ruby.say_and_wait('끝까지 남으셨군요. 수고하셨어요.');
     }
     era.println();
 
     await era.printAndWait(
-      `呆ける ${you.name} を構わず、${ruby.name} は続けた。`,
+      `멍하니 있는 ${you.name}은(는) 아랑곳하지 않고 ${ruby.name}은(는) 말을 이었다.`,
     );
     era.println();
 
     await ruby.say_and_wait(
-      '契約の前に、いくつか課題をお願いしたいですわ。あそこに立つ執事から課題を受け取り、明日中にご提出くださいまし。',
+      '계약 전에 몇 가지 과제를 부탁드리고 싶습니다. 저기 서 있는 집사에게 과제를 받아 내일까지 제출해 주세요.',
     );
     era.println();
 
     await era.printAndWait([
       ruby.get_colored_name(),
-      ' は軽く笑って駆けていった。',
+      '은(는) 가볍게 웃으며 달려갔다.',
     ]);
   },
 
-  // [번역 대상] rec_out1
+  // [번역 완료] rec_out1
   async rec_out1(ruby, you) {
-    era.print('学園を出て、いちばん近い道場へ……');
-    ruby.say('はあああっ！');
+    era.print('학원을 나와 가장 가까운 도장으로……');
+    ruby.say('하아아앗!');
     era.print(
-      `${ruby.name} の動きは流れるようで、素人のあなたにも、${ruby.name} が幼い頃から護身術を積んできたのが一目で分かった。`,
+      `${ruby.name}의 움직임은 물 흐르듯 자연스러워서, 문외한인 당신도 ${ruby.name}이(가) 어릴 때부터 호신술을 익혀 왔다는 것을 한눈에 알 수 있었다.`,
     );
     era.print(
-      '【護身術の訓練を受け、一通りの型を習得すること。】嘘ではなかったらしい。',
+      '【호신술 훈련을 받고 기본적인 형을 익힐 것.】 거짓말은 아니었던 모양이다.',
     );
-    era.printButton('（待て待て待て、今のをやれだと？？）', 1);
+    era.printButton('（잠깐 잠깐 잠깐, 방금 그걸 하라고??）', 1);
     await era.input();
 
     await era.printAndWait(
-      '疑問が浮かぶのと同時に、すでに数名の参加者が自信を失っていた。',
+      '의문이 떠오르는 것과 동시에 이미 몇 명의 참가자가 자신감을 잃고 있었다.',
     );
     era.println();
 
     await era.printAndWait(
-      '執事「この程度で臆しては、先へ進めません。百般の鍛錬を経て生まれる自信こそ、最も輝く品格へと昇華します。」',
+      '집사「이 정도에 주눅 들어서는 앞으로 나아갈 수 없습니다. 온갖 단련을 거쳐 얻는 자신감이야말로 가장 빛나는 품격으로 승화하는 법입니다.」',
     );
     era.println();
 
     await era.printAndWait(
-      `執事「皆様がこれから献身する相手は、華麗一族の令嬢——${ruby.name}。覚悟と自覚をお持ちください。」`,
+      `집사「여러분이 앞으로 헌신할 상대는 화려 일족의 영애——${ruby.name} 님입니다. 각오와 자각을 갖춰 주십시오.」`,
     );
     era.println();
 
     await ruby.say_and_wait(
-      'お話はここまでですわ。最終判断はわたくしがいたします。皆様は選抜試験に専心してくださいまし。',
+      '이야기는 여기까지입니다. 최종 판단은 제가 내리겠습니다. 여러분은 선발 시험에 전념해 주세요.',
     );
     era.println();
 
-    era.print('誰かに特別指導を頼もうと思っていたが、今はどうする？');
-    era.printButton('やめよう。自分でやる。', 1);
-    era.printButton('頼む！', 2);
+    era.print('누군가에게 특별 지도를 부탁하려 했는데, 지금은 어떻게 할까?');
+    era.printButton('그만두자. 스스로 한다.', 1);
+    era.printButton('부탁한다!', 2);
     if ((await era.input()) === 2) {
       era.println();
-      era.print('では、誰に頼む？');
-      era.printButton('大学の期末試験前を思い出す。答えはもう見えている！', 1);
+      era.print('그럼 누구에게 부탁할까?');
+      era.printButton('대학 기말고사 직전을 떠올린다. 답은 이미 보인다!', 1);
       await era.input();
       await you.say_and_wait(
-        '——決めた。白タイツの、仏頂面のお嬢さまだ。',
+        '——정했다. 흰 타이츠를 신은, 무뚝뚝한 영애다.',
         true,
       );
       era.get('cflag:85:招募状态').special++;
     }
   },
 
-  // [번역 대상] rec_out2
+  // [번역 완료] rec_out2
   async rec_out2(ruby, you) {
-    era.print('次の試験会場はレストラン');
+    era.print('다음 시험장은 레스토랑이다');
     era.print(
-      `${you.name} はトレーナー室から現場へ着き、顔が強張った。見えたのは`,
+      `${you.name}은(는) 트레이너실에서 시험장에 도착하자 얼굴이 굳었다. 눈에 들어온 것은`,
     );
-    era.print('——席がほぼ埋まっている。一箇所を除いて。');
+    era.print('——자리가 거의 가득 차 있었다. 딱 한 곳을 빼고.');
     era.print(
-      `周囲の興味津々な視線の中、${you.name} は仕方なく ${ruby.name} のすぐ傍へ座った。`,
-    );
-    era.print(
-      '黒いスカートの裾が最も美しい景色を隠しているが、椅子の背は卓より少し高い。',
+      `주변의 흥미진진한 시선을 받으며 ${you.name}은(는) 어쩔 수 없이 ${ruby.name} 바로 옆에 앉았다.`,
     );
     era.print(
-      `${you.name} の視界では、均整の取れた白い美脚が、わずかに傾きつつまっすぐな優美な斜線を描いていた。`,
-    );
-    era.print('完全に気が緩んだとき、「異臭」が鼻を突いた。');
-    era.print(
-      '吸い込めば脳髄が溶け、心身が弛緩する、甘美な毒のような匂いだった。',
-    );
-    era.print('新人トレーナーB「おい、どうした？ 顔色が変だぞ。」');
-    era.print('新人トレーナーC「どこか具合が悪いのか？」');
-    era.print(
-      'あなたの異様な表情と寄った眉に気づき、近くのトレーナーがナイフとフォークを置いて心配した。',
+      '검은 치마 자락이 가장 아름다운 풍경을 가리고 있었지만, 의자 좌판은 테이블보다 조금 높았다.',
     );
     era.print(
-      `${ruby.name} は周囲に反応せず、手のナイフを料理へ滑らせる。食器は音一つ立てず、あなたには見事な無声劇に見えた。脚付きグラスを握る指先まで細く、ただの水が高級ワインに見える……`,
+      `${you.name}의 시야에는 균형 잡힌 하얀 다리가 살짝 기울어진 채 곧고 우아한 사선을 그리고 있었다.`,
     );
-    era.printButton('（すごいな……）', 1);
-    era.printButton('（握っているのが俺の棒ならいいのに……）', 2);
+    era.print('완전히 긴장이 풀렸을 때 「이상한 냄새」가 코를 찔렀다.');
+    era.print(
+      '들이마시면 뇌가 녹고 심신이 풀릴 것 같은, 달콤한 독 같은 향기였다.',
+    );
+    era.print('신인 트레이너 B「야, 왜 그래? 안색이 이상한데.」');
+    era.print('신인 트레이너 C「어디 몸이 안 좋은 거야?」');
+    era.print(
+      '당신의 이상한 표정과 찌푸린 눈썹을 눈치챈 근처 트레이너들이 나이프와 포크를 내려놓고 걱정했다.',
+    );
+    era.print(
+      `${ruby.name}은(는) 주변에 반응하지 않고 손에 든 나이프를 요리 위로 미끄러뜨렸다. 식기는 소리 하나 내지 않았고, 당신에게는 훌륭한 무성극처럼 보였다. 와인잔을 잡은 손가락 끝까지 가늘어, 평범한 물조차 고급 와인처럼 보인다……`,
+    );
+    era.printButton('（대단하네……）', 1);
+    era.printButton('（쥐고 있는 게 내 물건이면 좋을 텐데……）', 2);
     if ((await era.input()) === 2) {
       era.get('cflag:85:招募状态').special++;
     }
     era.println();
 
-    era.print(`食事、あるいは試験が終わり、${ruby.name} は席を立った。`);
+    era.print(`식사, 혹은 시험이 끝나고 ${ruby.name}은(는) 자리에서 일어났다.`);
     era.print(
-      `${ruby.sex} の今日の上は濃紺の長袖で、精緻な花の刺繍が施されている。`,
+      `오늘 ${ruby.sex}의 상의는 짙은 남색 긴소매로, 섬세한 꽃 자수가 놓여 있었다.`,
     );
     era.print(
-      '下は脹脛までの黒スカート。可憐な白い小さな足には、柔らかい底の革靴。',
+      '아래는 종아리까지 내려오는 검은 치마. 가냘프고 하얀 작은 발에는 부드러운 밑창의 가죽 구두가 신겨져 있다.',
     );
-    era.print('絢爛な茶色の長髪を、赤い蝶が後頭部でまとめている。');
+    era.print('화려한 갈색 긴 머리를 붉은 나비 장식이 뒤통수에서 묶고 있다.');
     era.print(
-      '東洋人の美点を余さず示した精緻な顔立ちに、貴族らしいピンクの瞳。',
+      '동양인의 아름다움을 남김없이 드러내는 섬세한 이목구비와 귀족다운 분홍빛 눈동자.',
     );
-    era.print('ただそこに立っているだけで、絵の中の傾国の美人のようだった。');
+    era.print('그저 거기에 서 있기만 해도 그림 속 경국지색 같은 모습이었다.');
     era.print(
-      `上下紺と黒の生地は上等で、素人の ${you.name} にも安くないのが一目で分かった。`,
-    );
-    era.print(
-      `目を奪われた ${you.name} を見て、${ruby.name} が何を思っているかは分からない。`,
+      `남색과 검은색으로 맞춘 옷감은 고급스러워, 문외한인 ${you.name}도 비싸다는 것을 한눈에 알 수 있었다.`,
     );
     era.print(
-      `${ruby.sex}は裾を摘んで別れの礼をし、伸びやかに、美しい小さな顔を上げて、音もなく ${you.name} へ微笑んだ。`,
+      `넋을 잃은 ${you.name}을(를) 보며 ${ruby.name}이(가) 무슨 생각을 하는지는 알 수 없다.`,
     );
-    await era.printAndWait('歯は見せない。だが、甘くてたまらない。');
+    era.print(
+      `${ruby.sex}은(는) 치맛자락을 집어 작별 인사를 하고, 우아하게 아름다운 얼굴을 들어 소리 없이 ${you.name}에게 미소 지었다.`,
+    );
+    await era.printAndWait('이를 드러내지는 않았다. 하지만 견딜 수 없이 달콤했다.');
   },
 
-  // [번역 대상] rec_out3
+  // [번역 완료] rec_out3
   async rec_out3(ruby, you) {
     const ret = [];
     await era.printAndWait(
-      'その後数日、あなたは教養と知識を続けて学び、再び護身術の復習へ戻った。結果——',
+      '그 뒤 며칠 동안 당신은 교양과 지식을 계속 배우고 다시 호신술 복습으로 돌아왔다. 결과는——',
     );
     era.println();
 
-    era.print('ベテラントレーナーA「降参だ！ もう——だめだ！」');
+    era.print('베테랑 트레이너 A「항복이다! 이제——못 하겠어!」');
     await era.printAndWait(
-      '新人トレーナーA「私も降参。そもそもトレーナーに、こんなものが必要なのか？」',
+      '신인 트레이너 A「나도 항복. 애초에 트레이너에게 이런 게 필요한 거야?」',
     );
     era.println();
 
-    era.print('試験が進むにつれ、自ら棄権する人数が、不合格の人数を上回った。');
-    era.printButton('私も降参する。（募集を諦める）', 1);
-    era.printButton('必要だから、やらせているんだ。', 2);
+    era.print('시험이 진행될수록 스스로 기권하는 사람이 불합격자보다 많아졌다.');
+    era.printButton('나도 항복한다.（모집을 포기한다）', 1);
+    era.printButton('필요하니까 시키는 거겠지.', 2);
     ret.push((ret['select'] = await era.input()));
     if (ret['select'] === 2) {
-      ruby.say('明日の社交ダンスの試験、皆様は参加なさいますか？');
+      ruby.say('내일 사교댄스 시험에 여러분은 참가하시겠습니까?');
       era.print(
-        '「社交ダンス」の三文字を聞いたあと、傍に残っていた同僚も次々と去った。',
+        '「사교댄스」라는 말을 듣자 곁에 남아 있던 동료들도 하나둘 떠났다.',
       );
       era.print(
-        `${ruby.name} は皆の会話など気にも留めず、淡々と通告したあと、視線をあなたへ向けた。色に、わずかな意外がある。`,
+        `${ruby.name}은(는) 사람들의 대화는 신경도 쓰지 않고 담담히 통보한 뒤 시선을 당신에게 돌렸다. 눈빛에 약간의 의외가 묻어 있었다.`,
       );
       era.print(
-        `${ruby.name} からは、あの日のレース場にあった情熱は感じられなかった。`,
+        `${ruby.name}에게서는 그날 레이스장에서 느껴졌던 열정이 보이지 않았다.`,
       );
       era.print(
-        'トレーナー選抜試験に参加したのも、「もしかしたら」という期待からだった。',
+        '트레이너 선발 시험에 참가한 것도 「혹시나」 하는 기대 때문이었다.',
       );
       era.print(
-        `残念ながら現実は ${you.name} に教えた。自分と ${ruby.name} の溝が、どれほど遠く、越えがたいかを。`,
+        `안타깝게도 현실은 ${you.name}에게 알려 주었다. 자신과 ${ruby.name} 사이의 격차가 얼마나 멀고 넘기 어려운지를.`,
       );
       era.print(
-        `${ruby.sex}は険しい崖の上に生まれ、誰も触れられない高嶺の花だ。`,
+        `${ruby.sex}은(는) 험준한 절벽 위에 태어나 누구도 손댈 수 없는 높은 산의 꽃이다.`,
       );
-      era.printButton('（自分は釣り合わない。やめよう。）（募集を諦める）', 1);
+      era.printButton('（나는 어울리지 않는다. 그만두자.）（모집을 포기한다）', 1);
       era.printButton(
-        '（……だが、あの優れた走り、あの姿は、生涯忘れられないだろう。）',
+        '（……하지만 그 뛰어난 달리기, 그 모습은 평생 잊지 못할 것이다.）',
         2,
       );
       ret.push((ret['select'] = await era.input()));
       if (ret['select'] === 2) {
         ruby.say(
-          '……ここに残られたということは、次の試験にも参加なさる。そう理解してよろしいですわね？',
+          '……여기에 남으셨다는 건 다음 시험에도 참가하시겠다는 뜻으로 이해해도 되겠죠?',
         );
-        era.print(`美しい深紅の瞳が、まっすぐ ${you.name} を見つめた。`);
-        era.printButton('「はい！！！」', 1);
+        era.print(`아름다운 진홍빛 눈동자가 똑바로 ${you.name}을(를) 바라봤다.`);
+        era.printButton('「네!!!」', 1);
         await era.input();
 
-        ruby.say('ん———！');
-        await ruby.say_and_wait('ふぅん…………');
+        ruby.say('음——!');
+        await ruby.say_and_wait('흐음…………');
 
-        ruby.say('分かりましたわ');
+        ruby.say('알겠습니다.');
         era.print(
-          `${ruby.child_sex_title}の頬に淡い赤が浮かんだ理由は、あなたには分からない。`,
+          `${ruby.child_sex_title}의 뺨에 옅은 홍조가 떠오른 이유는 당신에게 알 수 없었다.`,
         );
-        ruby.say('試験の曲目などは、忘れずにご確認を……では、おやすみなさい。');
-        era.print(`${ruby.name} はあなたに一礼した。`);
-        era.printButton('体育館へ走る', 1);
+        ruby.say('시험 곡목 등은 잊지 말고 확인해 주세요…… 그럼 안녕히 주무세요.');
+        era.print(`${ruby.name}은(는) 당신에게 인사했다.`);
+        era.printButton('체육관으로 달려간다', 1);
         await era.input();
       }
     }
     return ret;
   },
 
-  // [번역 대상] rec_out4
+  // [번역 완료] rec_out4
   async rec_out4(ruby, you) {
     era.print(
-      `${you.name} は一人、明日の試験で問われる社交ダンスを黙々と繰り返した。だが……`,
+      `${you.name}은(는) 혼자서 내일 시험에 나올 사교댄스를 묵묵히 반복했다. 하지만……`,
     );
-    era.printButton('（難しい！）', 1);
+    era.printButton('（어렵다!）', 1);
     await era.input();
 
-    era.print('当然だ。一日やそこらで覚えられるものではない。');
-    era.printButton('（学べる分だけ学ぶしかない。）', 1);
+    era.print('당연하다. 하루 이틀 만에 익힐 수 있는 게 아니다.');
+    era.printButton('（배울 수 있는 만큼 배우는 수밖에.）', 1);
     await era.input();
 
-    era.print('たた、たた、たた……');
-    ruby.say('まだ練習なさっているのですか？');
+    era.print('타닥, 타닥, 타닥……');
+    ruby.say('아직도 연습하고 계신가요?');
     await ruby.say_and_wait(
-      '皆様はもうお帰りですわ。あなたも、そろそろお休みになった方がよろしいかと。',
+      '다른 분들은 이미 돌아가셨어요. 당신도 이제는 쉬시는 편이 좋을 것 같습니다.',
     );
     era.println();
 
-    era.print('社交ダンスの試験は明日だ。今は体面を気にしている場合ではない。');
-    era.print(`${you.name} は覚悟を決めて——`);
-    era.printButton('「社交ダンスの指導を、お願いできませんか？」', 1);
+    era.print('사교댄스 시험은 내일이다. 지금은 체면을 신경 쓸 때가 아니다.');
+    era.print(`${you.name}은(는) 각오를 다지고——`);
+    era.printButton('「사교댄스를 지도해 주실 수 없을까요?」', 1);
     await era.input();
 
     ruby.say('……');
-    await ruby.say_and_wait('まずは姿勢を正してくださいまし。');
+    await ruby.say_and_wait('우선 자세부터 바로잡아 주세요.');
     era.println();
 
     await era.printAndWait(
-      `${ruby.name} はあなたの前へ歩き、手取り足取り指導し始めた。`,
+      `${ruby.name}은(는) 당신 앞으로 다가와 하나하나 손수 지도하기 시작했다.`,
     );
     era.println();
 
     await ruby.say_and_wait(
-      '舞の動きはもう覚えていらっしゃいますわね？ では始めましょう。',
+      '춤 동작은 이미 외우셨겠죠? 그럼 시작하겠습니다.',
     );
     era.println();
 
     era.print(
-      `${ruby.sex}は溜息をつき、あなたの懐へ歩み入った。ふわふわした耳が、時折 ${you.name} の頬に触れる。`,
+      `${ruby.sex}은(는) 한숨을 쉬고 당신 품 안으로 들어왔다. 부드러운 귀가 때때로 ${you.name}의 뺨에 닿았다.`,
     );
-    era.print(`${ruby.name} の指導は、疑いなく厳しい。`);
+    era.print(`${ruby.name}의 지도는 의심할 여지 없이 엄격했다.`);
     era.print(
-      `${you.name} は ${ruby.name} の言うとおり、音楽に合わせて${ruby.sex}と体を動かした。`,
+      `${you.name}은(는) ${ruby.name}의 말대로 음악에 맞춰 ${ruby.sex}와(과) 몸을 움직였다.`,
     );
     await era.printAndWait(
-      `臨時のパートナーを見下ろそうとしたとき、幼い小さな手が ${you.name} の頬にかかった。`,
+      `임시 파트너를 내려다보려던 순간, 작고 앳된 손이 ${you.name}의 뺨에 닿았다.`,
     );
     era.println();
 
     ruby.say(
-      '顔を上げてくださいまし。何かを成し遂げたいなら、常に威厳ある態度を保たねばなりませんわ。',
+      '고개를 들어 주세요. 무언가를 이루고 싶다면 언제나 위엄 있는 태도를 유지해야 합니다.',
     );
     await ruby.say_and_wait(
-      '恥じるようなことがおありですの？ なければ、ご自身のために視線を前方へ、胸を張って頭を上げるべきですわ。',
+      '부끄러워할 일이 있으신가요? 없다면 자신을 위해 시선을 앞으로 두고 가슴을 펴고 고개를 드셔야 합니다.',
     );
 
     await era.printAndWait(
-      `${ruby.sex}にそう言われ、あなたはこれまでの ${ruby.name} の振る舞いを思い出した。`,
+      `${ruby.sex}에게 그 말을 듣고 당신은 지금까지의 ${ruby.name}의 행동을 떠올렸다.`,
     );
     era.println();
 
     ruby.say(
-      'ええ。その姿を忘れないでくださいまし。狙うものがあるなら、それに見合う振る舞いをしなければなりませんわ。',
+      '네. 그 모습을 잊지 말아 주세요. 원하는 것이 있다면 그에 걸맞은 행동을 해야 합니다.',
     );
-    ruby.say('そうしてこそ、いつかなりたい自分になれるのですから。');
-    await era.printAndWait(`${ruby.name} は言い終え、にこりと笑った。`);
+    ruby.say('그래야 언젠가 되고 싶은 자신이 될 수 있으니까요.');
+    await era.printAndWait(`${ruby.name}은(는) 말을 마치고 방긋 웃었다.`);
     era.println();
 
     await era.printAndWait(
-      `そのあと、会場設営の業者が来ても、${you.name} と ${ruby.name} は場所を屋外へ移して練習を続けた。`,
+      `그 뒤 행사장 설치 업체가 와도 ${you.name}와(과) ${ruby.name}은(는) 장소를 야외로 옮겨 연습을 계속했다.`,
     );
     era.println();
 
     await era.printAndWait(
-      `——そして翌日、${ruby.name} の「丁寧な指導」のおかげで、${you.name} は試験で皆の目を引く成果を出せた。`,
+      `——그리고 다음 날, ${ruby.name}의 「세심한 지도」 덕분에 ${you.name}은(는) 시험에서 모두의 눈길을 끄는 성과를 냈다.`,
     );
   },
 
-  // [번역 대상] rec_out5
+  // [번역 완료] rec_out5
   async rec_out5(ruby, you, breast_cup) {
-    era.print(`ほかのお嬢さまたちとの茶会で、${you.name} は愕然とした！`);
-    era.print(`トレーナーは ${you.name} 一人だ。ほかに誰もいない。`);
-    era.printButton('皆は別の場所か、別の日に試験を受けているに違いない！', 1);
+    era.print(`다른 영애들과의 다과회에서 ${you.name}은(는) 경악했다!`);
+    era.print(`트레이너는 ${you.name} 혼자뿐이다. 다른 사람은 아무도 없다.`);
+    era.printButton('다들 다른 장소나 다른 날에 시험을 보는 게 틀림없다!', 1);
     await era.input();
 
-    era.print(`独特の空気も少女たちの体香も、${you.name} には慣れない。`);
-    era.print(`緊張した ${you.name} は、カップの紅茶を一気に飲み干した。`);
-    era.printButton('（もう一杯いただこう！ うん）', 1);
+    era.print(`독특한 분위기도 여성들의 체향도 ${you.name}에게는 익숙하지 않았다.`);
+    era.print(`긴장한 ${you.name}은(는) 찻잔의 홍차를 단숨에 마셔 버렸다.`);
+    era.printButton('（한 잔 더 마시자! 그래）', 1);
     await era.input();
 
-    await ruby.say_and_wait('じっ……');
+    await ruby.say_and_wait('빤히……');
     era.println();
 
-    era.print(`この茶会は ${ruby.name} が主催している。`);
-    era.print('この場で、自分で注いだら……');
-    era.printButton('（お茶を淹れる手つきが上手だ。）', 1);
+    era.print(`이 다과회는 ${ruby.name}이(가) 주최하고 있다.`);
+    era.print('이 자리에서 직접 따라 마시면……');
+    era.printButton('（차를 따르는 솜씨가 좋다.）', 1);
     await era.input();
 
     await era.printAndWait(
-      `……${you.name} は、その言い方が少し違う気がした。だが、自分から注いだのが作法破りであることは、より確かになった。`,
+      `……${you.name}은(는) 그 표현이 조금 이상한 것 같다고 느꼈다. 하지만 스스로 차를 따른 것이 예법에 어긋난다는 점은 더 분명해졌다.`,
     );
 
-    ruby.say('……お褒めにあずかり、光栄ですわ。');
-    era.print(`言い終え、${ruby.name} が二杯目を注いでくれた。`);
-    await era.printAndWait(`${you.name}がほっとした、そのとき——`);
+    ruby.say('……칭찬해 주셔서 영광입니다.');
+    era.print(`말을 마치고 ${ruby.name}이(가) 두 번째 잔을 따라 주었다.`);
+    await era.printAndWait(`${you.name}이(가) 안도한 바로 그때——`);
 
     era.print(
-      '執事「お嬢さま、皆様。お時間です。お迎えの車が用意できております。」',
+      '집사「아가씨, 여러분. 시간이 되었습니다. 모실 차량이 준비되어 있습니다.」',
     );
-    era.printButton('「晩餐会？」', 1);
+    era.printButton('「만찬회?」', 1);
     await era.input();
 
     await ruby.say_and_wait(
-      'ええ、次の試験会場でもありますわ。では参りましょう。',
+      '네, 다음 시험장이기도 합니다. 그럼 가시죠.',
     );
     era.println();
 
     era.print(
-      `${ruby.name} は問答無用で、${you.name} を写真でしか見たことのない豪華客船へ連れていった。`,
+      `${ruby.name}은(는) 문답무용으로 ${you.name}을(를) 사진으로만 보던 호화 여객선으로 데려갔다.`,
     );
     await era.printAndWait(
-      `${you.name} は度肝を抜かれた。だが——${ruby.name} は財界・政界の名士たちの前でも恐れず、${you.name} とはまったく違った。`,
+      `${you.name}은(는) 크게 놀랐다. 하지만——${ruby.name}은(는) 재계와 정계의 명사들 앞에서도 전혀 주눅 들지 않았고, ${you.name}와(과)는 완전히 달랐다.`,
     );
     era.println();
 
     await era.printAndWait(
-      `周囲を見回せば、あの日のトレーニング場と同じく、多くの視線が${ruby.sex}の姿を追っている。大きな期待は、すべて華麗一族へ向けられていた。`,
+      `주위를 둘러보면 그날 트레이닝장과 마찬가지로 많은 시선이 ${ruby.sex}의 모습을 쫓고 있다. 큰 기대는 모두 화려 일족을 향하고 있었다.`,
     );
     era.println();
 
     ruby.print(
-      '【狙うものがあるなら、それに見合う振る舞いをしなければなりませんわ。そうしてこそ、いつかなりたい自分になれるのですから。】',
+      '【원하는 것이 있다면 그에 걸맞은 행동을 해야 합니다. 그래야 언젠가 되고 싶은 자신이 될 수 있으니까요.】',
     );
-    era.print(`${you.name} の目標は——`);
-    era.printButton(`${ruby.name} に釣り合うトレーナーになる`, 1);
+    era.print(`${you.name}의 목표는——`);
+    era.printButton(`${ruby.name}에게 어울리는 트레이너가 된다`, 1);
     era.printButton(ruby.name, 2);
     if ((await era.input()) === 2) {
       era.print(
-        `${ruby.name} の体は小さいと言っていいが、胸の実は${breast_cup}カップもある。滑らかな頬、可愛い衣装。トレーナーの ${
+        `${ruby.name}의 체구는 작다고 할 수 있지만 가슴은 ${breast_cup}컵이나 된다. 매끄러운 뺨, 귀여운 의상. 트레이너인 ${
           you.name
-        } も、淫らなことをたくさんしたくなる。`,
+        }도 음란한 일을 많이 하고 싶어진다.`,
       );
-      era.print('小学生のような体にキスされる');
-      era.print('豊潤な唇が肌に触れる感触');
-      era.print('ミルクのように滑らかな肌');
-      await era.printAndWait('小さな舌を耳へねじ込み、囁かれる');
+      era.print('초등학생처럼 작은 체구에게 키스를 받는다');
+      era.print('도톰한 입술이 피부에 닿는 감촉');
+      era.print('우유처럼 매끄러운 피부');
+      await era.printAndWait('작은 혀가 귀에 파고들고, 귓가에 속삭임을 듣는다');
       era.get('cflag:85:招募状态').special++;
     }
     era.println();
 
-    era.print('……そう、そういうことだ。');
+    era.print('……그래, 그런 거다.');
     await era.printAndWait(
-      `気づくと、視線はもう ${ruby.name} から離れられなかった。`,
+      `정신을 차리고 보니 시선은 이미 ${ruby.name}에게서 떨어지지 않았다.`,
     );
     era.println();
 
-    await era.printAndWait('深夜の校門前。');
+    await era.printAndWait('심야의 교문 앞.');
     ruby.say(
-      'お疲れさまでした。では、このあとまだトレーニングがありますので、ここで失礼いたしますわ。',
+      '수고하셨습니다. 그럼 이 뒤에도 트레이닝이 남아 있으니 저는 이만 실례하겠습니다.',
     );
-    era.printButton('「え？ 今からですか？」', 1);
+    era.printButton('「네? 지금부터요?」', 1);
     await era.input();
 
-    ruby.say('ええ。お気遣いなく、先にお帰りくださいまし。明日の試験は——');
-    era.printButton('「何かお手伝いできることはありませんか！」', 1);
+    ruby.say('네. 신경 쓰지 마시고 먼저 돌아가 주세요. 내일 시험은——');
+    era.printButton('「제가 도와드릴 일은 없을까요!」', 1);
     await era.input();
 
-    ruby.say('特に必要はございませんわ。');
-    era.printButton('「タイムを測るとか！」', 1);
+    ruby.say('딱히 필요하지 않습니다.');
+    era.printButton('「타임을 재는 것이라든가!」', 1);
     await era.input();
 
     ruby.say('……');
-    era.printButton('「測りたいんです。とても。」', 1);
+    era.printButton('「재고 싶습니다. 정말로요.」', 1);
     await era.input();
 
-    await ruby.say_and_wait('ご自由に。測ってくださいまし。');
+    await ruby.say_and_wait('마음대로 하세요. 재 보시죠.');
 
     era.print(
-      `この夜、${you.name} は内心の何かが変わった気がした。きっと ${ruby.name} の言葉が、自分を変えたのだろう。`,
+      `이날 밤 ${you.name}은(는) 마음속 무언가가 변한 것 같았다. 분명 ${ruby.name}의 말이 자신을 바꾼 것이리라.`,
     );
     await era.printAndWait(
-      '（しばらくは、選抜試験で外出する必要はなさそうだ）',
+      '（당분간은 선발 시험 때문에 외출할 일은 없을 것 같다）',
     );
   },
 
-  // [번역 대상] rec_week_end
+  // [번역 완료] rec_week_end
   async rec_week_end(ruby, you) {
     era.print(
-      `豪華客船の一件のあと、試験が終わってから ${ruby.name} のトレーニングに付き合うのが、${you.name} の日課になった。${you.name} は休日まで ${ruby.name} に使った。`,
+      `호화 여객선에서의 일 이후, 시험이 끝난 뒤 ${ruby.name}의 트레이닝을 도와주는 것이 ${you.name}의 일상이 되었다. ${you.name}은(는) 휴일까지 ${ruby.name}에게 썼다.`,
     );
     era.print(
-      'だが試験が終盤に入るということは、こうした手伝いもこれが最後だということだ。',
+      '하지만 시험이 막바지에 접어든다는 것은 이런 도움도 이번이 마지막이라는 뜻이다.',
     );
-    era.printButton('「お疲れさまでした。」', 1);
+    era.printButton('「수고하셨습니다.」', 1);
     await era.input();
 
-    ruby.say('あなたも、ですわ。');
-    era.printButton('「トレーナー選抜試験も、もうすぐ終わりですね。」', 1);
+    ruby.say('당신도요.');
+    era.printButton('「트레이너 선발 시험도 이제 곧 끝나는군요.」', 1);
     await era.input();
 
     await ruby.say_and_wait(
-      'おっしゃるとおりですわ。また視線が下がっています。胸を張り、顎を引いて立ちなさい。',
+      '말씀하신 대로입니다. 또 시선이 내려가 있군요. 가슴을 펴고 턱을 당겨 서세요.',
     );
     era.println();
 
-    await era.printAndWait('危なかった。脚を少し見ただけで、バレかけた。');
+    await era.printAndWait('위험했다. 다리를 조금 봤을 뿐인데 들킬 뻔했다.');
     era.println();
 
     await ruby.say_and_wait(
-      '意識は態度に現れますわ。今一度、胸に手を当ててお聞きなさい。ご自身の心は、どこにありますか？',
+      '의식은 태도에 드러납니다. 다시 한번 가슴에 손을 얹고 스스로에게 물어보세요. 당신의 마음은 어디에 있나요?',
     );
     era.println();
 
     era.print(
-      `まだ諦めないトレーナーは必ずいる。ずっと ${ruby.name} に知られ、${you.name} は自分が選ばれる確率がほとんどないのを分かっていた。`,
+      `아직 포기하지 않은 트레이너는 분명 있을 것이다. 줄곧 ${ruby.name}을(를) 지켜본 ${you.name}은(는) 자신이 선택될 확률이 거의 없다는 것을 알고 있었다.`,
     );
-    era.printButton('「これまで、本当にありがとうございました！」', 1);
+    era.printButton('「지금까지 정말 감사했습니다!」', 1);
     await era.input();
 
-    await ruby.say_and_wait('ふ……');
+    await ruby.say_and_wait('후……');
     era.println();
 
     era.print(
-      `${you.name} は ${ruby.name} に告げた。この試験を最後まで受けられたのは、光栄だと。`,
+      `${you.name}은(는) ${ruby.name}에게 이 시험을 끝까지 치를 수 있었던 것을 영광으로 생각한다고 말했다.`,
     );
     await era.printAndWait(
-      `結果がどうであれ、${you.name} はこの一ヶ月で学んだものを、これから伸びる力に変えるつもりだ。`,
+      `결과가 어떻든 ${you.name}은(는) 이 한 달 동안 배운 것을 앞으로 성장할 힘으로 바꿀 생각이다.`,
     );
     era.println();
 
-    await ruby.say_and_wait('……ええ。お疲れさまでした。');
+    await ruby.say_and_wait('……네. 수고하셨습니다.');
     era.println();
 
     era.print(
-      `最初から最後まで、互いの間には距離があった。それが ${you.name} を少し寂しくさせたのは、また別の話だ。`,
+      `처음부터 끝까지 서로 사이에는 거리가 있었다. 그것이 ${you.name}을(를) 조금 쓸쓸하게 만든 것은 또 다른 이야기다.`,
     );
     era.print(
-      `そのときトレーナーが誰であれ、どんな人であれ、${you.name} は相手を応援するつもりだった。`,
+      `그때 트레이너가 누구든, 어떤 사람이든 ${you.name}은(는) 그 사람을 응원할 생각이었다.`,
     );
     await era.printAndWait(
-      `高貴で前向きな${ruby.sex}を支え、一緒に進んでほしい。`,
+      `고귀하고 긍정적인 ${ruby.sex}을(를) 지탱하며 함께 나아가 주기를 바랐다.`,
     );
   },
 };
