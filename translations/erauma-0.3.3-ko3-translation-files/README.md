@@ -14,19 +14,19 @@
 - 작업 단위: **3파일씩**
 - 진행 판단 기준: `coverage.json` / `manifest.json`보다 **실제 파일의 `[번역 대상]` 마커를 우선**한다. manifest는 완료 파일도 미완료처럼 남아 있어 참고용으로만 사용한다.
 - **작업 순서: `FILES.md`에 적힌 파일 순서를 위에서 아래로 그대로 따른다.** 번역 대상 개수, 파일 크기, 작업 난이도에 따라 순서를 바꾸지 않는다. 이미 실제 `[번역 대상]`이 0개인 파일만 건너뛰고, 그 다음 미완료 파일을 계속 진행한다.
-- **현재 연속 진행 위치:** `FILES.md` 기준 `kojo/100300-Tokai-Teio/edu-3-hurt.js`까지 확인·완료. 다음 시작점은 `kojo/100300-Tokai-Teio/edu-3.js`.
+- **현재 연속 진행 위치:** `FILES.md` 기준 `kojo/100300-Tokai-Teio/love-3.js`까지 확인·완료. 다음 시작점은 `kojo/100400-Maruzensky/daily-4.js`.
 - 이번 완료 배치:
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/base-3.js` — 12개 완료; commit `8c91d771`
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/daily-3.js` — 25개 완료; commit `6117ec21`
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/edu-3-hurt.js` — 15개 완료; commits `2f28fbcf` → `abf26fb5` → `e92848a4` → `c8354008` → `db5e2684`
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/edu-3.js` — 23개 완료; commits `a4442215` → `9c4adace` → `04e60edf` → `11564e6e`
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/ero-3.js` — 8개 완료; commit `8ca68b5e`
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/love-3.js` — 5개 완료; commits `bc738760` → `fa8aa8fb` → `f50646e2`
 - 위 3파일은 재검사 시 `[번역 대상]` **0개**, 코드/본문의 일본어 가나 잔존 **0줄** 확인 완료.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
-- 직전 완료 배치: `100200-Silence-Suzuka/edu-2.kojo`, `100200-Silence-Suzuka/love-2.kojo`, `100200-Silence-Suzuka/rec-2.kojo`.
+- 직전 완료 배치: `100300-Tokai-Teio/base-3.js`, `100300-Tokai-Teio/daily-3.js`, `100300-Tokai-Teio/edu-3-hurt.js`.
 - 다음 재개 지점(`FILES.md` 순서 기준, 실제 마커 확인 완료):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/edu-3.js` — `[번역 대상]` 23개
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/ero-3.js` — `[번역 대상]` 8개
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/love-3.js` — `[번역 대상]` 5개
-- `FILES.md`상 `edu-3.js`와 `ero-3.js` 사이의 `entry.js`는 실제 `[번역 대상]`이 0개라 건너뛴다.
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/daily-4.js` — `[번역 대상]` 23개
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — `[번역 대상]` 90개
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — `[번역 대상]` 6개
+- `FILES.md`상 `edu-4.js`와 `love-4.js` 사이의 `entry.js`는 실제 `[번역 대상]`이 0개라 건너뛴다.
 - 매 배치 종료 시 이 섹션의 **현재 연속 진행 위치 / 이번 완료 배치 / 다음 재개 지점**을 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
