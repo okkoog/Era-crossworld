@@ -1395,120 +1395,120 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_1
+  // [번역 완료] ws_47_1
   ws_47_1: (() => {
-    const title = '新年の抱負';
+    const title = '새해의 포부';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       await era.printAndWait(
-        `新しい年、新しい始まり。${gs.name} の活躍が、さらに上へ届いてほしい。${you.name} はそう思っていた。`,
+        `새로운 해, 새로운 시작. ${gs.name}의 활약이 한층 더 높은 곳까지 닿기를. ${you.name}은(는) 그렇게 생각했다.`,
       );
       await era.printAndWait(
-        `その当の本人は ${you.name} に向かって両手を合わせ、掌が当たってパシッと音を立てた。`,
+        `정작 본인은 ${you.name}을(를) 향해 두 손을 맞대며 짝 소리를 냈다.`,
       );
       await gs.say_and_wait(
-        '新年ありがとな——新しい一年……去年のアタシが、今年のアタシになった。',
+        '새해 고맙다——새로운 한 해…… 작년의 내가 올해의 내가 됐어.',
       );
       await era.printAndWait(
-        `${you.name} はうなずき、技術的には正しい発言に同意した。`,
+        `${you.name}은(는) 고개를 끄덕이며, 엄밀히 말하면 틀리지 않은 말에 동의했다.`,
       );
-      await gs.say_and_wait('でもよ、これって大奇跡だと思うんだよな。');
+      await gs.say_and_wait('근데 말이야, 이거 엄청난 기적이라고 생각하지 않냐?');
       await gs.say_and_wait(
-        '地球がなかったら、宇宙がなかったら……アタシは存在しねえ。',
+        '지구가 없었다면, 우주가 없었다면…… 나도 존재하지 않았을 거야.',
       );
       await era.printAndWait(
-        `${gs.sex} はまた ${you.name} に向かって合掌する。${you.name} は、三度目は勘弁してほしいと思った。`,
+        `${gs.sex}은(는) 다시 ${you.name}을(를) 향해 합장했다. ${you.name}은(는) 세 번째만큼은 사양하고 싶다고 생각했다.`,
       );
       await gs.say_and_wait(
-        'だから今年一年は、いろんなものに感謝する年にする。',
+        '그러니까 올해는 여러 가지에 감사하는 해로 만들 거야.',
       );
-      await gs.say_and_wait('地球に感謝、宇宙に感謝、目の前のてめえに感謝。');
+      await gs.say_and_wait('지구에 감사, 우주에 감사, 눈앞의 너에게도 감사.');
       await gs.say_and_wait(
-        'それでは一曲、『恭賀新年～寒冬を越え、春へ行け～』',
+        '그럼 한 곡, 『근하신년~한겨울을 넘어 봄으로 가자~』',
       );
       await era.printAndWait(
-        `${gs.name} は演歌調の謎の曲を歌い始め、${gs.sex} の悠々とした歌声がトレーナー室にいつまでも残った。`,
+        `${gs.name}은(는) 엔카풍의 수수께끼 같은 노래를 부르기 시작했고, ${gs.sex}의 느긋한 노랫소리가 트레이너실에 오래도록 남았다.`,
       );
       await era.printAndWait(
-        `伴奏なしのアカペラでも、${you.name} には歌に満ちた本気の気持ちが伝わってきた。`,
+        `반주 없는 아카펠라였지만, ${you.name}에게는 노래에 담긴 진심이 전해졌다.`,
       );
-      await era.printAndWait(`一曲終わり、${you.name} は思わず拍手した。`);
-      await gs.say_and_wait('サンキュー、サンキュー、山頂の友よこんにちは！');
+      await era.printAndWait(`노래가 끝나자 ${you.name}은(는) 저도 모르게 박수를 쳤다.`);
+      await gs.say_and_wait('땡큐, 땡큐, 산 정상의 친구여 안녕!');
       await era.printAndWait(
-        'アイドル歌手は嬉しそうに、いない観客へ手を振っている。',
+        '아이돌 가수는 기쁜 듯 아무도 없는 관객석을 향해 손을 흔들고 있다.',
       );
       era.println();
 
-      era.printButton('「そういえば……」', 1);
+      era.printButton('「그러고 보니……」', 1);
       await era.input();
 
-      await gs.say_and_wait('ん？ どうした？ アタシにも何か伝えるか？');
+      await gs.say_and_wait('응? 왜 그래? 나한테도 뭔가 전할 말 있어?');
       await era.printAndWait(
-        `${gs.name} は期待の顔を作り、腰の尻尾も箒みたいに勢いよく左右へ振っている。`,
+        `${gs.name}은(는) 기대에 찬 표정을 짓고, 허리의 꼬리도 빗자루처럼 힘차게 좌우로 흔들고 있었다.`,
       );
       era.println();
 
-      era.printButton('「今年のクラシック級、ちゃんと結果を出せよ。」', 1);
+      era.printButton('「올해 클래식급에서는 제대로 결과를 내자.」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        'なんだよ？ クラシック？ 今年は激烈なギターソロを披露したかったんだけど、逆張りでバイオリンもありかもな。',
+        '뭐야? 클래식? 올해는 격렬한 기타 솔로를 보여주고 싶었는데, 역으로 바이올린도 괜찮겠네.',
       );
       era.println();
 
-      era.print('「何言ってるんだ、つまり……」');
-      era.printButton('「長距離適性を鍛えよう！」（スタミナ+40）', 1);
-      era.printButton('「いま考えよう！」（賢さ+40）', 2);
-      era.printButton('「ドームツアーをやろう！」（スキルPt+50）', 3);
+      era.print('「무슨 소리야, 그러니까……」');
+      era.printButton('「장거리 적성을 단련하자!」(스태미나+40)', 1);
+      era.printButton('「지금부터 생각해보자!」(지능+40)', 2);
+      era.printButton('「돔 투어를 하자!」(스킬 Pt+50)', 3);
       const ret = await era.input();
       switch (ret) {
         case 1:
           await gs.say_and_wait(
-            'なるほど、長時間演奏に耐えるスタミナを鍛えるってことか！',
+            '과연, 장시간 연주를 버틸 스태미나를 기르자는 거구나!',
           );
           await era.printAndWait(
-            `違う。${you.name} は首を振るが、彼女はもう自分の世界に沈んでいた。`,
+            `아니다. ${you.name}은(는) 고개를 저었지만, 그녀는 이미 자기 세계에 빠져 있었다.`,
           );
           await gs.say_and_wait(
-            '分かった！ たしかにクラシックなら、長い曲は10時間にもなるもんな！',
+            '알겠어! 확실히 클래식이라면 긴 곡은 10시간도 넘으니까!',
           );
           await gs.say_and_wait(
-            'よし！ 10時間でも20時間でも、ウマ娘をよこせー！',
+            '좋아! 10시간이든 20시간이든, 우마무스메를 데려와라ー!',
           );
           await era.printAndWait(
-            `違う。${you.name} がクラシック級とクラシック音楽の違いを説明する前に、${gs.sex} は一目散に楽器を取りに走った。`,
+            `아니다. ${you.name}이(가) 클래식급과 클래식 음악의 차이를 설명하기도 전에, ${gs.sex}은(는) 악기를 가지러 쏜살같이 달려갔다.`,
           );
-          await era.printAndWait('いまさら、臨機応変に付き合うしかない。');
+          await era.printAndWait('이제 와서는 임기응변으로 맞춰주는 수밖에 없다.');
           break;
         case 2:
           await gs.say_and_wait(
-            'なるほど、バンドメンバーの意見を尊重するか！ それはありだ。',
+            '과연, 밴드 멤버의 의견을 존중하자는 거구나! 그건 괜찮네.',
           );
           await gs.say_and_wait(
-            'だって解散の原因、音楽路線の食い違いってやつ、多いからな。',
+            '밴드 해체 원인으로 음악 노선 차이 같은 게 많으니까 말이지.',
           );
-          await gs.say_and_wait('分かった、付き合う……！ さあ、拳で語ろう！');
+          await gs.say_and_wait('알겠어, 상대해주지……! 자, 주먹으로 이야기하자!');
           await era.printAndWait(
-            'そのあと二人は物理的に打ち解け、トレーナー室で川の字になって寝た。',
+            '그 뒤 두 사람은 물리적으로 친해진 끝에 트레이너실에서 나란히 드러누워 잠들었다.',
           );
-          await era.printAndWait('よく眠れた。');
+          await era.printAndWait('푹 잤다.');
           break;
         case 3:
-          await gs.say_and_wait('おいおい……ドームツアー！？');
+          await gs.say_and_wait('어이 어이…… 돔 투어!?');
           await gs.say_and_wait(
-            'てめえの夢、遠大すぎる！！ アタシ……燃えてきた！！',
+            '네 꿈, 너무 원대하잖아!! 나…… 불타오르기 시작했어!!',
           );
           await gs.say_and_wait(
-            'よし！！ 今すぐ開演だ！！ ライブやるなら一位を目指せ！！！',
+            '좋아!! 지금 당장 공연 시작이다!! 라이브를 할 거면 1위를 노려야지!!!',
           );
-          await era.printAndWait('そのあと、二人はしばらく必死に練習した。');
+          await era.printAndWait('그 뒤 두 사람은 한동안 필사적으로 연습했다.');
           await era.printAndWait(
-            '学園で開いた小さな野外ライブは、意外と評判が良かった。',
+            '학원에서 연 작은 야외 라이브는 의외로 평판이 좋았다.',
           );
-          await era.printAndWait('で、レースは？');
+          await era.printAndWait('그래서, 레이스는?');
       }
       return [ret];
     };
@@ -1516,86 +1516,86 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_29
+  // [번역 완료] ws_47_29
   ws_47_29: (() => {
-    const title = '夏合宿';
+    const title = '여름 합숙';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       await era.printAndWait(
-        `夏合宿は、${gs.uma_sex_title}にとって学びと遊びが同居する時間だ。夏休みになれば、ほとんどのトレセンの生徒が海へ向かい、陽の光と砂浜、そして少しばかりの地獄の鍛錬を楽しむ。`,
+        `여름 합숙은 ${gs.uma_sex_title}에게 배움과 놀이가 함께하는 시간이다. 여름방학이 되면 대부분의 트레센 학생이 바다로 향해 햇빛과 모래사장, 그리고 약간의 지옥 같은 훈련을 즐긴다.`,
       );
       await era.printAndWait(
-        `当然ながら、そういう時期になると、${you.name} の一風変わった愛馬 ${gs.name} は特に調子がいい。`,
+        `당연히 이런 시기가 되면 ${you.name}의 독특한 애마 ${gs.name}은(는) 특히 신이 난다.`,
       );
       era.println();
 
       await gs.say_and_wait(
-        'おおおおお！ 夏といえば海だ！ 一緒に海へ出発だ！！！',
+        '오오오오오! 여름 하면 바다지! 같이 바다로 출발이다!!!',
       );
       await gs.say_and_wait('Zzzzzzz……');
       era.println();
 
       await era.printAndWait(
-        `${you.name} はバスで死んだ豚みたいに眠る ${gs.name} を見ながら、このやつのやる気は ${gs.sex} 本人と同じで、来たと思えば消えると思った。`,
+        `${you.name}은(는) 버스에서 죽은 돼지처럼 잠든 ${gs.name}을(를) 보며, 이 녀석의 의욕은 ${gs.sex} 본인처럼 생겼다 싶으면 금세 사라진다고 생각했다.`,
       );
       era.println();
 
-      era.printButton('「起きろ！！！ 陽が尻を焼いてるぞ！！！」', 1);
+      era.printButton('「일어나!!! 해가 엉덩이를 굽고 있다고!!!」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        'うわ～びっくりした！ いまバスで海の合宿を待ってる夢見てたのに！ どう償うんだよ！',
+        '우와~ 깜짝 놀랐잖아! 방금 버스에서 바다 합숙을 기다리는 꿈을 꾸고 있었는데! 어떻게 책임질 거야!',
       );
       era.println();
 
       await era.printAndWait(
-        `${you.name} は不機嫌に親指で窓の外を示し、もう着いていることを教える。気づいた ${gs.name} はすぐ上機嫌に、ぴょんと跳ねてバスを降りた。`,
+        `${you.name}은(는) 못마땅한 표정으로 엄지손가락을 창밖으로 가리켜 이미 도착했다는 걸 알려줬다. 알아챈 ${gs.name}은(는) 금세 기분이 좋아져 폴짝 뛰어 버스에서 내렸다.`,
       );
       era.println();
 
       await era.printAndWait(
-        `数日は悪くない休暇で、訓練も充実していた。だが今日はもう訓練の時間なのに、${gs.name} は姿を見せない。${gs.sex}を探すため、海辺へ来た。`,
+        `며칠 동안은 나쁘지 않은 휴가였고 훈련도 충실했다. 하지만 오늘은 이미 훈련 시간이 됐는데도 ${gs.name}은(는) 모습을 보이지 않았다. ${gs.sex}을(를) 찾으러 해변으로 왔다.`,
       );
       era.println();
 
-      await era.printAndWait('そして——');
+      await era.printAndWait('그리고——');
       era.println();
 
       await gs.say_and_wait(
-        'さあ通る人通る人、見逃すなよーおいしい焼きそば大安売りよー！！',
+        '자, 지나가는 사람들 놓치지 마세요ー 맛있는 야키소바 대할인입니다ー!!',
       );
       await gs.say_and_wait(
-        '甘いも酸っぱいも苦いも辛いも～人生と同じだよー！！',
+        '달고 시고 쓰고 매운맛까지~ 인생과 똑같아요ー!!',
       );
       era.println();
 
-      era.printButton('「なんでここで焼きそば売ってるんだ……！！」', 1);
+      era.printButton('「왜 여기서 야키소바를 팔고 있는 거야……!!」', 1);
       await era.input();
 
       await era.printAndWait(
-        `${you.name} は腹を立てて屋台の前へ行き、サボっているこいつを問い詰めようとした。`,
+        `${you.name}은(는) 화가 나서 포장마차 앞으로 가, 농땡이를 피우는 이 녀석을 추궁하려 했다.`,
       );
       era.println();
 
-      await gs.say_and_wait('あー、トレーナーじゃねえか～特辛でいいんだよな？');
+      await gs.say_and_wait('아, 트레이너잖아~ 아주 맵게 하면 되지?');
       era.println();
 
-      era.printButton('「訓練に呼べって来たんだ。」', 1);
+      era.printButton('「훈련하러 오라고 부르러 왔어.」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        'いやー、店主のおじちゃんの代わりに立ってるだけだって～腰が痛いらしいんだよ、真夏の陽の下で一日焼かせるの、忍びねえだろ？',
+        '아니~ 그냥 가게 아저씨 대신 봐주고 있는 것뿐이야~ 허리가 아프다던데, 한여름 햇볕 아래 하루 종일 굽게 두는 건 너무하잖아?',
       );
       await gs.say_and_wait(
-        'だから今日は、この麺を全部売り切る！ さもないとおじちゃんの腰が治らねえ！',
+        '그러니까 오늘은 이 면을 전부 팔아치운다! 안 그러면 아저씨 허리가 안 나아!',
       );
       era.println();
 
       await era.printAndWait(
-        `${you.name} は、${gs.sex}の一度決めたら聞かない性格では説得できないと悟り、仕方なく甘酢味の焼きそばを一皿頼み、隣のビーチチェアで食べながら ${gs.name} を監視し、また失踪されないようにした。`,
+        `${you.name}은(는) ${gs.sex}의 한번 정하면 말을 듣지 않는 성격상 설득은 불가능하다고 깨닫고, 어쩔 수 없이 새콤달콤한 야키소바 한 접시를 주문했다. 그리고 옆 비치체어에서 먹으며 ${gs.name}을(를) 감시해 또 실종되지 않게 했다.`,
       );
     };
     f.title = title;
