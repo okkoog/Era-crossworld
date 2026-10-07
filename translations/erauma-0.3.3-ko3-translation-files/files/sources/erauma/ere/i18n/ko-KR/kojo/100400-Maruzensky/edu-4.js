@@ -9807,148 +9807,148 @@ module.exports = {
      * @param {string} callname 마루젠 スキーのプレイヤーへの呼び方
      */
     const f = async (maru, you, callname) => {
-      await maru.say_and_wait(`예、これが${callname}の分。`);
+      await maru.say_and_wait(`자, 이게 ${callname} 몫이야.`);
       await era.printAndWait(
-        `${you.name}の提案で、今年の밸런타인は훈련실で二人きりパーティーを開くことにした。`,
+        `${you.name}의 제안으로 올해 밸런타인은 훈련실에서 둘만의 파티를 열기로 했다.`,
       );
-      era.printButton(`「ありがとう」`, 1);
+      era.printButton(`「고마워.」`, 1);
       await era.input();
       await era.printAndWait(
-        `飾りのかリボンをそっと解き、ハンドバッグ型のチョコレート箱を開けた。`,
+        `장식 리본을 살며시 풀고 핸드백 모양의 초콜릿 상자를 열었다.`,
       );
       await era.printAndWait(
-        `液体チョコを満たしたチューリップカップ。クリームを挟み、上は厚いイチゴシロップ。飾りはチェリー、ミント、マルベリー。`,
+        `액체 초콜릿을 채운 튤립 컵. 크림을 사이에 넣고 위에는 진한 딸기 시럽. 장식은 체리, 민트, 멀베리.`,
       );
       await era.printAndWait(
-        `杯の胴に結んだ黒い蝶結びが、かすかなピンクの背景を放っている。`,
+        `컵 몸통에 묶인 검은 리본이 옅은 분홍색 배경과 어우러진다.`,
       );
       await maru.say_and_wait(
-        `これまで、何のために走るかを探してきた。今は、走る意味がもう一つ増えたわ。`,
+        `지금까지 무엇을 위해 달리는지 찾아왔어. 이제 달리는 의미가 하나 더 늘었네.`,
       );
-      await maru.say_and_wait(`この先も、ずっと支えてね？ ${callname}`);
+      await maru.say_and_wait(`앞으로도 계속 지지해줘? ${callname}`);
       era.printButton(
-        `「じゃあありがたくいただく。ありがとう${you.name}${maru.name}」`,
+        `「그럼 감사히 받을게. 고마워, ${you.name}${maru.name}.」`,
         1,
       );
       await era.input();
       await maru.say_and_wait(
-        `あ、そうだ！ テイオー${maru.couple_title}が言ってたの。百貨店のある店は밸런타인にカップル그렇다면写真を撮ると6割引きだって.`,
+        `아, 맞다! 테이오 ${maru.couple_title}이(가) 그러더라. 백화점의 어떤 가게는 밸런타인에 커플이라면 사진을 찍으면 60% 할인해 준대.`,
       );
-      await era.printAndWait(`${callname}、興味ある？`);
-      era.printButton(`「問題ない」`, 1);
+      await era.printAndWait(`${callname}, 관심 있어?`);
+      era.printButton(`「문제없어.」`, 1);
       await era.input();
       await era.printAndWait(
-        `${you.name}と${maru.name}は百貨店へ行き,少し探してその店を見つけた.`,
+        `${you.name}과(와) ${maru.name}은(는) 백화점에 가서 조금 찾아본 끝에 그 가게를 발견했다.`,
       );
       await era.printAndWait(
-        `今週の聖地なのかもしれない.入口に長い列ができ,様子からみんなカップルらしい.`,
+        `이번 주의 성지인지도 모른다. 입구에는 긴 줄이 늘어서 있고 보아하니 모두 커플인 듯하다.`,
       );
       await maru.say_and_wait(
-        `人が多いわね.テイオー${maru.couple_title}の言うとおり,ここでしょう`,
+        `사람 많네. 테이오 ${maru.couple_title}이(가) 말한 대로 여기인가 봐.`,
       );
-      await era.printAndWait(`じゃあ、私たちも並びましょう.`);
+      await era.printAndWait(`그럼 우리도 줄 서자.`);
       await era.printAndWait(
-        `${maru.name}は${you.name}の腕を取り、カップルの中に混ざった。`,
+        `${maru.name}은(는) ${you.name}의 팔을 잡고 커플들 사이에 섞였다.`,
       );
-      await era.printAndWait(`店員:お二人はカップル特典セットをご購入ですか？`);
+      await era.printAndWait(`점원: 두 분은 커플 특전 세트를 구매하시나요?`);
       await era.printAndWait(
-        `店員:ただ、割引があると聞いてお得を狙うお客様が多くて、本当に欲しいカップルが買えなくなっているんです`,
+        `점원: 다만 할인이 있다는 말을 듣고 혜택만 노리는 손님이 많아서 정말 원하는 커플들이 사지 못하는 일이 생기고 있습니다.`,
       );
       await era.printAndWait(
-        `店員:こちらも困っていまして、最後に店主がいい案を마음つきました.`,
+        `점원: 저희도 곤란해서 결국 점주가 좋은 방법을 떠올렸습니다.`,
       );
-      await era.printAndWait(`店員:お二人、ロマンチックなキスをお願いします.`);
-      era.printButton(`「き……キス?!」`, 1);
+      await era.printAndWait(`점원: 두 분, 로맨틱한 키스를 부탁드립니다.`);
+      era.printButton(`「키…… 키스?!」`, 1);
       await era.input();
 
       await era.printAndWait(
-        `店員:キスはロマンチックなことではありませんか？ 伴侶への愛も伝えられますし、お得狙いの人はキスと聞いて逃げていきました.`,
+        `점원: 키스는 로맨틱한 일이잖아요? 연인에게 사랑도 전할 수 있고, 혜택만 노리던 분들은 키스 이야기를 듣고 다들 도망갔습니다.`,
       );
       await era.printAndWait(
-        `店員:カップル그렇다면、恥ずかしがることはないでしょう.`,
+        `점원: 커플이라면 부끄러워할 일도 없겠죠.`,
       );
       await era.printAndWait(
-        `店員の鋭い視線で${you.name}の圧力はどんどん増す.${you.name}は${
+        `점원의 날카로운 시선에 ${you.name}의 압박감은 점점 커진다. ${you.name}은(는) ${
           maru.name
-        }を見た.${maru.sex}は落ち着いているふりをしているが,激しく揺れる尻尾が${maru.sex}を裏切っている.`,
+        }을(를) 바라봤다. ${maru.sex}은(는) 태연한 척하지만 세차게 흔들리는 꼬리가 ${maru.sex}의 속마음을 드러낸다.`,
       );
-      era.printButton(`「こうするしかない」`, 1);
+      era.printButton(`「이렇게 할 수밖에 없다.」`, 1);
       await era.input();
       await maru.say_and_wait(`${callname}？`);
       await era.printAndWait(
-        `${you.name}は${maru.name}の腰を抱き,${
+        `${you.name}은(는) ${maru.name}의 허리를 감싸고 ${
           maru.sex
-        }の顔を軽くなで,覚悟を決めてキスした.`,
+        }의 얼굴을 가볍게 쓰다듬은 뒤 각오를 굳히고 키스했다.`,
       );
       await era.printAndWait(
-        `まず探るように軽く触れ,空気が高まるにつれ${you.name}も速くなり,熱い想いが最後は深く重なるキスになった.`,
+        `처음에는 살피듯 가볍게 닿았고 분위기가 달아오를수록 ${you.name}도 움직임이 빨라져 뜨거운 마음은 결국 깊은 입맞춤으로 이어졌다.`,
       );
       await era.printAndWait(
-        `${maru.sex}の唇はリンゴの香りを放つようで,摘む者を誘う.${
+        `${maru.sex}의 입술은 사과 향을 풍기는 듯해 따려는 이를 유혹한다.${
           you.name
-        }は舌を${maru.sex}の口へ入れ,一寸ずつ探った`,
+        }은(는) 혀를 ${maru.sex}의 입안으로 넣어 조금씩 탐색했다.`,
       );
       await era.printAndWait(
-        `${you.name}が${maru.sex}の舌に触れようとするたび,${
+        `${you.name}이(가) ${maru.sex}의 혀에 닿으려 할 때마다 ${
           maru.sex
-        }が恥ずかしそうに退く様子が、かえって${you.name}の欲を刺激した.`,
+        }이(가) 부끄러운 듯 물러나는 모습이 오히려 ${you.name}의 욕망을 자극했다.`,
       );
       await era.printAndWait(
-        `これ以上続けて예けない.だが${you.name}の動きは止まらない.`,
+        `이 이상 계속하면 안 된다. 하지만 ${you.name}의 움직임은 멈추지 않는다.`,
       );
       await era.printAndWait(
-        `激しい刺激で頭が真っ白なとき,${you.name}はこの瞬間を永遠にしたかった.${you.name}は幸福を感じた.`,
+        `강렬한 자극에 머릿속이 새하얘진 순간 ${you.name}은(는) 이 순간이 영원하길 바랐다. ${you.name}은(는) 행복을 느꼈다.`,
       );
       await maru.say_and_wait(`……${callname}`);
       await era.printAndWait(
-        `店員:うわあ、本当に熱いキスですね。ではどうぞお入りください。後ろのお客様がお待ちです.`,
+        `점원: 우와, 정말 뜨거운 키스네요. 그럼 들어가세요. 뒤 손님들이 기다리고 계십니다.`,
       );
       await era.printAndWait(
-        `後ろの客を構う余裕もなく,${you.name}は${
+        `뒤의 손님을 신경 쓸 여유도 없이 ${you.name}은(는) ${
           maru.sex
-        }の頬をそっと支え,世に唯一の至宝のようだった.`,
+        }의 뺨을 살며시 받쳤다. 세상에 하나뿐인 보물처럼 느껴졌다.`,
       );
       await era.printAndWait(
-        `${maru.sex}の頬は完全に赤くなり,激しい心拍が二人の近さから${
+        `${maru.sex}의 뺨은 완전히 붉어졌고 거센 심장박동이 두 사람의 가까운 거리 때문에 ${
           you.name
-        }へ伝わった.`,
+        }에게 전해졌다.`,
       );
       await era.printAndWait(
-        `${you.name}は${maru.sex}の手を握り,空いた席へ向かった.`,
+        `${you.name}은(는) ${maru.sex}의 손을 잡고 빈자리로 향했다.`,
       );
       await maru.say_and_wait(`……`);
       await era.printAndWait(
-        `二人は黙って同じパフェを味わう.震える腕が、主人の平静のなさを示している`,
+        `두 사람은 말없이 같은 파르페를 맛본다. 떨리는 팔이 주인의 동요를 보여준다.`,
       );
       await era.printAndWait(
-        `このあとどう謝る？${
+        `이 뒤에 어떻게 사과하지?${
           maru.sex
-        }はこれで関係を切るのか？ 恐れと喜びが${you.name}の頭で交わり,最後に残ったのは`,
+        }은(는) 이 일로 관계를 끊을까? 두려움과 기쁨이 ${you.name}의 머릿속에서 뒤엉키고 마지막에 남은 것은 `,
       );
       era.printButton(
-        `「${maru.name}が俺を好きかどうかは関係ない。だが나는 ${maru.sex}が好きだ」`,
+        `「${maru.name}이(가) 나를 좋아하는지는 상관없어. 하지만 나는 ${maru.sex}을(를) 좋아해.」`,
         1,
       );
       await era.input();
       await era.printAndWait(
-        `長い責めのあと,このパフェはやっと底を見せた.黙って店を出て大通りを歩き，堤を過ぎ，最後に훈련실へ戻った.`,
+        `긴 고뇌 끝에 이 파르페는 마침내 바닥을 보였다. 말없이 가게를 나와 대로를 걷고 둑을 지나 마지막에는 훈련실로 돌아왔다.`,
       );
-      await maru.say_and_wait(`ねえ,${callname}。`);
+      await maru.say_and_wait(`있지, ${callname}.`);
       await era.printAndWait(
-        `突然足を止めた${maru.name}が、${you.name}を抱いた。`,
+        `갑자기 걸음을 멈춘 ${maru.name}이(가) ${you.name}을(를) 끌어안았다.`,
       );
-      await era.printAndWait(`唇に伝わった湿りが、波紋のように広がる。`);
-      await maru.say_and_wait(`この先も、잘 부탁해.❤`);
+      await era.printAndWait(`입술에 전해진 촉촉함이 물결처럼 퍼진다.`);
+      await maru.say_and_wait(`앞으로도 잘 부탁해❤`);
       await era.printAndWait(
-        `最初の愕きから戻った${you.name}は、大人の余裕を必死に保つ${maru.name}を見た。`,
+        `처음의 놀라움에서 돌아온 ${you.name}은(는) 어른의 여유를 필사적으로 지키려는 ${maru.name}을(를) 바라봤다.`,
       );
       await era.printAndWait(
-        `その様子の${maru.name}が可笑しくて、でもそんな${maru.sex}は本当にかわいく、絹の糸で織ったシルクが胸にそっと敷かれたようだ。`,
+        `그런 ${maru.name}의 모습이 우습기도 했지만, 그런 ${maru.sex}은(는) 정말 귀여워 비단실로 짠 천이 가슴 위에 살며시 깔린 듯했다.`,
       );
-      era.printButton(`「気持ちは複雑だな。」`, 1);
+      era.printButton(`「기분이 복잡하네.」`, 1);
       await era.input();
       await era.printAndWait(
-        `星空とネオンの下で、二人の手はきつく握り合った。`,
+        `별빛과 네온 아래 두 사람의 손은 굳게 맞잡혔다.`,
       );
     };
     f.title = title;
@@ -9957,7 +9957,7 @@ module.exports = {
 
   // [번역 대상] yasu_kin_win_s
   yasu_kin_win_s: (() => {
-    const title = '安田記念後・走りたくなるレース';
+    const title = '야스다 기념 후・달리고 싶어지는 레이스';
     /**
      * @param {CharaTalk} maru 마루젠 スキー
      * @param {CharaTalk} you プレイヤー
@@ -9965,58 +9965,58 @@ module.exports = {
      */
     const f = async (maru, you, callname) => {
       await era.printAndWait('대기실');
-      await maru.say_and_wait(` ${callname}、私のきれいな背中、見えた？`);
+      await maru.say_and_wait(` ${callname}, 내 멋진 뒷모습 잘 봤어?`);
       await era.printAndWait(
-        `安田記念で、後輩の ${maru.uma_sex_title}たちは ${maru.name} の背中に励まされ、${maru.sex} を目標に前へ走り続けた`,
+        `야스다 기념에서 후배 ${maru.uma_sex_title}들은 ${maru.name}의 뒷모습에 격려받아 ${maru.sex}을(를) 목표로 계속 앞으로 달렸다.`,
       );
       await maru.say_and_wait(
-        `後輩たちもすごくなったわね。いつか ${maru.elder_sibling_sex_title} も後輩に超えられて、ハンカチを噛みながら表彰台の ${maru.couple_title}を嫉妬の顔で睨むかも`,
+        `후배들도 정말 대단해졌네. 언젠가 ${maru.elder_sibling_sex_title}도 후배에게 추월당해 손수건을 깨물면서 시상대의 ${maru.couple_title}을(를) 질투 어린 얼굴로 노려볼지도 몰라.`,
       );
       await maru.say_and_wait(
-        `${maru.elder_sibling_sex_title} の傷ついた心をなだめるため、${callname}、今夜は一緒に寝ましょう`,
+        `${maru.elder_sibling_sex_title}의 상처받은 마음을 달래기 위해 ${callname}, 오늘 밤은 같이 자자.`,
       );
       await you.say_and_wait(
-        `それより ${maru.name}은(는) 走る喜びを楽しんでるみたいだな`,
+        `그보다 ${maru.name}은(는) 달리는 기쁨을 즐기고 있는 것 같네.`,
       );
       await maru.say_and_wait(
-        `え、話題をそらすの。${callname} の態度も、こんなに冷たくなったのね。`,
+        `어, 화제를 돌리는 거야? ${callname}의 태도도 이렇게 차가워졌네.`,
       );
       await maru.say_and_wait(
-        `もう魅力がなくなったのかしら。このままじゃ ${maru.elder_sibling_sex_title}、薄情者に捨てられるわ。`,
+        `이제 매력이 없어진 걸까. 이대로면 ${maru.elder_sibling_sex_title}, 매정한 사람에게 버림받겠네.`,
       );
-      await maru.say_and_wait(` ${maru.elder_sibling_sex_title}、かわいそう`);
-      await era.printAndWait(` ${maru.name}은(는) 今、甘えてくることも覚えた`);
-      await you.say_and_wait(`こういうときは`, true);
+      await maru.say_and_wait(` ${maru.elder_sibling_sex_title}, 불쌍해.`);
+      await era.printAndWait(` ${maru.name}은(는) 이제 어리광 부리는 법도 배웠다.`);
+      await you.say_and_wait(`이럴 때는`, true);
       await era.printAndWait(
-        `右手で ${maru.name} の腰をそっと抱き、深く一吻を注ぎ、左手で耳の際の敏感なところを撫でる`,
+        `오른손으로 ${maru.name}의 허리를 살며시 감싸고 깊게 입맞춘 뒤 왼손으로 귀 가장자리의 민감한 곳을 쓰다듬는다.`,
       );
       await era.printAndWait(
-        `キャットニップを吸った子猫のように、${maru.name}은(는) 今、完全に緩んだ。`,
+        `캣닢을 맡은 새끼고양이처럼 ${maru.name}은(는) 지금 완전히 긴장이 풀렸다.`,
       );
       await maru.say_and_wait(
-        `帰りに ${maru.elder_sibling_sex_title} の愛情弁当を食べさせてあげる♪`,
+        `돌아가는 길에 ${maru.elder_sibling_sex_title}의 사랑이 담긴 도시락을 먹여줄게♪`,
       );
       await era.printAndWait(
-        ` ${you.name}은(는) 、ふわふわのチーズと蜂蜜をかけたパンの甘い香りと、晴れの空の下で ${maru.name} が見せた笑顔を마음出した。`,
+        ` ${you.name}은(는) 폭신한 치즈와 꿀을 얹은 빵의 달콤한 향과 맑은 하늘 아래 ${maru.name}이(가) 보였던 미소를 떠올렸다.`,
       );
-      era.printButton(`「${maru.name} の料理예つも上手だな」`, 1);
+      era.printButton(`「${maru.name}의 요리는 언제나 맛있네.」`, 1);
       await era.input();
       await era.printAndWait(
-        `何かを마음出したように、微笑の中に悪賢い顔を見せた ${maru.name} が尻尾を軽く揺らす。`,
+        `무언가를 떠올린 듯 미소 속에 짓궂은 표정을 띤 ${maru.name}이(가) 꼬리를 가볍게 흔든다.`,
       );
-      await maru.say_and_wait(`${callname}、この先もずっと私の試食係ね。`);
-      await you.say_and_wait(`그러고 보니.、明日は中華料理を食べてみたい。`);
-      await maru.say_and_wait(`ふふ♪ ${callname}は目を拭いて待ってて。`);
+      await maru.say_and_wait(`${callname}, 앞으로도 계속 내 시식 담당이야.`);
+      await you.say_and_wait(`그러고 보니 내일은 중화요리를 먹어보고 싶어.`);
+      await maru.say_and_wait(`후후♪ ${callname}, 눈 닦고 기다려.`);
       era.drawLine();
       await era.printAndWait(
-        `夜、${maru.name} が厨房から出来たばかりのキャベツ炒め肉を出すと、箸を動かす前にその鮮やかな匂いが鼻腔へ急いで入り、胃の虫を引きずり出した。`,
+        `밤에 ${maru.name}이(가) 주방에서 갓 만든 양배추 고기볶음을 내오자 젓가락을 움직이기도 전에 선명한 향이 콧속으로 파고들어 식욕을 끌어냈다.`,
       );
       await era.printAndWait(
-        `箸を動かして豚肉を一塊挟むと、柔らかい感触は豆腐を挟んだようだ。口に入れると、野菜の汁を含んだ豚肉が口の中で弾け、舌まで食べたくなる。`,
+        `젓가락으로 돼지고기 한 점을 집자 부드러운 감촉은 두부를 집은 듯하다. 입에 넣으면 채소즙을 머금은 돼지고기가 입안에서 터져 혀까지 먹어치우고 싶을 만큼 맛있다.`,
       );
-      await maru.say_and_wait(`味はどう？`);
+      await maru.say_and_wait(`맛은 어때?`);
       await era.printAndWait(
-        `がつがつ食べる ${you.name} を見て、${maru.name}은(는) 満足の笑顔を見せた。`,
+        `허겁지겁 먹는 ${you.name}을(를) 보며 ${maru.name}은(는) 만족스러운 미소를 보였다.`,
       );
     };
     f.title = title;
