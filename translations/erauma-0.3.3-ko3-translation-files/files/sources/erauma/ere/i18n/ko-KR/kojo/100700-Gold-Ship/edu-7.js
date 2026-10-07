@@ -1602,9 +1602,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_41
+  // [번역 완료] ws_47_41
   ws_47_41: (() => {
-    const title = '目指せパリコレ編';
+    const title = '파리 컬렉션을 노려라 편';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} opera テイエムオペラオー
@@ -1612,224 +1612,224 @@ module.exports = {
      */
     const f = async (gs, opera, you) => {
       await era.printAndWait(
-        'ゴールドシップは有馬記念でエイシンフラッシュとぶつかる——',
+        '골드 쉽은 아리마 기념에서 에이신 플래시와 맞붙는다——',
       );
       era.println();
 
       await era.printAndWait(
-        'たしかに、エイシンフラッシュ自体が強敵だ……だが有馬記念の舞台では、どの選手も実力十分な強者ばかり！',
+        '확실히 에이신 플래시 자체가 강적이다…… 하지만 아리마 기념 무대에는 어느 선수 하나 빠짐없이 실력 있는 강자들뿐이다!',
       );
       era.println();
 
-      era.printButton('（ゴルシを捕まえて、ちゃんと鍛えねえと……）', 1);
+      era.printButton('(고루시를 붙잡아서 제대로 단련시켜야……)', 1);
       await era.input();
 
       await era.printAndWait(
-        `そう、この大事な局面で、${
+        `그래, 이 중요한 국면에 ${
           you.name
-        } のかわいくて魅力的な担当${gs.uma_sex_title}ゴールドシップは、またどこかへ消えていた。あいつは意気揚々と ${
+        }의 귀엽고 매력적인 담당 ${gs.uma_sex_title}골드 쉽은 또 어디론가 사라져 있었다. 녀석은 의기양양하게 ${
           you.name
-        } の目の前を大股で通り過ぎ、「おほほほほ！ ウマ娘の頂点に立つために必要なのは圧倒的な『美』……！！」などと言いながら、一目散に走り去った。`,
+        }의 눈앞을 성큼성큼 지나가며 「오호호호호! 우마무스메의 정점에 서기 위해 필요한 것은 압도적인 『미』……!!」 같은 소리를 하고는 쏜살같이 달려가 버렸다.`,
       );
       era.println();
 
       await era.printAndWait(
         `${
           you.name
-        } は急いで追い、ふと、自身の美学を誇る${opera.uma_sex_title}と鉢合わせした……`,
+        }은(는) 서둘러 뒤쫓다가 문득, 자신의 미학을 자랑하는 ${opera.uma_sex_title}와(과) 맞닥뜨렸다……`,
       );
       era.println();
 
-      await gs.say_and_wait('てめえは……！');
+      await gs.say_and_wait('너는……!');
       await opera.say_and_wait(
-        'その通り！ 我こそ美の化身！ 神に愛されし光の子！ テイエム——',
+        '그렇다! 내가 바로 아름다움의 화신! 신에게 사랑받는 빛의 아이! 티엠——',
       );
       await gs.say_and_wait(
-        'オペラオー——！！ ふん、ゴールドシップ様はパリコレに楽々立てる存在だ！',
+        '오페라 오——!! 흥, 골드 쉽 님은 파리 컬렉션 무대쯤은 가볍게 설 존재다!',
       );
       await opera.say_and_wait(
-        'ぐっ、台詞を奪うとは……！ さすがゴールドシップ、一瞬たりとも油断できぬ！ ではどちらがより美しいか、ここで決着をつけよう！',
+        '큭, 대사를 빼앗다니……! 역시 골드 쉽, 한순간도 방심할 수 없군! 그렇다면 누가 더 아름다운지 여기서 결판을 내자!',
       );
       era.println();
       await era.printAndWait(
-        `それから二人の${opera.uma_sex_title}は、${
+        `그 뒤 두 ${opera.uma_sex_title}은(는) ${
           you.name
-        } の注視のもと、まる四時間のウォーキング対決を繰り広げた……！ 当人が楽しむのはまだいい。なぜ ${
+        }이(가) 지켜보는 가운데 무려 네 시간 동안 워킹 대결을 펼쳤다……! 당사자들이 즐기는 건 그렇다 치자. 왜 ${
           you.name
-        } まで引きずり込むのか、なんという無慈悲！`,
+        }까지 끌어들이는 거냐, 이 무슨 무자비함인가!`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_95_29
+  // [번역 완료] ws_95_29
   ws_95_29: (() => {
-    const title = '夏合宿';
+    const title = '여름 합숙';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname ゴールドシップのプレイヤーへの呼び方
      */
     const f = async (gs, you, callname) => {
-      await gs.say_and_wait('夏だ！ 海だ！ 水着だ！');
+      await gs.say_and_wait('여름이다! 바다다! 수영복이다!');
       era.println();
 
-      await era.printAndWait('二人は砂浜を歩いていた……');
+      await era.printAndWait('두 사람은 모래사장을 걷고 있었다……');
       await era.printAndWait(
-        `${gs.name} は炎天下でも清々しく、${you.name} だけが汗だくだった。`,
+        `${gs.name}은(는) 작열하는 햇볕 아래에서도 상쾌해 보였고, ${you.name}만 땀범벅이었다.`,
       );
       era.println();
 
-      era.printButton('「今年の夏、例年より暑いな……！」', 1);
+      era.printButton('「올여름은 예년보다 덥네……!」', 1);
       await era.input();
 
-      await gs.say_and_wait('暑いなら脱げばいいだろ？');
+      await gs.say_and_wait('더우면 벗으면 되잖아?');
       era.println();
 
       await era.printAndWait(
-        `${you.name} はその言葉に、目を銅鈴より大きく見開き、水着以外何も着ていない自分を指差した。${you.name} はさらに二本の指を突き出し、まず自分の両目を指し、それから ${gs.name} の目を指した。`,
+        `${you.name}은(는) 그 말에 눈을 동그랗게 뜨고, 수영복 말고는 아무것도 입지 않은 자신을 가리켰다. 이어 손가락 두 개로 먼저 자신의 두 눈을 가리킨 뒤 ${gs.name}의 눈을 가리켰다.`,
       );
       era.println();
 
-      await era.printAndWait('「はいはい、冗談だよ——」');
-      await era.printAndWait('「氷食べに行こう、氷！ 体温下げよう！」');
+      await era.printAndWait('「알았어 알았어, 농담이야——」');
+      await era.printAndWait('「빙수 먹으러 가자, 빙수! 체온 좀 낮추자!」');
 
       era.printButton(
-        '「分かった、買ってくる。」（ウマコイン-5、好感+10、恋慕+2）',
+        '「알았어, 사 올게.」(우마 코인-5, 호감+10, 연모+2)',
         1,
       );
       await era.input();
 
       await era.printAndWait(
-        `${you.name} は ${gs.name} を砂浜に残し、早足で屋台へカキ氷を買いに行き、帰り際——`,
+        `${you.name}은(는) ${gs.name}을(를) 모래사장에 남겨두고 빠른 걸음으로 가게에 빙수를 사러 갔다. 그리고 돌아오는 길——`,
       );
 
       era.drawLine();
       await era.printAndWait(
-        `通行人A「おや？ この${gs.sex_code !== 1 ? 'お嬢さん' : 'お兄ちゃん'}、お一人？ 」`,
+        `通行人A「おや？ この${gs.sex_code !== 1 ? '아가씨' : '오빠'}, 혼자야? 」`,
       );
       await era.printAndWait(
-        `通行人B「${gs.sex_code !== 1 ? '兄ちゃん' : '姉ちゃん'}と遊ばねえ？」`,
+        `通行人B「${gs.sex_code !== 1 ? '형씨' : '누나'}랑 놀지 않을래?」`,
       );
       era.println();
 
       await gs.print_and_wait(
-        `${gs.name} は元の場所に立ったままだが、花のような美貌は必ず蜂や蝶を呼ぶ。何人もの不逞な連中が${gs.sex}を囲み、しつこく絡んでいた。こういう場でも、${gs.name} はなんとかはぐらかそうとしていて、いつもの威勢は微塵もない……`,
+        `${gs.name}은(는) 원래 있던 자리에 그대로 서 있었지만, 꽃 같은 미모는 벌과 나비를 불러들이기 마련이다. 몇몇 불량배가 ${gs.sex}을(를) 둘러싸고 끈질기게 들이대고 있었다. 이런 상황에서도 ${gs.name}은(는) 어떻게든 좋게 넘기려 하고 있었고, 평소의 기세는 조금도 보이지 않았다……`,
       );
       era.println();
 
       await gs.print_and_wait(
-        `そうか……あいつは名の知れた${gs.uma_sex_title}だ。ここでは簡単に切れない……`,
+        `그렇구나…… 저 녀석은 이름이 알려진 ${gs.uma_sex_title}다. 여기서는 함부로 화낼 수도 없는 거야……`,
       );
       era.println();
 
       await gs.print_and_wait(
-        `${gs.name} は表向きは自分勝手だが、実際は誰より「社会性」というものを分かっている。`,
+        `${gs.name}은(는) 겉보기에는 제멋대로지만, 사실 누구보다도 「사회성」이라는 걸 잘 알고 있다.`,
       );
       era.println();
 
       era.printButton(
-        `「おい、よその${gs.sex_code - 1 ? '女' : '男'}に何してんだ？」`,
+        `「おい、よその${gs.sex_code - 1 ? '여자' : '남자'}한테 뭐 하는 거야?」`,
         1,
       );
       await era.input();
 
       await era.printAndWait(
-        `${you.actual_name} が言い終わるや、その場の数人が驚いて${you.sex}を見た。`,
+        `${you.actual_name}이(가) 말을 끝내자마자 그 자리에 있던 몇 사람이 놀라 ${you.sex}을(를) 바라봤다.`,
       );
       era.println();
 
-      await gs.say_and_wait('ダーリン～来てくれた～');
+      await gs.say_and_wait('달링~ 와줬구나~');
       era.println();
 
       if (era.get('love:7') >= 75) {
         await gs.print_and_wait(
-          `${gs.name} は好機と見るやチンピラたちを掻き分け、両手を振って ${you.actual_name} へ走り寄り、抱きしめ、熱い口づけを捧げた。${you.actual_name} を含む全員が度肝を抜かれたが、${you.actual_name} はすぐ応えた——双方の舌が口の中で絡み、求め合い、熱を分け合う……チンピラたちは口説きに失敗したと見るや、悪態をついて去った。`,
+          `${gs.name}은(는) 기회다 싶자 불량배들을 헤치고 양손을 흔들며 ${you.actual_name}에게 달려와 껴안고 진한 입맞춤을 했다. ${you.actual_name}을(를) 포함해 모두가 놀랐지만, ${you.actual_name}은(는) 곧바로 응했다——두 사람의 혀가 입안에서 얽혀 서로를 탐하고 열기를 나눴다…… 불량배들은 작업이 실패했다고 판단하자 욕설을 내뱉고 떠났다.`,
         );
       } else {
         await gs.print_and_wait(
-          `${gs.name} は好機と見るやチンピラたちを掻き分け、両手を振って ${you.actual_name} へ走り寄り、抱きしめ、それから ${you.actual_name} の頬に軽いキスをした——そのキスは顔にリップの冷たさを残し、${you.actual_name} の跳ねる胸には激情の刻印を残した。`,
+          `${gs.name}은(는) 기회다 싶자 불량배들을 헤치고 양손을 흔들며 ${you.actual_name}에게 달려와 껴안은 뒤, ${you.actual_name}의 뺨에 가볍게 입을 맞췄다——그 입맞춤은 얼굴에 립스틱의 차가운 감촉을 남기고, ${you.actual_name}의 뛰는 가슴에는 격한 감정의 흔적을 남겼다.`,
         );
       }
 
       era.drawLine();
       await era.printAndWait(
-        `一件落着し、${you.name} とゴールドシップは日傘の下でカキ氷の涼しさを味わった。`,
+        `한바탕 소동이 끝나고 ${you.name}와(과) 골드 쉽은 파라솔 아래에서 빙수의 시원함을 즐겼다.`,
       );
       era.println();
 
-      await gs.say_and_wait('ふぅ、危なかった～ゴルシ、さらわれそうだったぜ～');
-      await gs.say_and_wait(`ありがとな、${callname}❤️`);
+      await gs.say_and_wait('후우, 위험했다~ 고루시 납치당할 뻔했네~');
+      await gs.say_and_wait(`고맙다, ${callname}❤️`);
       await gs.say_and_wait(
-        `ところで……アタシは『${gs.sex_code - 1 ? '女' : '男'}』扱いなのか？`,
+        `그런데…… 나는 『${gs.sex_code - 1 ? '여자' : '남자'}』 취급인 거냐?`,
       );
 
       await era.printAndWait(
-        `${gs.name} は悪賢い顔で ${you.name} の肩に寄りかかり、${you.name} がどう説明しても聞かない……この件は、${gs.sex}に十年は吹聴されそうだ……`,
+        `${gs.name}은(는) 짓궂은 표정으로 ${you.name}의 어깨에 기대고는, ${you.name}이(가) 아무리 설명해도 듣지 않았다…… 이 일은 ${gs.sex}에게 앞으로 십 년은 놀림감이 될 것 같다……`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_95_3
+  // [번역 완료] ws_95_3
   ws_95_3: (() => {
-    const title = '目指せ社会人編';
+    const title = '사회인을 노려라 편';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} ticket ウイニングチケット
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, ticket, you) => {
-      await era.printAndWait('年が明け、シニア級のレースが始まった。');
+      await era.printAndWait('새해가 밝고 시니어급 레이스가 시작됐다.');
       await era.printAndWait(
-        `まもなく天皇賞や宝塚記念といった大レースも迫ってくる。`,
+        `곧 천황상이나 타카라즈카 기념 같은 큰 레이스도 다가온다.`,
       );
       era.println();
 
       await era.printAndWait(
-        'ところが、ゴールドシップはトレーナー室に来ていない。',
+        '그런데 골드 쉽은 트레이너실에 오지 않았다.',
       );
       era.println();
 
       await era.printAndWait(
-        `${you.name} は怒りを押さえ、学園中を探し回った——`,
+        `${you.name}은(는) 화를 억누르며 학원 곳곳을 찾아다녔다——`,
       );
       era.println();
 
       await gs.say_and_wait(
-        `チケゾー、聞いてくれ。後輩の${gs.child_sex_title.substring(
+        `치케조, 잘 들어. 후배 ${gs.child_sex_title.substring(
           0,
           1,
-        )}がなにより大事なんは、いわゆる社会人力なんだわ。`,
+        )}에게 무엇보다 중요한 건 이른바 사회인력이라는 거야.`,
       );
-      await ticket.say_and_wait('人材会社？');
+      await ticket.say_and_wait('인재 회사?');
       await ticket.say_and_wait(
-        'いやいや、社会にうまく溶け込み、決まりどおり素早く動き、周りに迷惑をかけない『社会人・力』だ！',
+        '아니 아니, 사회에 잘 녹아들고 규칙대로 빠르게 움직이며 주변에 민폐를 끼치지 않는 『사회인・력』이다!',
       );
-      await ticket.say_and_wait('『社会人点力』！ なんかすごそう……！！');
+      await ticket.say_and_wait('『사회인점력』! 뭔가 대단해 보여……!!');
       era.println();
 
       era.printButton(
-        '（てめえの『社会人点力』は完全に落第だゴールドシップ——！！）',
+        '(네 『사회인점력』은 완전히 낙제다, 골드 쉽——!!)',
         1,
       );
       await era.input();
 
       await gs.say_and_wait(
-        'なんで『社会人・力』を『社会人点力』って読むのか分からねえけど、じゃあ俺たちの『社会人点力』を試すか！',
+        '왜 『사회인・력』을 『사회인점력』이라고 읽는지는 모르겠지만, 그럼 우리 『사회인점력』을 시험해볼까!',
       );
-      await gs.say_and_wait('そこの覗き魔トレーナー、お前も来い！');
+      await gs.say_and_wait('거기 엿보는 트레이너, 너도 와!');
       era.println();
 
       await era.printAndWait(
-        `言い終わるか終わらないかのうちに、ゴールドシップとウイニングチケットは勢いよく学園を飛び出し、${you.name} は息を切らして追いすがるしかなかった。`,
+        `말이 끝나기도 전에 골드 쉽과 위닝 티켓은 기세 좋게 학원을 뛰쳐나갔고, ${you.name}은(는) 숨을 헐떡이며 뒤쫓을 수밖에 없었다.`,
       );
       era.println();
 
       await era.printAndWait(
-        'そのあと、ゴールドシップ二人組が電車内で静かにし『社会人点力』を誇示しようとする試みは、開始15秒で失敗に終わった。',
+        '그 뒤 골드 쉽 일행이 전철 안에서 조용히 하며 『사회인점력』을 과시하려던 시도는 시작 15초 만에 실패로 끝났다.',
       );
     };
     f.title = title;
