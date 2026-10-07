@@ -8,247 +8,247 @@ module.exports = {
 
   // [번역 대상] arim_kin_win_h_s
   arim_kin_win_h_s: (() => {
-    const title = '奇跡の復活（下）';
+    const title = '기적의 부활 (하)';
     /**
      * @param {CharaTalk} teio トウカイテイオー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (teio, you) => {
-      await teio.say_and_wait('大丈夫だよ。');
+      await teio.say_and_wait('괜찮아.');
       era.println();
 
       await era.printAndWait(
-        `${teio.uma_sex_title}${teio.teen_sex_title}は熾烈な流星と化し、体力を最大限に狂おしく燃やし、レース場を走る。`,
+        `${teio.uma_sex_title}${teio.teen_sex_title}은(는) 맹렬한 유성이 되어 체력을 한계까지 불태우며 레이스장을 달린다.`,
       );
       era.println();
 
-      await teio.say_and_wait('勝てる。');
+      await teio.say_and_wait('이길 수 있어.');
       era.println();
 
       await era.printAndWait(
-        `${you.name} は専用観戦席から立ち上がり、そのぼやけた赤い影を目で追う——${you.name} の担当が、全身の筋繊維を絞り切ってこのレースを仕上げようとしている。`,
+        `${you.name}은(는) 전용 관람석에서 일어나 흐릿한 붉은 그림자를 눈으로 좇는다——${you.name}의 담당이 온몸의 근섬유를 쥐어짜 이 레이스를 완성하려 하고 있다.`,
       );
-      await era.printAndWait(`ふたりの夢を、叶えるために。`);
+      await era.printAndWait(`두 사람의 꿈을 이루기 위해.`);
       era.println();
 
       await era.printAndWait(
-        `青空に白い雲、赤い陽に清い風、いちばん適した天気なのに、${you.name} には味わう気がなく、ただその小さな影へ全身を投げる。`,
+        `푸른 하늘과 흰 구름, 붉은 태양과 맑은 바람. 더없이 좋은 날씨지만 ${you.name}에게 그것을 즐길 여유는 없고, 그저 작은 그림자 하나에 온 정신을 쏟는다.`,
       );
-      await era.printAndWait(`${you.name} の担当、${teio.name}。`);
+      await era.printAndWait(`${you.name}의 담당, ${teio.name}.`);
       await era.printAndWait(
-        `世界が ${you.name} の目から遠ざかり、${teio.sex}のうえへ再び焦点を結ぶ。あらゆる音がノイズのように濁る——待て。`,
+        `세계가 ${you.name}의 눈에서 멀어지고 초점은 다시 ${teio.sex}에게 모인다. 모든 소리가 잡음처럼 흐려진다——잠깐.`,
       );
       era.println();
 
-      await era.printAndWait(`実況「——${teio.name}選手が——」`);
+      await era.printAndWait(`실황「——${teio.name} 선수가——」`);
       era.println();
 
-      await era.printAndWait('何かがおかしい。');
+      await era.printAndWait('뭔가 이상하다.');
       era.println();
 
       await era.printAndWait(
-        `${you.name} は柵を掴み、身を乗り出し、必死に叫ぶ。`,
+        `${you.name}은(는) 울타리를 움켜쥐고 몸을 내밀며 필사적으로 외친다.`,
       );
       era.println();
 
-      await era.printAndWait(`実況「——失速！脚の旧傷か——」`);
+      await era.printAndWait(`실황「——실속! 다리의 옛 부상인가——」`);
       era.println();
 
-      await teio.say_and_wait('は……は……');
+      await teio.say_and_wait('하…… 하……');
       era.println();
 
-      await teio.say_and_wait('体が……言うこと聞かない', true);
+      await teio.say_and_wait('몸이…… 말을 안 들어', true);
       era.println();
 
-      await teio.say_and_wait('こ——きゅう——上がらない', true);
+      await teio.say_and_wait('호——흡이—— 안 돼', true);
       era.println();
 
-      await teio.say_and_wait('肋骨と肺と心臓が……燃えてる。', true);
+      await teio.say_and_wait('갈비뼈와 폐와 심장이…… 타고 있어.', true);
       era.println();
 
-      await teio.say_and_wait('手足が……感じない', true);
+      await teio.say_and_wait('손발이…… 느껴지지 않아', true);
       era.println();
 
-      era.printButton('「——テ——イ——オー——」', 1);
+      era.printButton('「——테——이——오——」', 1);
       await era.input();
 
-      await teio.say_and_wait('あの人はだれ……', true);
+      await teio.say_and_wait('저 사람은 누구지……', true);
       era.println();
 
       await teio.say_and_wait(
-        '声も……視界も……ぼやける……何も思い出せない、このまま倒れて……',
+        '목소리도…… 시야도…… 흐려져…… 아무것도 기억나지 않아, 이대로 쓰러져서……',
         true,
       );
       era.println();
 
-      await era.printAndWait('胴が前へ傾き、頭が落ちる。');
+      await era.printAndWait('몸통이 앞으로 기울고 머리가 떨어진다.');
       era.println();
 
-      await era.printAndWait('いや、待て。');
-      await era.printAndWait('こんな結末であるはずがない。');
+      await era.printAndWait('아니, 잠깐.');
+      await era.printAndWait('이런 결말일 리가 없다.');
       era.println();
 
-      await teio.say_and_wait('違う', true);
+      await teio.say_and_wait('아니야.', true);
       era.println();
 
-      await teio.say_and_wait('ボクは何を——', true);
+      await teio.say_and_wait('나는 뭘——', true);
       era.println();
 
       era.printButton(`「${teio.name}！！！」`, 1);
       await era.input();
 
-      await teio.say_and_wait('ああ……');
+      await teio.say_and_wait('아아……');
       era.println();
 
-      await era.printAndWait(`実況「——おお！${teio.name} が追いついた？」`);
+      await era.printAndWait(`실황「——오오! ${teio.name}이(가) 따라붙었나요?」`);
       era.println();
 
-      await teio.say_and_wait('思い出した。');
+      await teio.say_and_wait('생각났다.');
       era.println();
 
       await era.printAndWait(
-        `重い両脚、燃える肺、酸えた腕——痛みが ${teio.name} という${teio.uma_sex_title}の体へ戻る。`,
+        `무거운 두 다리, 타는 듯한 폐, 시큰거리는 팔——고통이 ${teio.name}이라는 ${teio.uma_sex_title}의 몸으로 돌아온다.`,
       );
-      await era.printAndWait('だが同じように戻ったのは、闘志と信念だ。');
+      await era.printAndWait('하지만 함께 돌아온 것은 투지와 신념이다.');
       era.println();
 
-      await teio.say_and_wait('思い出した！');
-      era.println();
-
-      await era.printAndWait(
-        `両足が大地に触れ、擦り、地面を蹴った反作用が、すでに苦痛に耐えきれない体を前へ押し、体を傾け、位置エネルギーが生む前向きの加速を最大限に使う——`,
-      );
+      await teio.say_and_wait('생각났어!');
       era.println();
 
       await era.printAndWait(
-        `実況「今の先頭は——待て、あれは、${teio.name} が上がってきた！${teio.name}だ！」`,
-      );
-      era.println();
-
-      await teio.say_and_wait('呼吸が苦しい', true);
-      era.println();
-
-      await teio.say_and_wait('肺が破れても構わない', true);
-      era.println();
-
-      await teio.say_and_wait('脚は重い、でもまだ動く', true);
-      era.println();
-
-      await teio.say_and_wait('ボクは……何度も挫折した', true);
-      era.println();
-
-      await teio.say_and_wait('あのときも……あのときも', true);
-      era.println();
-
-      await teio.say_and_wait('誰より多く挫折したのはボクだ', true);
-      era.println();
-
-      await teio.say_and_wait('誰より悔しいのもボクだ', true);
-      era.println();
-
-      await teio.say_and_wait('誰より勝ちたいのもボクだ', true);
-      era.println();
-
-      await teio.say_and_wait('絶対に譲らない', true);
-      era.println();
-
-      await teio.say_and_wait('絶対に絶対に', true);
-      era.println();
-
-      await teio.say_and_wait('絶対にボクだ！', true);
-      era.println();
-
-      await teio.say_and_wait('行け', true);
-      era.println();
-
-      await teio.say_and_wait('行け', true);
-      era.println();
-
-      await teio.say_and_wait('行け、走れ', true);
-      era.println();
-
-      await teio.say_and_wait('勝負だ！', true);
-      era.println();
-
-      await era.printAndWait(
-        `実況「${teio.name}だ！${teio.name} が追いついた！${teio.sex}と先頭の差が縮まっていく！」`,
-      );
-      era.println();
-
-      await era.printAndWait('残り200メートルを切る');
-      era.println();
-
-      await era.printAndWait(
-        `実況「一年ぶりにレース場へ戻った ${teio.name} は追いつけるか？${teio.sex}が抜き去った——いや、他の${teio.uma_sex_title}が${teio.sex}のそばに張りつき、必死に ${teio.name} を追っている！」`,
+        `두 발이 땅에 닿고 스치며 지면을 차는 반작용이 이미 고통을 견디기 힘든 몸을 앞으로 밀어낸다. 몸을 기울여 위치에너지가 만드는 전방 가속을 최대한 활용한다——`,
       );
       era.println();
 
       await era.printAndWait(
-        `実況「${teio.name} が力を振り絞って追う！相手も一歩も譲らない——あと一馬身！」`,
+        `실황「현재 선두는——잠깐, 저건, ${teio.name}이(가) 올라옵니다! ${teio.name}입니다!」`,
+      );
+      era.println();
+
+      await teio.say_and_wait('숨쉬기 힘들어', true);
+      era.println();
+
+      await teio.say_and_wait('폐가 터져도 상관없어', true);
+      era.println();
+
+      await teio.say_and_wait('다리는 무거워, 그래도 아직 움직여', true);
+      era.println();
+
+      await teio.say_and_wait('나는…… 몇 번이고 좌절했어', true);
+      era.println();
+
+      await teio.say_and_wait('그때도…… 그때도', true);
+      era.println();
+
+      await teio.say_and_wait('누구보다 많이 좌절한 건 나야', true);
+      era.println();
+
+      await teio.say_and_wait('누구보다 분한 것도 나야', true);
+      era.println();
+
+      await teio.say_and_wait('누구보다 이기고 싶은 것도 나야', true);
+      era.println();
+
+      await teio.say_and_wait('절대로 양보하지 않아', true);
+      era.println();
+
+      await teio.say_and_wait('절대로, 절대로', true);
+      era.println();
+
+      await teio.say_and_wait('절대로 내가 이겨!', true);
+      era.println();
+
+      await teio.say_and_wait('가!', true);
+      era.println();
+
+      await teio.say_and_wait('가!', true);
+      era.println();
+
+      await teio.say_and_wait('가, 달려!', true);
+      era.println();
+
+      await teio.say_and_wait('승부다!', true);
+      era.println();
+
+      await era.printAndWait(
+        `실황「${teio.name}입니다! ${teio.name}이(가) 따라붙었습니다! ${teio.sex}와 선두의 격차가 줄어듭니다!」`,
+      );
+      era.println();
+
+      await era.printAndWait('남은 거리 200미터를 끊는다.');
+      era.println();
+
+      await era.printAndWait(
+        `실황「1년 만에 레이스장으로 돌아온 ${teio.name}, 따라잡을 수 있을까요? ${teio.sex}이(가) 추월했습니다——아니, 다른 ${teio.uma_sex_title}이(가) ${teio.sex} 곁에 바짝 붙어 필사적으로 ${teio.name}을(를) 쫓고 있습니다!」`,
       );
       era.println();
 
       await era.printAndWait(
-        `実況「あと少し、あと少し！${teio.name} がもう一歩近づけない！」`,
+        `실황「${teio.name}이(가) 힘을 짜내 쫓습니다! 상대도 한 걸음도 물러서지 않습니다——한 마신 차!」`,
       );
       era.println();
 
       await era.printAndWait(
-        '実況「菊花賞レコード保持者の強さが、ここでも譲らない！」',
+        `실황「조금만 더, 조금만 더! ${teio.name}이(가) 한 걸음을 더 좁히지 못합니다!」`,
       );
       era.println();
 
       await era.printAndWait(
-        `実況「だが——${teio.name} が近づいた！レース場へ戻ったテイオーが差をどんどん縮める！」`,
-      );
-      era.println();
-
-      await era.printAndWait('100メートル\n最後の鍔迫り合い');
-      era.println();
-
-      await era.printAndWait(
-        `実況「先頭と並んだか？${teio.name}！新世代の覇者か、往時の没落した王が玉座へ戻るのか——」`,
+        '실황「국화상 기록 보유자의 강함이 여기서도 버팁니다!」',
       );
       era.println();
 
       await era.printAndWait(
-        '芝の原全体が、震えるようだ。中山競馬場——ここも、有馬記念の勝者を待っているのではないか。',
+        `실황「하지만——${teio.name}이(가) 다가옵니다! 레이스장에 돌아온 테이오가 격차를 계속 줄입니다!」`,
       );
       era.println();
 
-      await teio.say_and_wait('あああああああああああ！');
-      era.println();
-
-      await era.printAndWait(`実況「${teio.name}だ！」`);
+      await era.printAndWait('100미터\n마지막 접전');
       era.println();
 
       await era.printAndWait(
-        `実況「${teio.name} は越えたか？${teio.name} がわずかに先行、ダービーウマ${teio.uma_sex_title}の骨を見せるか？！」`,
+        `실황「선두와 나란히 섰나요? ${teio.name}! 신세대의 패자인가, 과거 몰락한 왕이 왕좌로 돌아오는가——」`,
       );
       era.println();
 
       await era.printAndWait(
-        '実況「だが優勢は薄い、相手も食らいついて離さない！」',
+        '잔디밭 전체가 떨리는 듯하다. 나카야마 경마장——이곳 역시 아리마 기념의 승자를 기다리고 있는 것 아닐까.',
       );
       era.println();
 
-      await era.printAndWait('実況「どっちだ、どっちだ？！」');
+      await teio.say_and_wait('아아아아아아아아아아아!');
       era.println();
 
-      await era.printAndWait(`ウマ${teio.uma_sex_title}「ボクが——」`);
-      era.println();
-
-      await teio.say_and_wait('——勝った——');
-      era.println();
-
-      await era.printAndWait('一筋の赤い虹が、決勝線を切り裂く。');
+      await era.printAndWait(`실황「${teio.name}입니다!」`);
       era.println();
 
       await era.printAndWait(
-        '場全体が一瞬静まったようで、それから山を崩すような歓声。',
+        `실황「${teio.name}이(가) 넘어섰나요? ${teio.name}이(가) 근소하게 앞섭니다, 더비 우마 ${teio.uma_sex_title}의 저력을 보여주는가?!」`,
+      );
+      era.println();
+
+      await era.printAndWait(
+        '실황「하지만 우세는 미미합니다, 상대도 바짝 따라붙어 놓치지 않습니다!」',
+      );
+      era.println();
+
+      await era.printAndWait('실황「어느 쪽입니까, 어느 쪽입니까?!」');
+      era.println();
+
+      await era.printAndWait(`우마 ${teio.uma_sex_title}「내가——」`);
+      era.println();
+
+      await teio.say_and_wait('——이겼어——');
+      era.println();
+
+      await era.printAndWait('한 줄기 붉은 무지개가 결승선을 갈라놓는다.');
+      era.println();
+
+      await era.printAndWait(
+        '경기장 전체가 한순간 조용해진 듯하다가 산을 무너뜨릴 듯한 환호가 터진다.',
       );
       await era.printAndWait(
-        '沸騰する人々の叫びが空に響き、ひとつの名がそのなかで回る。',
+        '끓어오르는 사람들의 함성이 하늘에 울리고 하나의 이름이 그 속에서 메아리친다.',
       );
       era.println();
 
@@ -269,7 +269,7 @@ module.exports = {
       });
       era.println();
 
-      await era.printAndWait(`実況「${teio.name}——奇跡の復活！」`, {
+      await era.printAndWait(`실황「${teio.name}——기적의 부활!」`, {
         align: 'center',
         color: teio.color,
         fontSize: '1.5rem',
@@ -997,113 +997,113 @@ module.exports = {
      */
     const f = async (teio, you) => {
       await era.printAndWait(
-        `${you.name} は自ら担当をレース場へ送り、${teio.sex}を励ましてから観客席へ戻る。`,
+        `${you.name}은(는) 직접 담당을 레이스장으로 보내고 ${teio.sex}을(를) 격려한 뒤 관객석으로 돌아온다.`,
       );
-      await era.printAndWait('隣はがら空きだ。');
+      await era.printAndWait('옆자리는 텅 비어 있다.');
       await era.printAndWait(
-        `${you.name} は溜息をつく。会見に現れたあのテイオーのファンたちは、結局来なかった。`,
-      );
-      await era.printAndWait(
-        `だが構わない、と ${you.name} は思う。テイオーが夢を叶えられればいい。首を捻り、視線を再び場へ戻す。`,
-      );
-      await era.printAndWait('だが、戦況は理想どおりではなさそうだ。');
-      await era.printAndWait(
-        `団子になった${teio.uma_sex_title}の群れは競争が激しく、テイオーは包囲を破れない。`,
+        `${you.name}은(는) 한숨을 쉰다. 기자회견에 나타났던 그 테이오 팬들은 결국 오지 않았다.`,
       );
       await era.printAndWait(
-        `${you.name} の掌は、いつのまにか汗でいっぱいだ。`,
+        `하지만 상관없다고 ${you.name}은(는) 생각한다. 테이오가 꿈을 이루기만 하면 된다. 목을 돌려 다시 경기장으로 시선을 보낸다.`,
+      );
+      await era.printAndWait('하지만 전황은 이상적이지 않아 보인다.');
+      await era.printAndWait(
+        `한 덩어리가 된 ${teio.uma_sex_title} 무리는 경쟁이 치열해 테이오는 포위를 뚫지 못한다.`,
+      );
+      await era.printAndWait(
+        `${you.name}의 손바닥은 어느새 땀으로 흥건하다.`,
       );
       era.drawLine();
-      await era.printAndWait('トレーナーA「——以上が次のレースの出走馬です」');
-      await era.printAndWait('通行人A「残念だね……また選ばれなかった」');
-      await era.printAndWait('ファンA「……あはは、いいよ、どうせ下手だし」');
+      await era.printAndWait('트레이너 A「——이상이 다음 레이스의 출주마입니다.」');
+      await era.printAndWait('행인 A「아쉽네…… 또 뽑히지 못했어.」');
+      await era.printAndWait('팬 A「……아하하, 됐어. 어차피 못하니까.」');
       await era.printAndWait(
-        'ファンA（くそ……自分だって真面目に、朝早くから遅くまで鍛えてたのに！）',
+        '팬 A（젠장…… 나도 진지하게 아침 일찍부터 늦게까지 훈련했는데!）',
       );
       await era.printAndWait(`——${you.name}이(가) 팔고 있던 것은 꿈이었다.`);
       era.println();
 
       await era.printAndWait(
-        'ファンB「また怒鳴られた……自分のせいじゃないのに、全部自分のせいになる」',
+        '팬 B「또 혼났어…… 내 잘못도 아닌데 전부 내 탓이 돼.」',
       );
       await era.printAndWait(
-        'ファンB「もういいや……ゲームするか。自分にも得意なものはあるし、へへ」',
+        '팬 B「이제 됐어…… 게임이나 할까. 나도 잘하는 건 있으니까, 헤헤.」',
       );
       await era.printAndWait(
-        `——${you.name}이(가) 팔고 있던 것은 꿈이었다.誰もがそれに触れそうで触れず、必要だと認めないまま、心はそちらへ馳せる。`,
+        `——${you.name}이(가) 팔고 있던 것은 꿈이었다. 누구나 손에 닿을 듯 닿지 못하고, 필요하다고 인정하지 않으면서도 마음은 그쪽으로 달려간다.`,
       );
       era.println();
 
-      await era.printAndWait('ファンA「……ああ」');
-      await era.printAndWait('ファンB「何もない……」');
-      await era.printAndWait('——今まさに、人が夢を必要とするときだ。');
+      await era.printAndWait('팬 A「……아아.」');
+      await era.printAndWait('팬 B「아무것도 없어……」');
+      await era.printAndWait('——바로 지금이 사람이 꿈을 필요로 하는 때다.');
       era.println();
 
       await era.printAndWait(
-        'ファンA「もういいや……テレビでも見るか……今日、ジャパンカップだっけ……」',
+        '팬 A「이제 됐어…… TV나 볼까…… 오늘 재팬컵이던가……」',
       );
-      await era.printAndWait('ファンB「くそ……テレビでレースでも見るか」');
+      await era.printAndWait('팬 B「젠장…… TV로 레이스나 보자.」');
       await era.printAndWait(
-        '——人は、すべてが幸せで、天は勤勉に報い、努力は実り、信念は困難を越えられる、という物語を聞きたい。',
+        '——사람은 모든 것이 행복하고, 하늘은 노력에 보답하며, 노력은 결실을 맺고 신념은 어려움을 넘어설 수 있다는 이야기를 듣고 싶어 한다.',
       );
       era.println();
 
       await era.printAndWait(
-        `ファンA「${teio.name}……？${teio.sex}、本当に出た？」`,
+        `팬 A「${teio.name}……? ${teio.sex}, 정말 나왔어?」`,
       );
-      await era.printAndWait(`ファンB「${teio.sex}は……」`);
-      await era.printAndWait(`——${you.name} は、そういう物語を書けるか。`);
+      await era.printAndWait(`팬 B「${teio.sex}은(는)……」`);
+      await era.printAndWait(`——${you.name}은(는) 그런 이야기를 써낼 수 있을까.`);
       era.drawLine();
       await era.printAndWait(`？？？「${you.elder_sibling_sex_title}」`);
       era.println();
       await era.printAndWait(
-        `${you.name} が振り返ると、女がどこか見覚えのある女の子の手を引き、${you.name} へ歩いてくる。`,
+        `${you.name}이(가) 돌아보자 한 여성이 어딘가 낯익은 여자아이의 손을 잡고 ${you.name} 쪽으로 걸어온다.`,
       );
       era.println();
       await era.printAndWait(
-        `女の子「${you.elder_sibling_sex_title}？覚えてる？」`,
+        `여자아이「${you.elder_sibling_sex_title}? 기억해?」`,
       );
       era.println();
       await era.printAndWait(
-        `${you.name} は見て思い出す。あのとき ${you.name} とテイオーが初めて会ったときに見た子供だ。挨拶を交わし、彼女たちは ${you.name} の隣に座って一緒に観戦する。女の子はとても興奮している。初めて来たのか。`,
+        `${you.name}은(는) 보고 기억을 떠올린다. 그때 ${you.name}과(와) 테이오가 처음 만났을 때 보았던 아이였다. 인사를 나눈 뒤 두 사람은 ${you.name} 옆에 앉아 함께 관전한다. 여자아이는 무척 흥분해 있다. 처음 와본 모양이다.`,
       );
       era.println();
       await era.printAndWait(
-        `女の子「${you.elder_sibling_sex_title}、ずっとテイオー${teio.adult_sex_title}のレースが見たかったの……今まで機会がなくて、今度やっと！クラスで一番取ったら、お母さんがご褒美で連れてきてくれたの。テイオーさん、本当にかっこいい。${teio.sex} 絶対に一番だよね！」`,
+        `여자아이「${you.elder_sibling_sex_title}, 계속 테이오 ${teio.adult_sex_title}의 레이스를 보고 싶었어…… 지금까지 기회가 없었는데 이번에 드디어! 반에서 1등 하면 엄마가 상으로 데려와 주겠다고 했거든. 테이오 씨 정말 멋있어. ${teio.sex}, 반드시 1등이지!」`,
       );
       era.println();
       await era.printAndWait(
-        `${you.name} は${teio.sex}の顔を見て、思わず笑う。`,
+        `${you.name}은(는) ${teio.sex}의 얼굴을 보고 저도 모르게 웃는다.`,
       );
-      era.printButton(`「ああ、${teio.sex}なら必ず」`, 1);
+      era.printButton(`「그래, ${teio.sex}이라면 반드시.」`, 1);
       await era.input();
       era.drawLine();
       await teio.say_and_wait('最悪……', true);
       await era.printAndWait(
-        `いちばん得意な先行がまったく活きず、${teio.uma_sex_title}の群れが道を塞ぎ、突破は夢物語だ。`,
+        `가장 자신 있는 선행이 전혀 살아나지 못하고, ${teio.uma_sex_title} 무리가 길을 막아 돌파는 꿈같은 이야기다.`,
       );
-      await era.printAndWait('本当に……できるのか。');
+      await era.printAndWait('정말로…… 할 수 있을까.');
       era.println();
-      await teio.say_and_wait('できる！', true);
+      await teio.say_and_wait('할 수 있어!', true);
       era.println();
       await era.printAndWait(
-        `走る${teio.uma_sex_title}が集まり、散る。狭く、半馬身ほどの隙間が露出する——`,
+        `달리는 ${teio.uma_sex_title}들이 모였다 흩어진다. 좁게, 반 마신 정도의 틈이 드러난다——`,
       );
       era.println();
-      await era.printAndWait(`実況「え、あれは——${teio.name}？！」`);
+      await era.printAndWait(`실황「어, 저건——${teio.name}?!」`);
       era.println();
       await era.printAndWait(
-        'ふくらはぎの筋肉がいったん緩み、それから縮んで放つ！大きく脚を上げ、巻き上がる埃と跳ねる土も構わず、発力！',
+        '종아리 근육이 한 번 이완됐다가 수축하며 힘을 뿜는다! 다리를 크게 들어 올리고 치솟는 먼지와 튀는 흙도 아랑곳하지 않고 힘껏 박차고 나간다!',
       );
-      await era.printAndWait(`${teio.sex}だけの夢幻の歩法。`);
-      await era.printAndWait(`${teio.sex}だけの舞歩。`);
-      await era.printAndWait('すべての者に風采を見せる——帝王舞歩！');
+      await era.printAndWait(`${teio.sex}만의 환상적인 보법.`);
+      await era.printAndWait(`${teio.sex}만의 무보.`);
+      await era.printAndWait('모두에게 위용을 보여주는——제왕무보!');
       era.println();
       await era.printAndWait(
-        `実況「あり得るのか——夢幻のような光景、${teio.name}、抜け出した、${teio.sex}は先頭へ——」`,
+        `실황「이게 가능한가요——환상 같은 광경, ${teio.name}, 빠져나왔습니다, ${teio.sex}이(가) 선두로——」`,
       );
       era.println();
-      await era.printAndWait('刹那、局面は決した。');
+      await era.printAndWait('찰나에 승부는 결정됐다.');
     };
     f.title = title;
     return f;
@@ -1684,7 +1684,7 @@ module.exports = {
           `頭のなかが黒いもので埋まり、${you.name} は口を歪めて${teio.sex}の肌に触れる。舌を伸ばす。口づけを${teio.sex}の首筋に置き、汗を吸う。勢いで肌を舐め、柔らかな肉を吸い——醜い痕を残す。`,
         );
         era.println();
-        await teio.say_and_wait('ああ……');
+        await teio.say_and_wait('아아……');
         era.println();
         await era.printAndWait(
           `また小さな略奪を受け、${teio.teen_sex_title}は夢うつつに呻く。`,
