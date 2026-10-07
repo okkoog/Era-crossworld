@@ -565,9 +565,146 @@ Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목�
 기록 밖 kojo 후보 풀은 파일명 변형 67개를 포함해 최소 **1,272 (= edu 886 + love 171 + ero 215)**로 본다.
 현재 남은 미조사 후보:
 - edu: **0**
-- love: **171**
+- love: **0**
 - ero: **215**
-- **합계: 386**
+- **합계: 215**
+
+## 기록 밖 love 실제 3자 대조 — 전수조사 완료
+
+edu 완료 후, old-KR love 소스가 실제 존재하는 current live 파일을 다시 집계했다.
+
+중요:
+- `FILES.md`의 love 항목만 합산하면 이미 번역 완료된 과거 target까지 포함되어 과대계상된다.
+- old love 소스 32개와 **live 실제 `[번역 대상]`** 을 교차한 결과, 미완료 old-KR 후보는 **정확히 171 target**이다.
+- live `[번역 완료]`로 바뀐 54개는 이번 미완료 감사 후보에서 제외했다.
+
+### 1차 love — 59 C
+
+다음 파일은 live target 블록에 visible Korean prose가 없고, old main 및 분리 `love-events-*`에 같은 이벤트의 한국어 본문이 존재함을 직접 확인했다.
+
+- Agnes Digital: **9 C**
+  - old `love-events-19`: 49 / 74-first / 74-after / 89-first / 89-after / 99
+  - old main: `oshi`, `shine`, `univ`
+- Mayano Top Gun: **4 C**
+- Manhattan Cafe: **5 C**
+- Rice Shower: **4 C**
+- Agnes Tachyon: **10 C**
+  - old `love-events-32`의 25/49, 74 accept/betray/reject 분기, 89/99까지 직접 대응
+- Eishin Flash: **1 C**
+- Smart Falcon: **4 C**
+- Haru Urara: **12 C**
+  - old `love-events-52`: 49/50, 74 3분할, 75, 89 3분할, 90 + old main 99/101
+- Matikanefukukitaru: **6 C**
+- Nice Nature: **4 C**
+
+합계: **59 C**
+
+### Mejiro Palmer `love-64.kojo`
+
+live target: **44**
+
+old `love-64.kojo`의 37개 실제 섹션과 old `love-64.js`의 prompt/title/helper 분할을 함께 대조했다. current 44 target가 전부 old 한국어 구조에 대응한다.
+
+현재 target 중 한국어와 일본어가 함께 남아 있는 **B 10**:
+- `valentine_out_after_sex`
+- `come_fy_end`
+- `rooftop_event`
+- `s_feeling_end`
+- `nap_end`
+- `movie_end`
+- `not_joke_end`
+- `concern_end`
+- `dessert_end`
+- `party_end`
+
+나머지 **34개는 C**.
+- **B: 10**
+- **C: 34**
+
+### love 잔여 68개
+
+#### Kitasan Black `love-68.js`
+- current target: **8**
+- live Korean prose: 전부 0
+- old main의 49/74/89/`m_kita`/`nyotaimori`와 대응.
+- current `m_kita_end`는 old `m_kita`의 마지막 한국어 문장에서 분리.
+- `m_kita_notify` / `nyotaimori_notify`는 old 각 메서드의 실행 전 조건 안내문에서 분리.
+- **C: 8**
+
+#### Mejiro Ardan `love-71.kojo`
+- current target: **7**
+- old kojo 실제 섹션 7개와 1:1 대응.
+- **C: 7**
+
+#### Mejiro Bright `love-74.kojo`
+- current target: **13**
+- 13개 target 모두 current에 Korean prose와 Japanese prose가 함께 잔존.
+- old kojo에 동일 key/대응 섹션과 sex 분기 존재.
+- **B: 13**
+
+#### Daiichi Ruby `love-85.js`
+- current target: **17**
+- live Korean prose: 전부 0
+- old main + `love-events-85`의 after-girl-friend / until-fuck-buddy / until-girl-friend / until-half-life / until-wife를 직접 대조.
+- current 74/99 후처리 분할 및 clinic/dance/date/delicious/dessert/foot_job/jade/kiss/loli_wife/non_penetration/sex_mark/shame/take_shower 대응 확인.
+- **C: 17**
+
+#### Wonder Acute `love-100.js`
+- current target: **10**
+- live Korean prose: 전부 0
+- current `49-before`, `74-before`, `89-before`, `99-before`는 old 각 메서드의 week-end 안내 분기.
+- 본 49/74/89/99는 old 장소 실행 분기.
+- `99-end`는 old 99 후반 목줄/각인 본문.
+- `99-notify`는 old 99의 “준비가 모두 끝나면 … 옥상에서 기다리고 있을 것” 안내문.
+- **C: 10**
+
+#### Treve `love-205.js`
+- current target: **5**
+- live Korean prose: 전부 0
+- old main + `love-events-205`의 49 / 74 / 89 / 99 대응.
+- `89-continue-confirm`는 old 89 진행 확인 분기에서 분리.
+- **C: 5**
+
+#### Byerley Turk `love-342.kojo`
+- current target: **4**
+- live Korean prose: 전부 0
+- 49 / 50 / `after_sex_50`은 old `love-342.js`의 49 / 50 / `after_fuck()`와 대응.
+- `pray`는 love 파일 밖의 old `page/page-god-shop.js` `case 342`에 한국어 3문장 본문이 그대로 존재.
+- **C: 4**
+
+#### Sunday Silence `love-400.js`
+- current target: **4**
+- live Korean prose: 전부 0
+- 49는 old 49.
+- current 74 + `74-3crown-a` + `74-title`은 old 단일 `74()`의 제목/삼관 분기/일반 분기를 분리한 것.
+- **C: 4**
+
+### love 최종 결과
+
+전수조사:
+- **171 / 171 완료**
+
+분류:
+- **B: 23**
+- **C: 148**
+- **B+C: 171**
+
+love 후보에서는 D가 새로 확인되지 않았다.
+
+전체 엄격 최소:
+- daily/rec: **414**
+- timon: **130**
+- edu: **880**
+- love: **171**
+- **합계: 1,595 작업 단위**
+
+기록 밖 kojo 후보 풀:
+- edu: **886 / 886 조사 완료**
+- love: **171 / 171 조사 완료**
+- ero: **215 미조사**
+- 최소 총 후보 풀: **1,272**
+
+현재 남은 미조사 후보는 **ero 215개**다.
 
 ## 다음 조사 단계
 
@@ -586,8 +723,9 @@ Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목�
 - kojo daily/rec 기록 기반 현재 미반영: **414**
 - timon 기록/본문 기반 현재 미반영: **130**
 - edu 실제 3자 대조 최종 확정: **880**
-- 합계: **1,424 작업 단위**
+- love 실제 3자 대조 최종 확정: **171**
+- 합계: **1,595 작업 단위**
 
-edu는 보정된 후보 풀 **886 / 886 전수조사 완료**했다. old-KR love 소스 32개와 live 실제 `[번역 대상]`을 재집계한 결과 love 후보는 **171**이 맞다. 기록 밖 kojo 후보 풀은 최소 **1,272파트**(edu 886 + love 171 + ero 215)이며, 현재 남은 미조사 후보는 **386파트**(love 171 + ero 215)다.
+edu는 **886 / 886**, love는 **171 / 171** 전수조사 완료했다. 기록 밖 kojo 후보 풀은 최소 **1,272파트**(edu 886 + love 171 + ero 215)이며, 현재 남은 미조사 후보는 **ero 215파트**다.
 
-따라서 **1,424는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 love/ero 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
+따라서 **1,595는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 ero 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
