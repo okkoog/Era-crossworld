@@ -1707,7 +1707,7 @@ module.exports = {
 
       era.drawLine();
       await era.printAndWait(
-        `通行人A「おや？ この${gs.sex_code !== 1 ? '아가씨' : '오빠'}, 혼자야? 」`,
+        `행인A「어라? 이 ${gs.sex_code !== 1 ? '아가씨' : '오빠'}, 혼자야? 」`,
       );
       await era.printAndWait(
         `通行人B「${gs.sex_code !== 1 ? '형씨' : '누나'}랑 놀지 않을래?」`,
@@ -1730,7 +1730,7 @@ module.exports = {
       era.println();
 
       era.printButton(
-        `「おい、よその${gs.sex_code - 1 ? '여자' : '남자'}한테 뭐 하는 거야?」`,
+        `「어이, 남의 ${gs.sex_code - 1 ? '여자' : '남자'}한테 뭐 하는 거야?」`,
         1,
       );
       await era.input();
@@ -1836,9 +1836,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_eden
+  // [번역 완료] ws_eden
   ws_eden: (() => {
-    const title = 'エデンへの道';
+    const title = '에덴으로 가는 길';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} taste 秋川やよい / ホクホク味
@@ -1847,158 +1847,158 @@ module.exports = {
      */
     const f = async (gs, taste, you, callname) => {
       await era.printAndWait(
-        `晩冬の風が骨まで凍みる。午の刻、真相が道を現す……${you.name} とゴールドシップは四枚の手がかりを携え、最終地点へ向かった。`,
+        `늦겨울의 바람이 뼛속까지 스며든다. 정오가 되자 진실로 향하는 길이 모습을 드러냈다…… ${you.name}와(과) 골드 쉽은 네 장의 단서를 들고 최종 목적지로 향했다.`,
       );
       era.println();
       await gs.say_and_wait(
-        '運命の邂逅の前に、右手まで漆黒の影に呪われて痛む……',
+        '운명의 해후를 앞두고, 오른손까지 칠흑의 그림자에 저주받은 듯 아파온다……',
       );
       era.println();
 
-      era.printButton('「だが避けられねえ運命だ。進め！」', 1);
+      era.printButton('「하지만 피할 수 없는 운명이다. 전진!」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        '当たり前だ、神でもアタシをあの場所から止められねえ！',
+        '당연하지, 신이라도 내가 그곳으로 가는 걸 막을 수 없어!',
       );
       await gs.say_and_wait(
-        `準備はいいか、${callname}？ あそこが俺たちのゴールだ！`,
+        `준비됐냐, ${callname}? 저기가 우리의 골이다!`,
       );
       era.println();
 
-      era.printButton('「ふん、心配するな！ 行くぞ！」', 1);
+      era.printButton('「흥, 걱정 마! 간다!」', 1);
       await era.input();
 
-      await era.printAndWait(`薄暗い。それがこの場所への第一印象だった。`);
-      await era.printAndWait(`冷たい。それがこの場所からの第一撃だった。`);
+      await era.printAndWait(`어둑하다. 그것이 이 장소에 대한 첫인상이었다.`);
+      await era.printAndWait(`차갑다. 그것이 이 장소가 내민 첫 일격이었다.`);
       era.println();
       await era.printAndWait(
-        `ほとんど五指を見通せない洞窟の中、一点の光だけが二人を導いて先へ進ませる。`,
+        `손가락 다섯 개조차 제대로 보이지 않는 동굴 속에서, 한 점의 빛만이 두 사람을 이끌어 앞으로 나아가게 했다.`,
       );
       era.println();
       await era.printAndWait(
-        '傍らの奇妙な生き物たちは二人を気にもせず、のんびりと過ごしている。',
+        '주변의 기묘한 생물들은 두 사람에게 관심도 보이지 않은 채 느긋하게 지내고 있었다.',
       );
       era.println();
-      await gs.say_and_wait('ここが……紙に書いてあった場所だ。');
-      await gs.say_and_wait('『スイ』、『ゾ』、『ク』。');
+      await gs.say_and_wait('여기가…… 종이에 적혀 있던 장소다.');
+      await gs.say_and_wait('『스이』, 『조』, 『쿠』.');
       era.println();
 
-      era.printButton('「最後は『カン』だ！」', 1);
+      era.printButton('「마지막은 『칸』이다!」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        '答えはもう見え見えだ……『スイゾクカン』、つまり水族館だ！',
+        '답은 이미 뻔하군…… 『스이조쿠칸』, 즉 수족관이다!',
       );
-      await gs.say_and_wait('まさか、エデンがこんなところにあるとは……');
+      await gs.say_and_wait('설마 에덴이 이런 곳에 있을 줄이야……');
       era.println();
       await era.printAndWait(
-        'そのとき、一つの影が傍らから現れた！ 小さな影は拍手しながら、高い笑い声を上げている。',
+        '그때, 한 그림자가 옆에서 나타났다! 작은 그림자는 박수를 치며 높은 웃음소리를 내고 있었다.',
       );
       era.println();
       await taste.say_and_wait(
-        '素晴らしい！ 『エデン計画』を突破してここまで！',
+        '훌륭하다! 『에덴 계획』을 돌파하고 여기까지 오다니!',
       );
       await taste.say_and_wait(
-        '感動！ トレーナーの支えも、決して欠かせません！',
+        '감동! 트레이너의 지원도 결코 빼놓을 수 없습니다!',
       );
       await gs.say_and_wait(
-        'てめえ、トレセンのゴッドファーザー！？ なんでここに！',
+        '너, 트레센의 대부!? 왜 여기에!',
       );
-      await gs.say_and_wait(`${callname}！ まさか分かってたのか！？`);
+      await gs.say_and_wait(`${callname}! 설마 알고 있었던 거냐!?`);
       era.println();
 
       era.printButton(
-        '「三条目の時点で見当はついてた。場所も、裏の黒幕も。」',
+        '「세 번째 단서쯤에서 감은 잡았어. 장소도, 배후의 흑막도.」',
         1,
       );
       await era.input();
 
-      await gs.say_and_wait('は！？ なら言えよ！');
-      await taste.say_and_wait('面白い！ それではつまらない！');
-      await taste.say_and_wait('説明！ いわゆる『エデン計画』とは……！');
+      await gs.say_and_wait('하!? 그럼 말하라고!');
+      await taste.say_and_wait('재미! 그러면 재미없습니다!');
+      await taste.say_and_wait('설명! 이른바 『에덴 계획』이란……!');
       era.println();
       await era.printAndWait(
-        `もともと「エデン計画」は、情熱的だがしばしば心が他所へ飛ぶ ${gs.name} が、トゥインクルシリーズに集中して挑めるよう立てられた計画だった。`,
+        `원래 「에덴 계획」은 열정적이지만 종종 마음이 다른 곳으로 튀는 ${gs.name}이(가) 트윙클 시리즈에 집중해 도전할 수 있도록 세운 계획이었다.`,
       );
       era.println();
       await era.printAndWait(
-        '「エデン計画」では、さまざまな手がかりと秘伝の書でゴールドシップの好奇心を煽り、計画の目標へ導く。',
+        '「에덴 계획」에서는 여러 단서와 비전서로 골드 쉽의 호기심을 자극해 계획의 목표로 이끈다.',
       );
       era.println();
       await era.printAndWait(
-        `${taste.name} にとって、「エデン」とはウマ娘の生涯で最も大切な、トゥインクルシリーズそのものだった。`,
+        `${taste.name}에게 「에덴」이란 우마무스메의 생애에서 가장 중요한, 트윙클 시리즈 그 자체였다.`,
       );
       era.println();
-      await taste.say_and_wait('以上です！');
+      await taste.say_and_wait('이상입니다!');
       await gs.say_and_wait(
-        'なるほど！ じゃあ夢に出てきた声も、てめえらがやったのか？',
+        '과연! 그럼 꿈에 나온 목소리도 너희가 한 거냐?',
       );
-      await taste.say_and_wait('え？');
-      await gs.say_and_wait('え？');
+      await taste.say_and_wait('에?');
+      await gs.say_and_wait('에?');
       era.println();
 
-      era.printButton('「え？」', 1);
+      era.printButton('「에?」', 1);
       await era.input();
 
       await taste.say_and_wait(
-        '驚愕！ 生徒に紙切れと秘伝の書を用意してもらった以外、隠された禁断技術は使っていないはず！',
+        '경악! 학생들에게 종잇조각과 비전서를 준비하게 한 것 외에는 숨겨진 금단의 기술을 쓰지 않았을 터!',
       );
-      await taste.say_and_wait('あ、これは言ってはいけない。忘れてください。');
+      await taste.say_and_wait('아, 이건 말하면 안 되는 거였군요. 잊어주세요.');
       await gs.say_and_wait(
-        'まさか、本当にゴルシの体内に第二人格が生まれた！？',
+        '설마, 정말 고루시 몸 안에 제2의 인격이 생긴 거냐!?',
       );
       era.println();
 
-      era.printButton('「あんなものは一つで十分だ！」', 1);
+      era.printButton('「그런 건 하나로 충분해!」', 1);
       await era.input();
 
       await era.printAndWait(
-        `こうして、三年の旅は笑いとふざけと、わけの分からなさの中で一段落した。`,
+        `그렇게 3년간의 여행은 웃음과 장난, 그리고 영문 모를 소동 속에서 일단락됐다.`,
       );
 
       era.drawLine();
       await era.printAndWait(
-        `夜、${you.name} と ${gs.name} は海辺の砂に横たわり、塩辛い潮風が顔を撫でる感触を味わっていた。`,
+        `밤, ${you.name}와(과) ${gs.name}은(는) 해변 모래 위에 누워 짭짤한 바닷바람이 얼굴을 스치는 감촉을 느끼고 있었다.`,
       );
       era.println();
 
-      era.printButton('「……ありがとう、ゴールドシップ。」', 1);
+      era.printButton('「……고마워, 골드 쉽.」', 1);
       await era.input();
 
-      await gs.say_and_wait('ん？ 急だな……あ、もう寝てる？');
-      await gs.say_and_wait('まったく、頼れるようで頼れねえやつ。');
+      await gs.say_and_wait('응? 갑자기 왜 그래…… 아, 벌써 잤어?');
+      await gs.say_and_wait('정말, 믿음직한 것 같으면서도 못 미더운 녀석이야.');
       await gs.say_and_wait(
-        'この三年、アタシに散々振り回されたくせに、辞表ひとつ出さなかった。',
+        '이 3년 동안 나한테 실컷 휘둘렸으면서도 사표 한 장 안 냈지.',
       );
       await gs.say_and_wait(
-        'ときどきは真面目で、ときどきはアタシと一緒に馬鹿をやる。やりすぎたんじゃねえかって思うこともあるのに、てめえはわざわざ大人の顔して止めたりしなかった。',
+        '때로는 진지하고, 때로는 나랑 같이 바보짓도 해. 내가 너무 심했나 싶을 때도 있었는데, 너는 굳이 어른인 척하면서 말리진 않았지.',
       );
       await gs.say_and_wait(
-        '知ってるか？ 理事長は『エデン』がトゥインクルシリーズだって言った。',
+        '알고 있냐? 이사장은 『에덴』이 트윙클 시리즈라고 했어.',
       );
       await gs.say_and_wait(
-        'でもアタシの『エデン』は、トレセンでもトゥインクルシリーズでもねえ……',
+        '하지만 내 『에덴』은 트레센도, 트윙클 시리즈도 아니야……',
       );
       await gs.say_and_wait('……');
-      await gs.say_and_wait('ちゅ♡');
+      await gs.say_and_wait('쪽♡');
       era.println();
 
       if (era.get('love:7') >= 50) {
-        era.printButton('「目を開ける。」', 1);
+        era.printButton('「눈을 뜬다.」', 1);
       }
-      era.printButton('「寝たフリをする。」', 2);
+      era.printButton('「자는 척한다.」', 2);
       const ret = await era.input();
       if (ret === 1) {
-        await gs.say_and_wait('うおっ、起きてた！？');
+        await gs.say_and_wait('우왓, 깨어 있었냐!?');
         await gs.say_and_wait(
-          'いや、最初から寝てなかったのか！ シャア、ハメたな！',
+          '아니, 처음부터 안 자고 있었던 거냐! 젠장, 속였구나!',
         );
       } else {
-        await gs.say_and_wait('これからも、逃がさねえからな❤️');
+        await gs.say_and_wait('앞으로도, 놓치지 않을 거니까❤️');
         era.println();
         await era.printAndWait(
-          `どうやら ${you.name} がゴルシに使われる生活は、まだまだ長く続きそうだ……`,
+          `아무래도 ${you.name}이(가) 고루시에게 부려지는 생활은 앞으로도 한참 계속될 것 같다……`,
         );
       }
       return [ret];
@@ -2007,26 +2007,26 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_eden_sex_end
+  // [번역 완료] ws_eden_sex_end
   async ws_eden_sex_end(gs, you) {
-    await gs.say_and_wait('はぁ……はぁ……騙しやがって……');
-    await gs.say_and_wait('……てめぇ……くそ……');
+    await gs.say_and_wait('하아…… 하아…… 속였겠다……');
+    await gs.say_and_wait('……너…… 젠장……');
     era.println();
 
-    era.printButton('「ふふん、いじめられた気分はどうだ？」', 1);
+    era.printButton('「후훗, 괴롭힘당한 기분이 어때?」', 1);
     await era.input();
 
-    await gs.say_and_wait('てめぇ……一つ、勘定が足りねえ……');
-    await gs.say_and_wait('トレーナーは、ウマ娘には敵わねえ！');
+    await gs.say_and_wait('너…… 하나 계산이 빠졌어……');
+    await gs.say_and_wait('트레이너는 우마무스메를 당해낼 수 없어!');
     era.println();
 
-    era.printButton('「なに！」', 1);
+    era.printButton('「뭐!」', 1);
     await era.input();
 
-    await gs.say_and_wait('これからも、逃がさねえからな♡');
+    await gs.say_and_wait('앞으로도, 놓치지 않을 거니까♡');
     era.println();
     await era.printAndWait(
-      `どうやら ${you.name} がゴルシに顔を騎乗される生活は、まだまだ長く続きそうだ……`,
+      `아무래도 ${you.name}이(가) 고루시에게 얼굴 위에 올라타지는 생활은 앞으로도 한참 계속될 것 같다……`,
     );
   },
 };
