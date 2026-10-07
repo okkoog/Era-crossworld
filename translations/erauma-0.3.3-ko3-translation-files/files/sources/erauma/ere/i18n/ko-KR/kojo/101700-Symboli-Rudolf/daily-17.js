@@ -413,8 +413,8 @@ module.exports = {
   // [번역 대상] o_r_fishing_emperor
   async o_r_fishing_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('コースでの狩りも、一種の釣りではないか？'),
-      () => emperor.say_and_wait('水中の生霊よ……'),
+      () => emperor.say_and_wait('코스에서의 사냥도 일종의 낚시가 아니겠는가?'),
+      () => emperor.say_and_wait('물속의 생령이여……'),
     ];
     await get_random_entry(buffer)();
   },
@@ -424,11 +424,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '心を動かし性を忍ばせ、能わざるところを益す。釣りは、相当な学問ですね。',
+          '마음을 움직이고 성정을 인내하게 하여, 하지 못하던 바를 더하게 한다. 낚시도 상당한 학문이군요.',
         ),
       () =>
         luna.say_and_wait(
-          '魚が釣れても、写真の記念だけにしてください。学園の財産ですから。',
+          '물고기를 낚더라도 사진으로 기념만 남겨주세요. 학원의 재산이니까요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -437,8 +437,8 @@ module.exports = {
   // [번역 대상] o_r_walking_emperor
   async o_r_walking_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('疆土を視るのも、皇帝の務めだ。'),
-      () => emperor.say_and_wait('前方で何が騒がしい。弄臣よ、調べよ。'),
+      () => emperor.say_and_wait('영토를 둘러보는 것도 황제의 책무다.'),
+      () => emperor.say_and_wait('앞쪽이 왜 소란스럽지. 광대여, 알아보아라.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -448,11 +448,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '子供の頃を、少し思い出した気がします。あなたは、いつも私の傍にいましたね。',
+          '어릴 적 일이 조금 떠오르는 것 같네요. 당신은 언제나 제 곁에 있었죠.',
         ),
       () =>
         luna.say_and_wait(
-          '今は、並んで歩けます——見てください。背が伸びましたでしょう？',
+          '이제는 나란히 걸을 수 있어요——보세요. 키가 많이 컸죠?',
         ),
     ];
     await get_random_entry(buffer)();
@@ -461,10 +461,10 @@ module.exports = {
   // [번역 대상] o_s_arcade_emperor
   async o_s_arcade_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('騒がしい場所だ。'),
+      () => emperor.say_and_wait('시끄러운 곳이군.'),
       () =>
         emperor.say_and_wait(
-          '虚ろな遊戯が与える慰めも虚ろだ。真の愉しみが欲しければ、勇者と戦え。',
+          '허망한 놀이가 주는 위안도 허망할 뿐이다. 진정한 즐거움을 원한다면 용자와 싸워라.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -473,10 +473,10 @@ module.exports = {
   // [번역 대상] o_s_arcade_luna
   async o_s_arcade_luna(luna, you) {
     const buffer = [
-      () => luna.say_and_wait('む……もう一局！'),
+      () => luna.say_and_wait('으음…… 한 판 더!'),
       () =>
         luna.say_and_wait(
-          `あれも、それも！ ${you.actual_name}、全部やってみましょう！`,
+          `저것도, 이것도! ${you.actual_name}, 전부 해봐요!`,
         ),
     ];
     await get_random_entry(buffer)();
@@ -487,11 +487,11 @@ module.exports = {
     const buffer = [
       () =>
         emperor.say_and_wait(
-          '弄臣よ、愛想を尽くすと決めたなら、きちんと吾を愉しませよ。',
+          '광대여, 비위를 맞추기로 했다면 제대로 짐을 즐겁게 하라.',
         ),
       () =>
         emperor.say_and_wait(
-          '……ふん。爪先立ちすらできぬなら、随侍する必要もない。',
+          '……흥. 발끝으로 서는 것조차 못한다면 곁에서 시중들 필요도 없다.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -501,10 +501,10 @@ module.exports = {
   async o_s_dating_luna(luna) {
     const buffer = [
       () =>
-        luna.say_and_wait('悪夢を見たら教えてください。夜の番をしますから。'),
+        luna.say_and_wait('악몽을 꾸면 말씀해주세요. 밤새 곁을 지켜드릴 테니까요.'),
       () =>
         luna.say_and_wait(
-          '沈んだときは『紅葉を賞で』、心を『防風』する……ふふ、傑作です。',
+          '기분이 가라앉을 때는 『단풍을 감상하고』, 마음을 『바람막이』한다…… 후후, 걸작이네요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -513,9 +513,9 @@ module.exports = {
   // [번역 대상] o_s_drawing_emperor
   async o_s_drawing_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('確率学は、深奥な学問だ。'),
+      () => emperor.say_and_wait('확률학은 심오한 학문이다.'),
       () =>
-        emperor.say_and_wait('温泉へ行くと決めたなら、なぜこの手段を取る？'),
+        emperor.say_and_wait('온천에 가기로 했다면, 어째서 이런 수단을 쓰는 것이지?'),
     ];
     await get_random_entry(buffer)();
   },
@@ -525,9 +525,9 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          'あなたが好きなら……いっそ、温泉ホテルを買い取りますか？',
+          '당신이 좋아한다면…… 차라리 온천 호텔을 사버릴까요?',
         ),
-      () => luna.say_and_wait('抽選する子たち全員に、幸運が訪れますように。'),
+      () => luna.say_and_wait('추첨하는 아이들 모두에게 행운이 찾아오기를.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -535,8 +535,8 @@ module.exports = {
   // [번역 대상] o_s_ktv_emperor
   async o_s_ktv_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('劇場とは違う、別種の風味だ。'),
-      () => emperor.say_and_wait('美しき音楽に耳を傾けるのは、極上の享受だ。'),
+      () => emperor.say_and_wait('극장과는 다른, 또 다른 맛이 있군.'),
+      () => emperor.say_and_wait('아름다운 음악에 귀를 기울이는 것은 최상의 향락이다.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -544,10 +544,10 @@ module.exports = {
   // [번역 대상] o_s_ktv_luna
   async o_s_ktv_luna(luna) {
     const buffer = [
-      () => luna.say_and_wait('この機会に、少し休みましょう。'),
+      () => luna.say_and_wait('이 기회에 조금 쉬도록 해요.'),
       () =>
         luna.say_and_wait(
-          'あらゆる苦痛を、歌声として吐き出せたら、どれほど良いでしょう。',
+          '모든 고통을 노랫소리로 토해낼 수 있다면 얼마나 좋을까요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -556,8 +556,8 @@ module.exports = {
   // [번역 대상] o_s_movie_emperor
   async o_s_movie_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('退屈だ。'),
-      () => emperor.say_and_wait('次はない。'),
+      () => emperor.say_and_wait('지루하군.'),
+      () => emperor.say_and_wait('다음은 없다.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -567,11 +567,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '良い作品でした。眠るつもりでしたが、筋が目を引きます。',
+          '좋은 작품이었어요. 잠들 생각이었는데, 이야기에 눈길이 가더군요.',
         ),
       () =>
         luna.say_and_wait(
-          '今の映画は、ここまで本物なのですね。冷や汗をかきました。',
+          '요즘 영화는 이렇게까지 진짜 같군요. 식은땀이 났어요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -582,9 +582,9 @@ module.exports = {
     const buffer = [
       () =>
         emperor.say_and_wait(
-          '征途の大きな愉しみは、足元の土地が育んだ糧を味わうことだ。',
+          '정복길의 큰 즐거움은 발밑의 땅이 길러낸 양식을 맛보는 것이다.',
         ),
-      () => emperor.say_and_wait('美食と美酒を出せ！'),
+      () => emperor.say_and_wait('미식과 미주를 내오라!'),
     ];
     await get_random_entry(buffer)();
   },
@@ -594,11 +594,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          `後輩がアイスをご馳走したいと騒いでいます……ふふ、時間を作って${luna.sex}と食べに行かねば。`,
+          `후배가 아이스크림을 사주고 싶다고 성화네요…… 후후, 시간을 내서 ${luna.sex}와(과) 함께 먹으러 가야겠어요.`,
         ),
       () =>
         luna.say_and_wait(
-          '最近、食欲の旺盛な子が多い。食材の仕入れ量を、どう増やすか計算しなければ。',
+          '요즘 식욕이 왕성한 아이들이 많네요. 식재료 매입량을 얼마나 늘릴지 계산해야겠어요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -607,8 +607,8 @@ module.exports = {
   // [번역 대상] o_s_shopping_emperor
   async o_s_shopping_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('吾は活力ある街を好む。'),
-      () => emperor.say_and_wait('臣民が和やかだ。良い。'),
+      () => emperor.say_and_wait('짐은 활기찬 거리를 좋아한다.'),
+      () => emperor.say_and_wait('백성들이 화목하군. 좋다.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -618,9 +618,9 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '今の店は、こんなに流行っているのですか？ 子供たちが惹かれるのも無理はありません。',
+          '요즘 가게들은 이렇게나 유행하는군요? 아이들이 끌리는 것도 무리는 아니겠어요.',
         ),
-      () => luna.say_and_wait('あちらが賑やかですね。見に行きましょうか？'),
+      () => luna.say_and_wait('저쪽이 떠들썩하네요. 구경하러 갈까요?'),
     ];
     await get_random_entry(buffer)();
   },
@@ -628,8 +628,8 @@ module.exports = {
   // [번역 대상] office_cook_emperor
   async office_cook_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('食物を成すにも、大いなる学がある。'),
-      () => emperor.say_and_wait('汝に与える。畏れをもって食え。'),
+      () => emperor.say_and_wait('음식을 만드는 데에도 큰 학문이 있다.'),
+      () => emperor.say_and_wait('네게 하사하마. 경외하는 마음으로 먹어라.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -639,11 +639,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '楽しい料理をたくさん作りましょう。ふふ、調理の過程も、愉しいものです。特に、あなたと一緒なら。',
+          '즐거운 요리를 많이 만들어봐요. 후후, 조리 과정도 즐거운 법이죠. 특히 당신과 함께라면.',
         ),
       () =>
         luna.say_and_wait(
-          '午前のうちに生徒会の仕事は済ませました。これで、集中できます。',
+          '오전 중에 학생회 일은 끝냈습니다. 이제 집중할 수 있겠네요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -652,8 +652,8 @@ module.exports = {
   // [번역 대상] office_game_emperor
   async office_game_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('慰みとしては、合格だ。'),
-      () => emperor.say_and_wait('狩りに出る準備は、まだか？'),
+      () => emperor.say_and_wait('소일거리로는 합격이다.'),
+      () => emperor.say_and_wait('사냥에 나갈 준비는 아직인가?'),
     ];
     await get_random_entry(buffer)();
   },
@@ -663,10 +663,10 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '遊び……？ 子供の頃、あなたはいつも私を抱えて遊んでくれましたね。',
+          '놀이……? 어릴 적에는 당신이 언제나 저를 안고 놀아주셨죠.',
         ),
       () =>
-        luna.say_and_wait('遊ぶのは構いませんが、時間を無駄にはできません。'),
+        luna.say_and_wait('노는 건 괜찮지만, 시간을 낭비할 수는 없습니다.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -676,9 +676,9 @@ module.exports = {
     const buffer = [
       () =>
         emperor.say_and_wait(
-          'ほう？ 贈り物か？ ……ふん、欲しいものは、吾が自ら取る。',
+          '호오? 선물인가? ……흥, 원하는 것은 짐이 직접 취한다.',
         ),
-      () => emperor.say_and_wait('貢ぎ物は宝庫へ積め。'),
+      () => emperor.say_and_wait('공물은 보물창고에 쌓아두어라.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -688,11 +688,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          'もう子供ではありません……！ えへへ、でも、ありがとう！',
+          '이제 어린애가 아니에요……! 에헤헤, 그래도 고마워요!',
         ),
       () =>
         luna.say_and_wait(
-          '私たちは同じ理想を持つ『共犯』です。目標を果たすまで、止まってはいけません……すみません、少し重すぎましたか？',
+          '우리는 같은 이상을 품은 『공범』입니다. 목표를 이루기 전까지 멈춰서는 안 돼요…… 죄송해요, 조금 무거웠나요?',
         ),
     ];
     await get_random_entry(buffer)();
@@ -701,10 +701,10 @@ module.exports = {
   // [번역 대상] office_rest_emperor
   async office_rest_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('……眠れ……'),
+      () => emperor.say_and_wait('……자거라……'),
       () =>
         emperor.say_and_wait(
-          '厄介なことがあれば、弄臣……吾は、起こすことを許す。',
+          '곤란한 일이 생기면, 광대여…… 짐은 깨우는 것을 허락하마.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -715,9 +715,9 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '……恥ずかしいですね。大人になってから、昔は当たり前だった抱擁も、少し熱を帯びてしまいます。',
+          '……부끄럽네요. 어른이 된 뒤로는 예전엔 당연했던 포옹도 조금 열기를 띠게 됩니다.',
         ),
-      () => luna.say_and_wait('すぅ……はぁ……'),
+      () => luna.say_and_wait('스으…… 하아……'),
     ];
     await get_random_entry(buffer)();
   },
@@ -727,11 +727,11 @@ module.exports = {
     const buffer = [
       () =>
         emperor.say_and_wait(
-          '吾が眠っているあいだ、吾の意志でこの離宮をきちんと整えたか？',
+          '짐이 잠든 동안, 짐의 뜻대로 이 별궁을 제대로 정돈했느냐?',
         ),
       () =>
         emperor.say_and_wait(
-          '弄臣よ、吾に正しく仕えよ。さすれば、尽きせぬ栄を許してやろう。',
+          '광대여, 짐을 올바르게 섬겨라. 그러면 끝없는 영화를 허락하마.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -742,11 +742,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '光陰矢の如し、とはこのことでしょう。まだ幼い頃のように、シンボリ家で騒ぎ回っていた気がします。',
+          '세월이 화살처럼 빠르다는 게 이런 뜻이겠죠. 아직 어린 시절처럼 심볼리 가문에서 떠들며 뛰어다니던 때가 엊그제 같아요.',
         ),
       () =>
         luna.say_and_wait(
-          '何年も離れました。今からは、互いから遠く離れないほうがいい。',
+          '몇 년이나 떨어져 지냈죠. 이제부터는 서로에게서 멀리 떨어지지 않는 편이 좋겠어요.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -757,10 +757,10 @@ module.exports = {
     const buffer = [
       () =>
         emperor.say_and_wait(
-          '聞こえる……失意と敗北の者が、ここに残した苦恨が。',
+          '들리는군…… 실의와 패배에 빠진 자들이 이곳에 남긴 원한이.',
         ),
       () =>
-        emperor.say_and_wait('帝国が崩れようとも、美景と古跡は残り続ける。'),
+        emperor.say_and_wait('제국이 무너지더라도 아름다운 풍경과 옛 자취는 계속 남는다.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -770,11 +770,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          '芽吹く意志は、熱情でしょうか、本能でしょうか。見えない力が、私を前へ促しています。',
+          '싹트는 의지는 열정일까요, 본능일까요. 보이지 않는 힘이 저를 앞으로 나아가게 하고 있어요.',
         ),
       () =>
         luna.say_and_wait(
-          `三女神よ、もし本当にエデンがあるのなら、私はすべての${luna.uma_sex_title}をそこへ導きます。`,
+          `삼여신이여, 정말로 에덴이 존재한다면 저는 모든 ${luna.uma_sex_title}을(를) 그곳으로 이끌겠습니다.`,
         ),
     ];
     await get_random_entry(buffer)();
@@ -783,8 +783,8 @@ module.exports = {
   // [번역 대상] school_rooftop_emperor
   async school_rooftop_emperor(emperor) {
     const buffer = [
-      () => emperor.say_and_wait('日常の食事は、腹が満たされればよい。'),
-      () => emperor.say_and_wait('食物に、要求はない。'),
+      () => emperor.say_and_wait('일상의 식사는 배만 채우면 된다.'),
+      () => emperor.say_and_wait('음식에 바라는 것은 없다.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -794,11 +794,11 @@ module.exports = {
     const buffer = [
       () =>
         luna.say_and_wait(
-          'ふふふ……生姜がなければ、脱『ショウガ』の馬……ふふ、脱韁、です。ふふふふ！',
+          '후후후…… 생강이 없다면, 탈『생강』의 말…… 후후, 탈강(脫韁)이네요. 후후후후!',
         ),
       () =>
         luna.say_and_wait(
-          '実は味への要求は高くありません。ですが盛り付けが美しく、香りが良ければ、食欲も湧きます。',
+          '사실 맛에 대한 기준은 높지 않아요. 하지만 담음새가 아름답고 향이 좋으면 식욕도 돋죠.',
         ),
     ];
     await get_random_entry(buffer)();
@@ -806,6 +806,6 @@ module.exports = {
 
   // [번역 대상] select_sleep
   select_sleep(chara17) {
-    chara17.say('すぅ……はぁ……');
+    chara17.say('스으…… 하아……');
   },
 };
