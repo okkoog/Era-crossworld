@@ -1,6 +1,6 @@
 // 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 /**
- * @file シンボリルドルフ - 日常
+ * @file 심볼리 루돌프 - 일상
  * @author 露娜俘虏
  * @author Claude (翻訳)
  */
@@ -34,9 +34,9 @@ module.exports = {
       era.get('status:9017:神经衰弱') > 0
     ) {
       buffer.push(
-        () => emperor.say('軟弱を消し、皇帝の名を遠くまで響かせよ！'),
+        () => emperor.say('나약함을 지우고, 황제의 이름을 멀리까지 떨쳐라!'),
         () =>
-          emperor.say(`誰が吾の脳裏で騒いでいる。${emperor.sex}を黙らせよ。`),
+          emperor.say(`누가 짐의 머릿속에서 소란을 피우는가. ${emperor.sex}을(를) 닥치게 하라.`),
       );
     }
     get_random_entry(buffer)();
@@ -114,18 +114,18 @@ module.exports = {
           buffer.push(
             () =>
               luna.say_and_wait(
-                '調子は『極めて』良い。訓練への心が『昂って』います！ ふふ……',
+                '컨디션은 『매우』 좋습니다. 훈련을 향한 의욕도 『고조』되고 있어요! 후후……',
               ),
             () =>
-              luna.say_and_wait('普段より調子が良い。良い走りができそうです。'),
+              luna.say_and_wait('평소보다 컨디션이 좋아요. 좋은 달리기를 할 수 있을 것 같습니다.'),
           );
           break;
         case 1:
           buffer.push(
-            () => luna.say_and_wait('日々の積み重ねが大切です。'),
+            () => luna.say_and_wait('매일의 축적이 중요합니다.'),
             () =>
               luna.say_and_wait(
-                '訓練が終わったら、一緒に散歩でも……時間が空くなら、ですが。',
+                '훈련이 끝나면 함께 산책이라도…… 시간이 난다면 말이에요.',
               ),
           );
           break;
@@ -133,20 +133,20 @@ module.exports = {
           buffer.push(
             () =>
               luna.say_and_wait(
-                '完璧な調子とは言えませんが、弱音は吐けません。',
+                '완벽한 컨디션이라고 할 수는 없지만, 약한 소리를 할 수는 없어요.',
               ),
-            () => luna.say_and_wait('一歩ずつ行きましょう。私は耐えます。'),
+            () => luna.say_and_wait('한 걸음씩 나아가죠. 저는 견뎌낼게요.'),
           );
           break;
         case -1:
           buffer.push(
             () =>
               luna.say_and_wait(
-                '勝負服を着るのは身分の切り替えです。また皇帝にならねばなりません……',
+                '승부복을 입는 것은 신분을 전환하는 일이죠. 다시 황제가 되어야 합니다……',
               ),
             () =>
               luna.say_and_wait(
-                'む……どうも調子が悪い。ですが、この疲れで弱音を吐くわけにはいきません。',
+                '으음…… 아무래도 컨디션이 좋지 않네요. 하지만 이 정도 피로로 약한 소리를 할 수는 없습니다.',
               ),
           );
           break;
@@ -154,11 +154,11 @@ module.exports = {
           buffer.push(
             () =>
               luna.say_and_wait(
-                '困りました……身体が重い。それでも一日たりとも、無駄にしたくなくて……',
+                '곤란하네요…… 몸이 무거워요. 그래도 단 하루도 헛되이 보내고 싶지는 않아서……',
               ),
             () =>
               luna.say_and_wait(
-                'いつもの調子が掴めません……このままではいけないとわかっているのに、それでも……',
+                '평소의 감각을 잡을 수가 없네요…… 이대로는 안 된다는 걸 알고 있는데도, 그래도……',
               ),
           );
       }
@@ -177,33 +177,33 @@ module.exports = {
       switch (era.get('cflag:17:干劲')) {
         case 2:
           buffer.push(
-            () => emperor.say_and_wait('出征の時は来た。'),
-            () => emperor.say_and_wait('皇帝の名を、天まで響かせよ！'),
+            () => emperor.say_and_wait('출정의 때가 왔다.'),
+            () => emperor.say_and_wait('황제의 이름을 하늘까지 울려 퍼뜨려라!'),
           );
           break;
         case 1:
           buffer.push(
-            () => emperor.say_and_wait('帝国は、一磚一瓦より始まる。'),
+            () => emperor.say_and_wait('제국은 벽돌 한 장, 기와 한 장에서 시작된다.'),
             () =>
-              emperor.say_and_wait('ん……？ 弄臣よ、笑話のひとつでも聞かせよ。'),
+              emperor.say_and_wait('음……? 광대여, 우스갯소리 하나라도 들려보아라.'),
           );
           break;
         case 0:
           buffer.push(
-            () => emperor.say_and_wait('興が乗らぬ。'),
-            () => emperor.say_and_wait('吾の興を殺すな。'),
+            () => emperor.say_and_wait('흥이 나지 않는군.'),
+            () => emperor.say_and_wait('짐의 흥을 깨지 마라.'),
           );
           break;
         case -1:
           buffer.push(
-            () => emperor.say_and_wait('ふん……'),
-            () => emperor.say_and_wait('吾の視界から消えろ。'),
+            () => emperor.say_and_wait('흥……'),
+            () => emperor.say_and_wait('짐의 시야에서 사라져라.'),
           );
           break;
         case -2:
           buffer.push(
-            () => emperor.say_and_wait('弄臣よ、すべてを台無しにしたな？'),
-            () => emperor.say_and_wait('吾に無礼を働くな。'),
+            () => emperor.say_and_wait('광대여, 모든 것을 망쳐버렸구나?'),
+            () => emperor.say_and_wait('짐에게 무례를 범하지 마라.'),
           );
       }
     }
@@ -215,27 +215,27 @@ module.exports = {
     const buffer = [
       () =>
         luna.say(
-          '誰が思うでしょう。私たちが、こんな関係になるなんて……もう、引き返せません。',
+          '누가 생각이나 했을까요. 우리가 이런 관계가 될 줄은…… 이제 되돌아갈 수 없네요.',
         ),
       () =>
         luna.say(
-          '私を信じ、期待してくれる人たちを……その想いを、叱ることなどできません。',
+          '저를 믿고 기대해주는 사람들을…… 그 마음을 나무랄 수는 없어요.',
         ),
       () =>
         luna.say(
-          'あなたが傍にいてくれるおかげで、虚ろだと笑われるエデンにも、一歩ずつ近づけています。',
+          '당신이 곁에 있어주는 덕분에, 허황되다고 비웃음받는 에덴에도 한 걸음씩 가까워지고 있어요.',
         ),
       () =>
         luna.say(
-          '相手の身になって考える？ 私の立場を理解できる人など、いないと思います。',
+          '상대의 입장이 되어 생각하라고요? 제 입장을 이해할 수 있는 사람은 없다고 생각합니다.',
         ),
       () =>
         luna.say(
-          '生徒会への要望は紙に書いて渡してください。できる限り、みなの願いを叶えます。',
+          '학생회에 바라는 점은 종이에 적어서 건네주세요. 가능한 한 모두의 바람을 이루겠습니다.',
         ),
       () =>
         luna.say(
-          '勝負服が格好いい、ですか？ ……監獄を、格好いいとは呼びたくありません。',
+          '승부복이 멋지다고요? ……감옥을 멋지다고 부르고 싶지는 않네요.',
         ),
     ];
     if (
@@ -243,8 +243,8 @@ module.exports = {
       era.get('status:9017:精神损伤') > 0
     ) {
       buffer.push(
-        () => luna.say('最近、ときどき頭が痛くて堪えられません。'),
-        () => luna.say('眠る時間が、増えてきてはいませんか？'),
+        () => luna.say('요즘 가끔 머리가 너무 아파 견딜 수가 없어요.'),
+        () => luna.say('잠드는 시간이 점점 늘고 있지는 않나요?'),
       );
     }
     if (
@@ -254,11 +254,11 @@ module.exports = {
       buffer.push(
         () =>
           luna.say(
-            '私の視界から離れないで！ あなたの気配が、消えてしまいそうで……！',
+            '제 시야에서 벗어나지 말아주세요! 당신의 기척이 사라져버릴 것 같아서……!',
           ),
         () =>
           luna.say(
-            `${you.actual_name}、まだルナを見ていてくれますか？ 私はもう……自分ではなくなりそうで——`,
+            `${you.actual_name}, 아직 루나를 보고 있어주나요? 저는 이제…… 제가 아니게 될 것 같아서——`,
           ),
       );
     }
@@ -269,33 +269,33 @@ module.exports = {
   async load_talk(chara17, you, is_good_end, i_emperor) {
     if (is_good_end) {
       await chara17.say_and_wait(
-        '太陽と月が、これからもあなたに寄り添いますように',
+        '태양과 달이 앞으로도 당신 곁에 함께하기를',
       );
       await chara17.say_and_wait(
-        '……ですが、皇帝を、そしてルナを、忘れないでください',
+        '……하지만 황제를, 그리고 루나를 잊지 말아주세요',
       );
       await chara17.print_and_wait([
         chara17.get_colored_name(),
-        ' は振り返り、震えている',
+        '은(는) 뒤돌아보며 떨고 있다',
       ]);
-      await chara17.say_and_wait('気をつけて……また会いましょう（すすり泣き）');
+      await chara17.say_and_wait('조심하세요…… 다시 만나요(흐느낌)');
     } else if (i_emperor) {
-      await chara17.say_and_wait('弄臣よ、無駄なことを何度繰り返す？');
+      await chara17.say_and_wait('광대여, 쓸데없는 일을 몇 번이나 반복할 셈이지?');
     } else if (era.get('love:17') >= 75) {
       await chara17.print_and_wait([
         chara17.get_colored_name(),
-        ' は唇をわずかに開くが、声は出ない',
+        '은(는) 입술을 살짝 열었지만 목소리는 나오지 않는다',
       ]);
       await chara17.say_and_wait('——！');
-      await chara17.say_and_wait('——行かないで……');
+      await chara17.say_and_wait('——가지 말아주세요……');
       await chara17.print_and_wait([
         chara17.get_colored_name(),
-        ' はすすり泣いている。だが ',
+        '은(는) 흐느끼고 있다. 하지만 ',
         you.get_colored_name(),
-        ' はすでに遠ざかっている……',
+        '은(는) 이미 멀어지고 있다……',
       ]);
       await chara17.say_and_wait(
-        '約束したでしょう……何があっても離れない、と——',
+        '약속했잖아요…… 무슨 일이 있어도 떠나지 않겠다고——',
       );
     }
   },
@@ -303,110 +303,110 @@ module.exports = {
   // [번역 대상] o_c_pray_emperor
   async o_c_pray_emperor(emperor, you, dice) {
     await era.printAndWait(
-      `神社は ${you.name} と ${emperor.name} にとって、特別な場所ではない。`,
+      `신사는 ${you.name}와(과) ${emperor.name}에게 특별한 장소는 아니다.`,
     );
     await era.printAndWait(
-      `${you.name} は好運を祈る年を過ぎ、${emperor.name} は常に実力で成績を取ってきた。`,
+      `${you.name}은(는) 행운에 기대기엔 이미 나이가 들었고, ${emperor.name}은(는) 언제나 실력으로 성적을 거둬왔다.`,
     );
     await era.printAndWait([
-      'だが ',
+      '하지만 ',
       you.get_colored_name(),
-      ' が驚いたのは、',
+      '이(가) 놀란 것은,',
       emperor.get_colored_name(),
-      ' もルナと同じく、新しいものへの好奇心を尽きせずに持っていることだ。',
+      '도 루나와 마찬가지로 새로운 것에 대한 호기심을 끊임없이 품고 있다는 점이다.',
     ]);
     await era.printAndWait(
-      `年に数度の祈福があれば、${emperor.sex}の新鮮さは十分に保たれる。`,
+      `1년에 몇 번 정도 기도하러 오면 ${emperor.sex}에게도 충분히 신선한 경험이 된다.`,
     );
     await era.printAndWait(
-      `${you.name} は ${emperor.name} の傍らに立ち、${emperor.sex}が『幸運』を示す籤を引くのを待った。`,
+      `${you.name}은(는) ${emperor.name}의 곁에 서서, ${emperor.sex}이(가) 『행운』을 뜻하는 제비를 뽑기를 기다렸다.`,
     );
     era.println();
     if (dice < 0.5) {
-      await emperor.say_and_wait('絶対の実力があれば、天さえも味方する。');
+      await emperor.say_and_wait('절대적인 실력이 있다면 하늘조차도 아군이 된다.');
       await era.printAndWait([
         emperor.get_colored_name(),
-        ' は籤を後ろへ放り、',
+        '은(는) 제비를 뒤로 던졌고,',
         you.get_colored_name(),
-        ' は慌てて受け取り、木に掛けた。',
+        '은(는) 황급히 받아 나무에 매달았다.',
       ]);
       await era.printAndWait(
-        `${you.name} はふと思う。自分も吉籤を引いてみるか？`,
+        `${you.name}은(는) 문득 생각했다. 자신도 길한 제비를 한번 뽑아볼까?`,
       );
       await era.printAndWait(
-        `${emperor.name} が喜んでくれればそれでいい。見えない前途の曲折に、わずかな希望を足すために。`,
+        `${emperor.name}이(가) 기뻐해준다면 그걸로 됐다. 보이지 않는 앞날의 굴곡에 작은 희망이라도 보태기 위해서.`,
       );
       await era.printAndWait(
-        `どんな助力でもいい。ああ……三女神よ、${emperor.name} をお守りください！`,
+        `어떤 도움이라도 좋다. 아아…… 삼여신이여, ${emperor.name}을(를) 지켜주소서!`,
       );
     } else {
-      await emperor.say_and_wait('面白い！ 吾は挑戦を好む。');
+      await emperor.say_and_wait('재미있군! 짐은 도전을 좋아한다.');
       await era.printAndWait([
         emperor.get_colored_name(),
-        ' は興味深げに手の籤を掲げ、高らかに笑った。',
+        '은(는) 흥미롭다는 듯 손에 든 제비를 치켜들고 호탕하게 웃었다.',
       ]);
-      await era.printAndWait([you.get_colored_name(), ' の顔色が、少し沈む。']);
-      await era.printAndWait([you.get_colored_name(), ' は知っている。']);
+      await era.printAndWait([you.get_colored_name(), '의 안색이 조금 어두워진다.']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 알고 있다.']);
       await era.printAndWait(
-        '見えない前途の曲折に、神の呵責まで重ねることになれば……',
+        '보이지 않는 앞날의 굴곡에 신의 질책까지 겹친다면……',
       );
-      await era.printAndWait('少し、苛立つ。');
+      await era.printAndWait('조금 짜증이 난다.');
     }
   },
 
   // [번역 대상] o_c_pray_luna
   async o_c_pray_luna(luna, you, dice) {
     await era.printAndWait(
-      `神社は ${you.name} と ${luna.name} にとって、特別な場所ではない。`,
+      `신사는 ${you.name}와(과) ${luna.name}에게 특별한 장소는 아니다.`,
     );
     await era.printAndWait(
-      `${you.name} は好運を祈る年を過ぎ、${luna.name} は常に実力で成績を取ってきた。`,
+      `${you.name}은(는) 행운에 기대기엔 이미 나이가 들었고, ${luna.name}은(는) 언제나 실력으로 성적을 거둬왔다.`,
     );
     await era.printAndWait([
-      'だが ',
+      '하지만 ',
       you.get_colored_name(),
-      ' が安堵したのは、',
+      '이(가) 안도한 것은,',
       luna.get_colored_name(),
-      ' が昔と変わらず、新しいものへの好奇心を尽きせずに持っていることだ。',
+      '이(가) 예전과 다름없이 새로운 것에 대한 호기심을 끊임없이 품고 있다는 점이다.',
     ]);
     await era.printAndWait(
-      `年に数度の祈福があれば、${luna.sex}の新鮮さは十分に保たれる。`,
+      `1년에 몇 번 정도 기도하러 오면 ${luna.sex}에게도 충분히 신선한 경험이 된다.`,
     );
     await era.printAndWait(
-      `${you.name} は ${luna.name} の傍らに立ち、${luna.sex}が『幸運』を示す籤を引くのを待った。`,
+      `${you.name}은(는) ${luna.name}의 곁에 서서, ${luna.sex}이(가) 『행운』을 뜻하는 제비를 뽑기를 기다렸다.`,
     );
     era.println();
     if (dice < 0.5) {
-      await luna.say_and_wait('かなり良い啓示のようです。');
+      await luna.say_and_wait('상당히 좋은 계시인 것 같네요.');
       await era.printAndWait([
         luna.get_colored_name(),
-        ' は嬉しそうに吉籤を ',
+        '은(는) 기쁜 듯 길한 제비를 ',
         you.get_colored_name(),
-        ' へ見せ、それから木に掛けた。',
+        '에게 보여준 뒤 나무에 매달았다.',
       ]);
       await era.printAndWait(
-        `${you.name} はふと思う。自分も吉籤を引いてみるか？`,
+        `${you.name}은(는) 문득 생각했다. 자신도 길한 제비를 한번 뽑아볼까?`,
       );
       await era.printAndWait(
-        `${luna.name} が喜んでくれればそれでいい。見えない前途の曲折に、わずかな希望を足すために。`,
+        `${luna.name}이(가) 기뻐해준다면 그걸로 됐다. 보이지 않는 앞날의 굴곡에 작은 희망이라도 보태기 위해서.`,
       );
       await era.printAndWait(
-        `どんな助力でもいい。ああ……三女神よ、${luna.name} をお守りください！`,
+        `어떤 도움이라도 좋다. 아아…… 삼여신이여, ${luna.name}을(를) 지켜주소서!`,
       );
     } else {
-      await luna.say_and_wait('この先も、多くの妨げに遭いそうです。');
+      await luna.say_and_wait('앞으로도 많은 장애물을 만나게 될 것 같네요.');
       await era.printAndWait([
         luna.get_colored_name(),
-        ' は籤の文言を ',
+        '은(는) 제비에 적힌 문구를 ',
         you.get_colored_name(),
-        ' には見せず、丁寧にしまった。',
+        '에게는 보여주지 않고 조심스럽게 챙겨 넣었다.',
       ]);
-      await era.printAndWait([you.get_colored_name(), ' の顔色が、少し沈む。']);
-      await era.printAndWait([you.get_colored_name(), ' は知っている。']);
+      await era.printAndWait([you.get_colored_name(), '의 안색이 조금 어두워진다.']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 알고 있다.']);
       await era.printAndWait(
-        '見えない前途の曲折に、神の呵責まで重ねることになれば……',
+        '보이지 않는 앞날의 굴곡에 신의 질책까지 겹친다면……',
       );
-      await era.printAndWait('少し、苛立つ。');
+      await era.printAndWait('조금 짜증이 난다.');
     }
   },
 
