@@ -1220,9 +1220,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] tenn_sho_win_s
+  // [번역 완료] tenn_sho_win_s
   tenn_sho_win_s: (() => {
-    const title = 'キーワード？';
+    const title = '키워드?';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} jordan トウカイジョーダン
@@ -1230,47 +1230,47 @@ module.exports = {
      */
     const f = async (gs, jordan, you) => {
       await era.printAndWait(
-        `レース前に ${you.name} へ残した不安とは裏腹に、${gs.name} は力強く、見事なレースを見せた！`,
+        `레이스 전에 ${you.name}에게 남긴 불안과는 달리, ${gs.name}은(는) 힘차고 훌륭한 레이스를 보여줬다!`,
       );
       era.println();
-      await gs.say_and_wait('ときに笑い、ときに涙……紆余曲折の旅……');
+      await gs.say_and_wait('때로는 웃고, 때로는 울고…… 우여곡절의 여행……');
       await gs.say_and_wait(
-        'この旅のすべては無駄じゃなかった！ だって勝利は、もうアタシの手の中だ！',
+        '이 여행의 모든 것은 헛되지 않았어! 승리는 이미 내 손안에 있으니까!',
       );
-      await jordan.say_and_wait('くそっ、またてめえに負けたか……！！ ぐ……！！');
+      await jordan.say_and_wait('젠장, 또 너한테 졌냐……!! 크윽……!!');
       await jordan.say_and_wait(
-        '今日はウマも足元すくう日だ、次は絶対取り返す！',
+        '오늘은 우마무스메도 발이 미끄러지는 날이 있지, 다음엔 반드시 되갚아주겠어!',
       );
-      await gs.say_and_wait('いいぜ！ ゴールでマカロン食いながら待ってる！');
-      await jordan.say_and_wait('ふん！');
+      await gs.say_and_wait('좋아! 골인 지점에서 마카롱 먹으면서 기다릴게!');
+      await jordan.say_and_wait('흥!');
       era.println();
       await era.printAndWait(
-        `こうして ${jordan.name} はまたぷんすかと去っていった。だが……`,
+        `그렇게 ${jordan.name}은(는) 또 씩씩거리며 떠나갔다. 하지만……`,
       );
       era.println();
-      await gs.say_and_wait('おっ？ なんか落としていきやがった。');
+      await gs.say_and_wait('어? 뭔가 떨어뜨리고 갔는데.');
       era.println();
-      await era.printAndWait('以前と同じ紙切れだ。また新しい手がかりらしい。');
+      await era.printAndWait('전과 같은 종잇조각이다. 또 새로운 단서인 모양이다.');
       era.println();
 
-      era.printButton('「素直じゃないやつだな。」', 1);
+      era.printButton('「솔직하지 못한 녀석이네.」', 1);
       await era.input();
 
-      await gs.say_and_wait('今度は……『ク』。');
-      await gs.say_and_wait('『スイ』、『ゾ』、『ク』……');
-      await gs.say_and_wait('まだ分かんねえ——！');
+      await gs.say_and_wait('이번엔…… 『쿠』.');
+      await gs.say_and_wait('『스이』, 『조』, 『쿠』……');
+      await gs.say_and_wait('아직도 모르겠어——!');
       era.println();
       await era.printAndWait(
-        'あのお方は今回もきちんと新しい手がかりを残した。生徒をこういうことに使えるとは、よほど位の高い人物なのか？',
+        '그분은 이번에도 꼼꼼히 새 단서를 남겼다. 학생을 이런 일에 동원할 수 있다니, 상당히 높은 지위의 인물인가?',
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] tenn_spr_win
+  // [번역 완료] tenn_spr_win
   tenn_spr_win: (() => {
-    const title = 'キーワード';
+    const title = '키워드';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} flash エイシンフラッシュ
@@ -1278,57 +1278,57 @@ module.exports = {
      */
     const f = async (gs, flash, you) => {
       await era.printAndWait(
-        `レース前に ${you.name} へ残した不安とは裏腹に、${gs.name} は力強く、見事なレースを見せた！`,
+        `레이스 전에 ${you.name}에게 남긴 불안과는 달리, ${gs.name}은(는) 힘차고 훌륭한 레이스를 보여줬다!`,
       );
       era.println();
       await gs.say_and_wait(
-        'ほっ！ ほっ！ ほっ！ ほっ！ 今日もよく走れたかしら？',
+        '호호! 호호! 호호! 호호! 오늘도 잘 달렸는지 몰라?',
       );
       await gs.say_and_wait(
         `本${
-          era.get('cflag:7:性别') !== 1 ? 'お嬢' : '旦那'
-        }の美は、素手で割ったウニのように新鮮、ほっ！ ほっ！ ほっ！ ほっ！`,
+          era.get('cflag:7:性别') !== 1 ? '아가씨' : '도련님'
+        }의 아름다움은 맨손으로 깬 성게처럼 신선하답니다, 호호! 호호! 호호! 호호!`,
       );
       era.println();
       await era.printAndWait(
-        `今日の ${gs.name} は作風を変え、まさにアニメ漫画のお嬢様ステレオタイプ総集編のようだった。`,
+        `오늘의 ${gs.name}은(는) 작풍을 바꿔, 그야말로 애니·만화 속 아가씨 스테레오타입 총집편 같았다.`,
       );
       era.println();
 
-      era.printButton('「その生臭さは、嗅ぎたくない。」', 1);
+      era.printButton('「그 비린내는 맡고 싶지 않은데.」', 1);
       await era.input();
 
-      await flash.say_and_wait(`よくなさいました、${gs.name} さん。`);
-      await flash.say_and_wait('では、約束の第一条の手がかりです。どうぞ。');
-      await gs.say_and_wait('すぐ逃げるな、前回と全然違う。');
+      await flash.say_and_wait(`수고하셨습니다, ${gs.name} 씨.`);
+      await flash.say_and_wait('그럼 약속한 첫 번째 단서입니다. 받으세요.');
+      await gs.say_and_wait('바로 도망치지 마, 지난번이랑 완전히 다르잖아.');
       era.println();
 
-      era.printButton('「飽きたんじゃないか？ 何て書いてある。」', 1);
+      era.printButton('「질린 거 아냐? 뭐라고 쓰여 있어?」', 1);
       await era.input();
 
-      await gs.say_and_wait('字が一つしかねえ、『スイ』。');
+      await gs.say_and_wait('글자 하나뿐이야, 『스이』.');
       era.println();
       await era.printAndWait(
         `以前 ${
           flash.name
-        } が渡した手紙には、エデンへ向かう四つの手がかりを集めろとあった。この『スイ』が第一条だろう。`,
+        }이(가) 건넨 편지에는 에덴으로 향하는 네 가지 단서를 모으라고 적혀 있었다. 이 『스이』가 첫 번째겠지.`,
       );
       era.println();
       await gs.say_and_wait(
-        'いいぜ！ 面白え！ なら四つの手がかり、全部集めちまおう！',
+        '좋아! 재밌는데! 그럼 네 가지 단서, 전부 모아버리자!',
       );
       era.println();
       await era.printAndWait(
-        'ゴールドシップのレースへの熱が、さらに上がった！',
+        '골드 쉽의 레이스에 대한 열기가 더욱 뜨거워졌다!',
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ts_add
+  // [번역 완료] ts_add
   ts_add: (() => {
-    const title = '追加の自主トレ';
+    const title = '추가 자율 훈련';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
@@ -1336,58 +1336,58 @@ module.exports = {
      */
     const f = async (gs, you, callname) => {
       await era.printAndWait([
-        '今日、',
+        '오늘, ',
         gs.get_colored_name(),
-        ' との訓練は、どうにか終わった。',
+        '와(과)의 훈련은 어떻게든 끝났다.',
       ]);
       era.println();
 
-      await gs.say_and_wait('お疲れ——！ ばいばーい、ばいばーい！');
+      await gs.say_and_wait('수고했어——! 바이바이, 바이바이!');
       era.println();
 
       await era.printAndWait([
         gs.get_colored_name(),
-        ' は伸びをして小走りに去る——そして戻ってきた。',
+        '은(는) 기지개를 켜고 종종걸음으로 떠났다——그리고 돌아왔다.',
       ]);
       era.println();
 
       await gs.say_and_wait(
-        'よし、追加トレだ！ いまアタシ、ハイって感じだぜ！',
+        '좋아, 추가 훈련이다! 지금 나 완전 하이한 기분이야!',
       );
       await gs.say_and_wait([
         callname,
-        '、追加トレって知らねえのか？ のび太みたいに情報弱者だなー',
+        ', 추가 훈련도 모르냐? 노비타처럼 정보 약자네~',
       ]);
       await gs.say_and_wait(
-        '追加トレは追加トレの略だ——全宇宙一千万人のゴルシ界隈で大流行してるやつ！',
+        '추가 훈련은 추가 훈련의 줄임말이다——전 우주 천만 명의 고루시계에서 대유행 중인 거지!',
       );
       await gs.say_and_wait(
-        'アタシのトレーナーなら、もっと深く研究しろっての。',
+        '내 트레이너라면 좀 더 깊이 연구하라고.',
       );
 
-      era.printButton('「なら、流行に置いてかれちゃまずいな。」', 1);
-      era.printButton('「違う、今の流行はCD（Cool Down）だ！」', 2);
+      era.printButton('「그럼 유행에 뒤처지면 안 되겠네.」', 1);
+      era.printButton('「아니, 요즘 유행은 CD(Cool Down)다!」', 2);
       const ret = await era.input();
       if (ret === 1) {
         await gs.say_and_wait([
-          'よし！ 元気だ！',
+          '좋아! 기운 좋다!',
           you.actual_name,
-          ' 隊員、ついてこい——！',
+          ' 대원, 따라와——!',
         ]);
         era.println();
-        await era.printAndWait('夕陽の下でも、二人は走り続けた。');
+        await era.printAndWait('석양 아래에서도 두 사람은 계속 달렸다.');
       } else {
         await gs.say_and_wait(
-          'CD……？ なにそれ、流行ってんの？ トレーナー界隈で流行ってんの……？',
+          'CD……? 그게 뭐야, 유행하는 거야? 트레이너계에서 유행하는 거야……?',
         );
         await gs.say_and_wait(
-          'CDってクールダウンの意味か……へっ！ 簡単じゃねえか！',
+          'CD가 쿨다운이라는 뜻이냐…… 흥! 간단하잖아!',
         );
         await gs.say_and_wait(
-          'カキ氷食いながらCDすればいい！ 略して『Cool Down CD』！',
+          '빙수 먹으면서 CD 하면 돼! 줄여서 『Cool Down CD』!',
         );
         era.println();
-        await era.printAndWait('こうして、二人はちゃんと休んだ。');
+        await era.printAndWait('그렇게 두 사람은 제대로 휴식을 취했다.');
       }
       return [ret];
     };
