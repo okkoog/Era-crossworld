@@ -1745,401 +1745,401 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_95_10
+  // [번역 완료] we_95_10
   we_95_10: (() => {
-    const title = '心血を注ぐ';
+    const title = '심혈을 기울이다';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await era.printAndWait(
-        '天皇賞（春）が近づいている。最長距離のG1として、3200メートルはウマ娘の靭性を試す大関だ。',
+        '텐노상(봄)이 다가오고 있다. 최장거리 G1 레이스인 3200m는 우마무스메의 인내심을 시험하는 거대한 관문이다.',
       );
       await era.printAndWait(
-        'かつては、天皇賞を勝ったウマ娘が最強とされた。だが時代が変わり、各レースの評価も起伏する。',
+        '과거에는 텐노상을 제패한 우마무스메가 곧 최강으로 인정받았으나, 시대가 변하며 여러 레이스에 대한 평가도 달라졌다.',
       );
       await era.printAndWait(
-        'それでも、天皇賞（春）は今なお最も苛烈なレースであることに変わりはない。',
+        '그러나 어떤 시대든, 텐노상(봄)이 현재 가장 가혹한 레이스라는 사실만은 변함이 없다.',
       );
       await era.printAndWait(
-        '上級生になっても、ルナの生徒会の仕事の圧は下がらず、後輩の指導に時間を割き、各種の取材にも出ねばならない。',
+        '고학년이 된 루나의 학생회 업무는 줄어들기는커녕, 후배들을 지도하고 각종 인터뷰에 응하느라 더욱 늘어만 갔다.',
       );
       await era.printAndWait(
-        `${you.name} は憂えるが、ルナは一貫して、それに見合う名声を担う責任だと考えている。`,
+        `${you.name}이(가) 우려를 표해도, 루나는 항상 이것이 자신의 명성에 걸맞은 책임이라고 여겼다.`,
       );
       await era.printAndWait(
-        `${you.name} の思いに気づいたのか、一日の忙しさを終えたあと、ルナは ${you.name} を呼び止めた。`,
+        `${you.name}의 생각을 눈치챈 듯, 바쁜 하루를 마친 루나가 ${you.name}을(를) 불러 세웠다.`,
       );
-      await luna.say_and_wait('怒っていますか？');
-      era.printButton('「心配しているだけだ。」', 1);
-      era.printButton('「もっと俺を頼ってほしい。」', 2);
+      await luna.say_and_wait('화가 난 거야?');
+      era.printButton('「그저 네가 걱정될 뿐이야.」', 1);
+      era.printButton('「내게 좀 더 의지해줬으면 좋겠어.」', 2);
       await era.input();
       await era.printAndWait(
-        `${you.name} の言葉を聞き、ルナは軽く息を吐いた。`,
+        `${you.name}의 말을 들은 루나가 가볍게 한숨을 내쉬었다.`,
       );
-      await luna.say_and_wait('あなたも、もう少し私を信じてください。');
+      await luna.say_and_wait('당신도 나를 좀 믿어줘.');
       await era.printAndWait(
-        `ルナは${you.name}を見て、手を伸ばし、${you.name}の頰を撫でた。`,
+        `루나는 ${you.name}을(를) 바라보며 손을 뻗어 ${you.name}의 뺨을 어루만졌다.`,
       );
       await luna.say_and_wait(
-        '私はこうしなければいけません。でなければ、多くの者が迷いと苦境に沈みます。',
+        '내가 멈추면, 수많은 이들이 미궁 속에 빠져 방황하게 될 거야. 나는 계속해야만 해.',
       );
-      await luna.say_and_wait('私たちは、まだ夢を果たしていません。');
-      await era.printAndWait(`${you.name} はルナの手を握った。`);
+      await luna.say_and_wait('우리는 아직 꿈을 이루지 못했으니까.');
+      await era.printAndWait(`${you.name}은(는) 루나의 손을 맞잡았다.`);
       await era.printAndWait(
-        `遠大な理想を語っているのに、${you.name} はルナの眉間に散らない憂いがあるのに気づく。`,
+        `원대한 이상을 이야기하고 있었지만, ${you.name}은(는) 루나의 미간에 서린 깊은 수심을 보았다.`,
       );
       await era.printAndWait(
-        `${you.name} たちが再び出会ったときのように、息が詰まる様子だ。`,
+        `${you.name}과(와) 루나가 재회했을 때와 같은, 숨이 막힐 듯한 표정이었다.`,
       );
-      await era.printAndWait(`${you.name} は溜息をつき、頷いた。`);
+      await era.printAndWait(`${you.name}은(는) 한숨을 내쉬며 고개를 끄덕였다.`);
       await era.printAndWait(
-        `——ルナのために、まだ何ができるのか。これから先の日々、${you.name} はずっとその問いを考えていた。`,
+        `——진정 루나를 위해 내가 할 수 있는 일은 무엇일까? 이어지는 며칠 동안 ${you.name}은(는) 그 고민에 잠겼다.`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] we_wax_and_wane
+  // [번역 완료] we_wax_and_wane
   we_wax_and_wane: (() => {
-    const title = '陰晴円欠';
+    const title = '음양의 감옥';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await luna.print_and_wait(
-        '小さなころ、家の者は私に期待などしていませんでした。',
+        '어릴 적, 가족들은 내게 큰 기대를 걸지 않았어.',
       );
       await luna.print_and_wait(
-        '私は好き勝手に遊ぶことを許され、トレーニングに出ないことも許されていました。私には、みな「どうでもいい」という態度でした。',
+        '마음껏 뛰어노는 것도, 훈련에 빠지는 것도 허락됐지. 다들 내게 「어찌 되든 상관없다」는 식의 태도였어.',
       );
       await luna.print_and_wait(
-        'シンボリ家とはそういう場所です。人々が気にかけるのは実力だけ。',
+        '심볼리 가문은 그런 곳이야. 오직 실력만을 중요하게 여기지.',
       );
-      await luna.print_and_wait('だから、強い姉たちはコースを飛んでいました。');
+      await luna.print_and_wait('그래서 강인한 언니들은 트랙 위를 질주했고,');
       await luna.print_and_wait(
-        'そして私は、芝生の上で一日中眠ることさえできました。',
-      );
-      await luna.print_and_wait(
-        '私は楽に日を過ごしたかった。ですが年を重ねるうち、体内の躁動を抑えきれないことに気づきました。',
-      );
-      await luna.print_and_wait('まるで、私の血が体内で燃えているように。');
-      await luna.print_and_wait(
-        'そういうとき、私の胸には暴虐で兇暴な気持ちが生まれます。',
+        '나는 잔디밭에 누워 온종일 잠을 자도 괜찮았어.',
       );
       await luna.print_and_wait(
-        '引き裂きたい、踏み潰したい、相手を足の下に踏みつけ、嘲り、嗤いたい！',
+        '나 역시 편안하게 하루하루를 보내고 싶었지만, 나이가 들수록 내 몸 안의 요동치는 기운을 억누를 수가 없었어.',
+      );
+      await luna.print_and_wait('마치 내 피가 몸 안에서 타오르는 것 같았어.');
+      await luna.print_and_wait(
+        '그럴 때마다 내 마음속에는 폭압적이고 흉포한 감정이 솟구쳤지.',
       );
       await luna.print_and_wait(
-        '——すべての者からすべてを奪い、世界を焼き払いたい！',
+        '찢어발기고 싶고, 짓뭉개버리고 싶고, 상대를 발아래 짓밟으며 비웃어주고 싶었어! 조롱하고 싶었다고!',
       );
       await luna.print_and_wait(
-        '体力を使い果たし、やっと我に返ったとき、私は尽きせぬ空虚と恐怖しか感じられませんでした。',
+        '——모든 이의 모든 것을 빼앗고, 이 세상을 잿더미로 만들고 싶었어!',
       );
       await luna.print_and_wait(
-        '私は一喜一憂するようになりました……妄想を止めたい一心で、自らトレーニングに出るようになりました。',
+        '체력을 완전히 소진하고 간신히 정신을 차렸을 때, 내게 남은 건 끝없는 허무함과 공포뿐이었지.',
       );
       await luna.print_and_wait(
-        '極限まで走ったときだけ、私は穏やかになれる……私自身でいられる。',
-      );
-      await luna.print_and_wait('「ルナ。」');
-      await luna.print_and_wait(
-        '母がつけてくれた美しい名。優しい名でもあります。',
+        '불안해지기 시작했어…… 쓸데없는 생각을 하지 않으려 스스로 훈련에 참여하기 시작했어.',
       );
       await luna.print_and_wait(
-        '私は、暴力を発散するだけの怪物にはなりたくありません……',
+        '한계까지 달릴 때만이 비로소 평온해질 수 있었으니까…… 그래야만 나 자신으로 남아있을 수 있었어.',
+      );
+      await luna.print_and_wait('「루나.」');
+      await luna.print_and_wait(
+        '어머니는 내게 예쁘고도 다정한 이름을 지어주셨어.',
       );
       await luna.print_and_wait(
-        'ですが血脈がもたらす暴虐には勝てません。シンボリ家のこれまでのウマ娘と同じように。',
+        '폭력만을 휘두르는 괴물이 되고 싶지 않았어……',
       );
       await luna.print_and_wait(
-        'このとき、私はやっとわかりました。なぜ家の者が私を躾けないのかを。',
+        '하지만 혈통이 내게 부여한 그 포악함을 극복할 수 없었지. 과거 심볼리 가문의 모든 우마무스메들이 그랬던 것처럼.',
       );
       await luna.print_and_wait(
-        '代々流れる「シンボリ」の血が、私を定められた道へ導くからです。',
-      );
-      await luna.print_and_wait('勝利。勝利。');
-      await luna.print_and_wait(
-        '勝てさえすれば、私が自分でなくなっても許される。',
-      );
-      await luna.print_and_wait('というより、勝てさえすれば、どうでもいい。');
-      await luna.print_and_wait(
-        '私が稀代の才能を見せたあと、シンボリ家は私を育て始めました。',
-      );
-      await luna.print_and_wait('望めば、すべての資源を易々と手にできます。');
-      await luna.print_and_wait('望めば、すべての寵愛を易々と手にできます。');
-      await luna.print_and_wait('ですが私は、なお空虚と恐怖を感じていました。');
-      await luna.print_and_wait(
-        '走ることで頭を空にできるのは一時です。すべての相手を越え、ゴールから振り返ったとき、息を切らして気づくのです。私の口角が、止められずに上がっていることに。',
-      );
-      await luna.print_and_wait('まるで、人が変わったように。');
-      await luna.print_and_wait(
-        '思わず考えます。ルナは、本当の私なのでしょうか？',
+        '그때 깨달았어. 왜 가족들이 나를 훈육하지 않았는지.',
       );
       await luna.print_and_wait(
-        'それとも、コースで八方を虐げる怪物こそが、本当の私なのでしょうか？',
+        '대대로 이어져 내려온 「심볼리」의 피가, 나를 정해진 길로 인도할 것이기 때문이었지.',
+      );
+      await luna.print_and_wait('승리. 그리고 승리.');
+      await luna.print_and_wait(
+        '승리할 수만 있다면, 설령 내가 더 이상 내가 아니게 된다 해도 허용되는 거야.',
+      );
+      await luna.print_and_wait('아니, 오히려 승리만 한다면 무엇이든 상관없다는 거지.');
+      await luna.print_and_wait(
+        '내게서 희대의 재능이 엿보이자, 심볼리 가문은 본격적으로 나를 육성하기 시작했어.',
+      );
+      await luna.print_and_wait('마음만 먹으면 모든 자원을 손에 넣을 수 있었고,');
+      await luna.print_and_wait('마음만 먹으면 모든 총애를 독차지할 수 있었지.');
+      await luna.print_and_wait('하지만 여전히 공허하고 두려웠어.');
+      await luna.print_and_wait(
+        '달리기가 잠시나마 머릿속을 비워줄지라도, 모든 상대를 제치고 결승선에서 뒤를 돌아볼 때면…… 숨을 헐떡이면서도 내 입꼬리가 멈추지 않고 올라가는 걸 발견하곤 했거든.',
+      );
+      await luna.print_and_wait('마치 내가 다른 사람이 된 것처럼 말이야.');
+      await luna.print_and_wait(
+        '문득 생각했어. 루나가 진짜 나일까?',
       );
       await luna.print_and_wait(
-        '誰かに泣きたいと思いました。ですが私が成長するにつれ、優しくしてくれた人々は唐突に逝きました。',
+        '아니면 경기장에서 사방을 유린하는 저 괴물이 진짜 나인 걸까?',
       );
       await luna.print_and_wait(
-        '母は、狩人に驚いて鬱々として果てました。姉は、レース前の準備の中で粲然と逝きました。',
-      );
-      await luna.print_and_wait('あるいは、私も……');
-      await luna.print_and_wait(
-        '冷たい月光の注視の下、私は狂ったように大人たちの傍へ行きました。',
-      );
-      await luna.say_and_wait('欲しいのは——');
-      await luna.print_and_wait(
-        '安心でした。もう恐れなくていいこと。ですが和やかな祖父と父母の前で、私はそう言えませんでした。',
-      );
-      await luna.print_and_wait('彼らの目にある期待を見てしまったからです。');
-      await luna.print_and_wait(
-        'だから私は【愛】を願いました。数えきれない兄弟姉妹が傍にいること。各地から集う面白い人たちが、シンボリ家を囲むこと。',
-      );
-      await luna.print_and_wait('ここが賑やかになれば——');
-      await luna.print_and_wait('人々に囲まれれば——');
-      await luna.print_and_wait(
-        'きっと、きっと機会はある。きっと誰かが、自分を空虚と恐怖から救ってくれる。',
-      );
-      await luna.print_and_wait('そのとき……私は……ルナは、きっと——');
-      await luna.say_and_wait(`${you.actual_name}？`);
-      await luna.print_and_wait(
-        'ルナは夢から驚き、自分がひとりベッドにいるのに気づいた。',
+        '누군가에게 매달려 울고 싶었지만, 내가 자라날수록 나를 따뜻하게 대해주던 사람들은 갑작스레 세상을 떠났어.',
       );
       await luna.print_and_wait(
-        'なぜこんな夢を見たのか。ルナは頭を押さえる。窓の外の皎々たる明月を見て、目眩を感じた。',
+        '어머니는 사냥꾼에게 놀란 여파로 앓다가 돌아가셨고, 언니는 레이스 전 준비 중에 허망하게 가버렸지.',
+      );
+      await luna.print_and_wait('어쩌면 나도……');
+      await luna.print_and_wait(
+        '차가운 달빛 아래에서, 나는 미친 듯이 어른들을 찾아갔어.',
+      );
+      await luna.say_and_wait('나는——');
+      await luna.print_and_wait(
+        '안정감을 원한다고, 더 이상 무섭지 않게 해달라고 말하고 싶었어. 하지만 인자한 조부모님과 부모님 앞에서 차마 그럴 수 없었지.',
+      );
+      await luna.print_and_wait('그분들의 눈에 서린 기대감을 보았으니까.');
+      await luna.print_and_wait(
+        '그래서 나는【사랑】을 달라고 빌었어. 수많은 형제자매가 내 곁에 있어 주길, 세상 천지의 흥미로운 사람들이 심볼리 가문으로 모여들기를 바랐지.',
+      );
+      await luna.print_and_wait('이곳이 북적거리기만 한다면——');
+      await luna.print_and_wait('사람들에게 둘러싸여 있기만 한다면——');
+      await luna.print_and_wait(
+        '분명, 분명 기회가 있을 거라고. 분명 누군가는 내가 더 이상 공허함과 공포를 느끼지 않게 해줄 수 있을 거라고 믿었어.',
+      );
+      await luna.print_and_wait('그때가 되면…… 나…… 루나는…… 반드시——');
+      await luna.say_and_wait(`${you.actual_name}?`);
+      await luna.print_and_wait(
+        '루나는 꿈에서 깨어나, 자신이 홀로 침대에 누워 있음을 깨달았다.',
       );
       await luna.print_and_wait(
-        '励ましを受け、理想へ衝く決意をしたはずなのに、【皇帝】に意識を奪われ、暴虐の血脈を奮い起こすことを思うと……',
+        '왜 이런 꿈을 꾼 걸까? 루나는 머리를 짚었다. 창밖의 휘영청 밝은 달을 바라보자 현기증이 일었다.',
       );
       await luna.print_and_wait(
-        'ルナは潸然と涙を流した。どうしても、まだ怖い。',
+        '분명 격려를 받고 이상을 향해 나아가기로 결심했건만, 【황제】에게 의식을 빼앗기고 잔혹한 혈통에 몸을 맡길 생각을 하니……',
       );
       await luna.print_and_wait(
-        '忍耐には慣れたつもりでした。耐えれば、事態は好転すると信じていました。',
+        '루나는 눈물을 흘렸다. 아무리 애써도 결국 너무나 무서웠다.',
       );
       await luna.print_and_wait(
-        `ですが ${you.actual_name} と再会してから、これまで頼ってきた忍耐が、役に立たなくなりました。`,
+        '참아내는 데 익숙해졌고, 견디다 보면 분명 상황이 나아질 거라 굳게 믿어왔는데.',
       );
-      await luna.say_and_wait('会いたい……');
-      await luna.say_and_wait('会いたい……');
-      await luna.print_and_wait(`${luna.teen_sex_title}は、一晩眠れなかった。`);
+      await luna.print_and_wait(
+        `${you.actual_name}과(와) 재회한 이후로, 지금까지 의지해왔던 그 인내심이 아무런 소용이 없게 되어버렸다.`,
+      );
+      await luna.say_and_wait('보고 싶어……');
+      await luna.say_and_wait('만나고 싶어……');
+      await luna.print_and_wait(`${luna.teen_sex_title}은(는) 한숨도 자지 못한 채 밤을 지새웠다.`);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_47_1
+  // [번역 완료] ws_47_1
   ws_47_1: (() => {
-    const title = '新年の抱負';
+    const title = '신년의 포부';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await era.printAndWait(
-        'ルナと「共犯」になってから、気づかぬうちに新しい年を迎えた。',
+        '루나와 「공범」이 된 후, 어느덧 새로운 한 해가 밝았다.',
       );
       await era.printAndWait(
-        `絶え間ない戦々恐々と恐怖が、${you.name} を夜ごと眠れなくしていた。`,
+        `시도 때도 없이 찾아오는 전전긍긍함과 공포 탓에 ${you.name}은(는) 밤잠을 설치기 일쑤였다.`,
       );
       await era.printAndWait(
-        `だが新年の冷たい風が吹くと、${you.name} はわずかに勇気を取り戻した。`,
+        `하지만 신년의 차가운 바람이 불어오자, ${you.name}은(는) 조금은 용기가 생기는 것 같았다.`,
       );
       await era.printAndWait(
-        `まして、ルナは艶やかな晴れ着を着て、${you.name} へ小走りに寄ってくる。`,
+        `무엇보다, 화려한 설빔을 차려입은 루나가 ${you.name}을(를) 향해 아장아장 달려오고 있었다.`,
       );
       await era.printAndWait(
-        `${luna.sex} はあなたの腕へ飛び込んだ。船が港へ入るように。`,
+        `${luna.sex}는 마치 항구로 들어오는 배처럼 당신의 품속으로 뛰어들었다.`,
       );
       await luna.say_and_wait(
-        'このまま続けば、皇帝に代わってもらわねばなりません。',
+        '이대로 더 계속된다면, 아무래도 황제에게 대신 부탁해야 할지도 모르겠네.',
       );
       await era.printAndWait(
-        `${you.name} は仕方なく${luna.sex}の髪を撫で、細雪を摘み取った。`,
+        `${you.name}은(는) 어쩔 수 없다는 듯 ${luna.sex}의 머리카락을 쓰다듬으며 고운 눈송이를 털어주었다.`,
       );
       await era.printAndWait(
-        `早く ${you.name} と二人きりになりたくて、ルナは来る道で傘も差さなかったらしい。`,
+        `조금이라도 빨리 ${you.name}과(와) 단둘이 있고 싶었는지, 루나는 오는 길에 우산조차 쓰지 않은 모양이었다.`,
       );
       await era.printAndWait(
-        `${you.name} はルナの額にキスし、返礼として${luna.sex} は ${you.name} の肩に凭れた。`,
+        `${you.name}이(가) 루나의 이마에 입을 맞추자, 답례로 ${luna.sex}는 ${you.name}의 어깨에 머리를 기대었다.`,
       );
-      await era.printAndWait('窓の外、雪が揺れている。');
+      await era.printAndWait('창밖으로 흩날리는 눈꽃을 바라보며.');
       await luna.say_and_wait(
-        '今年は、ついにクラシック三冠に挑みます。これを取らねば、私は……',
+        '올해는 드디어 클래식 3관에 도전하는 해네. 이걸 따내야만 나는……',
       );
       await era.printAndWait(
-        `真面目な顔のルナを見て、${you.name} は深く息を吸い、${luna.sex} の手を握った。`,
+        `진지한 표정의 루나를 보며 ${you.name}은(는) 깊게 숨을 들이마시고 ${luna.sex}의 손을 맞잡았다.`,
       );
       await era.printAndWait(
-        `何があっても、${you.name} はルナの傍にいる、というように。`,
+        `어떤 상황에서도 ${you.name}이(가) 루나의 곁에 있겠다는 무언의 약속이었다.`,
       );
       await era.printAndWait(
-        `ルナは顔を上げて ${you.name} を見、目には幸福と希望が満ちている。`,
+        `루나는 행복과 희망이 가득한 눈으로 ${you.name}을(를) 올려다보았다.`,
       );
-      era.printButton('「賢明方正であれ。常に最善を選べ。」（賢さ+40）', 1);
+      era.printButton('「네가 현명하고 올곧게, 언제나 최고의 선택을 하길 바라.」', 1);
       era.printButton(
-        '「十全の健康であれ。身心を大事にしろ。」（スタミナ+40）',
+        '「네가 무조건 건강하길, 몸과 마음 모두 소중히 하길 바라.」',
         2,
       );
       era.printButton(
-        '「皇帝に武芸百般あれ。すべての技を活かせ。」（スキルPt+80）',
+        '「황제가 온갖 무예를 익혀, 모든 기교를 발휘하길 바라.」',
         3,
       );
       const ret = await era.input();
       await luna.say_and_wait(
-        'どれも幸福で、美しい願い……では、私にもひとつ願いがあります。',
+        '전부 행복하고 아름다운 소원들이네…… 그럼 나도 소원이 하나 있어.',
       );
       await era.printAndWait(
-        `ルナは ${you.name} の頰を摩り、${you.name} は${luna.sex}の体温と、魂の渇望を感じた。`,
+        `루나가 ${you.name}의 얼굴을 어루만졌다. ${you.name}은(는) ${luna.sex}의 체온과 영혼 속의 갈망을 느낄 수 있었다.`,
       );
       await luna.say_and_wait(
-        'あなたが長命でありますように。そうすれば、永遠に私の傍にいてくれますから。',
+        '당신이 만수무강했으면 좋겠어. 그래야 영원히 내 곁에 있어 줄 수 있을 테니까.',
       );
-      await era.printAndWait(`${you.name} は高らかに笑った。`);
-      await luna.say_and_wait('それから、もっと寒い冗談が見たいです。');
-      await era.printAndWait(`${you.name} の笑いが止まった。`);
+      await era.printAndWait(`${you.name}은(는) 하하하 웃음을 터뜨렸다.`);
+      await luna.say_and_wait('그리고, 썰렁한 농담을 더 많이 들을 수 있기를.');
+      await era.printAndWait(`${you.name}의 웃음소리가 뚝 끊겼다.`);
       return [ret];
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_47_29
+  // [번역 완료] ws_47_29
   ws_47_29: (() => {
-    const title = '夏季合宿';
+    const title = '여름 합숙';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
-      await era.printAndWait('夏季合宿の期間であるはずなのに——');
+      await era.printAndWait('분명 여름 합숙 기간인데도——');
       await era.printAndWait(
-        `${you.name} は、ウマ娘たちに取り囲まれたルナを見て、額に冷や汗を浮かべた。`,
+        `${you.name}은(는) 우마무스메들에게 겹겹이 둘러싸인 루나를 보며 식은땀을 흘렸다.`,
       );
       await era.printAndWait(
-        '万人が注目する生徒会長として、生徒たちの自主トレを指導し、',
+        '만인의 주목을 받는 학생회장으로서 학생들의 자율 훈련을 지도하고,',
       );
       await era.printAndWait(
-        '突破できない生徒を助け、ときには自ら手本を示す。',
+        '한계에 부딪힌 학생들을 돕고, 직접 대련까지 해준다.',
       );
       await era.printAndWait(
-        `それだけでなく、トレーニングでも${luna.sex}は格別に励んでいる。`,
+        `그뿐만 아니라, ${luna.sex} 본인의 훈련에도 누구보다 열심이었다.`,
       );
       await era.printAndWait(
-        '夜になっても、ルナは二つの寮の寮長を助け、任務を割り振っていた。',
+        '밤이 되어서도 루나는 두 기숙사 사감들을 도와 업무를 분담하고 있었다.',
       );
       await luna.say_and_wait(
-        '学園の問題は、すべて私の問題です。気にしないでください。',
+        '학원의 문제는 곧 나의 문제이니, 신경 쓰지 않아도 돼.',
       );
       await era.printAndWait(
-        `それから${luna.sex}は身をもって示し、早めに寝室へ戻って休んだ。`,
+        `그 말을 마친 ${luna.sex}는 솔선수범하듯 일찍 침실로 돌아가 휴식을 취했다.`,
       );
       await era.printAndWait(
-        `そう言いながらも、${you.name} の携帯はちょうどよく鳴った。`,
+        `하지만 그 순간, ${you.name}의 스마트폰이 타이밍 좋게 울렸다.`,
       );
       await luna.say_and_wait(
-        'なんだか、あなたの視線がずっと私から離れていない気がします。',
+        '왠지 당신의 시선이 한 번도 나에게서 떨어지지 않은 것 같은데.',
       );
       await era.printAndWait(
-        `ルナからの短信を見て、${you.name} は思わず微笑んだ。`,
+        `루나가 보낸 메시지를 보며 ${you.name}은(는) 빙그레 미소 지었다.`,
       );
       era.printButton(
-        '「おかけになった電話は圏外です。しばらくしてからおかけ直しください。」',
+        '「현재 지역은 서비스 지역이 아니오니, 다음에 다시……」',
         1,
       );
-      era.printButton('「だって、あなたが目を奪うから。」', 2);
+      era.printButton('「네가 너무 내 눈길을 사로잡아서 그래.」', 2);
       await era.input();
       await luna.say_and_wait(
-        '口が上手いのですね。ですが学園の風紀のため、私以外の子には使わないでください',
+        '말은 참 잘한다니까. 하지만 학원 환경의 정화를 위해, 나 이외의 아이들에게는 삼가주길 바라.',
       );
-      await luna.say_and_wait('そういえば');
-      await luna.say_and_wait('あなたは、いつもそう！');
+      await luna.say_and_wait('맞다.');
+      await luna.say_and_wait('당신은 늘 그랬지!');
       await luna.say_and_wait(
-        'シンボリ家でも巧言令色、よく生きてこられましたね',
+        '심볼리 가문에서도 감언이설을 늘어놓다니, 용케 살아남았네.',
       );
       await luna.say_and_wait(
-        'ですが、私は先に寝ます。明日は早起きしてトレーニングしましょう',
+        '그나저나, 난 이제 자야겠어. 내일 아침 일찍 훈련하러 가자.',
       );
       await era.printAndWait(
-        `${you.name} は携帯に点滅するメッセージを見ているうちに、いつのまにか眠っていた。`,
+        `${you.name}은(는) 깜빡이는 스마트폰 화면을 보다 어느새 잠이 들었다.`,
       );
       await era.printAndWait(
-        `翌朝早く、ルナはトレーニングへ向かうところだったが、${you.name} は${luna.sex}を引き止めた。`,
+        `다음 날 아침, 루나가 훈련을 나가려는 채비를 하자 ${you.name}이(가) ${luna.sex}를 불러세웠다.`,
       );
       await era.printAndWait(
-        `夏季合宿が始まる前から、${luna.sex}は矢継ぎ早にいくつもの仕事をこなし、トレーニングも落とさなかった。`,
+        `여름 합숙이 시작되기 전부터 ${luna.sex}는 이미 수많은 업무를 촘촘히 처리해왔고, 훈련 또한 거르지 않았다.`,
       );
-      await era.printAndWait(`疲労は蓄積する。${you.name} は確信していた。`);
+      await era.printAndWait(`피로는 반드시 축적되기 마련이라고 ${you.name}은(는) 확신했다.`);
       era.printButton(
-        '「豪勢な食事を取って、もっと強くなってくれ。」（パワー+10）',
+        '「맛있는 걸 먹고 기운을 차리자.」',
         1,
       );
       era.printButton(
-        '「たまにはトレーニングを先送りにしてみよう。」（根性+10）',
+        '「가끔은 훈련을 미뤄보는 건 어때?」',
         2,
       );
       const ret = await era.input();
-      await era.printAndWait('ルナは呆けた。');
-      await luna.say_and_wait('心配してくれているのですか？');
+      await era.printAndWait('루나가 멍하니 멈춰 섰다.');
+      await luna.say_and_wait('나를 걱정해 주는 거야?');
       await era.printAndWait(
-        `${you.name} は頷いた。ルナは窓枠に凭れ、海と砂浜を向いている。`,
+        `${you.name}은(는) 고개를 끄덕였다. 루나는 창가에 기대어 바다와 백사장을 바라보았다.`,
       );
       await era.printAndWait(
-        `朝の陽が${luna.sex}の顔を埋め、あなたには${luna.sex}の表情が見えない。`,
+        `이른 아침의 햇살이 ${luna.sex}의 얼굴을 가득 채워 ${luna.sex}의 표정을 읽을 수 없었다.`,
       );
       await luna.say_and_wait(
-        '他者のために励むことは、いつだって美しい願いです。',
+        '타인을 위해 노력한다는 건 언제나 아름다운 염원이야.',
       );
       await luna.say_and_wait(
-        'そうは言っても、私たちは菊花賞のために励まねばなりません。',
+        '그렇긴 해도, 우리는 국화상을 위해 정진해야만 해.',
       );
       await luna.say_and_wait(
-        'ですが、あなたの目がすでに物語っています——『これ以上のトレーニングは身体に害』、でしょう？',
+        '하지만 당신의 눈빛이 이미 말하고 있네—— 『더 훈련하는 건 몸에 해롭다』고, 그렇지?',
       );
       await luna.say_and_wait(
-        'ダービーのあと、私はますます確信しています。私たちの理想を果たすには、並大抵ではない努力が要ると。',
+        '하지만 더비 이후로 나는 더욱 확신하게 됐어. 우리의 이상을 실현하려면 평범한 노력으로는 부족하다는 걸.',
       );
       await luna.say_and_wait(
-        'あなたは、私を守りすぎてはいませんか？ 私がここまで弱いと、ここで倒れるとでも？',
+        '당신, 나를 너무 과잉보호하는 거 아니야? 내가 고작 여기서 쓰러질 만큼 약해 보여?',
       );
-      era.printButton('「……！」', 1);
+      era.printButton('「……!」', 1);
       await era.input();
       await era.printAndWait(
-        `窮した ${you.name} を見て、ルナは何かに気づき、${you.name} の腕を掴んだ。`,
+        `당황한 ${you.name}을(를) 보며 루나는 무언가 깨달은 듯 ${you.name}의 팔을 붙잡았다.`,
       );
       await luna.say_and_wait(
-        'これでは、あなたに八つ当たりしているだけですね……',
+        '이건 마치 당신한테 화풀이하는 꼴이 되어버렸네……',
       );
       await era.printAndWait(
-        `ルナは ${you.name} に謝っているようだった。だが ${you.name} は知っている。${luna.sex}はあなたに折れてはいない。`,
+        `루나는 ${you.name}에게 사과하는 듯했지만, ${you.name}은(는) 알고 있었다. ${luna.sex}가 타협하지 않았다는 것을.`,
       );
       await era.printAndWait(
-        `${luna.sex}の思いは、確かに ${you.name} の胸へ届いた。`,
+        `${luna.sex}의 의지는 확실하게 ${you.name}의 마음속으로 전해졌다.`,
       );
       await luna.say_and_wait(
-        '今日はトレーニングには行きません。安心してください。',
+        '오늘은 훈련하지 않을게. 안심해.',
       );
-      await era.printAndWait(`それから、ルナは ${you.name} の傍を離れた。`);
+      await era.printAndWait(`그러고는 루나는 ${you.name}의 곁을 떠났다.`);
       await era.printAndWait(
-        `${you.name} は引き止められなかった。${you.name} は胸を押さえ、長くしてから我に返り、がらんとした廊下を離れた。`,
+        `${you.name}은(는) 붙잡지 못했다. ${you.name}은(는) 가슴을 짓누르는 감정을 억누르며 한참 뒤에야 텅 빈 복도를 빠져나왔다.`,
       );
-      await era.printAndWait(`その一日、${you.name} はルナに会えなかった。`);
+      await era.printAndWait(`그날 하루 종일, ${you.name}은(는) 루나를 볼 수 없었다.`);
       await era.printAndWait(
-        `夜、${you.name} は携帯を取り、ルナへ短信を送る。`,
+        `밤이 되어 ${you.name}은(는) 스마트폰을 들어 루나에게 메시지를 보냈다.`,
       );
-      era.printButton('「俺は、ずっと傍にいる。」', 1);
-      era.printButton('「ルナ、俺はいつでも君を愛している。」', 2);
+      era.printButton('「내가 언제나 네 곁에 있을게.」', 1);
+      era.printButton('「루나, 나는 언제나 너를 사랑해.」', 2);
       await era.input();
       await era.printAndWait(
-        '既読にはなったが、ルナからの返事はいつまでも来ない。',
+        '메시지는 읽음으로 표시되었지만, 루나에게선 끝내 답장이 오지 않았다.',
       );
       await era.printAndWait(
-        `${you.name} は待ち続けた。結局、一晩中、ルナは返信しなかった。`,
+        `${you.name}은(는) 애타게 기다렸지만, 밤이 다 지나도록 루나의 회신은 없었다.`,
       );
       return [ret];
     };
@@ -2147,252 +2147,252 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_14
+  // [번역 완료] ws_95_14
   ws_95_14: (() => {
-    const title = '皇帝の墜落';
+    const title = '황제의 추락';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await era.printAndWait(
-        '四月になれば、万人が注目するファン感謝祭が始まる。',
+        '4월이 되면 만인이 고대하던 팬 대감사제가 시작된다.',
       );
       await era.printAndWait(
-        `${you.name} には不満もあるが、開会式のあとには模擬レースがある。`,
+        `${you.name}은(는) 내심 불만이 있었지만, 개막식 직후에는 모의 레이스가 열릴 예정이었다.`,
       );
       await era.printAndWait(
-        `模擬レースとはいえ、激しさは正式なレースとほとんど変わらないはずだ。`,
+        `모의 레이스라고는 해도 그 치열함만큼은 공식 레이스와 다를 바 없었다.`,
       );
       await era.printAndWait(
-        `${you.name} は知っている。こういうときほど、${you.name} はルナの身体の調子を釣り合わせにくい。`,
+        `${you.name}은(는) 이런 시기일수록 ${you.name}이(가) 루나의 컨디션을 조절하기가 무척 어렵다는 것을 잘 알고 있었다.`,
       );
-      await era.printAndWait('ひとたび問題が起きれば……');
+      await era.printAndWait('만약 문제라도 생긴다면……');
       await era.printAndWait(
-        `だが夏合宿の出来事を思い出すと、${you.name} はルナに回避を頼めない。`,
-      );
-      await era.printAndWait(
-        `模擬レースが始まろうとするとき、ルナの疲労した様子に ${you.name} は目尻が跳ねた。`,
+        `하지만 지난 여름 합숙 때의 일이 떠올라 ${you.name}은(는) 차마 루나에게 레이스를 포기하라고 말할 수 없었다.`,
       );
       await era.printAndWait(
-        'トレーニングだけでなく、生徒会の仕事と行事の運営。今日のために、ルナの負担は重すぎる。',
+        `모의 레이스 시작 전, 루나의 초췌한 기색을 본 ${you.name}은(는) 가슴이 철렁 내려앉았다.`,
       );
-      await era.printAndWait('——少し休め。');
       await era.printAndWait(
-        `${you.name} は傍らに立つルナを見て、言葉が喉で止まり、つい溜息になった。`,
+        '단순한 훈련뿐만 아니라 학생회 업무와 행사 운영까지, 오늘을 위해 루나가 짊어진 짐은 너무나 무거웠다.',
       );
-      await luna.say_and_wait('すべての人が、このレースを期待しています。');
+      await era.printAndWait('——좀 쉬어.');
+      await era.printAndWait(
+        `${you.name}은(는) 곁에 선 루나를 바라봤다. 말이 목구멍까지 차올랐지만 결국 한숨이 되어 흩어졌다.`,
+      );
+      await luna.say_and_wait('모든 사람이 이 레이스를 기대하고 있어.');
       await luna.say_and_wait(
-        'ファンの歓声、期待と祈り。すでに引退した先輩たちさえ、胸を高鳴らせています。',
+        '팬들의 환호와 기대, 축복이 이미 은퇴한 선배들의 마음까지 들끓게 하고 있어.',
       );
       await era.printAndWait(
-        `${you.name} はルナを見る。${luna.sex}は思い巡らしているようだ。しばらくして、${luna.sex}は ${you.name} を見た。`,
+        `${you.name}이(가) 루나를 돌아보자 ${luna.sex}는 깊은 생각에 잠겨 있는 듯했다. 잠시 후 ${luna.sex}이(가) ${you.name}을(를) 바라보았다.`,
       );
-      await luna.say_and_wait('あなたも、私に期待していますか？');
-      era.printButton('「いつだって！」', 1);
-      era.printButton('「休め……」', 2);
+      await luna.say_and_wait('당신도 나에게 무언가 기대하고 있어?');
+      era.printButton('「물론, 언제나!」', 1);
+      era.printButton('「그냥 좀 쉬었으면 좋겠어……」', 2);
       await era.input();
       await era.printAndWait(
-        `${you.name} の答えを聞き、ルナは深く息を吸い、それから ${you.name} の肩を叩いた。`,
+        `${you.name}의 대답에 루나는 깊은 숨을 내쉰 뒤 ${you.name}의 어깨를 가볍게 두드렸다.`,
       );
-      await luna.say_and_wait('行ってきます。');
+      await luna.say_and_wait('금방 다녀올게.');
       await era.printAndWait(
-        `${you.name} はその場で固まった。だがすぐに悟る。ルナは【今】のこの状態で、コースへ上がるつもりだ。`,
+        `${you.name}은(는) 그 자리에 굳어버렸다. 루나가 【지금】 그 상태로 경기장에 나가려 한다는 사실을 뒤늦게 깨달았기 때문이었다.`,
       );
       await era.printAndWait(
-        `——結果、ルナは苦戦した。連日の疲労が${luna.sex}の調子を落としたのかもしれない。`,
+        `——결국 루나는 고전을 면치 못했다. 연일 이어진 피로 탓에 ${luna.sex}의 컨디션이 무너진 것이리라.`,
       );
-      await era.printAndWait(`観客は騒然となった。`);
+      await era.printAndWait(`관중석은 술렁거렸다.`);
       await era.printAndWait(
-        `皇帝がどうしてここまで乱れるのか。そんな議論が数週間続いた。`,
+        `황제가 어쩌다 저렇게 망가진 거지? 그런 논란은 몇 주간이나 계속되었다.`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_95_16
+  // [번역 완료] ws_95_16
   ws_95_16: (() => {
-    const title = '乾坤一擲';
+    const title = '건곤일척';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await era.printAndWait(
-        `明日は天皇賞（春）の日だ。だがこのあいだ、${you.name} は気づいた。どうしても、ルナは【皇帝】を呼び出せない。`,
+        `내일은 텐노상(봄)이 시작되는 날이다. 하지만 최근 ${you.name}은(는) 루나가 아무리 애써도 【황제】를 불러내지 못한다는 사실을 발견했다.`,
       );
-      era.printButton('「積み重ねた疲労が、ついに報いをもたらした。」', 1);
-      era.printButton('「もう無理をするな！」', 2);
+      era.printButton('「계속 쌓여온 피로가 결국 한계에 달했어.」', 1);
+      era.printButton('「더 이상 자신을 몰아세우지 마!」', 2);
       await era.input();
       await era.printAndWait(
-        `生徒会で、${you.name} は額を押さえるルナを憂えて見ていた。`,
+        `학생회실에서 ${you.name}은(는) 이마를 짚고 있는 루나를 걱정스럽게 바라보았다.`,
       );
-      await era.printAndWait(`${luna.sex}の髪は乱れ、厚い隈を乗せている。`);
-      era.printButton('「全部、俺の責任だ……！」', 1);
-      era.printButton('「すまないルナ、俺は……」', 2);
+      await era.printAndWait(`${luna.sex}는 머리카락이 헝클어진 채 짙은 다크서클이 내려앉아 있었다.`);
+      era.printButton('「전부 내 책임이야……!」', 1);
+      era.printButton('「미안해 루나, 내가……」', 2);
       await era.input();
-      await luna.say_and_wait('いいえ、あなたとは関係ありません。');
+      await luna.say_and_wait('아니, 당신 잘못이 아니야.');
       await era.printAndWait(
-        `ルナは顔を上げて ${you.name} を見る。${luna.sex}の髪は乱れ、厚い隈を乗せ、涙が${luna.sex}の頰を伝う。`,
+        `루나가 고개를 들어 ${you.name}을(를) 바라봤다. ${luna.sex}의 머리카락은 흐트러지고 짙은 다크서클이 내려앉았으며, 눈물이 ${luna.sex}의 뺨을 타고 흘러내렸다.`,
       );
       await luna.say_and_wait(
-        '夢のために、私は無謀なほど今まで突き進みました。私の我がままに、あなたを巻き込んで……',
+        '꿈을 위해 무모할 정도로 달려왔어. 내 독단적인 고집이 당신까지 끌어들인 거야……',
       );
       await luna.say_and_wait(
-        'まして、あなたは何度も身体を大事にするよう言ってくれました。すべてを壊したのは、私です。',
+        '게다가 당신은 몇 번이고 건강을 챙기라고 말해줬는데, 내가 모든 걸 망쳐버렸어.',
       );
       await luna.say_and_wait(
-        '【皇帝】を失ったままでは、私はとうてい、すべての人を満足させられません。',
+        '【황제】를 잃어버린 지금의 나로서는 결코 모두를 만족시킬 수 없어.',
       );
       await luna.say_and_wait(
-        'ごめんなさい。私は強いウマ娘ではありません……ごめんなさい……ごめんなさい……',
+        '미안해, 나는 강한 우마무스메가 아니었어…… 미안해…… 미안해……',
       );
-      await era.printAndWait(`${you.name} の前で、ルナは号泣した。`);
+      await era.printAndWait(`${you.name} 앞에서 루나는 아이처럼 통곡했다.`);
       await era.printAndWait(
-        `${you.name} はすぐに前へ出て、ルナをきつく抱いた。`,
-      );
-      await era.printAndWait(
-        `${you.name} は${luna.sex}の脆さを感じ、${luna.sex}の悔しさを感じる。`,
+        `${you.name}은(는) 급히 다가가 루나를 꽉 껴안았다.`,
       );
       await era.printAndWait(
-        `同時に、${you.name} の胸には不満と、いたわりが満ち、ルナへ告げたい。`,
+        `${you.name}은(는) ${luna.sex}의 연약함과 ${luna.sex}이(가) 억눌러온 서러움을 온몸으로 느꼈다.`,
       );
       await era.printAndWait(
-        'いたわりは、ルナの涙のため。不満は、ルナの自らを卑下するため。',
+        `동시에 ${you.name}의 가슴 속에는 루나에게 쏟아내고 싶은 안타까움과 애틋함이 휘몰아쳤다.`,
       );
       await era.printAndWait(
-        '模擬レースで力を出せなかったからといって、ルナはすべての者に敬われる存在ではなくなるのか？',
+        '루나의 눈물에는 가슴이 찢어질 듯 아팠고, 루나의 자조에는 화가 치밀었다.',
       );
-      await era.printAndWait('否。否！！！');
-      await era.printAndWait(`${you.name} は歯を食いしばった。`);
       await era.printAndWait(
-        'あれほど励み、トレセンのため、すべてのウマ娘のために心血を注ぎ、身を尽くしたルナを、人は議すべきではない。',
+        '고작 모의 레이스 한 번 제대로 뛰지 못했다고 해서, 루나가 모두의 경외를 받는 존재가 아니게 된단 말인가?',
       );
-      await era.printAndWait(`${luna.sex}は、胸を張ってよいはずだ！`);
+      await era.printAndWait('아니. 절대 아니다!!!');
+      await era.printAndWait(`${you.name}은(는) 이를 악물었다.`);
+      await era.printAndWait(
+        '트레센을 위해, 모든 우마무스메를 위해 온 마음을 다해 헌신해 온 루나가 그런 소리를 들어서는 안 된다.',
+      );
+      await era.printAndWait(`${luna.sex}은(는) 마땅히 스스로에게 당당해야만 한다!`);
       await you.say_and_wait(
-        '君は、人々の心にある【皇帝】の強さを誤解している。',
+        '아무래도 너는 사람들이 생각하는 【황제】의 강함을 오해하고 있는 것 같아.',
       );
       await era.printAndWait(
-        `ルナが泣き疲れたあと、${you.name}は口を開いて慰めた。${you.name}の言葉の見極めを聞き、ルナの心は小さく震えた。`,
-      );
-      await you.say_and_wait(
-        '皇帝——シンボリルドルフが人を惹きつけるのは、あのシンボリの旗の下で、誰もがそれぞれの務めを果たせるからだ。',
+        `루나가 울다 지쳐 진정되자 ${you.name}은(는) 위로를 건넸다. ${you.name}의 확신에 찬 목소리에 루나의 마음이 가늘게 떨렸다.`,
       );
       await you.say_and_wait(
-        'すべての者が励み、奮闘するよう、背中を押している。',
+        '황제—— 심볼리 루돌프가 매력적인 이유는, 그 상징의 깃발 아래서 모두가 각자의 역할을 다할 수 있기 때문이야.',
       );
       await you.say_and_wait(
-        '今まで、君より【皇帝】の称号にふさわしい者はいない。君は俺たちを導き、俺たちを前へ連れていった！',
+        '모든 이가 노력하고 분투할 수 있도록 격려해주니까.',
       );
       await you.say_and_wait(
-        '夢へ向かう天途の途中で、君はすでに、誰かの夢になっている。',
+        '지금까지 그 누구도 너보다 【황제】라는 칭호에 어울리는 사람은 없었어. 너는 우리를 이끌었고, 끊임없이 앞으로 나아가게 했어!',
       );
-      await you.say_and_wait('だから、自分を貶めるな、ルナ——');
+      await you.say_and_wait(
+        '꿈을 향해 나아가는 그 길 위에서, 너는 이미 다른 누군가의 꿈이 되었단 말이야.',
+      );
+      await you.say_and_wait('그러니까 자신을 깎아내리지 마, 루나——');
       await era.printAndWait(
-        `${you.name} はルナをきつく抱き、${luna.sex}に無限の力を与えたいようだった。また、${you.name} が生涯で最も大切な人を、己の魂へ揉み込みたいようでもあった。`,
+        `${you.name}은(는) 루나를 세차게 껴안으며 ${luna.sex}에게 무한한 힘을 나눠주려는 듯했다. 마치 ${you.name}이(가) 생명에서 가장 소중한 사람을 자신의 영혼 속에 새겨넣으려는 것 같았다.`,
       );
       await era.printAndWait(
-        `長くして、ルナはやっと抗議するように、小さく拳を振り、${you.name} の肩を叩いた。`,
+        `한참이 지나서야 루나는 항의하듯 가벼운 주먹으로 ${you.name}의 어깨를 톡톡 쳤다.`,
       );
       await era.printAndWait(
-        `${you.name} はやっと力が入りすぎたのに気づく。${you.name} は慌てて腕を緩めたが、ルナは離れず、なお ${you.name} の胸に凭れていた。`,
+        `${you.name}은(는) 그제야 너무 세게 안았다는 걸 깨달았다. ${you.name}은(는) 서둘러 팔을 풀었지만 루나는 떨어지지 않고 여전히 ${you.name}의 가슴팍에 머리를 묻고 있었다.`,
       );
-      await luna.say_and_wait('私は、まだ前へ進めますか？');
-      era.printButton('「もちろん。」', 1);
+      await luna.say_and_wait('나, 계속 앞으로 나아가도 괜찮을까?');
+      era.printButton('「당연하지.」', 1);
       await era.input();
-      await luna.say_and_wait('あなたは、まだ私の傍にいてくれますか？');
-      era.printButton('「奈落の底でも。」', 1);
-      era.printButton('「永遠に。」', 2);
+      await luna.say_and_wait('당신도 계속 곁에 있어 줄 거야?');
+      era.printButton('「지옥 끝까지라도.」', 1);
+      era.printButton('「영원히.」', 2);
       await era.input();
-      await era.printAndWait(`${you.name} はルナの浅い笑いを聞いた。`);
+      await era.printAndWait(`${you.name}은(는) 루나의 옅은 웃음소리를 들었다.`);
       await you.say_and_wait(
-        '俺だけじゃない。生徒会のみんなも、トレセンの生徒たちも、君を助けたいと思っている。微力でもいいから。',
+        '사실 나뿐만이 아니야. 학생회 식구들, 그리고 트레센의 학생들 모두가 너를 돕고 싶어 해. 비록 사소한 일일지라도 말이야.',
       );
-      await you.say_and_wait('君の努力は、必ず実を結ぶ。');
-      await luna.say_and_wait('では、私はなおさら、ここで足を止められません。');
-      await luna.say_and_wait('私たちの夢は、未来にしかありません。');
+      await you.say_and_wait('네 노력은 반드시 결실을 맺을 거야.');
+      await luna.say_and_wait('그렇다면 더더욱 여기서 멈출 수는 없겠네.');
+      await luna.say_and_wait('우리의 꿈은 오직 미래에만 존재하니까.');
       await era.printAndWait(
-        `${you.name} はポケットからハンカチを出し、ルナの涙を優しく拭った。${you.name} は気づく。ルナの目に輝いているのは、もう涙ではない。`,
+        `${you.name}은(는) 주머니에서 손수건을 꺼내 루나의 눈물을 부드럽게 닦아주었다. ${you.name}은(는) 루나의 눈에서 빛나는 것이 이제 눈물이 아님을 깨달았다.`,
       );
-      await era.printAndWait(`乾坤一擲の意志だ。`);
+      await era.printAndWait(`그것은 건곤일척의 의지였다.`);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_95_4
+  // [번역 완료] ws_95_4
   ws_95_4: (() => {
-    const title = '寄り添って前へ';
+    const title = '함께 기대어 나아가다';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await era.printAndWait(
-        `新しい年。${you.name} は寒風を冒して、ルナと会う約束の場所へ向かっていた。`,
+        `새해를 맞아 ${you.name}은(는) 찬 바람을 뚫고 루나와 만나기로 한 장소로 향하고 있었다.`,
       );
       await era.printAndWait(
-        `だが道中、${you.name} はルナが大門の前に立ち、まだ幼く見える生徒と話しているのを見つけた。`,
+        `그런데 가는 길에 ${you.name}은(는) 루나가 정문 앞에서 아직 앳된 티가 나는 학생과 대화하고 있는 것을 발견했다.`,
       );
       await era.printAndWait(
-        '後者は何度も頷き、お辞儀をし、鄭重にルナへ礼を述べてから去った。',
+        '학생은 연신 고개를 숙여 인사하더니, 정중하게 감사를 표하고는 자리를 떠났다.',
       );
-      era.printButton('「ルナ先輩。」', 1);
-      era.printButton('「ルナお姉さん？」', 2);
+      era.printButton('「루나 선배님.」', 1);
+      era.printButton('「루나 언니?」', 2);
       const ret = await era.input();
       await era.printAndWait(
-        `${you.name} の揶揄を聞き、ルナの顔はわずかに紅らむ。${luna.sex}は拗ねたように ${you.name} を見るが、その呼び方も嫌いではないらしい。`,
+        `${you.name}의 짓궂은 농담에 루나의 얼굴이 살짝 붉어졌다. ${luna.sex}는 나무라는 눈으로 ${you.name}을(를) 보았지만, 싫지는 않은 기색이었다.`,
       );
       await luna.say_and_wait(
-        '今になって戻ってきた子です。もうすぐメイクデビューです。',
+        '이제 막 복귀한 아이야. 곧 데뷔전을 치를 예정이거든.',
       );
       await luna.say_and_wait(
-        '一月の末近くになって学園へ戻る。あなたも不思議に思うでしょう？ 大半のウマ娘は秋か冬にデビューします。',
+        '1월 말이나 되어서야 학원에 돌아오다니 의아하게 생각하겠지? 보통은 가을이나 겨울에 데뷔하니까.',
       );
       await luna.say_and_wait(
-        'ですがその前に、私たちは学園へ来て、同年代と学び、競い合います。',
+        '하지만 그전에 우리는 학원에 와서 또래들과 함께 배우고, 또 경쟁해.',
       );
       await luna.say_and_wait(
-        'それは楽しいことです。ですが、その過程に心碎と疲労がないとは限りません。',
+        '그건 즐거운 일이지만, 그 과정에 상처나 피로가 없으리란 보장은 없지.',
       );
       await era.printAndWait(
-        `人のいない場所へ来ると、ルナの腕が ${you.name} の肩に触れる。${luna.sex}にはそういう癖があるらしい。無意識に、あなたへ寄ってしまう。`,
+        `인적이 드문 곳으로 들어서자 루나의 팔이 ${you.name}의 어깨에 닿았다. ${luna.sex}는 무의식중에 당신에게 몸을 기대는 버릇이 있었다.`,
       );
       await luna.say_and_wait(
-        '過酷なレースとトレーニングに耐えきれず、自分に失望したとき、休暇で温かい家へ戻れば……',
+        '가혹한 레이스와 훈련을 견디지 못하고 자신에게 실망했을 때, 방학을 맞아 따뜻한 집으로 돌아가면……',
       );
-      await luna.say_and_wait('諦める思いが芽生えるのかもしれません。');
+      await luna.say_and_wait('어쩌면 포기하고 싶다는 마음이 싹틀지도 몰라.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は黙ってルナの話を聞いた。正直、あなたたちの立場——シンボリルドルフの立場では、',
+        '은(는) 루나의 이야기를 묵묵히 들었다. 솔직히 두 사람의 입장——심볼리 루돌프의 입장에서는,',
         you.get_colored_name(),
-        ' はきれいな言葉を並べられない。',
+        '은(는) 달콤한 위로만 늘어놓을 수 없었다.',
       ]);
       await era.printAndWait(
-        `${you.name} は知っている。多くの${luna.uma_sex_title}は、ルナが出走すると聞けば、${luna.couple_title}の第一の反応が回避だと。`,
+        `${you.name}은(는) 알고 있었다. 많은 ${luna.uma_sex_title}은(는) 루나가 출주한다고 들으면 ${luna.couple_title}의 첫 반응이 기권이라는 것을.`,
       );
       era.printButton(
-        '「現実と苦境に真正面から向き合う者こそ、真の勇者だ。」',
+        '「현실과 고난에 정면으로 맞서는 자가 진정한 용자야.」',
         1,
       );
-      era.printButton('「彼女たちにもっと助けを出すべきかもしれない。」', 2);
+      era.printButton('「어쩌면 우리가 그들에게 더 많은 도움을 줘야 할지도 몰라.」', 2);
       await era.input();
-      await era.printAndWait(`ルナは笑って ${you.name} を見た。`);
+      await era.printAndWait(`루나가 미소 지으며 ${you.name}을(를) 바라보았다.`);
       await luna.say_and_wait(
-        '私も逃げたいと思ったことがあります。ですが……私の逃げ場は、いつもあなたのところなのです。',
+        '나도 도망치고 싶다고 생각한 적 있어. 하지만 내 도망칠 곳은 언제나 당신뿐이었던 것 같네.',
       );
       await era.printAndWait(
-        `ルナは ${you.name} の懐に凭れ、指で軽く ${you.name} の胸を突いた。`,
+        `루나가 ${you.name}의 품에 기대어 손가락으로 ${you.name}의 가슴팍을 살짝 찔렀다.`,
       );
       if (ret === 1) {
-        await luna.say_and_wait(`ルナ先輩にも、もう逃げ場はありませんね。`);
+        await luna.say_and_wait(`루나 선배도 이제 도망칠 곳은 없네요.`);
       } else {
-        await luna.say_and_wait(`ルナお姉さんにも、もう逃げ場はありませんね。`);
+        await luna.say_and_wait(`루나 언니도 이제 도망칠 곳은 없네요.`);
       }
-      await era.printAndWait(`まったく……`);
+      await era.printAndWait(`참 나……`);
       await era.printAndWait(
-        `${you.name} は頰を赤らめ、ルナの小さな仕返しを欣然と受けた。`,
+        `${you.name}은(는) 얼굴을 붉히며 루나의 작은 복수를 기꺼이 받아들였다.`,
       );
       return [ret];
     };
@@ -2400,110 +2400,110 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_a_stones_throw
+  // [번역 완료] ws_a_stones_throw
   ws_a_stones_throw: (() => {
-    const title = 'あと一歩';
+    const title = '한 걸음의 거리';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (luna, you) => {
       await era.printAndWait(
-        `ルナはどうして皇帝になったのか。${you.name} はやっと思い出した。`,
+        `루나가 어떻게 황제로 변하게 되었나? ${you.name}은(는) 마침내 기억해냈다.`,
       );
       await era.printAndWait(
-        'あれは無謀な計略だった。新米の生意気な小僧が、シンボリの未来の星へ仕掛けた蠱惑だった。',
+        '그것은 무모한 책략이었고, 풋내기 애송이가 심볼리의 미래가 될 스타에게 건네버린 미혹이었다.',
       );
       era.printButton(
-        '「暴虐が憎いなら、そういうことは他人にやらせればいいんじゃないか？」',
+        '「폭압을 증오한다면, 다른 이에게 그 역할을 맡기면 되잖아?」',
         1,
       );
       await era.input();
-      await luna.say_and_wait('他人……？');
+      await luna.say_and_wait('다른 이……?');
       era.printButton(
-        '「ああ、他人。たとえば——別の人だ。つまり、もうひとりの君だ。」',
-        1,
-      );
-      await era.input();
-      await era.printAndWait(
-        `${you.name} の本意は、浮かない顔のルナを解きほぐすための冗談だった。だがなぜか、普段は悪戯な子が、ずいぶん真剣に聞いていた。`,
-      );
-      await era.printAndWait(
-        `${luna.sex}の目に急かされ、${you.name} は知恵を絞り、荒唐な話を続けた。`,
-      );
-      era.printButton('「ルナとは違う、好戦的で暴虐な存在を創り出そう。」', 1);
-      era.printButton('「君の個性の上に立てた、想像の姿だ。」', 2);
-      await era.input();
-      await era.printAndWait(`${you.name} は息を吐き、ふと思いついた。`);
-      await you.say_and_wait('そうだ、【皇帝】みたいに！');
-      await era.printAndWait(
-        `ルナは呆けて ${you.name} を見つめる。${you.name} は、いま脳裏を過ぎった考えに歓喜していた。`,
-      );
-      await era.printAndWait(
-        `違う、だめだ——${you.name} の魂が震える。${you.name} はやっと思い出した。`,
-      );
-      await era.printAndWait(
-        `皇帝は、${you.name} がルナのために創った牢獄だ。`,
-      );
-      era.printButton(
-        '「ルナにできないことは、すべて皇帝にやらせればいい。」',
+        '「응, 다른 사람. 예를 들면—— 또 다른 인격이라든가, 그러니까, 또 다른 너 말이야.」',
         1,
       );
       await era.input();
       await era.printAndWait(
-        `そうではない。あの子の運命、${luna.sex}が背負うすべてを、こんなに軽く括っていいはずがない！`,
-      );
-      await you.say_and_wait('そうすれば、ルナは易々と頂点に立てるだろ！');
-      await you.say_and_wait('黙れ！ 早く黙れ！ もう言うな！！！', true);
-      await era.printAndWait(
-        `${you.name} は己の首をきつく絞めたいと思った。その動作のあいだに、${you.name} は夢から覚めた。`,
-      );
-      await era.printAndWait(`${you.name} は冷や汗に濡れていた。`);
-      await era.printAndWait(
-        `あのころの ${you.name} は、ただの思い上がった馬鹿だった。四方で才能を持て余していると自称していたが、実際は学生の空論にすぎない。`,
+        `${you.name}은(는) 고민에 빠진 루나를 달래기 위해 농담조로 던진 말이었지만, 웬일인지 평소 장난기 많던 아이는 무척 진지하게 귀를 기울였다.`,
       );
       await era.printAndWait(
-        `ルナと出会ったとき、${you.name} は脳裏に隠していた、日の目を見なかった戦略、見聞、幻想、そして ${you.name} がルナから読み取った——${luna.sex}はいずれ大人物になる、ということを、一気に口にした。`,
+        `${luna.sex}의 재촉하는 눈빛에 ${you.name}은(는) 머리를 쥐어짜며 허무맹랑한 서술을 이어갔다.`,
+      );
+      era.printButton('「루나와는 전혀 다른, 호전적이고 위압적인 존재를 만들어내는 거야.」', 1);
+      era.printButton('「네 개성 위에 세워진, 상상 속의 이미지를 말이지.」', 2);
+      await era.input();
+      await era.printAndWait(`${you.name}은(는) 한숨을 내쉬며 돌발적인 영감을 내뱉었다.`);
+      await you.say_and_wait('그래, 마치 【황제】처럼 말이야!');
+      await era.printAndWait(
+        `루나는 멍하니 ${you.name}을(를) 바라보았고, ${you.name}은(는) 방금 뇌리를 스친 생각에 들떠 있었다.`,
       );
       await era.printAndWait(
-        `${you.name} は、あのときの自分がどれほどみっともなかったか知らない。だがルナは、あのとき、釈然とした笑みを見せた。`,
-      );
-      await era.printAndWait('月夜の下で、咲いた笑み。');
-      await era.printAndWait(
-        'あのとき、自分は決めた。ルナのために湯火も辞さず、命も知恵も捧げると。',
+        `안 돼, 안 돼—— ${you.name}의 영혼이 떨려왔다. ${you.name}은(는) 이제야 똑똑히 기억났다.`,
       );
       await era.printAndWait(
-        '本業へ戻ったことも、死ぬほど学んだことも、シンボリルドルフのトレーナーになったことも——',
+        `황제는, ${you.name}이(가) 루나를 가두기 위해 직접 만든 감옥이었다.`,
       );
-      await era.printAndWait('【皇帝】の威名を遠くへ響かせるためではない。');
-      await era.printAndWait('すべては、ルナの笑顔のためだったはずだ！');
-      await era.printAndWait('だがなぜ、なぜこうなってしまったのか……');
-      await era.printAndWait(`${you.name} は頭を押さえ、深く息を吐いた。`);
+      era.printButton(
+        '「루나가 할 수 없는 일은, 전부 황제가 완수하게 하는 거야.」',
+        1,
+      );
+      await era.input();
+      await era.printAndWait(
+        `그럴 리가 없어. 그 아이의 운명, ${luna.sex}가 짊어진 모든 것을 어떻게 그렇게 가볍게 단정 지을 수 있단 말인가?!`,
+      );
+      await you.say_and_wait('그러면 루나는 아주 쉽게 정점에 오를 수 있을 거야!');
+      await you.say_and_wait('닥쳐! 제발 입 다물어! 더는 말하지 마!!!', true);
+      await era.printAndWait(
+        `${you.name}은(는) 자신의 목을 조르고 싶을 정도의 괴로움 속에서, 그러는 사이 ${you.name}은(는) 꿈에서 깨어났다.`,
+      );
+      await era.printAndWait(`${you.name}은(는) 식은땀에 흠뻑 젖어 있었다.`);
+      await era.printAndWait(
+        `그때의 ${you.name}은(는) 그저 오만한 얼간이에 불과했다. 도처에서 재능을 인정받지 못한다며 투덜댔지만, 실상은 학생의 허풍이나 다름없었다.`,
+      );
+      await era.printAndWait(
+        `루나를 만났을 때 ${you.name}은(는) 머릿속에 숨겨두었던 빛 보지 못한 전략과 견문, 환상들…… 그리고 ${you.name}이(가) 루나에게서 보았던 「${luna.sex}은(는) 장차 거물이 될 자질」을 한꺼번에 쏟아내 버렸다.`,
+      );
+      await era.printAndWait(
+        `${you.name}은(는) 그때의 자신이 얼마나 꼴불견이었는지 알지 못했지만, 루나는 그때 홀가분한 듯 미소를 지었었다.`,
+      );
+      await era.printAndWait('달밤 아래서 피어난, 그 미소.');
+      await era.printAndWait(
+        '그때 결심했었다. 루나를 위해 물불 가리지 않고, 자신의 목숨과 지혜를 모두 바치겠노라고.',
+      );
+      await era.printAndWait(
+        '트레이너 본업으로 돌아온 것도, 필사적으로 공부한 것도, 심볼리 루돌프의 트레이너가 된 것도——',
+      );
+      await era.printAndWait('【황제】의 위명을 떨치기 위해서가 아니었다.');
+      await era.printAndWait('모든 것은 루나의 미소를 위해서였어야만 했다!');
+      await era.printAndWait('그런데 어째서, 왜 이렇게 되어버린 걸까……');
+      await era.printAndWait(`${you.name}은(는) 머리를 감싸 쥐고 깊은 한숨을 내뱉었다.`);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_palace
+  // [번역 완료] ws_palace
   async ws_palace(chara17, i_good_end, i_emperor) {
     if (i_good_end) {
       await chara17.say_and_wait(
-        'あなたはどんな空が好きですか？ 太陽、それとも月？ 決められなくても構いません。あなたがどんな空の下にいようと、いつか、私たちは出会います。ええ、今度は、私たちがあなたを探しに行きます。',
+        '당신은 어떤 하늘을 좋아해? 태양? 아니면 달? 결정하지 못해도 괜찮아. 당신이 어떤 하늘 아래 있든, 언젠가 우리는 반드시 만나게 될 테니까. 응, 이번에는 우리가 당신을 찾아갈게.',
       );
     } else if (i_emperor) {
       await chara17.say_and_wait(
-        'まだ前へ進めるなら、ここに留まる必要はない！ 吾の天途は止まらぬ。祝え、弄臣よ！ 貴様は皇帝の偉業を目撃する。褒美として、吾は貴様に永世、吾に従い仕えよという栄誉を許す……答えは？',
+        '아직 앞으로 나아갈 수 있다면, 이곳에 머무를 이유는 없다! 짐의 천도는 결코 멈추지 않으니, 경축하라, 광대여! 너는 황제의 위업을 증언하게 될 것이다. 그 포상으로, 짐을 영원히 따르며 보필할 영광을 허락하마…… 대답은?',
       );
     } else {
       await chara17.say_and_wait(
-        `皇帝の物語は終わりました。ですが私の使命は、まだ終わっていません。手を携えて、あそこへ行きましょう。すべての${chara17.uma_sex_title}が幸福になれる未来へ。ええ……その未来には、私も含まれるはずです。だから……あなたは、私を幸福にしてくれますよね？`,
+        `황제의 이야기는 끝났지만, 나의 사명은 아직 끝나지 않았어. 우리 함께 그곳으로 가자. 모든 ${chara17.uma_sex_title}이(가) 행복해질 수 있는 미래로. 음…… 그 미래에는 나도 포함되어 있겠지? 그러니까…… 나를 행복하게 해 줄 거지?`,
       );
     }
   },
 
-  // [번역 대상] ws_transform
+  // [번역 완료] ws_transform
   ws_transform: (() => {
-    const title = '日月交替';
+    const title = '해와 달의 교체';
     /**
      * @param {CharaTalk} luna ルナ
      * @param {CharaTalk} emperor 皇帝
@@ -2515,30 +2515,30 @@ module.exports = {
       if (i_emperor) {
         buffer.push(
           () =>
-            luna.say_and_wait('ええ……私たちの願いのためなら、私は耐えます。'),
-          () => luna.say_and_wait('……抱いて……ひとりで向き合うのは、嫌です……'),
+            luna.say_and_wait('음…… 우리의 공통된 염원을 위해서라면 참아내겠어.'),
+          () => luna.say_and_wait('……나를 안아줘…… 혼자 마주하고 싶지 않아……'),
         );
         if (era.get(`status:${luna.id}:精神损伤`) > 0) {
           buffer.push(() =>
             luna.say_and_wait(
-              `${you.actual_name}、そうしなければいけないのですか？`,
+              `${you.actual_name}, 꼭 이렇게 해야만 해?`,
             ),
           );
         }
         if (era.get(`status:${luna.id}:神经衰弱`) > 0) {
-          buffer.push(() => luna.say_and_wait('…………………………………………私は誰？'));
+          buffer.push(() => luna.say_and_wait('…………………………………………나는 누구지?'));
         }
       } else {
         buffer.push(
-          () => emperor.say_and_wait('入夢の時……？'),
+          () => emperor.say_and_wait('꿈에 들 시간인가……?'),
           () =>
-            emperor.say_and_wait('大器は必ず成る。されど、磨かねばならぬ。'),
+            emperor.say_and_wait('대기만성이라 하거늘, 연마 또한 필요한 법이지.'),
         );
         if (era.get(`status:${luna.id}:精神损伤`) > 0) {
-          buffer.push(() => emperor.say_and_wait('夢醒の刻。'));
+          buffer.push(() => emperor.say_and_wait('꿈에서 깰 시간이다.'));
         }
         if (era.get(`status:${luna.id}:神经衰弱`) > 0) {
-          buffer.push(() => emperor.say_and_wait('エデンへ進め！'));
+          buffer.push(() => emperor.say_and_wait('에덴을 향해 전진하라!'));
         }
       }
       await get_random_entry(buffer)();
