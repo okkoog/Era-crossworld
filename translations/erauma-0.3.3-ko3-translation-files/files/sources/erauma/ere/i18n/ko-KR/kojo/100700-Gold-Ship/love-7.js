@@ -265,7 +265,7 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] 74-2-start
+  // [번역 완료] 74-2-start
   '74-2-start': (() => {
     /**
      * @param {CharaTalk} gold_shp ゴールドシップ
@@ -274,54 +274,54 @@ module.exports = {
      */
     const f = async (gold_shp, you, callname) => {
       await gold_shp.say_and_wait(
-        'ゴールドシップ、野心満々、天下を呑む。地球上の人類とウマ娘がどれだけ警戒しようと、黄金火山が噴火した日にゃあ、最低でも120億ウマコインの被害を覚悟しとけ。',
+        '골드 쉽, 야심만만, 천하를 삼킨다. 지구상의 인류와 우마무스메가 아무리 경계해도 황금 화산이 분화하는 날엔 최소 120억 우마 코인의 피해를 각오해라.',
       );
       era.println();
       await gold_shp.say_and_wait(
-        'だが、英雄ゴールドシップといえども、色には弱い……',
+        '하지만 영웅 골드 쉽이라 해도 색욕에는 약하다……',
       );
       era.println();
       await gold_shp.say_and_wait(
-        'いまゴールドシップはトレーナーのデスクの端に座っている。口の中で何やら呟き、ちょうどこの場面を三人称で実況しているかのようだ。',
+        '지금 골드 쉽은 트레이너 책상 끝에 걸터앉아 있다. 입속으로 뭔가를 중얼거리며 마치 이 장면을 3인칭으로 중계하는 것 같다.',
       );
       era.println();
 
       era.printButton(
-        '「……自分にナレーション入れてるのか？ しかも今の文まで？」',
+        '「……자기한테 내레이션을 붙이는 거야? 방금 문장까지?」',
         1,
       );
       await era.input();
 
       await gold_shp.say_and_wait(
-        `${callname} うぜえな、もっと乗れよ！ 役やってくれよ！ ゴールドシップは少し怒って叫ぶと、拳を上げてトレーナーを軽く叩く。ダメージダイスを振れ。`,
+        `${callname}, 짜증 나네. 좀 더 맞춰주라고! 역할을 해달라고! 골드 쉽은 살짝 화를 내며 소리치고는 주먹을 들어 트레이너를 가볍게 때린다. 대미지 다이스를 굴려라.`,
       );
       era.println();
 
       era.printButton(
-        '「いや、急にTRPGモード入るな！ こっちは真面目に仕事してるんだ。」',
+        '「아니, 갑자기 TRPG 모드로 들어가지 마! 나는 진지하게 일하고 있다고.」',
         1,
       );
       await era.input();
 
       await gold_shp.say_and_wait([
-        'うぅぅ、仕事と、かわいい担当',
+        '으으으, 일과 귀여운 담당 ',
         gold_shp.uma_sex_title,
-        'と遊ぶの、どっちが大事なのさー！',
+        '하고 노는 것 중 뭐가 더 중요한 거야ー!',
       ]);
       era.println();
       await era.printAndWait(
-        `${gold_shp.name} が ${you.name} の椅子を揺すり続け、${you.name} は仕事に集中できない。仕方なく席を立ち、${gold_shp.name} がまた何を仕出かすのか見に行く。`,
+        `${gold_shp.name}이(가) ${you.name}의 의자를 계속 흔드는 바람에 ${you.name}은(는) 일에 집중할 수 없었다. 어쩔 수 없이 자리에서 일어나 ${gold_shp.name}이(가) 또 무슨 일을 벌이려는지 보러 갔다.`,
       );
       era.println();
       await era.printAndWait(
-        `${gold_shp.name} はにやりと悪く笑い、${you.name} をソファへ押し倒した。`,
+        `${gold_shp.name}은(는) 짓궂게 웃으며 ${you.name}을(를) 소파에 밀어 넘어뜨렸다.`,
       );
     };
-    f.title = [{ color: gold_color, content: '英雄船、色に弱し' }];
+    f.title = [{ color: gold_color, content: '영웅선, 색욕에는 약하다' }];
     return f;
   })(),
 
-  // [번역 대상] golden_ship_attack
+  // [번역 완료] golden_ship_attack
   golden_ship_attack: (() => {
     /**
      * @param {CharaTalk} gold_shp ゴールドシップ
@@ -331,134 +331,134 @@ module.exports = {
     const f = async (gold_shp, you, callname) => {
       const ret = [];
       await era.printAndWait(
-        `トレーナー室のスピーカーから流れるバラエティ番組の効果音とともに、${gold_shp.name} は突然 ${you.name} をソファへ通した。`,
+        `트레이너실 스피커에서 흘러나오는 버라이어티 프로그램 효과음과 함께 ${gold_shp.name}은(는) 갑자기 ${you.name}을(를) 소파에 앉혔다.`,
       );
       await era.printAndWait(
-        `${gold_shp.sex}は器用にペンを取り、ホワイトボードへ書いた。`,
+        `${gold_shp.sex}은(는) 능숙하게 펜을 집어 화이트보드에 적었다.`,
       );
       era.println();
 
-      await era.printAndWait(`突撃！ ${gold_shp.name} の`, { align: 'center' });
-      await era.printAndWait('超残酷二択クイズ！', { align: 'center' });
-      await era.printAndWait('～生き残れるかな？～', { align: 'center' });
+      await era.printAndWait(`돌격! ${gold_shp.name}의`, { align: 'center' });
+      await era.printAndWait('초잔혹 양자택일 퀴즈!', { align: 'center' });
+      await era.printAndWait('~살아남을 수 있을까?~', { align: 'center' });
       era.println();
 
       await era.printAndWait(
-        `突然すぎるが、${gold_shp.name} は突然、${you.name} に心理テストをやりたくなったらしい。`,
+        `너무 갑작스럽지만, ${gold_shp.name}은(는) 갑자기 ${you.name}에게 심리 테스트를 시키고 싶어진 모양이다.`,
       );
       await era.printAndWait(
-        `事の発端が突然なので、${you.name} にも突然断る権利はない！ 覚悟を決めて、突然受け入れろ！`,
+        `일의 발단부터 갑작스러웠으니 ${you.name}에게도 갑자기 거절할 권리는 없다! 각오하고 갑자기 받아들여라!`,
       );
 
-      era.printButton('「なんだこれ！？」', 1);
+      era.printButton('「이게 뭐야!?」', 1);
       await era.input();
 
       await gold_shp.say_and_wait(
-        `そういうこと、問題は上に書くからな～${callname} はホワイトボードを見てくれよ～`,
+        `그런 거다, 문제는 위에 적을 테니까~ ${callname}은(는) 화이트보드를 봐줘~`,
       );
       await gold_shp.say_and_wait(
-        '一問目は超定番！ 誰もが一度は聞かれるやつ！',
+        '첫 번째 문제는 완전 정석! 누구나 한 번쯤 들어봤을 녀석!',
       );
       await gold_shp.say_and_wait(
-        'お前なら【チョコ味の○○】と【○○味のチョコ】、どっちを選ぶ？',
+        '너라면 【초콜릿 맛 ○○】와 【○○ 맛 초콜릿】 중 어느 쪽을 고를래?',
       );
 
-      era.printButton('「チョコ味の○○……」', 1);
-      era.printButton('「○○味のチョコ……」', 2);
+      era.printButton('「초콜릿 맛 ○○……」', 1);
+      era.printButton('「○○ 맛 초콜릿……」', 2);
       ret.push(await era.input());
       era.println();
 
       await gold_shp.say_and_wait(
-        '出題者のアタシでも【別のもの食べる】！ 次！',
+        '출제자인 나라도 【다른 걸 먹는다】! 다음!',
       );
-      await gold_shp.say_and_wait('二問目！ 見ろ！');
+      await gold_shp.say_and_wait('두 번째 문제! 봐!');
       await gold_shp.say_and_wait(
-        'お前なら【馬跳びの中身を家族に誤送信】と【馬跳びの中身を担当ウマ娘に誤送信】、どっちを選ぶ？',
+        '너라면 【야한 내용을 가족에게 잘못 전송】과 【야한 내용을 담당 우마무스메에게 잘못 전송】 중 어느 쪽을 고를래?',
       );
 
-      era.printButton('「馬跳びの中身を家族に誤送信……」', 1);
-      era.printButton('「馬跳びの中身を担当ウマ娘に誤送信……」', 2);
+      era.printButton('「야한 내용을 가족에게 잘못 전송……」', 1);
+      era.printButton('「야한 내용을 담당 우마무스메에게 잘못 전송……」', 2);
       ret.push(await era.input());
       era.println();
 
       await gold_shp.say_and_wait(
-        '人に知られたくなければ【己が為さざるに如かず】！ 次！',
+        '남에게 알려지기 싫으면 【애초에 하지 않는 게 상책】! 다음!',
       );
-      await gold_shp.say_and_wait('三問目から、ちょっと意地悪になるぜ！');
+      await gold_shp.say_and_wait('세 번째 문제부터는 좀 심술궂어진다!');
       await gold_shp.say_and_wait(
-        '彼女と飲んでるとき、彼女が三人目を呼ぼうとする！',
+        '애인과 술을 마시는데 애인이 세 번째 사람을 부르려고 한다!',
       );
       await gold_shp.say_and_wait(
-        'お前なら【お前の元カノを呼ぶ】と【彼女の元カレを呼ぶ】、どっちを選ぶ？',
+        '너라면 【네 전 여자친구를 부른다】와 【애인의 전 남자친구를 부른다】 중 어느 쪽을 고를래?',
       );
 
-      era.printButton('「お前の元カノを呼ぶ……」', 1);
-      era.printButton('「彼女の元カレを呼ぶ……」', 2);
+      era.printButton('「내 전 여자친구를 부른다……」', 1);
+      era.printButton('「애인의 전 남자친구를 부른다……」', 2);
       ret.push(await era.input());
       era.println();
 
-      await gold_shp.say_and_wait('なんか【むかつく】な！ 次！');
-      await gold_shp.say_and_wait('四問目！ けっこうやるやつ多そう！');
-      await gold_shp.say_and_wait('お前はウマ娘チームのリーダーだ！');
+      await gold_shp.say_and_wait('왠지 【열받네】! 다음!');
+      await gold_shp.say_and_wait('네 번째 문제! 꽤 해본 녀석이 많을 것 같아!');
+      await gold_shp.say_and_wait('너는 우마무스메 팀의 리더다!');
       await gold_shp.say_and_wait(
-        'お前なら【いつでも隊員と馬跳びしたい】と【いつでも隊員がお前と馬跳びしたがる】、どっちを選ぶ？',
+        '너라면 【언제든 대원과 야한 짓을 하고 싶다】와 【언제든 대원이 너와 야한 짓을 하고 싶어한다】 중 어느 쪽을 고를래?',
       );
 
-      era.printButton('「いつでも隊員と馬跳びしたい……」', 1);
-      era.printButton('「いつでも隊員がお前と馬跳びしたがる……」', 2);
+      era.printButton('「언제든 대원과 야한 짓을 하고 싶다……」', 1);
+      era.printButton('「언제든 대원이 나와 야한 짓을 하고 싶어한다……」', 2);
       ret.push(await era.input());
       era.println();
 
       await gold_shp.say_and_wait(
-        '大スケベだな～でも時には【我慢も大事】だぜ？',
+        '엄청 밝히네~ 그래도 가끔은 【참는 것도 중요】하다고?',
       );
-      await gold_shp.say_and_wait('五問目！ 命に関わる事件発生！');
+      await gold_shp.say_and_wait('다섯 번째 문제! 목숨이 걸린 사건 발생!');
       await gold_shp.say_and_wait(
-        'おっと！ お前、お前の彼女、お前の親友の三人が攫われた！ 誘拐犯は悪趣味で、一人を殺せ、残った一人とお前の命を助ける、と要求してきた！',
+        '이런! 너와 네 애인, 네 절친 세 사람이 납치됐다! 납치범은 악취미라서 한 사람을 죽이면 남은 한 사람과 네 목숨을 살려주겠다고 요구했다!',
       );
       await gold_shp.say_and_wait(
-        'お前なら【生死を共にした親友を殺す】と【お前のために死んでもいい彼女を殺す】、どっちを選ぶ？',
+        '너라면 【생사를 함께한 절친을 죽인다】와 【너를 위해 죽어도 좋다는 애인을 죽인다】 중 어느 쪽을 고를래?',
       );
 
-      era.printButton('「生死を共にした親友を殺す……」', 1);
-      era.printButton('「お前のために死んでもいい彼女を殺す……」', 2);
+      era.printButton('「생사를 함께한 절친을 죽인다……」', 1);
+      era.printButton('「나를 위해 죽어도 좋다는 애인을 죽인다……」', 2);
       await era.input();
 
       await era.printAndWait(
-        '……ドラムもない。妙に茶目っ気のあるBGMもない。どこからともなく流れる缶笑いもない。',
+        '……드럼도 없다. 묘하게 장난스러운 BGM도 없다. 어디선가 들려오던 녹음 웃음소리도 없다.',
       );
-      await era.printAndWait('すべてが、突然止まった。');
+      await era.printAndWait('모든 것이 갑자기 멈췄다.');
       await era.printAndWait(
-        `${gold_shp.name} の表情は異様なほど静かで、${gold_shp.sex}の目から光が消え、まっすぐ ${you.name} の顔に釘付けになっている。`,
+        `${gold_shp.name}의 표정은 이상할 만큼 고요했고, ${gold_shp.sex}의 눈에서 빛이 사라진 채 곧장 ${you.name}의 얼굴에 고정되어 있었다.`,
       );
       era.println();
 
       await gold_shp.say_and_wait(
-        'この問題は重要です。どうか、よく考えてからお答えください。',
+        '이 문제는 중요합니다. 부디 충분히 생각한 뒤 대답해 주세요.',
       );
       era.println();
 
-      era.printButton('「生死を共にした親友を殺す……」', 1);
-      era.printButton('「お前のために死んでもいい彼女を殺す……」', 2);
+      era.printButton('「생사를 함께한 절친을 죽인다……」', 1);
+      era.printButton('「나를 위해 죽어도 좋다는 애인을 죽인다……」', 2);
       await era.input();
 
       await gold_shp.say_and_wait(
-        'この問題は重要です。どうか、よく考えてからお答えください。',
+        '이 문제는 중요합니다. 부디 충분히 생각한 뒤 대답해 주세요.',
       );
       era.println();
 
-      await era.printAndWait(`${gold_shp.sex}は、そう言った。`);
+      await era.printAndWait(`${gold_shp.sex}은(는) 그렇게 말했다.`);
       const buffer = [
         {
           accelerator: 1,
           config: { disableWarning: true },
-          content: '「生死を共にした親友を殺す……」',
+          content: '「생사를 함께한 절친을 죽인다……」',
           type: 'button',
         },
         {
           accelerator: 2,
           config: { disableWarning: true },
-          content: '「お前のために死んでもいい彼女を殺す……」',
+          content: '「나를 위해 죽어도 좋다는 애인을 죽인다……」',
           type: 'button',
         },
       ];
@@ -468,7 +468,7 @@ module.exports = {
           buffer.push({
             accelerator: 3,
             config: { disableWarning: true },
-            content: '「どっちも選ばねえ……！」',
+            content: '「어느 쪽도 고르지 않아……!」',
             type: 'button',
           });
           era.replaceInColRows(buffer);
@@ -478,54 +478,54 @@ module.exports = {
       era.println();
 
       await era.printAndWait(
-        `${gold_shp.name} はいつもの顔に戻り、にやにやしながら音楽を流し始めた。`,
+        `${gold_shp.name}은(는) 평소의 표정으로 돌아와 히죽거리며 음악을 틀기 시작했다.`,
       );
       era.println();
-      await gold_shp.say_and_wait(`ふふ～お疲れ ${callname}～`);
+      await gold_shp.say_and_wait(`후후~ 수고했어 ${callname}~`);
       if (ret.at(-1) === 3) {
         await gold_shp.say_and_wait(
-          `ん～${callname} はいい子だな。担当ウマ娘と馬跳びしたがるのは、まあちょっとアレだけど。`,
+          `음~ ${callname}은(는) 착한 애네. 담당 우마무스메와 야한 짓을 하고 싶어하는 건 뭐, 좀 그렇지만.`,
         );
         await gold_shp.say_and_wait(
-          '……それがアタシの出した問題だって？ じゃあなんで三番目を選ばねえんだよ。',
+          '……그게 내가 낸 문제라고? 그럼 왜 세 번째 선택지를 안 고르는 건데.',
         );
         await gold_shp.say_and_wait(
-          'そうだ、チョコ食うか？ 安心しろ、仕込んでねえし味も普通だぜ。',
+          '맞다, 초콜릿 먹을래? 안심해, 아무것도 안 넣었고 맛도 평범해.',
         );
         era.println();
         await era.printAndWait([
-          'トレーナー室で笑い合うこの景色は、きっとこの先もなくならない。',
+          '트레이너실에서 함께 웃는 이 풍경은 분명 앞으로도 사라지지 않을 것이다.',
         ]);
       } else {
         era.println();
         await era.printAndWait(
-          `${gold_shp.sex} は風のように来て、風のように去った。${you.name} は結局、心理テストの結果を聞けなかった。`,
+          `${gold_shp.sex}은(는) 바람처럼 왔다가 바람처럼 떠났다. ${you.name}은(는) 결국 심리 테스트 결과를 듣지 못했다.`,
         );
       }
       era.println();
       if (ret[3] === 1) {
         era.print([
           gold_shp.get_colored_name(),
-          ' は',
-          { color: buff_colors[2], content: ' [罵倒好き] ' },
-          'と',
-          { color: buff_colors[2], content: ' [苦痛好き] ' },
-          'になった！',
+          '은(는) ',
+          { color: buff_colors[2], content: ' [욕설 취향] ' },
+          '와(과) ',
+          { color: buff_colors[2], content: ' [고통 취향] ' },
+          '이(가) 되었다!',
         ]);
       } else {
         era.print([
           gold_shp.get_colored_name(),
-          ' は',
-          { color: buff_colors[2], content: ' [ドS] ' },
-          'になった！',
+          '은(는) ',
+          { color: buff_colors[2], content: ' [도S] ' },
+          '이(가) 되었다!',
         ]);
       }
       if (ret[1] === 2) {
         era.print([
           gold_shp.get_colored_name(),
-          ' はいま、少し',
-          { color: buff_colors[2], content: ' [焦り] ' },
-          '！',
+          '은(는) 지금 조금 ',
+          { color: buff_colors[2], content: ' [초조함] ' },
+          !',
         ]);
       }
       return ret;
@@ -533,7 +533,7 @@ module.exports = {
     f.title = [
       {
         color: gold_color,
-        content: '突撃！ゴールドシップの超残酷二択クイズ！～生き残れるかな？～',
+        content: '돌격! 골드 쉽의 초잔혹 양자택일 퀴즈!~살아남을 수 있을까?~',
       },
     ];
     return f;
