@@ -15,7 +15,7 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {number} b_escape 地下室からの脱出手段。0 のときは通常
    */
-  // [번역 대상] good_morning
+  // [번역 완료] good_morning
   good_morning(gs, b_escape) {
     if (b_escape > 0) {
       switch (b_escape) {
@@ -94,37 +94,37 @@ module.exports = {
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    * @param {number|false} b_escape 地下室からの脱出手段。0 は通常、false はプレイヤーが寝ているため該当台詞なし
    */
-  // [번역 대상] select_awake
+  // [번역 완료] select_awake
   select_awake(gs, callname, b_escape) {
     if (b_escape > 0) {
       switch (b_escape) {
         case escape_enum.sneak:
           gs.say([
             callname,
-            ' って、自分で外に遊びに出て、自分で帰ってくるペットか？',
+            '은(는) 혼자 밖에 놀러 나갔다가 혼자 돌아오는 애완동물이냐?',
           ]);
-          gs.say([{ color: gold_color, content: 'まあいい、手間が省ける。' }]);
+          gs.say([{ color: gold_color, content: '뭐, 좋아. 수고를 덜었네.' }]);
           break;
         case escape_enum.beat:
-          gs.say('くっくっく、まさかてめえにやられるとはな。');
+          gs.say('큭큭큭, 설마 네놈한테 당할 줄이야.');
           gs.say([
-            { color: gold_color, content: '『次』は、もっと本気出すからな。' },
+            { color: gold_color, content: '『다음』에는 더 진심으로 간다.' },
           ]);
           break;
         case escape_enum.strike:
-          gs.say('おいおい、自分の愛馬にそんな手を出すとか、薄情すぎね？');
+          gs.say('어이 어이, 자기 애마한테 그런 손을 쓰다니 너무 매정한 거 아냐?');
           gs.say([
             {
               color: gold_color,
-              content: 'でもゴルシは、度胸のあるトレーナー、嫌いじゃねえな❤️',
+              content: '그래도 고루시는 배짱 있는 트레이너, 싫지 않다구❤️',
             },
           ]);
       }
     } else {
       if (Math.random() < 0.5) {
-        gs.say('おっ！ ゴルシ様に用か？');
+        gs.say('오! 고루시 님한테 볼일이냐?');
       } else {
-        gs.say('ゴルシ様についてこい！');
+        gs.say('고루시 님을 따라와!');
       }
     }
   },
@@ -159,7 +159,7 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] talk
+  // [번역 완료] talk
   async talk(gs) {
     if (era.get('base:7:体力') < 0.45 * era.get('maxbase:7:体力')) {
       if (Math.random() < 0.5) {
@@ -208,9 +208,9 @@ module.exports = {
               gs.say_and_wait([
                 {
                   color: gold_color,
-                  content: `てめぇ、何かやらねえなら、${
-                    era.get('cflag:7:性别') === 1 ? 'オレ' : 'アタシ'
-                  }は勝手に街ぶらするぞー！`,
+                  content: `네놈, 아무것도 안 할 거면 ${
+                    era.get('cflag:7:性别') === 1 ? '나' : '나'
+                  }는 멋대로 시내 구경하러 간다ー!`,
                 },
               ]),
             () =>
@@ -309,67 +309,67 @@ module.exports = {
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] s_a_tree_hollow
+  // [번역 완료] s_a_tree_hollow
   async s_a_tree_hollow(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、枯れ木のうろへ行った……',
+      '은(는) 고목의 구멍으로 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait(
-        `${gs.uma_sex_title}はな、最後の最後まで泣くなよ……`,
+        `${gs.uma_sex_title}은(는) 말이야, 정말 마지막 순간까지 울지 마라……`,
       );
     } else {
       await gs.say_and_wait([
-        '三女神が聞いてるなら、',
+        '세 여신이 듣고 있다면,',
         {
-          content: '鼓膜はまだ無事か？',
+          content: '고막은 아직 멀쩡하냐?',
           color: gold_color,
         },
       ]);
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] s_a_dating
+  // [번역 완료] s_a_dating
   async s_a_dating(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、デートに行った……',
+      '은(는) 데이트하러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait(
-        '思い出？ ……一緒に海底で過ごした七日の休暇、懐かしいな～',
+        '추억? ……같이 해저에서 보낸 7일간의 휴가, 그립네~',
       );
     } else {
       await gs.say_and_wait([
-        'やだ～裾がひらひらして恥ずかしいよ～',
+        '싫어~ 옷자락이 팔랑팔랑해서 부끄럽잖아~',
         {
           color: gold_color,
-          content: 'おい、ちゃんとアタシを見ろよ。',
+          content: '야, 제대로 나를 보라고.',
         },
       ]);
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] s_r_lunch
+  // [번역 완료] s_r_lunch
   async s_r_lunch(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、弁当を食べた……',
+      '은(는) 도시락을 먹었다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait(
-        'このポテトサラダ、うまいだろ？ 粉をふやかしたやつだぜ。',
+        '이 감자 샐러드, 맛있지? 가루를 불려서 만든 거다.',
       );
     } else {
       await gs.say_and_wait([
-        '見ろ、この完璧な肉の五重塔！ まさに精緻を極めた',
+        '봐라, 이 완벽한 고기의 오층탑! 그야말로 정교함의 극치인',
         {
           color: gold_color,
-          content: '……梅干しの豚ばら煮だ。',
+          content: '……우메보시 삼겹살 조림이다.',
         },
       ]);
     }
