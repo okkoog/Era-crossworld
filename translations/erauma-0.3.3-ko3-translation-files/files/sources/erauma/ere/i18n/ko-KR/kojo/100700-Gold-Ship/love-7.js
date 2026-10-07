@@ -525,7 +525,7 @@ module.exports = {
           gold_shp.get_colored_name(),
           '은(는) 지금 조금 ',
           { color: buff_colors[2], content: ' [초조함] ' },
-          !',
+          '!',
         ]);
       }
       return ret;
