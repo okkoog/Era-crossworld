@@ -370,6 +370,100 @@ edu 누적 엄격 확정:
 
 Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목은 위 “미조사 750”과 별개로 계속 보류 상태다.
 
+## 기록 밖 edu 실제 3자 대조 — 3차 확정
+
+2차 체크포인트 이후 old-KR 보유 edu 파일을 계속 대조했다. 이번 구간에서도 live 실제 `[번역 대상]` 블록의 Korean prose 존재 여부와 old main / 분리 event module의 실제 대응 본문을 함께 확인했다.
+
+### Smart Falcon `edu-46.js`
+
+- live target: **72**
+- 72개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- 구버전 `edu-46.js` + `edu-events-46`의 race/week/crazy-fan 모듈을 직접 대조.
+- 현재 번호가 이동한 `ws_47_15`, `we_47_15` 등은 old 이벤트 제목/본문으로 대응 확인.
+- current `get_ts_content`는 old `train_success`의 한국어 트레이닝 완료 문구가 별도 helper로 분리된 것.
+- `rooftop_idol`은 old event mark/check에는 key만 존재하지만, old KR 저장소 전체에서 실제 이벤트 본문 구현을 찾지 못했다.
+
+분류:
+- **C: 71**
+- **D: 1** — `rooftop_idol`
+
+### Haru Urara `edu-52.js`
+
+- live target: **76**
+- 76개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- 구버전 `edu-52.js` + 약 30개 `edu-events-52` 모듈을 대조.
+- old 제목 이벤트 68개에 더해, current에서 기존 old 이벤트 내부가 별도 helper/승패/후처리 함수로 분리된 항목까지 확인했다.
+- `tf_message`는 old `train-fail.js`의 속성별 한국어 실패 대사에서 분리.
+- `train`은 old main의 한국어 랜덤 트레이닝 대사에서 분리.
+- 기타 승패/후처리 세분화도 old KR branch 내 대응 본문 존재 확인.
+
+분류:
+- **C: 76**
+
+### Nakayama Festa old edu 존재 여부
+
+- 구버전 `sources/eraumak_kr_2.21/game/ere/event/edu/edu-49.js` 자체는 존재한다.
+- 그러나 current ko3/ja-JP에는 대응 `edu-49` 작업 파일이 없고 `104900-Nakayama-Festa/entry.js`만 존재한다.
+- 따라서 현재 edu `[번역 대상]` 감사 단위는 **0**이며 B/C/D 수치에 넣지 않는다.
+
+### Matikanefukukitaru `edu-56.js`
+
+- live target: **59**
+- 59개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- old main + celebration/crazy-fan/office/race/train/week-start/week-end 모듈 전부 대조.
+- race-end 세부 이벤트, 6개 week-start handler 모듈, current generic `race_start`까지 old KR 대응 확인.
+- current `train_success`도 old `train-success.js`의 한국어 본문에서 분리된 것.
+- old에만 남고 current target에는 없는 이벤트(`핫라인 전화`, 일부 과거 week-start 등)는 현재 작업 단위로 세지 않았다.
+
+분류:
+- **C: 59**
+
+### Nice Nature `edu-60.js`
+
+- live target: **22**
+- 22개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- old main 이벤트 **8**, `edu-events-60/race-end.js` 이벤트 **11**, `school-atrium.js` 이벤트 **3**으로 현재 22개와 정확히 대응.
+- 제목과 이벤트 의미를 직접 대조했으며 별도 신규 이벤트 없음.
+
+분류:
+- **C: 22**
+
+### 이번 3차 edu 추가 확정치
+
+실제 대조한 current target:
+- Smart Falcon: **72**
+- Haru Urara: **76**
+- Matikanefukukitaru: **59**
+- Nice Nature: **22**
+- 합계: **229**
+
+분류:
+- **B: 0**
+- **C: 228**
+- **D: 1**
+- strict old-KR 미반영 추가: **228**
+
+edu 누적 엄격 확정:
+- 1차: **183**
+- 2차: **267**
+- 3차: **228**
+- 합계: **678**
+
+전체 엄격 최소:
+- daily/rec: **414**
+- timon: **130**
+- 기록 밖 edu: **678**
+- 합계: **1,222 작업 단위**
+
+원래 old-KR 보유 edu 후보 819 중 실제 대조한 current target 후보는 누적 **684개**다.
+아직 미조사 후보:
+- edu: **135**
+- love: **171**
+- ero: **215**
+- 합계: **521**
+
+Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목은 위 “미조사 521”과 별개로 계속 보류 상태다.
+
 ## 다음 조사 단계
 
 1. 기록 밖 kojo 후보 **1,205파트**를 `FILES.md` 순서로 실제 3자 대조.
@@ -386,9 +480,9 @@ Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목�
 전수조사 완료 전 **엄격 최소 확정치**:
 - kojo daily/rec 기록 기반 현재 미반영: **414**
 - timon 기록/본문 기반 현재 미반영: **130**
-- 기록 밖 edu 실제 3자 대조 누적 확정: **450**
-- 합계: **994 작업 단위**
+- 기록 밖 edu 실제 3자 대조 누적 확정: **678**
+- 합계: **1,222 작업 단위**
 
-원래 기록 밖 kojo 후보 1,205 중 **455 edu 후보를 실제 대조 완료**했다. 아직 미조사 후보는 **750파트**(edu 364 + love 171 + ero 215)이며, 이미 조사한 파일 안의 별도 미확정 항목은 따로 남아 있다.
+원래 기록 밖 kojo 후보 1,205 중 old-KR 보유 edu 후보는 819이며, 그중 **684 current target 후보를 실제 대조 완료**했다. 아직 미조사 후보는 **521파트**(edu 135 + love 171 + ero 215)이며, 이미 조사한 파일 안의 별도 미확정 항목은 따로 남아 있다.
 
-따라서 **994는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
+따라서 **1,222는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
