@@ -15,33 +15,33 @@ const __JaOriginal = require('#/i18n/ja-JP/kojo/101900-Agnes-Digital/daily-19.js
 
 module.exports = {
   ...__JaOriginal,
-  // [번역 대상] office_gift
+  // [번역 완료] office_gift
   async office_gift(digital, callname) {
     if (Math.random() < 0.5) {
       await digital.say_and_wait([
         "이런 선물을 고르다니, 역시 ",
         callname,
-        '！',
+        '!',
       ]);
     } else {
       const items = [
-        '堕伯先生のサイン本',
-        'カレンちゃん写真集',
-        'ファル子握手券',
-        'マヤちゃんぬいぐるみ',
-        'メジロ家同款ティーカップ',
-        'タキオン×カフェ印象マグ',
-        digital.uma_sex_title + 'の走り靴モデル',
-        digital.uma_sex_title + '限定コラボグッズ',
-        digital.uma_sex_title + 'のイヤーカバー＆ストッキングのサイン本',
+        '타백 선생님의 사인본',
+        '카렌짱 사진집',
+        '팔코 악수권',
+        '마야짱 인형',
+        '메지로 가문 스타일 티컵',
+        '타키온×카페 이미지 머그컵',
+        digital.uma_sex_title + ' 러닝화 모델',
+        digital.uma_sex_title + ' 한정 콜라보 굿즈',
+        digital.uma_sex_title + ' 이어커버 & 스타킹 사인본',
       ];
       const gift = get_random_entry(items);
       await digital.say_and_wait([
-        'わっ、',
+        '와, ',
         gift,
-        '！ ここから',
+        '! 여기서 ',
         digital.uma_sex_title,
-        '萌え萌えパワー、しっかり汲むよ！',
+        '모에모에 파워를 듬뿍 흡수할게요!',
       ]);
     }
   },
@@ -594,28 +594,28 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] good_morning
+  // [번역 완료] good_morning
   good_morning(digital, callname) {
     if (Math.random() < 0.5) {
       digital.say([
-        'ハイ！ ',
+        '하잇! ',
         digital.name,
-        '、登場！ 宇宙一尊い',
+        ', 등장! 우주에서 가장 고귀한 ',
         digital.uma_sex_title,
-        'の力を探しに行くよ！',
+        '의 힘을 찾으러 가요!',
       ]);
     } else {
       digital.say([
-        'うふふ、',
+        '우후후, ',
         callname,
-        '！ 今日も推し活パワー、貯めに行こう！',
+        '! 오늘도 덕질 파워를 쌓으러 가요!',
       ]);
     }
   },
 
-  // [번역 대상] o_c_pray
+  // [번역 완료] o_c_pray
   o_c_pray: (() => {
-    const title = '徳を積む……福を集める？';
+    const title = '덕을 쌓자 덕을…… 이건 복을 모으는 건가요?';
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} you プレイヤー
@@ -624,92 +624,92 @@ module.exports = {
      */
     const f = async (digital, you, callname, call_98) => {
       await era.printAndWait([
-        '神社の前で二礼二拍手のあと、',
+        '신사 앞에서 박수를 두 번 친 후, ',
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         digital.get_colored_name(),
-        ' は手を合わせて祈った',
+        '은 두 손을 모아 기도했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' はもちろん担当',
+        '은(는) 당연히 담당 ',
         digital.uma_sex_title,
-        'の健康を願った。では ',
+        '의 건강을 빌었지만, ',
         digital.get_colored_name(),
-        ' は何を願うのだろう？',
+        '은 과연 무엇을 빌었을까?',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' はちらりと ',
+        '이(가) 살짝 곁눈질로 ',
         digital.get_colored_name(),
-        ' を見た。',
+        '을 보니, ',
         digital.sex,
-        'はまだ目を閉じて、小さな手をもみ、耳を立て、口のなかでつぶやいている。普通の人が持つような誠実さか？',
+        '는 아직 눈을 감은 채 손을 비비며 귀를 쫑긋거리면서 무언가 중얼거리고 있었다. 이건 보통 경건함이 아닌 것 같다.',
       ]);
       await era.printAndWait([
-        'しばらくして',
+        '잠시 후 ',
         digital.sex,
-        'は振り返り、真面目な顔で言った：',
+        '가 몸을 돌려 진지하게 말했다.',
       ]);
       await digital.say_and_wait([
-        '神さまがすべての',
+        '모든 ',
         digital.uma_sex_title,
-        'を守ってくれるように、私は最大限の誠実さで祈るべきなんだ',
+        '들을 신께서 보살펴 주시도록, 저 나름대로 최대한의 경건함을 담아 기도했어요.',
       ]);
       await digital.say_and_wait(
-        '虚実のはなしだけど、これで自分をまた理性的に見られる。ついでに徳も積めるしね！',
+        '비록 눈에 보이지 않는 것이라 해도, 이를 통해 다시금 자신을 이성적으로 바라볼 수 있고, 겸사겸사 덕도 쌓을 수 있으니까요!',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は意外だったが、',
+        '은(는) 뜻밖이면서도 ',
         digital.sex,
-        'の言葉にも一理あると思った。だから ',
+        '의 말이 일리가 있다고 생각했다. 그래서 ',
         you.get_colored_name(),
-        ' も雑念を捨てて、もう一度祈ろうとした。',
+        ' 역시 잡념을 버리고 다시 한번 기도하기로 했다.',
       ]);
       if (Math.random() < 0.5) {
         await era.printAndWait([
-          'ゆっくり、',
+          '조금씩, ',
           you.get_colored_name(),
-          ' は思考のなかを三筋の清水が流れるのを感じた。',
+          '의 정신 속에 세 줄기 맑은 샘물이 흐르는 것을 느꼈다. ',
           you.get_colored_name(),
-          ' は驚いて目を開けると、そよ風が葉を、社を渡り、',
+          '이(가) 깜짝 놀라 눈을 뜨니, 맑은 바람이 나뭇잎을 스치고 신사를 지나며 ',
           you.get_colored_name(),
-          ' の心を静めていた。',
+          '의 마음을 차분하게 가라앉혀 주고 있었다.',
         ]);
         await digital.say_and_wait([
           call_98,
-          ' が勧めた、すごく霊験あらたかな神社だから、さっきはずっとあまり話せなかったんだ～',
+          '가 추천해 준 아주 영험한 신사라, 방금까진 감히 말을 걸 엄두도 못 냈네요~',
         ]);
-        await era.printAndWait('これは本当にあることなのか？');
+        await era.printAndWait('이게 정말 일어날 수 있는 일인가?');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は隣の ',
+          '은(는) 옆에 있는 ',
           digital.get_colored_name(),
-          ' も同じ境地に浸っていることに気づいた。',
+          ' 역시 동시에 이 분위기에 젖어있는 것을 발견했다.',
         ]);
-        await digital.say_and_wait('これは三女神の恵みだよ！');
+        await digital.say_and_wait('이것이 세 여신의 은총이군요!');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は突っ込みたかった。神社で願掛けして、授けるのが三女神なのはなぜだ、と。だが少なくとも心のうえでは効いているなら、まあいい。',
+          '은(는) 신사에서 기도하는데 왜 세 여신의 축복이 내려오냐고 태클을 걸고 싶었지만, 실제로 심리적인 효과라도 있다면 상관없다고 생각했다.',
         ]);
       } else {
         await era.printAndWait([
-          '意識を両目のあいだに集めて、どう誠実に祈るかを考えたが、このやり方自体が問題だ。どうやら ',
+          '양눈 사이에 정신을 집중하고 어떻게 하면 정성껏 기도할 수 있을지 고민했지만, 사실 그런 방법 자체가 문제였던 것 같다. ',
           you.get_colored_name(),
-          ' はまだ雑念を払うのが下手らしい。',
+          '은(는) 아직 잡념을 없애는 데 서툰 모양이다.',
         ]);
         await digital.say_and_wait(
-          '大丈夫、私もかなり練習してこの域に達したんだ。同志、もっと練習しないとね！',
+          '괜찮아요, 저도 꽤 오랫동안 연습해서 겨우 이런 경지에 오른 거니까요. 동지여, 수행이 더 필요하겠어요!',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' はこの技能の実用地が気になった。レースのとき、注意を集めやすい、ということか？',
+          '은(는) 이 기술의 실질적인 용도가 궁금해졌다. 설마 레이스 때 집중력을 응집하는 데 쓰는 걸까?',
         ]);
         await era.printAndWait([
-          'ただ ',
+          '하지만 ',
           you.get_colored_name(),
-          ' も、ときには静心の練習が要ると気づいた。次に試すしかない。',
+          ' 역시 때로는 마음을 다스릴 필요가 있다고 느꼈다. 다음 기회에 다시 시도해 보는 수밖에 없겠다.',
         ]);
       }
     };
@@ -717,355 +717,355 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(digital, callname, call_20) {
     const buffer = [
       () =>
         digital.say_and_wait([
-          'うわ、',
+          '우와앗, 저건…… ',
           call_20,
-          '……あっちには行かないほうがいいよね……',
+          '…… 역시 저쪽으로는 가지 않는 게 좋으려나……',
         ]),
       () =>
         digital.say_and_wait([
-          'おおお、釣れた、釣れた！ 野営なら焼いて食べられるね、',
+          '오오오, 낚였다, 낚였어! 캠핑 중이었다면 바로 구워 먹을 수 있었을 텐데요, ',
           callname,
-          '！',
+          '!',
         ]),
       () =>
         digital.say_and_wait(
-          `気にしないで！ 勝負は兵家の常、大侠もう一度どうぞ……ボウズもガチャで出ない確率と同じだよ！`,
+          `개의치 마세요! 승패는 병가지상사라 했으니, 다시 도전해 보시는 게…… 꽝인 날도 가챠에서 안 나오는 확률 같은 거니까요!`,
         ),
     ];
     await get_random_entry(buffer);
   },
 
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(digital, callname, call_8, call_9, call_46, call_58) {
     const buffer = [
       () =>
         digital.say_and_wait([
           call_46,
-          '、',
+          ', ',
           call_46,
-          ' だ！ 絶対あっち行かなきゃ！',
+          '다! 반드시 저기로 가야만 해요!',
         ]),
       () =>
         digital.say_and_wait([
           call_9,
-          ' と ',
+          ' 씨와 ',
           call_8,
-          ' を発見！ ',
+          ' 씨를 발견! ',
           digital.couple_title,
-          '、あっちで何してる～の！',
+          ', 저쪽에서 뭐 하는 걸까~요!',
         ]),
       () =>
         digital.say_and_wait([
-          'わっ！ ',
+          '와아! ',
           call_58,
-          ' が転んだ、手を貸さなきゃ……立った！ うおっ、勤勉……',
+          '가 넘어졌어, 도와드리러 가야…… 어라, 벌써 일어나셨다! 우오오, 정말 근면하시기도 해라……',
         ]),
       async () => {
         await era.printAndWait([
-          '川辺の散歩は ',
+          '강변 산책은 ',
           digital.get_colored_name(),
-          ' にとって巡礼みたいなもので、',
+          '에게 일종의 성지순례 같은 행위였고,',
         ]);
         await era.printAndWait(
-          `どの角にも、${digital.uma_sex_title}が見つかるからだ。`,
+          `어느 곳에서든 달리고 있는 ${digital.uma_sex_title}을(를) 발견할 수 있기 때문이다.`,
         );
         await era.printAndWait(
-          `歌の練習をしている小さな${digital.uma_sex_title}アイドル、ダートに慣れようとしている小さな努力家。`,
+          `노래 연습 중인 꼬마 ${digital.uma_sex_title} 아이돌부터, 더트 적응 훈련 중인 노력가까지.`,
         );
         await era.printAndWait(
-          `幸い、今回${digital.sex}は尊さで魂を抜かれなかった。`,
+          `다행히 이번에는 ${digital.sex}이(가) 존엄함에 혼을 빼앗기지는 않았다.`,
         );
       },
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(digital, call_46) {
     const buffer = [
       () =>
         digital.say_and_wait([
-          'うおおお、',
+          '우오오오, 설마 ',
           call_46,
-          ' の新曲出てる！ 手袋持ってきてよかった！',
+          '의 신곡이 나오다니! 장갑을 챙겨와서 다행이에요!',
         ]),
-      () => digital.say_and_wait(`取った取った！ あの勝負服限定ぬいぐるみ！`),
+      () => digital.say_and_wait(`뽑았다 뽑았어! 바로 그 승부복 한정판 인형!`),
       () =>
         digital.say_and_wait(
-          `ポイント貯めて景品交換だ！ あの限定フィギュアにできるよ！`,
+          `포인트를 다 모아서 경품으로 바꿨어요! 그 한정판 피규어로 교환할 수 있다고요!`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(digital, callname) {
     const buffer = [
       () =>
         digital.say_and_wait([
-          'あははは、',
+          '아하하하, ',
           callname,
-          '、一緒に歩くと、かえってどこがいいか選べなくなる……',
+          ', 막상 같이 돌아다니려니 어디가 좋을지 못 고르겠어요……',
         ]),
       () =>
         digital.say_and_wait(
-          `え？ 場所は私が選ぶの？ どうせ${digital.uma_sex_title}関連の場所になっちゃう気がする……`,
+          `에? 제가 장소를 고르라고요? 왠지 저는 자꾸 ${digital.uma_sex_title} 관련 장소만 고르게 될 것 같은데……`,
         ),
       () =>
         digital.say_and_wait([
           callname,
-          '！ あっちで聖地巡礼、もう一回行こう！',
+          '! 저쪽으로 다시 한번 성지 순례 가요!',
         ]),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(digital, call_32) {
     const buffer = [
       () =>
         digital.say_and_wait([
-          'にんじん当たった！ ',
+          '당근을 뽑았어요! 이건 가져가서 ',
           call_32,
-          ' に持って帰ろう。食事、普通にしてほしい。体壊すよ！ だめだめ！',
+          '에게 줘야겠네요. 식습관을 좀 제대로 고쳤으면 좋겠는데, 이러다 몸 다 상한다고요! 안 돼 안 돼!',
         ]),
-      () => digital.say_and_wait(`くくく、ふふふ、当たった、あれだ！`),
-      () => digital.say_and_wait(`ティッシュか……やっぱり単発じゃ出ないよね。`),
+      () => digital.say_and_wait(`쿠후후후. 뽑았어요. 바로 그거예요!`),
+      () => digital.say_and_wait(`종이 티슈라니…… 역시 단뽑으로 대박을 노리는 건 무리인가요.`),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(digital, callname) {
     const buffer = [
-      () => digital.say_and_wait(`今日の勝利の女神は、私だけに口づけを……`),
+      () => digital.say_and_wait(`오늘의 승리의 여신은 오직 저에게만 입을 맞추는군요……`),
       () =>
         digital.say_and_wait(
-          `勝者ステージは勝ち${digital.uma_sex_title}ちゃんへのご褒美だけじゃない、私たちファンへの褒美でもあるんだよ！`,
+          `위닝 라이브는 승리한 ${digital.uma_sex_title}짱을 위한 보상일 뿐만 아니라, 저희 같은 팬들에게 주는 선물이기도 하죠!`,
         ),
       () =>
         digital.say_and_wait([
-          'んはっ、えはっ！ おーーはっーー！ ',
+          '음 하이 에 하이! 오—— 하이——! ',
           callname,
-          '！ ペンライト、遅い！',
+          '! 응원봉 휘두르는 게 늦어요!',
         ]),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(digital) {
     const buffer = [
       () =>
         digital.say_and_wait(
-          `尊すぎ！ 監督わかってる！ ${digital.uma_sex_title}ちゃんの尊いところ、全部出してる！`,
+          `너무 고귀해! 감독님이 뭘 좀 아시네요! ${digital.uma_sex_title}짱의 매력 포인트를 아주 완벽하게 보여줬어요!`,
         ),
       () =>
         digital.say_and_wait(
-          `うおおおお、感動した、この悔しさ、この奮闘、現実の${digital.uma_sex_title}ちゃんみたい！`,
+          `우오오오오, 너무 감동적이에요. 이런 분함, 이런 투지, 마치 현실 속의 ${digital.uma_sex_title}짱과 같네요!`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(digital) {
     const buffer = [
       () =>
         digital.say_and_wait(
-          `にんじんみたいな${digital.uma_sex_title}ちゃんが好む食べ物が好きなのは、${digital.uma_sex_title}ちゃんが好きだから？ それとも自分が${digital.uma_sex_title}だから……`,
+          `당근처럼 ${digital.uma_sex_title}짱들이 좋아하는 음식을 저도 좋아하는 건, 제가 ${digital.uma_sex_title}짱을 좋아해서일까요? 아니면 제가 ${digital.uma_sex_title}이기 때문일까요……`,
         ),
       () =>
         digital.say_and_wait(
-          `パフェ♪パフェ♪メロンパフェ♪はちみつ♪はちみつ♪特濃はちみつ♪それにいちご大福♪推したちの真似をすると運が来る気がする！`,
+          `파르페♪ 파르페♪ 메론 파르페♪ 하치미♪ 하치미♪ 진한 하치미♪ 그리고 딸기 찹쌀떡♪ 최애들을 흉내 내면 행운이 따를 것 같아요!`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_shopping
+  // [번역 완료] o_s_shopping
   async o_s_shopping(digital, call_25, call_33) {
     const buffer = [
       () =>
         digital.say_and_wait([
-          'うぬぬ！ この ',
+          '으누누! 이 ',
           call_25,
-          ' 同款コーヒーカップ、あっちのメジロ紅茶カップ、どう選べっていうの?! もちろん全部だよ！',
+          ' 스타일 커피잔이랑 저 메지로 스타일 홍차 잔 사이에서 어떻게 선택하라는 거예요?! 당연히 전부 다 사야죠!',
         ]),
       () =>
         digital.say_and_wait([
           call_33,
-          ' が宣伝してる乾燥機？ これは……ちょっと……だめ、買わなきゃ！',
+          '가 광고하는 건조기? 이건…… 사야…… 아니, 사야만 해!',
         ]),
       () =>
         digital.say_and_wait(
-          `え？ なんでグッズを三セット買うかって？ 当然、一本は常用、一本は保存、一本は布教だよ！`,
+          `에? 왜 굿즈를 세 세트씩 사냐고요? 당연히 하나는 실사용, 하나는 소장용, 하나는 포교용이죠!`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_cook
+  // [번역 완료] office_cook
   async office_cook(digital) {
     const buffer = [
       () =>
         digital.say_and_wait(
-          `担当${digital.uma_sex_title}への愛を込めて作る……トレーナーにもそんな信条があるなんて。私も見習わなきゃ！`,
+          `담당 ${digital.uma_sex_title}을(를) 향한 사랑을 담아 만드는 건가요…… 트레이너에게도 그런 신조가 있다니. 저도 배워야겠어요!`,
         ),
       () =>
         digital.say_and_wait(
-          `普段は両親と外で野営することが多いからね。こう見えて、料理はちょっと得意なんだよ`,
+          `평소에는 부모님과 캠핑을 자주 다녀서요. 이래 봬도 요리는 좀 자신 있어요.`,
         ),
       () =>
         digital.say_and_wait(
-          `${digital.uma_sex_title}ちゃんたちの青い気持ち、直接言えなくて弁当に込めて渡すの！ 尊すぎる！`,
+          `${digital.uma_sex_title}짱들의 풋풋한 마음을 직접 전하지 못하고 도시락에 담아 건네는 거군요! 너무 고귀해요!`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(digital, callname) {
     if (Math.random() < 0.5) {
       await digital.say_and_wait(
-        `この『${digital.uma_sex_title}オールスター大乱闘』、やってみる？ キャラはランダムでいいよ、だって私DDだし！`,
+        `이 『${digital.uma_sex_title} 올스타 대난투』, 해보실래요? 캐릭터는 랜덤으로 할게요. 전부 좋아하니까요!`,
       );
     } else {
       await digital.say_and_wait([
-        'えへ！ ',
+        '에헤헤! ',
         callname,
-        '、さすがにこのゲームにはちょっと自信あるよ。',
+        ', 아무리 그래도 이 게임만큼은 꽤 자신 있다고요.',
       ]);
     }
   },
 
-  // [번역 대상] office_rest
+  // [번역 완료] office_rest
   async office_rest(digital) {
     const buffer = [
       () =>
         digital.say_and_wait(
-          `ふー……可愛い${digital.uma_sex_title}ちゃんの癒し系ASMR聞いてると、全身溶けそう……`,
+          `후우…… 귀여운 ${digital.uma_sex_title}짱의 치유계 ASMR을 듣고 있으니 온몸이 녹아내리는 기분이에요……`,
         ),
       () =>
         digital.say_and_wait(
-          `こうして、あなたと目的もなく${digital.uma_sex_title}の話をするの、いいね。`,
+          `이렇게 당신과 목적 없이 ${digital.uma_sex_title} 이야기를 나누는 것도 좋네요.`,
         ),
     ];
     if (era.get(`relation:${this.id}:0`) > 375) {
       buffer.push(() =>
         digital.say_and_wait(
-          `膝枕したい？ いやいや、こんな貧相な脚じゃ落ち着かないでしょ……でも、ちょっと恥ずかしい……`,
+          `무릎베개요? 아뇨 아뇨, 이렇게 가느다란 다리로는 편하지 않을 텐데…… 그래도 조금 부끄럽네요……`,
         ),
       );
     }
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_study
+  // [번역 완료] office_study
   async office_study(digital) {
     const buffer = [];
     buffer.push(
       () =>
         digital.say_and_wait(
-          `え？ なんで${digital.uma_sex_title}ちゃん関連の知識に詳しいかって？ ファンなら当然でしょ！`,
+          `에? 왜 ${digital.uma_sex_title}짱 관련 지식에 그렇게 정통하냐고요? 팬이라면 당연하잖아요!`,
         ),
       () =>
         digital.say_and_wait(
-          '実はトレセン学園に入るために、当時いろんな方面で頑張ったから……勉強はあまり困らない。ちょっと自慢になっちゃうけど。',
+          '사실 트레센 학원에 들어오기 위해 그때 여러 방면으로 노력했거든요…… 그래서 공부는 별로 곤란하지 않아요. 제 입으로 말하긴 좀 그렇지만요.',
         ),
       () =>
         digital.say_and_wait(
-          `思うんだよね、勉強が苦手で補習に引っ張られる${digital.uma_sex_title}ちゃんもいるじゃん？ どうしたら${
+          `가끔 공부가 서툴러서 보충 수업에 끌려가는 ${digital.uma_sex_title}짱들도 있잖아요? 어떻게 하면 ${
             digital.couple_title
-          }の助けになれるんだろう……`,
+          }에게 도움이 될 수 있을까요……`,
         ),
     );
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_dating
+  // [번역 완료] s_a_dating
   async s_a_dating(digital, callname) {
     const buffer = [
       () =>
         digital.say_and_wait(
-          `……なんか${digital.uma_sex_title}ちゃんにたくさん見られてる。どこかに隠れたい……`,
+          `……왠지 많은 ${digital.uma_sex_title}짱들이 저희를 보고 있는 것 같아요. 어디 숨을 곳 없나……`,
         ),
       () =>
         digital.say_and_wait(
-          `この大きなリボン？ 小さい頃からずっとつけてる感じ……え？ 目立つって？ ひゃあ、たしかに問題だね。`,
+          `이 커다란 리본요? 어릴 때부터 계속 하고 다녔던 것 같은데…… 에? 너무 눈에 띈다고요? 아하하, 확실히 문제긴 하네요.`,
         ),
       () =>
         digital.say_and_wait([
           callname,
-          '、私、面倒くさいって思われてない……？ ずっと付き合って応援活動して……え？ ないの？',
+          ', 제가 너무 번거로운 애라고 생각하진 않으시죠…… 계속 절 따라 응원 활동 하느라 고생하시고…… 에? 아니라고요?',
         ]),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_tree_hollow
+  // [번역 완료] s_a_tree_hollow
   async s_a_tree_hollow(digital) {
     const buffer = [
       () =>
         digital.say_and_wait(
-          `ずっと${digital.uma_sex_title}からレースの冷酷さ、訓練の苦しさ、感情のもつれを打ち明けられてきたあなた！ なんで私は木の穴に嫉妬してるの！`,
+          `언제나 ${digital.uma_sex_title}들에게 레이스의 냉혹함, 훈련의 고됨, 감정의 갈등을 전해 듣는 당신! 어째서 제가 대나무 숲 같은 당신에게 질투를 느끼는 걸까요!`,
         ),
       () =>
         digital.say_and_wait(
-          `ねえ、なんでレースには勝者と敗者がいるんだろう……${digital.uma_sex_title}ちゃんたち、全員勝者だったらいいのに……`,
+          `음, 저기, 어째서 레이스에는 승자와 패자가 나뉘는 걸까요…… ${digital.uma_sex_title}짱들 모두가 승자라면 좋을 텐데……`,
         ),
       () =>
         digital.say_and_wait(
-          `私の覚悟、まだ足りない。ライバルとしての覚悟も、${digital.uma_sex_title}としての覚悟も……`,
+          `제 각오, 아직 부족하네요. 라이벌로서도, ${digital.uma_sex_title}로서의 각오도……`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_r_lunch
+  // [번역 완료] s_r_lunch
   async s_r_lunch(digital, callname) {
     const buffer = [
       () =>
         digital.say_and_wait([
-          'え？ ',
+          '에? ',
           callname,
-          '、隠れた強者だったの？ この再現度、私だって感嘆しちゃう！',
+          ', 설마 숨겨진 고수였나요? 이 재현도…… 저조차 감탄하게 되네요!',
         ]),
       () =>
         digital.say_and_wait(
-          `ん、可愛い${digital.uma_sex_title}ちゃん、どうして口をつけられる……`,
+          `음, 귀여운 ${digital.uma_sex_title}짱을 제가 어떻게 감히 먹을 수 있겠어요……`,
         ),
       () =>
         digital.say_and_wait([
-          '見て！ ',
+          '보세요! ',
           callname,
-          '、このデザイン、私の心血だよ！ 特許、出願しよっか、うへ！',
+          ', 이 디자인은 제 심혈을 기울인 역작이에요! 특허라도 신청해볼까요, 우헤!',
         ]),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] select
+  // [번역 완료] select
   select(digital, callname, call_13) {
     const buffer = [];
     buffer.push(
       () =>
-        digital.say(['そう！ 何が起きても全力で推すんだよ！ ', callname, '！']),
-      () => digital.say('うふふ、尊すぎて、もうだめ……'),
-      () => digital.say('芝！ ダート！ どっちも私の戦場！'),
+        digital.say(['그래요! 무슨 일이 있어도 전력으로 덕질하는 거예요! ', callname, '!']),
+      () => digital.say('우후후, 너무 고귀해서 이제 무리……'),
+      () => digital.say('잔디! 더트! 둘 다 제 전장이에요!'),
     );
     if (era.get('relation:19:0') > 375) {
       buffer.push(() =>
         digital.say([
           callname,
-          '！ 一緒に',
+          '! 함께 ',
           digital.uma_sex_title,
-          'ちゃんを推せるなんて、本当によかった！',
+          '짱을 덕질할 수 있다니, 정말 다행이에요!',
         ]),
       );
     }
@@ -1073,7 +1073,7 @@ module.exports = {
       case 1:
         buffer.push(() =>
           digital.say(
-            'あははは……え？ 脚が震えてるって？ 大丈夫大丈夫！ デジたん、至って正常だよ！',
+            '아하하하…… 에? 다리가 떨린다고요? 괜찮아요 괜찮아! 디지털은 지극히 정상이라고요!',
           ),
         );
         break;
@@ -1081,9 +1081,9 @@ module.exports = {
       case 3:
         buffer.push(() =>
           digital.say([
-            'ぐへへへ、まだ聞くの、',
+            '구헤헤헤, 아직도 물어보세요, ',
             callname,
-            ' がいちばんわかってるでしょ……ずるっ……',
+            '님이 제일 잘 아시잖아요…… 쥬릅……',
           ]),
         );
     }
@@ -1091,51 +1091,51 @@ module.exports = {
       case 1:
         buffer.push(() =>
           digital.say([
-            '一心同体……',
+            '일심동체……',
             call_13,
-            ' が語ってた素敵な未来、だんだんわかってきた気がする……',
+            ' 씨가 말했던 멋진 미래를, 저도 조금씩 이해하게 된 것 같아요……',
           ]),
         );
         break;
       case 2:
       case 3:
-        buffer.push(() => digital.say('メジロ城、行く？ 行くよね！'));
+        buffer.push(() => digital.say('메지로 시티, 가실 건가요? 가실 거죠!'));
     }
     switch (era.get('mark:19:苦痛')) {
       case 1:
         buffer.push(() =>
-          digital.say(['え、あ、', callname, ' か……今日は何か用？']),
+          digital.say(['에, 저기, ', callname, '(이)군요…… 오늘은 무슨 일인가요.']),
         );
         break;
       case 2:
       case 3:
         buffer.push(() =>
-          digital.say('ううう……ひっ！ いやいや、大丈夫大丈夫！'),
+          digital.say('우우우…… 히익! 아뇨 아뇨, 아무것도 아니에요!'),
         );
     }
     switch (era.get('mark:19:羞耻')) {
       case 1:
         buffer.push(() =>
-          digital.say('あのね、デジだって、こうなるとちょっと恥ずかしいよ。'),
+          digital.say('저기 말이죠, 아무리 저라도 이런 건 조금 부끄럽다고요.'),
         );
         break;
       case 2:
       case 3:
-        buffer.push(() => digital.say('ひゃあ、さすがにこれはヤバくない?!'));
+        buffer.push(() => digital.say('우우, 역시 이건 너무 심한 거 아닌가요?!'));
     }
     switch (era.get('mark:19:反抗')) {
       case 1:
         buffer.push(() =>
-          digital.say(['ん？ ', callname, ' か、え、何するの？']),
+          digital.say(['응? ', callname, '(이)군요. 에, 뭐, 뭘 하려는 건가요?']),
         );
         break;
       case 2:
       case 3:
         buffer.push(() =>
           digital.say([
-            'えーと、',
+            '으윽, ',
             callname,
-            '、最近ちょっと、同志らしくなくない？',
+            ', 요즘 좀 동지답지 않은 모습인걸요?',
           ]),
         );
     }
@@ -1143,27 +1143,27 @@ module.exports = {
       case 1:
         buffer.push(() =>
           digital.say(
-            '見慣れてるのに微妙なものが自分に出てくる……素材にはなる、よね？',
+            '낯익으면서도 묘한 게 몸에 새겨지다니…… 소재로 써도 되는 거……겠죠?',
           ),
         );
         break;
       case 2:
       case 3:
         buffer.push(() =>
-          digital.say('カッコいいって言えばカッコいい……本当に進化するの?!'),
+          digital.say('이 문양 멋지다고 해야 할지…… 설마 이거 진짜로 진화하는 건가요?!'),
         );
     }
     get_random_entry(buffer)();
   },
 
-  // [번역 대상] talk
+  // [번역 완료] talk
   async talk(digital) {
     if (era.get('base:19:体力') < era.get('maxbase:19:体力') / 3) {
       if (Math.random() < 0.5) {
-        await digital.say_and_wait(`はぁ……燃え尽きた、力ない……推せない……`);
+        await digital.say_and_wait(`하아…… 다 타버렸어, 덕질할 기운이…… 없어……`);
       } else {
         await digital.say_and_wait(
-          `この状態、推しの${digital.uma_sex_title}ちゃんに申し訳ないよ`,
+          `이런 상태로는 덕질 대상인 ${digital.uma_sex_title}짱들을 뵐 낯이 없어요.`,
         );
       }
     } else {
@@ -1174,11 +1174,11 @@ module.exports = {
           buffer.push(
             () =>
               digital.say_and_wait(
-                'うおお、萌えパワー不足、今すぐ補給しないと……',
+                '우오오, 모에 에너지가 부족해, 당장 보충해야 해요……',
               ),
             () =>
               digital.say_and_wait(
-                `この状態、絶対に推したちに見られたくない……`,
+                `이런 모습은 절대 최애들에게 보일 수 없어요……`,
               ),
           );
           break;
@@ -1186,20 +1186,20 @@ module.exports = {
           buffer.push(
             () =>
               digital.say_and_wait(
-                'あー……なんか力入らない。萌えパワー足りないのかな',
+                '아…… 왠지 힘이 안 들어가네요, 모에 에너지가 부족한가.',
               ),
             () =>
               digital.say_and_wait(
-                `いやー、さっき${digital.uma_sex_title}のこと考えてて……`,
+                `에구구, 방금 ${digital.uma_sex_title}에 대한 생각을 하느라……`,
               ),
           );
           break;
         case 0:
           buffer.push(
-            () => digital.say_and_wait(`すー……はー……もっと、萌え萌えパワー！`),
+            () => digital.say_and_wait(`쓰읍…… 후우…… 조금만 더, 모에모에한 힘을!`),
             () =>
               digital.say_and_wait(
-                `まだ足りない、全然足りない。もっと${digital.uma_sex_title}萌え萌えパワーを吸わないと！`,
+                `아직 부족해요, 모자란 느낌이야. 더 많은 ${digital.uma_sex_title} 모에 에너지를 흡수해야겠어요!`,
               ),
           );
           break;
@@ -1207,11 +1207,11 @@ module.exports = {
           buffer.push(
             () =>
               digital.say_and_wait(
-                `調子ちょうどいい！ 一緒に${digital.uma_sex_title}萌え萌えパワーを汲んで徳を積もう！`,
+                `컨디션 딱 좋아요! 같이 ${digital.uma_sex_title} 모에모에 파워를 모으면서 덕도 쌓으러 가요!`,
               ),
             () =>
               digital.say_and_wait(
-                `愛だよ、${digital.uma_sex_title}ちゃんへの愛があるから、こんな力が出せるんだ！`,
+                `사랑, 바로 ${digital.uma_sex_title}짱들을 향한 사랑이 저에게 이런 힘을 주는 거예요!`,
               ),
           );
           break;
@@ -1219,9 +1219,9 @@ module.exports = {
           buffer.push(
             () =>
               digital.say_and_wait(
-                `わあああ！ こっちもあっちも${digital.uma_sex_title}ちゃん！ 今なら何でもできそう！`,
+                `와아아아! 이쪽도, 저쪽도 온통 ${digital.uma_sex_title}짱들뿐! 지금이라면 뭐든 할 수 있을 것 같아요!`,
               ),
-            () => digital.say_and_wait(`はあっ！ 萌えパワー、天を突いた！`),
+            () => digital.say_and_wait(`히얏! 모에 에너지가 이미 하늘을 뚫어버렸어요!`),
           );
       }
       await get_random_entry(buffer)();
