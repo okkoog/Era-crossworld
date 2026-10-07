@@ -13,7 +13,7 @@ const __JaOriginal = require('#/i18n/ja-JP/kojo/101700-Symboli-Rudolf/daily-17.j
 
 module.exports = {
   ...__JaOriginal,
-  // [번역 대상] good_morning_emperor
+  // [번역 완료] good_morning_emperor
   good_morning_emperor(emperor) {
     const buffer = [
       () => emperor.say("시간을 낭비하지 마라."),
@@ -97,7 +97,7 @@ module.exports = {
     ];
     await get_random_entry(buffer)();
   },
-  // [번역 대상] talk_luna
+  // [번역 완료] talk_luna
   async talk_luna(luna) {
     const buffer = [];
     if (era.get('base:17:体力') < 0.4 * era.get('maxbase:17:体力')) {
@@ -165,7 +165,7 @@ module.exports = {
     }
     await get_random_entry(buffer)();
   },
-  // [번역 대상] talk_emperor
+  // [번역 완료] talk_emperor
   async talk_emperor(emperor) {
     const buffer = [];
     if (era.get('base:17:体力') < 0.4 * era.get('maxbase:17:体力')) {
@@ -210,7 +210,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] good_morning_luna
+  // [번역 완료] good_morning_luna
   good_morning_luna(luna, you) {
     const buffer = [
       () =>
@@ -265,7 +265,7 @@ module.exports = {
     get_random_entry(buffer)();
   },
 
-  // [번역 대상] load_talk
+  // [번역 완료] load_talk
   async load_talk(chara17, you, is_good_end, i_emperor) {
     if (is_good_end) {
       await chara17.say_and_wait(
@@ -300,7 +300,7 @@ module.exports = {
     }
   },
 
-  // [번역 대상] o_c_pray_emperor
+  // [번역 완료] o_c_pray_emperor
   async o_c_pray_emperor(emperor, you, dice) {
     await era.printAndWait(
       `신사는 ${you.name}와(과) ${emperor.name}에게 특별한 장소는 아니다.`,
@@ -354,7 +354,7 @@ module.exports = {
     }
   },
 
-  // [번역 대상] o_c_pray_luna
+  // [번역 완료] o_c_pray_luna
   async o_c_pray_luna(luna, you, dice) {
     await era.printAndWait(
       `신사는 ${you.name}와(과) ${luna.name}에게 특별한 장소는 아니다.`,
@@ -410,7 +410,7 @@ module.exports = {
     }
   },
 
-  // [번역 대상] o_r_fishing_emperor
+  // [번역 완료] o_r_fishing_emperor
   async o_r_fishing_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('코스에서의 사냥도 일종의 낚시가 아니겠는가?'),
@@ -419,7 +419,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_r_fishing_luna
+  // [번역 완료] o_r_fishing_luna
   async o_r_fishing_luna(luna) {
     const buffer = [
       () =>
@@ -434,7 +434,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_r_walking_emperor
+  // [번역 완료] o_r_walking_emperor
   async o_r_walking_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('영토를 둘러보는 것도 황제의 책무다.'),
@@ -443,7 +443,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_r_walking_luna
+  // [번역 완료] o_r_walking_luna
   async o_r_walking_luna(luna) {
     const buffer = [
       () =>
@@ -458,7 +458,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_arcade_emperor
+  // [번역 완료] o_s_arcade_emperor
   async o_s_arcade_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('시끄러운 곳이군.'),
@@ -470,7 +470,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_arcade_luna
+  // [번역 완료] o_s_arcade_luna
   async o_s_arcade_luna(luna, you) {
     const buffer = [
       () => luna.say_and_wait('으음…… 한 판 더!'),
@@ -482,7 +482,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_dating_emperor
+  // [번역 완료] o_s_dating_emperor
   async o_s_dating_emperor(emperor) {
     const buffer = [
       () =>
@@ -497,7 +497,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_dating_luna
+  // [번역 완료] o_s_dating_luna
   async o_s_dating_luna(luna) {
     const buffer = [
       () =>
@@ -510,7 +510,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_drawing_emperor
+  // [번역 완료] o_s_drawing_emperor
   async o_s_drawing_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('확률학은 심오한 학문이다.'),
@@ -520,7 +520,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_drawing_luna
+  // [번역 완료] o_s_drawing_luna
   async o_s_drawing_luna(luna) {
     const buffer = [
       () =>
@@ -532,7 +532,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_ktv_emperor
+  // [번역 완료] o_s_ktv_emperor
   async o_s_ktv_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('극장과는 다른, 또 다른 맛이 있군.'),
@@ -541,7 +541,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_ktv_luna
+  // [번역 완료] o_s_ktv_luna
   async o_s_ktv_luna(luna) {
     const buffer = [
       () => luna.say_and_wait('이 기회에 조금 쉬도록 해요.'),
@@ -553,7 +553,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_movie_emperor
+  // [번역 완료] o_s_movie_emperor
   async o_s_movie_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('지루하군.'),
@@ -562,7 +562,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_movie_luna
+  // [번역 완료] o_s_movie_luna
   async o_s_movie_luna(luna) {
     const buffer = [
       () =>
@@ -577,7 +577,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_restaurant_emperor
+  // [번역 완료] o_s_restaurant_emperor
   async o_s_restaurant_emperor(emperor) {
     const buffer = [
       () =>
@@ -589,7 +589,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_restaurant_luna
+  // [번역 완료] o_s_restaurant_luna
   async o_s_restaurant_luna(luna) {
     const buffer = [
       () =>
@@ -604,7 +604,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_shopping_emperor
+  // [번역 완료] o_s_shopping_emperor
   async o_s_shopping_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('짐은 활기찬 거리를 좋아한다.'),
@@ -613,7 +613,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_shopping_luna
+  // [번역 완료] o_s_shopping_luna
   async o_s_shopping_luna(luna) {
     const buffer = [
       () =>
@@ -625,7 +625,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_cook_emperor
+  // [번역 완료] office_cook_emperor
   async office_cook_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('음식을 만드는 데에도 큰 학문이 있다.'),
@@ -634,7 +634,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_cook_luna
+  // [번역 완료] office_cook_luna
   async office_cook_luna(luna) {
     const buffer = [
       () =>
@@ -649,7 +649,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_game_emperor
+  // [번역 완료] office_game_emperor
   async office_game_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('소일거리로는 합격이다.'),
@@ -658,7 +658,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_game_luna
+  // [번역 완료] office_game_luna
   async office_game_luna(luna) {
     const buffer = [
       () =>
@@ -671,7 +671,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_gift_emperor
+  // [번역 완료] office_gift_emperor
   async office_gift_emperor(emperor) {
     const buffer = [
       () =>
@@ -683,7 +683,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_gift_luna
+  // [번역 완료] office_gift_luna
   async office_gift_luna(luna) {
     const buffer = [
       () =>
@@ -698,7 +698,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_rest_emperor
+  // [번역 완료] office_rest_emperor
   async office_rest_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('……자거라……'),
@@ -710,7 +710,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_rest_luna
+  // [번역 완료] office_rest_luna
   async office_rest_luna(luna) {
     const buffer = [
       () =>
@@ -722,7 +722,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_dating_emperor
+  // [번역 완료] s_a_dating_emperor
   async s_a_dating_emperor(emperor) {
     const buffer = [
       () =>
@@ -737,7 +737,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_dating_luna
+  // [번역 완료] s_a_dating_luna
   async s_a_dating_luna(luna) {
     const buffer = [
       () =>
@@ -752,7 +752,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_tree_hollow_emperor
+  // [번역 완료] s_a_tree_hollow_emperor
   async s_a_tree_hollow_emperor(emperor) {
     const buffer = [
       () =>
@@ -765,7 +765,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_tree_hollow_luna
+  // [번역 완료] s_a_tree_hollow_luna
   async s_a_tree_hollow_luna(luna) {
     const buffer = [
       () =>
@@ -780,7 +780,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] school_rooftop_emperor
+  // [번역 완료] school_rooftop_emperor
   async school_rooftop_emperor(emperor) {
     const buffer = [
       () => emperor.say_and_wait('일상의 식사는 배만 채우면 된다.'),
@@ -789,7 +789,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] school_rooftop_luna
+  // [번역 완료] school_rooftop_luna
   async school_rooftop_luna(luna) {
     const buffer = [
       () =>
@@ -804,7 +804,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] select_sleep
+  // [번역 완료] select_sleep
   select_sleep(chara17) {
     chara17.say('스으…… 하아……');
   },
