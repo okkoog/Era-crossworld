@@ -5,9 +5,9 @@ const recruit_flags = require('#/data/event/recruit-flags');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/100700-Gold-Ship/edu-7"),
 
-  // [번역 대상] arim_kin_win_c
+  // [번역 완료] arim_kin_win_c
   arim_kin_win_c: (() => {
-    const title = 'キーワードを集めろ';
+    const title = '키워드를 모아라';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} flash エイシンフラッシュ
@@ -15,71 +15,71 @@ module.exports = {
      */
     const f = async (gs, flash, you) => {
       await era.printAndWait(
-        `レース前に ${you.name} へ残した不安とは裏腹に、${gs.name} は力強く、見事なレースを見せた！`,
+        `레이스 전에 ${you.name}에게 남긴 불안과 달리 ${gs.name}은(는) 힘차고 멋진 레이스를 보여줬다!`,
       );
       era.println();
-      await gs.say_and_wait('よし！ 収穫のときだ！');
+      await gs.say_and_wait('좋아! 수확할 시간이다!');
       era.println();
 
-      era.printButton('「よく走った！」', 1);
+      era.printButton('「잘 달렸어!」', 1);
       await era.input();
 
       await era.printAndWait(
-        `${flash.name} が傍らから歩み寄り、${gs.name} に拍手を送った。`,
+        `${flash.name}이(가) 곁에서 다가와,${gs.name}에게 박수를 보냈다.`,
       );
       era.println();
-      await flash.say_and_wait(`さすがです、${gs.name} さん。`);
-      await gs.say_and_wait('おっ！ フラッシュ！');
-      await flash.say_and_wait('私たちの約束を、覚えていらっしゃいますね。');
+      await flash.say_and_wait(`역시 ${gs.name} 씨네요.`);
+      await gs.say_and_wait('오! 플래시!');
+      await flash.say_and_wait('우리의 약속, 기억하고 계시죠.');
       era.println();
 
-      era.printButton('「イオンの件か？」', 1);
+      era.printButton('「이온 건 말이지?」', 1);
       await era.input();
 
-      await flash.say_and_wait('……エデンです。');
+      await flash.say_and_wait('……에덴입니다.');
       await flash.say_and_wait(
-        'これが、あのお方があなたに用意した手がかりです。',
+        '이것이 그분께서 당신을 위해 준비한 단서입니다.',
       );
       era.println();
 
       await era.printAndWait(
-        `${flash.name} はポケットから、まだ余熱の残る手紙を取り出し、${
+        `${flash.name}은(는) 주머니에서 아직 온기가 남은 편지를 꺼내,${
           gs.name
-        } に渡すと去っていった。二人きりが残る。`,
+        }에게 건넨 뒤 떠났다. 둘만 남았다.`,
       );
       era.println();
-      await gs.say_and_wait('見せてもらうか！');
+      await gs.say_and_wait('어디 한번 볼까!');
       era.println();
-      await gs.say_and_wait('『エデンは、いちばん深い海底に……』');
-      await gs.say_and_wait('『エデンを得るには、四つの手がかりが要る……』');
+      await gs.say_and_wait('『에덴은 가장 깊은 해저에……』');
+      await gs.say_and_wait('『에덴을 얻으려면 네 개의 단서가 필요하다……』');
       await gs.say_and_wait(
-        '『数多の強敵と戦い、彼女たちから手がかりを得よ by 秘伝の書。』',
+        '『수많은 강적과 싸워 그녀들에게서 단서를 얻어라 by 비전의 서.』',
       );
       era.println();
 
       era.printButton(
-        '「ゲーム用スティックで操縦するミニ潜水艦で潜らなくて済むならいいけど……」',
+        '「게임용 스틱으로 조종하는 미니 잠수함을 타고 잠수하지 않아도 된다면 좋겠는데……」',
         1,
       );
       await era.input();
 
-      await gs.say_and_wait('ふんふん、どんどん血が騒いでくるぜ！');
+      await gs.say_and_wait('흥흥, 점점 피가 끓어오르는군!');
       await gs.say_and_wait(
-        'でもフラッシュがずっと言ってる『あのお方』って、誰なんだ……？',
+        '그런데 플래시가 계속 말하는 『그분』은 누구지……?',
       );
       era.println();
 
       await era.printAndWait(
-        `なんにせよ、${gs.name} のレースへの熱がさらに上がった。それは悪いことじゃない！`,
+        `なんにせよ、${gs.name}의 레이스를 향한 열정이 더욱 높아졌다. 나쁜 일은 아니다!`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] arim_kin_win_s
+  // [번역 완료] arim_kin_win_s
   arim_kin_win_s: (() => {
-    const title = '最後のキーワード';
+    const title = '마지막 키워드';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} flash エイシンフラッシュ
@@ -88,66 +88,66 @@ module.exports = {
      * @param {string} callname ゴールドシップのプレイヤーへの呼び方
      */
     const f = async (gs, flash, jordan, you, callname) => {
-      await flash.say_and_wait('まことに……残念です。');
-      await jordan.say_and_wait('くそ、今日こそ勝てると思ってたのに……！');
+      await flash.say_and_wait('정말로…… 아쉽습니다.');
+      await jordan.say_and_wait('젠장, 오늘이야말로 이길 줄 알았는데……!');
       await gs.say_and_wait(
-        'ありがとうな。アタシの火山噴火ハートも、いちばん熱い温度まで上がったぜ！',
+        '고맙다. 내 화산 폭발 하트도 최고 온도까지 올라갔다고!',
       );
-      await flash.say_and_wait(`おめでとうございます、${gs.name} さん。`);
-      await flash.say_and_wait('今回が、あなたとの最後の対決になりますね。');
-      await flash.say_and_wait('どうぞ、お受け取りください。');
+      await flash.say_and_wait(`축하드립니다, ${gs.name} 씨.`);
+      await flash.say_and_wait('이번이 당신과의 마지막 대결이 되겠군요.');
+      await flash.say_and_wait('부디 받아주세요.');
       era.println();
       await era.printAndWait(
-        `${flash.name} が取り出した紙切れ、それがエデンへ通じる最後の手がかりだ！`,
+        `${flash.name}이(가) 꺼낸 종잇조각, 그것이 에덴으로 이어지는 마지막 단서다!`,
       );
       era.println();
-      await gs.say_and_wait('これは……！！');
+      await gs.say_and_wait('이건……!!');
       await flash.say_and_wait(
-        'これが、あなたが追い求めたエデン……でしょうか。よくは分かりませんが、どうか頑張ってください。',
+        '이것이 당신이 찾아 헤맨 에덴……일까요. 자세히는 모르겠지만 부디 힘내세요.',
       );
-      await gs.say_and_wait('ありがとな！');
+      await gs.say_and_wait('고맙다!');
       era.println();
       await era.printAndWait(
-        `${flash.name}、${jordan.name}。ゴルシの生涯における宿敵たちの姿が、人ごみの中で遠ざかっていく……`,
+        `${flash.name}、${jordan.name}. 고루시의 생애를 함께한 숙적들의 모습이 인파 속으로 멀어져간다……`,
       );
       era.println();
-      await gs.say_and_wait(`${callname}、これが……！`);
+      await gs.say_and_wait(`${callname}, 이게……!`);
       era.println();
 
-      era.printButton('「これが最後だ！」', 1);
+      era.printButton('「이게 마지막이다!」', 1);
       await era.input();
 
-      await era.printAndWait('さあ、最後の手がかりを明かそう！');
+      await era.printAndWait('자, 마지막 단서를 밝혀보자!');
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] begin_race_win
+  // [번역 완료] begin_race_win
   begin_race_win: (() => {
-    const title = '迷走';
+    const title = '미주';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       await era.printAndWait(
-        `レース前に ${you.name} へ残した不安とは裏腹に、${gs.name} は力強く、見事なレースを見せた！`,
+        `레이스 전에 ${you.name}에게 남긴 불안과 달리 ${gs.name}은(는) 힘차고 멋진 레이스를 보여줬다!`,
       );
       era.println();
       await era.printAndWait(
-        'この先のレースも期待できる。いまが、進む先を見据えるときだ。',
+        '앞으로의 레이스도 기대할 수 있다. 지금이야말로 나아갈 방향을 바라볼 때다.',
       );
       era.println();
 
-      era.printButton('「お疲れ！」', 1);
+      era.printButton('「수고했어!」', 1);
       await era.input();
 
       await era.printAndWait(
-        `${gs.name} はすぐ両腕を高く掲げ、意味不明な大豆の呪文を唱え、今日があるのは大豆のタンパク質のおかげだと主張した。`,
+        `${gs.name}은(는) 곧 두 팔을 높이 치켜들고 의미 불명의 콩 주문을 외우며 오늘이 있는 것은 콩 단백질 덕분이라고 주장했다.`,
       );
       era.println();
-      await gs.say_and_wait('今日も真面目に豆乳を挽くぞ！ 豆だ豆だ豆だ豆——！');
+      await gs.say_and_wait('오늘도 성실하게 두유를 갈아보자! 콩이다 콩이다 콩이다 콩——!');
     };
     f.title = title;
     return f;
