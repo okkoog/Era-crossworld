@@ -11,21 +11,19 @@
 ## 작업 인수인계 / 현재 진행 상태
 
 - 마지막 갱신: 2026-10-07
-- 작업 단위: **3파일씩**
+- 작업 단위: 기본은 **3파일씩**이지만, 대형 파일 중단 방지를 위해 이번에는 사용자 요청에 따라 **`edu-4.js`만 단독 마무리 후 정지**한다.
 - 진행 판단 기준: `coverage.json` / `manifest.json`보다 **실제 파일의 `[번역 대상]` 마커와 본문을 우선**한다. manifest는 완료 파일도 미완료처럼 남아 있어 참고용으로만 사용한다.
 - **작업 순서: `FILES.md`에 적힌 파일 순서를 위에서 아래로 그대로 따른다.** 번역 대상 개수, 파일 크기, 작업 난이도에 따라 순서를 바꾸지 않는다. 이미 실제 `[번역 대상]`이 0개인 파일만 건너뛰고, 그 다음 미완료 파일을 계속 진행한다.
-- **현재 체크포인트:** `kojo/100400-Maruzensky/daily-4.js` 완료 후, `kojo/100400-Maruzensky/edu-4.js`를 **60/90 구간까지 부분 번역**했다. 마지막 처리 구간은 `we_47_32`, 다음 재개 구간은 **`we_47_33`**이다.
-- 이번 3파일 배치 상태:
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/daily-4.js` — **23/23 완료**; commits `9bacffe4` → `478e3e68`; 재검사 `[번역 대상]` 0개 / 코드·본문 일본어 가나 0줄.
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — **60/90 구간까지 본문 번역 진행**; 마지막 본작업 commit `9ae31921`, 처리구간 잔존 7줄 정리 commit `fde67447`. **1~60구간 재검사 일본어 가나 0줄.** 파일 전체 작업이 끝나기 전이라 90개 마커는 아직 `[번역 대상]` 상태로 유지한다.
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — 아직 미착수; 기존 확인 기준 `[번역 대상]` 6개.
-- `edu-4.js` 부분 작업 commit 흐름: `c32d1ab8` → `0f4932e1` → `3345796f` → `e4b12bf0` → `1a99b51e` → `8929655e` → `c441905f` → `49b691d8` → `9f56bf21` → `be6038a3` → `9700b08b` → `a744bb78` → `b3b123b2` → `20305620` → `1d4ecf59` → `9ae31921` → cleanup `fde67447`.
-- **중단 확인:** `we_47_33` 이후를 번역하려던 마지막 작업은 커밋되지 않았다. 따라서 재개 시 `we_47_33`부터 시작하면 된다.
+- **현재 체크포인트:** `kojo/100400-Maruzensky/daily-4.js`와 `kojo/100400-Maruzensky/edu-4.js`까지 완료. 사용자 요청에 따라 여기서 정지한다.
+- 현재 배치 상태:
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/daily-4.js` — **23/23 완료**; final commit `478e3e68`; 재검사 `[번역 대상]` 0개 / 코드·본문 일본어 가나 0줄.
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — **90/90 완료**; final translation commit `79d3c5b5`, residual cleanup `2b2816be`, 마커 완료 전환 commit `d8f9671c`; 최종 재검사 `[번역 대상]` 0개 / `[번역 완료]` 90개 / 코드·본문 일본어 가나 0줄.
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — **미착수 상태 유지**. 이번 요청 범위에 포함하지 않는다.
+- `edu-4.js` 61~90구간 재개 이후 주요 commit 흐름: `daba8766` → `3071ea91` → `89c55a4e` → `509370eb` → `332914ad` → `d64b3efa` → `7c0f32ba` → `9cf83d4c` → `c76b2d5c` → `d9511ba5` → `d0ee60ca` → `9f5856f4` → `94518283` → `517a8b58` → `ec6695f1` → `72b0b41d` → `8263eafc` → `da995f3f` → `186e66e4` → `1b3bf296` → `dc98ebc7` → `50a9e3ec` → `79d3c5b5` → cleanup `2b2816be` → complete `d8f9671c`.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
 - 직전 완료 배치: `100300-Tokai-Teio/edu-3.js`, `100300-Tokai-Teio/ero-3.js`, `100300-Tokai-Teio/love-3.js`.
-- 다음 재개 지점(`FILES.md` 순서 기준):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — **61번째 구간 `we_47_33`부터**
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — `edu-4.js` 완료 후
+- 다음 재개 지점(`FILES.md` 순서 기준, **현재는 정지 상태**):
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — 기존 확인 기준 `[번역 대상]` 6개.
 - `FILES.md`상 `edu-4.js`와 `love-4.js` 사이의 `entry.js`는 실제 `[번역 대상]`이 0개라 건너뛴다.
 - 매 배치 종료 또는 중단 체크포인트 저장 시 이 섹션의 **현재 체크포인트 / 배치 상태 / 다음 재개 지점**을 반드시 갱신한다.
 
