@@ -671,7 +671,7 @@ module.exports = {
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
-        'なあ ',
+        '야, ',
         callname,
         ', 손 잡을래?',
         {
