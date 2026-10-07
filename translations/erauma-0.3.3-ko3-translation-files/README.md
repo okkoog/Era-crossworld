@@ -16,18 +16,18 @@
 - **작업 순서: `FILES.md`에 적힌 파일 순서를 위에서 아래로 그대로 따른다.** 번역 대상 개수, 파일 크기, 난이도에 따라 순서를 바꾸지 않는다. 실제 `[번역 대상]`이 0개인 파일만 건너뛴다.
 - **대형 파일 단독 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100600-Oguri-Cap/edu-6.kojo` — **34/34 완료**, 최종 정리 commit `7aa8d735`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 34 / 코드·본문 일본어 가나 0 / 한자-only 일본어 잔존 0.
 - **직전 일반 배치 완료(3파일):**
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/love-7.js` — **5/5 완료**, translation commits `cb59353d` / `b296e6ac` / `7adbb495`, syntax fix `c06e2a61`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 5 / 본문 일본어 가나 literal 0 / JS 구문 정상.
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100900-Daiwa-Scarlet/ero-9.js` — **2/2 완료**, commit `aa8280bb`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 2 / 본문 일본어 가나 literal 0 / JS 구문 정상.
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/base-13.kojo` — **11/11 완료**, commit `3a736d35`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 11 / 일본어 가나 0.
-- 순서상 `100700-Gold-Ship/entry.js`, `100700-Gold-Ship/ero-7.js`, `100900-Daiwa-Scarlet/entry.js`는 실제 `[번역 대상]` 0개라 건너뛰었고, `101100-Grass-Wonder/entry.js`는 실제 파일에서 이미 완료 상태라 건너뛰었다.
-- **현재 체크포인트:** 위 일반 배치 3파일 완료. 다음 작업은 Mejiro McQueen 구간으로 이동한다.
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/daily-13.kojo` — 지정 **3/3 완료** + 마커 누락 상태였던 `birthday2` 잔존 원문도 함께 정리. commits `62d55b2a` / `2adefa00` / residual cleanup `c3ed4674`; 재검사 `[번역 대상]` 0 / 일본어 가나 0 / 한자-only 일본어 잔존 0 / ja-JP 구조 일치.
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/edu-13.kojo` — **25/25 완료**, commits `cd74d067` / `48c4975f` / final `aece1e37`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 25 / 일본어 가나 0 / 한자-only 일본어 잔존 0 / ja-JP 구조 일치.
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/ero-13.kojo` — **25/25 완료**, 현재 ja-JP 구조 기준 재구축 후 번역. commits `6c9c6668` / `b3b4f02e` / final `77f9454e`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 25 / 일본어 가나 0 / 한자-only 일본어 잔존 0 / ja-JP 구조 일치.
+- 순서상 `101300-Mejiro-McQueen/entry.js`는 실제 `[번역 대상]` 0개라 건너뛰었다.
+- **현재 체크포인트:** Mejiro McQueen 일반 배치 3파일 완료. 다음은 McQueen 남은 love/rec 이후 Symboli Rudolf로 이동한다.
 - **Gold-Ship 대형 파일 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **27/27 완료**, 최종 residual cleanup commit `a0db3897`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 27 / 본문 일본어 가나 literal 0 / JS 구문 정상.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
 - 다음 재개 지점(`FILES.md` 순서 기준, 기본 3파일 배치):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/daily-13.kojo` — 실제 `[번역 대상]` **3개**
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/edu-13.kojo` — 실제 `[번역 대상]` **25개**
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/entry.js` — 실제 `[번역 대상]` 0개라 건너뜀
-  4. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/ero-13.kojo` — 실제 `[번역 대상]` **25개**, 따라서 다음 배치의 세 번째 실작업 파일
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/love-13.kojo` — 실제 `[번역 대상]` **8개**
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/rec-13.kojo` — 실제 `[번역 대상]` **4개**
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/daily-17.js` — 실제 `[번역 대상]` **40개**, 812줄로 기본 3파일 배치에 포함
+  4. `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/entry.js` — 실제 `[번역 대상]` 0개라 다음 순서에서 건너뜀
 - 매 배치 종료 또는 중단 체크포인트 저장 시 이 섹션의 **현재 체크포인트 / 배치 상태 / 다음 재개 지점**을 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
