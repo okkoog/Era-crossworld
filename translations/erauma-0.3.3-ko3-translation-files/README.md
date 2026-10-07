@@ -19,14 +19,20 @@
   1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/love-13.kojo` — **8/8 완료**, bulk `5ffac329`, translation finish `560f5693`, residual cleanup `39c8f90e`, ending normalization `97c2e548`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 8 / 일본어 가나 0 / 한자-only 일본어 잔존 0 / ja-JP 구조 일치.
   2. `files/sources/erauma/ere/i18n/ko-KR/kojo/101300-Mejiro-McQueen/rec-13.kojo` — **4/4 완료**, bulk `83fa9b08`, translation finish `28887fc4`, header cleanup `a03768ac`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 4 / 일본어 가나 0 / 한자-only 일본어 잔존 0 / ja-JP 구조 일치.
   3. `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/daily-17.js` — **40/40 완료**, core/shrine `58e8c515`, activity translation `9d8c042d`, final marker commit `444034a5`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 40 / 일본어 가나 literal 0 / JS 구문 정상.
-- 순서상 `101700-Symboli-Rudolf/entry.js`는 실제 확인 결과 이미 `[번역 대상]` 0 / `[번역 완료]` 20 상태라 다음 순서에서 건너뛴다.
-- **현재 체크포인트:** 위 일반 배치 3파일 완료. 다음 순번의 `101700-Symboli-Rudolf/edu-17.js`는 **2552줄 / 30개 대상**으로 대형 파일 단독 작업 규칙을 적용하며, **10개 / 10개 / 10개로 3분할**하여 각 구간마다 저장·검증·커밋한다.
+- **대형 파일 단독 3분할 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/edu-17.js` — 최초 **2552줄 / 30개 대상**, 내부 순서대로 **10/10/10** 분할 처리.
+  1. **1/3:** 대상 1~10 완료, commit `3cb5e548`; 해당 10구간 일본어 가나 literal 0 / JS 구문 정상.
+  2. **2/3:** 대상 11~20 완료, commit `955d91b1`; 해당 10구간 일본어 가나 literal 0 / JS 구문 정상.
+  3. **3/3:** 대상 21~30 완료, commit `2e7570de`; 해당 10구간 일본어 가나 literal 0 / JS 구문 정상.
+  - 최종 전체 재검사: **2550줄 / 30/30 완료 / `[번역 대상]` 0 / `[번역 완료]` 30 / 일본어 가나 literal 0 / 한자-only 일본어 literal 후보 0 / JS 구문 정상**. 현재 blob `dd7d0540f4a891772cc56d83d0da8702be342849`.
+- 순서상 `101700-Symboli-Rudolf/entry.js`는 실제 확인 결과 이미 `[번역 대상]` 0 / `[번역 완료]` 20 상태라 건너뛴다.
+- **현재 체크포인트:** `101700-Symboli-Rudolf/edu-17.js` 대형 파일의 새 3분할 안전 규칙 적용을 완료했다. 다음은 기본 배치로 복귀하되, 다음 대형 파일 경계 전까지 남은 일반 실작업 파일을 순서대로 처리한다.
 - **Gold-Ship 대형 파일 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **27/27 완료**, 최종 residual cleanup commit `a0db3897`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 27 / 본문 일본어 가나 literal 0 / JS 구문 정상.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
 - 다음 재개 지점(`FILES.md` 순서 기준):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/edu-17.js` — 실제 `[번역 대상]` **30개**, **2552줄이므로 대형 파일 단독 배치 + 내부 3분할(10/10/10), 각 분할별 저장·검증·커밋**
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/entry.js` — 실제 `[번역 대상]` 0개라 건너뜀
-  3. 단독 대형 파일 완료 후 기본 3파일 배치 재개: `101700-Symboli-Rudolf/love-17.js` (**4개**) → `101900-Agnes-Digital/daily-19.js` (**22개**) → 다음 `FILES.md` 실작업 파일
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101700-Symboli-Rudolf/love-17.js` — 실제 `[번역 대상]` **4개**, 421줄.
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/daily-19.js` — 실제 `[번역 대상]` **22개**, 1231줄.
+  3. 그 다음 `files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/edu-19.js` — 실제 `[번역 대상]` **32개**, **4275줄이므로 다음 대형 파일 단독 배치**. 이 경계를 넘어 억지로 일반 3파일 묶음을 만들지 않고, 앞의 일반 2파일을 먼저 완료한 뒤 `edu-19.js`를 내부 **3분할(11/11/10)** 하여 처리한다.
+  4. `files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/entry.js` — 실제 `[번역 대상]` 0 / `[번역 완료]` 1이라 이후 건너뜀
 - 매 배치 종료 또는 중단 체크포인트 저장 시 이 섹션의 **현재 체크포인트 / 배치 상태 / 다음 재개 지점**을 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
