@@ -5,7 +5,7 @@ const buff_colors = require('#/data/color-const')["buff_colors"];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/100400-Maruzensky/edu-4"),
 
-  // [번역 대상] arim_kin_lose_c
+  // [번역 완료] arim_kin_lose_c
   arim_kin_lose_c: (() => {
     const title = '아리마 기념 후・최대의 무대!';
     /**
@@ -34,7 +34,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] arim_kin_win_c
+  // [번역 완료] arim_kin_win_c
   arim_kin_win_c: (() => {
     const title = '아리마 기념 후・희망의 빛';
     /**
@@ -88,7 +88,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] asah_sta_5
+  // [번역 완료] asah_sta_5
   asah_sta_5: (() => {
     const title = '아사히배 후・고양되는 감각';
     /**
@@ -160,7 +160,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] asah_sta_win
+  // [번역 완료] asah_sta_win
   asah_sta_win: (() => {
     const title = '아사히배 후・열기 최고조';
     /**
@@ -224,7 +224,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] be_Self_contempt
+  // [번역 완료] be_Self_contempt
   be_Self_contempt: (() => {
     const title = 'BAD END · 나무가 무성해 흙이 무너지다';
     /**
@@ -311,7 +311,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] be_broken_tears
+  // [번역 완료] be_broken_tears
   be_broken_tears: (() => {
     const title = 'BAD END · 마루젠스키의 편지';
     /**
@@ -371,7 +371,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] be_crazy_fan
+  // [번역 완료] be_crazy_fan
   be_crazy_fan: (() => {
     const title = '비 오는 날 (이별)';
     /**
@@ -491,7 +491,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] beautiful_winner
+  // [번역 완료] beautiful_winner
   beautiful_winner: (() => {
     const title = '쿨하고 화려한 필승법!';
     /**
@@ -583,7 +583,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_arim_kin_c
+  // [번역 완료] before_arim_kin_c
   before_arim_kin_c: (() => {
     const title = '아리마 기념 전・가장 성대한 무대';
     /**
@@ -623,7 +623,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_asah_sta
+  // [번역 완료] before_asah_sta
   before_asah_sta: (() => {
     const title = '朝日杯前・5速加速';
     /**
@@ -657,7 +657,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_begin_race
+  // [번역 완료] before_begin_race
   before_begin_race: (() => {
     const title = '메이크 데뷔 전・모든 것의 시작점';
     /**
@@ -692,7 +692,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_radi_shi
+  // [번역 완료] before_radi_shi
   before_radi_shi: (() => {
     const title = '라디오 NIKKEI상 전・누구를 위한 달리기';
     /**
@@ -743,7 +743,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_sank_hai
+  // [번역 완료] before_sank_hai
   before_sank_hai: (() => {
     const title = '오사카배 전・부드러운 바람';
     /**
@@ -786,7 +786,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_sats_sho
+  // [번역 완료] before_sats_sho
   before_sats_sho: (() => {
     const title = '사츠키상 전・다시 한번';
     /**
@@ -847,7 +847,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_sprg_sta
+  // [번역 완료] before_sprg_sta
   before_sprg_sta: (() => {
     const title = '스프링 S 전・불꽃의 난초';
     /**
@@ -938,7 +938,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_tenn_sho_s
+  // [번역 완료] before_tenn_sho_s
   before_tenn_sho_s: (() => {
     const title = '천황상(가을) 전・에덴의 꿈';
     /**
@@ -1046,7 +1046,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_toky_yus
+  // [번역 완료] before_toky_yus
   before_toky_yus: (() => {
     const title = (maru) => `일본 더비 전・${maru.name}`;
     /**
@@ -1082,7 +1082,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_yasu_kin_s
+  // [번역 완료] before_yasu_kin_s
   before_yasu_kin_s: (() => {
     const title = '安田記念前・生気勃発';
     /**
@@ -1124,7 +1124,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] begin_race_lose
+  // [번역 완료] begin_race_lose
   begin_race_lose: (() => {
     const title = '메이크 데뷔 후・다시 한번 노력';
     /**
@@ -1147,7 +1147,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] begin_race_win
+  // [번역 완료] begin_race_win
   begin_race_win: (() => {
     const title = '메이크 데뷔 후・여행을 떠나는 바람';
     /**
@@ -1320,7 +1320,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] beginning
+  // [번역 완료] beginning
   beginning: (() => {
     const title = '서장・마루젠스키 등장';
     // 마루젠 スキー登場から風数値は1。最終結末と風数値 例：TE=20 GE=17-19 それ以外はNE
@@ -1535,7 +1535,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] current_trend
+  // [번역 완료] current_trend
   current_trend: (() => {
     const title = '거리의 유행을 이끄는 사람';
     /**
@@ -1637,7 +1637,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] dream
+  // [번역 완료] dream
   dream: (() => {
     const title = '초록사슴의 꿈';
     /**
@@ -1829,7 +1829,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] fall_heaven
+  // [번역 완료] fall_heaven
   fall_heaven: (() => {
     const title = 'GOOD END · 낙원에 길을 잃고 들어온 여행자';
     /**
@@ -2338,7 +2338,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] favourite_things
+  // [번역 완료] favourite_things
   favourite_things: (() => {
     const title = '마루젠스키, 「좋아함」을 말하다';
     /**
@@ -2424,7 +2424,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] feel_speed
+  // [번역 완료] feel_speed
   feel_speed: (() => {
     const title = '슈퍼카로 드라이브';
     /**
@@ -2534,7 +2534,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] find_love
+  // [번역 완료] find_love
   find_love: (() => {
     const title = '마루젠스키와 황혼의 해변에서 일몰을 보다';
     /**
@@ -2876,7 +2876,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] gentle_wind
+  // [번역 완료] gentle_wind
   gentle_wind: (() => {
     const title = 'TRUE END 다정한 바람이 세상을 분다';
     /**
@@ -2977,7 +2977,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] gentle_wind_end
+  // [번역 완료] gentle_wind_end
   async gentle_wind_end(maru, callname) {
     await era.printAndWait(
       `이렇게 두 사람의 이야기는 일단 결말을 맞았다. 경사로세, 경사로세.`,
@@ -3007,7 +3007,7 @@ module.exports = {
     }
   },
 
-  // [번역 대상] get_ts_content
+  // [번역 완료] get_ts_content
   get_ts_content(maru, train) {
     era.print([
       maru.get_colored_name(),
@@ -3017,7 +3017,7 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] girls_blue_1
+  // [번역 완료] girls_blue_1
   girls_blue_1: (() => {
     const title = (maru) => `${maru.teen_sex_title}의 우울`;
     /**
@@ -3248,7 +3248,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] girls_blue_2
+  // [번역 완료] girls_blue_2
   girls_blue_2: (() => {
     const title = (maru) => `${maru.teen_sex_title}의 우울`;
     /**
@@ -3340,7 +3340,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] girls_dream
+  // [번역 완료] girls_dream
   girls_dream: (() => {
     const title = 'NORMAL END · 꿈의 미래';
     /**
@@ -3425,7 +3425,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] girls_dream_end
+  // [번역 완료] girls_dream_end
   async girls_dream_end(maru, callname) {
     await era.printAndWait(`힌트를 보시겠습니까?`);
     era.printButton(`예`, 1);
@@ -3452,7 +3452,7 @@ module.exports = {
     }
   },
 
-  // [번역 대상] memory
+  // [번역 완료] memory
   memory: (() => {
     const title = '좋은 아침, 마루젠스키';
     /**
@@ -3545,7 +3545,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ne_happiness_day
+  // [번역 완료] ne_happiness_day
   ne_happiness_day: (() => {
     const title = 'NORMAL END · 잔잔한 나날';
     /**
@@ -3618,7 +3618,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] oc_95_1
+  // [번역 완료] oc_95_1
   oc_95_1: (() => {
     const title = '新年参拝';
     /**
@@ -3696,7 +3696,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_end_10
+  // [번역 완료] race_end_10
   race_end_10: (() => {
     const title = '레이스 패배';
     /** @param {CharaTalk} maru 마루젠 スキー */
@@ -3726,7 +3726,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_end_5
+  // [번역 완료] race_end_5
   race_end_5: (() => {
     const title = '레이스 입상';
     /** @param {CharaTalk} maru 마루젠 スキー */
@@ -3761,7 +3761,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_end_win
+  // [번역 완료] race_end_win
   race_end_win: (() => {
     const title = '레이스 승리';
     /** @param {CharaTalk} maru 마루젠 スキー */
@@ -3792,7 +3792,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_start
+  // [번역 완료] race_start
   race_start: (() => {
     const title = '레이스 시작';
     /**
@@ -3819,7 +3819,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] radi_shi_win
+  // [번역 완료] radi_shi_win
   radi_shi_win: (() => {
     const title = '라디오 NIKKEI상 후・방황의 길';
     /**
@@ -3874,7 +3874,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sank_hai_lose
+  // [번역 완료] sank_hai_lose
   sank_hai_lose: (() => {
     const title = '大阪杯後・鬱蒼';
     /** @param {CharaTalk} maru 마루젠 スキー */
@@ -3891,7 +3891,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sank_hai_win
+  // [번역 완료] sank_hai_win
   sank_hai_win: (() => {
     const title = '오사카배 후・바람이 남은 구름을 걷어내다';
     /**
@@ -3956,7 +3956,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sats_sho_5
+  // [번역 완료] sats_sho_5
   sats_sho_5: (() => {
     const title = '사츠키상 후・기어 체인지';
     /**
@@ -3993,7 +3993,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sats_sho_win
+  // [번역 완료] sats_sho_win
   sats_sho_win: (() => {
     const title = '사츠키상 후・불꽃처럼 아름다운 달리기';
     /**
@@ -4095,7 +4095,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sister_annoyance
+  // [번역 완료] sister_annoyance
   sister_annoyance: (() => {
     const title = (maru) => `${maru.elder_sibling_sex_title}의 고민`;
     /**
@@ -4275,7 +4275,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sprg_sta_win
+  // [번역 완료] sprg_sta_win
   sprg_sta_win: (() => {
     const title = '스프링 S 후・방황의 시작';
     /**
@@ -4418,7 +4418,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] teacher_sister
+  // [번역 완료] teacher_sister
   teacher_sister: (() => {
     const title = '가르쳐 주세요, 마루젠스키 선생님!';
     /**
@@ -4574,7 +4574,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] tenn_sho_win_s
+  // [번역 완료] tenn_sho_win_s
   tenn_sho_win_s: (() => {
     const title = '천황상(가을) 후・금빛 가을, 황금의 꿈';
     /**
@@ -4767,7 +4767,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] toky_yus_lose
+  // [번역 완료] toky_yus_lose
   toky_yus_lose: (() => {
     const title = '일본 더비 후・선택의 시작';
     /**
@@ -4876,7 +4876,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] toky_yus_win
+  // [번역 완료] toky_yus_win
   toky_yus_win: (() => {
     const title = '일본 더비 후・선택의 시작';
     /**
@@ -4998,7 +4998,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] train_fail
+  // [번역 완료] train_fail
   train_fail: (() => {
     const title = '몸을 소중히';
     /**
@@ -5080,7 +5080,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] train_fumble
+  // [번역 완료] train_fumble
   train_fumble: (() => {
     const title = '무리는 금물';
     /**
@@ -5189,7 +5189,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ts_add
+  // [번역 완료] ts_add
   ts_add: (() => {
     const title = '추가 자율 훈련';
     /**
@@ -5244,7 +5244,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_39
+  // [번역 완료] we_39
   we_39: (() => {
     const title = '할로윈';
     /**
@@ -5353,7 +5353,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_41
+  // [번역 완료] we_41
   we_41: (() => {
     const title = (maru) => `트레이너와 담당 ${maru.uma_sex_title}`;
     /**
@@ -5529,7 +5529,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_16
+  // [번역 완료] we_47_16
   we_47_16: (() => {
     const title = (maru) => `안녕, ${maru.name}이야.`;
     /**
@@ -5699,7 +5699,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_17
+  // [번역 완료] we_47_17
   we_47_17: (() => {
     const title = '동경';
     /**
@@ -5859,7 +5859,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_32
+  // [번역 완료] we_47_32
   we_47_32: (() => {
     const title = '夏季合宿終了';
     /**
@@ -5906,7 +5906,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_33
+  // [번역 완료] we_47_33
   we_47_33: (() => {
     const title = '물과 모래';
     /**
@@ -6054,7 +6054,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_34
+  // [번역 완료] we_47_34
   we_47_34: (() => {
     const title = '無風帯';
     /**
@@ -6279,7 +6279,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_37
+  // [번역 완료] we_47_37
   we_47_37: (() => {
     const title = '마음';
     /**
@@ -6416,7 +6416,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_38
+  // [번역 완료] we_47_38
   we_47_38: (() => {
     const title = '無風';
     /**
@@ -6692,7 +6692,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_95_32
+  // [번역 완료] we_95_32
   we_95_32: (() => {
     const title = '여름 합숙 종료・잊을 수 없는 연회';
     /**
@@ -6762,7 +6762,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_95_43
+  // [번역 완료] we_95_43
   we_95_43: (() => {
     const title = '다정한 바람';
     /** @param {CharaTalk} maru 마루젠 スキー */
@@ -6807,7 +6807,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_95_9
+  // [번역 완료] we_95_9
   we_95_9: (() => {
     const title = '炎炎';
     /**
@@ -6872,7 +6872,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_24
+  // [번역 완료] ws_24
   ws_24: (() => {
     const title = '훈련이 끝난 평범한 하루';
     /**
@@ -6967,7 +6967,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_30
+  // [번역 완료] ws_30
   ws_30: (() => {
     const title = '세 여신의 아이들';
     /**
@@ -7113,7 +7113,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_34
+  // [번역 완료] ws_34
   ws_34: (() => {
     const title = '선물';
     /**
@@ -7232,7 +7232,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47
+  // [번역 완료] ws_47
   ws_47: (() => {
     const title = '크리스마스와 설레는 추억';
     /**
@@ -7427,7 +7427,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_1
+  // [번역 완료] ws_47_1
   ws_47_1: (() => {
     const title = '새해의 마음';
     /**
@@ -7648,7 +7648,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_12
+  // [번역 완료] ws_47_12
   ws_47_12: (() => {
     const title = '팬 감사제';
     /**
@@ -7695,7 +7695,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_29
+  // [번역 완료] ws_47_29
   ws_47_29: (() => {
     const title = '夏季合宿';
     /**
@@ -7758,7 +7758,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_30
+  // [번역 완료] ws_47_30
   ws_47_30: (() => {
     const title = '縁日';
     /**
@@ -8004,7 +8004,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_31
+  // [번역 완료] ws_47_31
   ws_47_31: (() => {
     const title = '選択';
     /**
@@ -8327,7 +8327,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_40
+  // [번역 완료] ws_47_40
   ws_47_40: (() => {
     const title = '할로윈';
     /**
@@ -8445,7 +8445,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_48
+  // [번역 완료] ws_47_48
   ws_47_48: (() => {
     const title = '크리스마스';
     /**
@@ -8607,7 +8607,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_5
+  // [번역 완료] ws_47_5
   ws_47_5: (() => {
     const title = '겨울과 봄의 경계';
     /**
@@ -8773,7 +8773,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_6
+  // [번역 완료] ws_47_6
   ws_47_6: (() => {
     const title = '밸런타인';
     /**
@@ -8900,7 +8900,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_7
+  // [번역 완료] ws_47_7
   ws_47_7: (() => {
     const title = '아이돌';
     /**
@@ -9032,7 +9032,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_9
+  // [번역 완료] ws_47_9
   ws_47_9: (() => {
     const title = '전당 입성 주간 (인자 계승)';
     /**
@@ -9108,7 +9108,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_5
+  // [번역 완료] ws_5
   ws_5: (() => {
     const title = (maru) => `${maru.elder_sibling_sex_title}에게서 온 선물`;
     /**
@@ -9223,7 +9223,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_14
+  // [번역 완료] ws_95_14
   ws_95_14: (() => {
     const title = '팬 감사제';
     /**
@@ -9314,7 +9314,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_29
+  // [번역 완료] ws_95_29
   ws_95_29: (() => {
     const title = '夏季合宿開始';
     /**
@@ -9360,7 +9360,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_30
+  // [번역 완료] ws_95_30
   ws_95_30: (() => {
     const title = '縁日';
     /**
@@ -9493,7 +9493,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_40
+  // [번역 완료] ws_95_40
   ws_95_40: (() => {
     const title = '과자 안 주면 장난칠 거야!';
     /**
@@ -9594,7 +9594,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_48
+  // [번역 완료] ws_95_48
   ws_95_48: (() => {
     const title = '크리스마스';
     /**
@@ -9798,7 +9798,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_6
+  // [번역 완료] ws_95_6
   ws_95_6: (() => {
     const title = '밸런타인';
     /**
@@ -9955,7 +9955,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] yasu_kin_win_s
+  // [번역 완료] yasu_kin_win_s
   yasu_kin_win_s: (() => {
     const title = '야스다 기념 후・달리고 싶어지는 레이스';
     /**
