@@ -17,9 +17,9 @@
 - **현재 체크포인트:** `kojo/100400-Maruzensky/daily-4.js`와 `kojo/100400-Maruzensky/edu-4.js`까지 완료. 사용자 요청에 따라 여기서 정지한다.
 - 현재 배치 상태:
   1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/daily-4.js` — **23/23 완료**; final commit `478e3e68`; 재검사 `[번역 대상]` 0개 / 코드·본문 일본어 가나 0줄.
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — **90/90 완료**; final translation commit `79d3c5b5`, residual cleanup `2b2816be`, 마커 완료 전환 commit `d8f9671c`; 최종 재검사 `[번역 대상]` 0개 / `[번역 완료]` 90개 / 코드·본문 일본어 가나 0줄.
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — **90/90 완료**; 기존 완료 commit `d8f9671c` 이후 한자-only 일본어 문자열까지 최종 정리한 commit `b1a1192c`; 최종 재검사 `[번역 대상]` 0개 / `[번역 완료]` 90개 / 코드·본문 일본어 가나 0줄 / 코드 문자열 내 일본어 한자 잔존 0개.
   3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — **미착수 상태 유지**. 이번 요청 범위에 포함하지 않는다.
-- `edu-4.js` 61~90구간 재개 이후 주요 commit 흐름: `daba8766` → `3071ea91` → `89c55a4e` → `509370eb` → `332914ad` → `d64b3efa` → `7c0f32ba` → `9cf83d4c` → `c76b2d5c` → `d9511ba5` → `d0ee60ca` → `9f5856f4` → `94518283` → `517a8b58` → `ec6695f1` → `72b0b41d` → `8263eafc` → `da995f3f` → `186e66e4` → `1b3bf296` → `dc98ebc7` → `50a9e3ec` → `79d3c5b5` → cleanup `2b2816be` → complete `d8f9671c`.
+- `edu-4.js` 61~90구간 재개 이후 주요 commit 흐름: `daba8766` → `3071ea91` → `89c55a4e` → `509370eb` → `332914ad` → `d64b3efa` → `7c0f32ba` → `9cf83d4c` → `c76b2d5c` → `d9511ba5` → `d0ee60ca` → `9f5856f4` → `94518283` → `517a8b58` → `ec6695f1` → `72b0b41d` → `8263eafc` → `da995f3f` → `186e66e4` → `1b3bf296` → `dc98ebc7` → `50a9e3ec` → `79d3c5b5` → cleanup `2b2816be` → complete `d8f9671c` → final CJK cleanup `b1a1192c`.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
 - 직전 완료 배치: `100300-Tokai-Teio/edu-3.js`, `100300-Tokai-Teio/ero-3.js`, `100300-Tokai-Teio/love-3.js`.
 - 다음 재개 지점(`FILES.md` 순서 기준, **현재는 정지 상태**):
