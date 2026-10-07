@@ -14,7 +14,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] good_morning
+  // [번역 완료] good_morning
   good_morning(maru, you, callname) {
     const buffer = [];
     if (era.get('base:4:体力') < era.get('maxbase:4:体力') / 3) {
@@ -112,7 +112,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select
+  // [번역 완료] select
   select(maru, you, callname) {
     const buffer = [];
     if (era.get('base:4:体力') < era.get('maxbase:4:体力') / 3) {
@@ -218,7 +218,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_after_recruit
+  // [번역 완료] select_after_recruit
   select_after_recruit(maru, you, callname) {
     maru.say(
       `하이~ ${you.sex_code !== 1 ? '아가씨' : '멋진 남자'}, 나는 ${maru.name}이야.`,
@@ -231,7 +231,7 @@ module.exports = {
     );
   },
   /** @param {CharaTalk} maru マルゼンスキー */
-  // [번역 대상] select_sister_annoyance
+  // [번역 완료] select_sister_annoyance
   select_sister_annoyance(maru) {
     maru.say('더 큰 무대에서 달리면 기분까지 반짝반짝해지네♪');
     maru.say(`무슨 일 있으면 반드시 ${maru.elder_sibling_sex_title}에게 상담해 줘?`);
@@ -241,14 +241,14 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_girls_blue
+  // [번역 완료] select_girls_blue
   select_girls_blue(maru, callname) {
     maru.say('무릎이 전보다 훨씬 아파.', true);
     maru.say('앞으로 얼마나 더 버틸 수 있을까.', true);
     maru.say(`적어도 ${callname}에게는 들키지 않도록.`, true);
   },
   /** @param {CharaTalk} maru マルゼンスキー */
-  // [번역 대상] select_true_end
+  // [번역 완료] select_true_end
   select_true_end(maru) {
     maru.say('같은 후회를 두 번 다시 하지 않기 위해서.');
     maru.say('적어도 길을 잃고 고민하는 후배들에게 참고가 될 길을 남기기 위해서.');
@@ -260,7 +260,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_good_end
+  // [번역 완료] select_good_end
   select_good_end(maru, you, callname) {
     maru.say(
       `괴로움도 외로움도 ${callname}과(와) 함께라면 별것 아닌 것 같아.`,
@@ -279,7 +279,7 @@ module.exports = {
    * @param {number} wind マルゼンスキー育成用変数 wind の値
    * @returns {boolean} wind が特定値なら本文を出したので true、そうでなければ続行
    */
-  // [번역 대상] select_by_wind
+  // [번역 완료] select_by_wind
   select_by_wind(maru, you, callname, wind) {
     switch (wind) {
       case 1:
@@ -320,7 +320,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_Self_contempt
+  // [번역 완료] select_Self_contempt
   select_Self_contempt(maru, callname) {
     maru.say(`왜 그렇게 풀이 죽어 있어?`);
     maru.say('빨리 기운 내!');
@@ -330,7 +330,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] select_happiness_day
+  // [번역 완료] select_happiness_day
   select_happiness_day(maru, callname) {
     maru.say(`새파란 하늘, 새 잔디. 왠지 그리운 느낌이 드네.`);
     maru.say(`어머, ${callname}, 언제 왔어?`);
@@ -399,7 +399,7 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] talk
+  // [번역 완료] talk
   async talk(maru, callname) {
     const buffer = [];
     if (era.get('cflag:4:育成回合计时') < 3 * 48) {
@@ -433,9 +433,9 @@ module.exports = {
             () => maru.say_and_wait(`${callname}, 오늘 스케줄은 어떻게 되니?`),
             () =>
               maru.say_and_wait(
-                `${callname} に何かあったら、私に話してちょうだい。というか${
+                `${callname}에게 무슨 일이 있으면 나한테 말해줘. 아니, 그보다 ${
                   maru.sex_code === 1 ? '멋진 남자' : '아가씨'
-                }の私、大歓迎よ♪`,
+                }인 나는 대환영이야♪`,
               ),
           );
           break;
@@ -478,9 +478,9 @@ module.exports = {
           ),
         () =>
           maru.say_and_wait(
-            `かわいい後輩たちは、春の花みたいに香りを漂わせてるわね。${
+            `귀여운 후배들은 봄꽃처럼 향기를 풍기고 있네.${
               maru.sex
-            }たちの香りが、この世界の隅々まで届いたらいいのに。`,
+            }들의 향기가 이 세상 구석구석까지 닿으면 좋겠어.`,
           ),
       );
     }
@@ -648,17 +648,17 @@ module.exports = {
     await get_random_entry(buffer)();
   },
   /** @param {CharaTalk} maru マルゼンスキー */
-  // [번역 대상] s_a_tree_hollow
+  // [번역 완료] s_a_tree_hollow
   async s_a_tree_hollow(maru) {
     const buffer = [];
     buffer.push(
       () =>
         maru.say_and_wait(
-          `悩みごと？ ふふ、${maru.elder_sibling_sex_title}には、今のところないわ`,
+          `고민거리? 후후, ${maru.elder_sibling_sex_title}인 나한테는 지금은 없어.`,
         ),
       () =>
         maru.say_and_wait(
-          `私の走りは、${maru.uma_sex_title}たちに希望を届けてるのかしら、それとももっと深い絶望を……ううん、なんでもないわ⭐`,
+          `내 달리기는 ${maru.uma_sex_title}들에게 희망을 전하고 있는 걸까, 아니면 더 깊은 절망을…… 아니, 아무것도 아니야⭐`,
         ),
     );
     await get_random_entry(buffer)();
@@ -667,16 +667,16 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] s_a_dating
+  // [번역 완료] s_a_dating
   async s_a_dating(maru, callname) {
     const buffer = [];
     buffer.push(
       () =>
         maru.say_and_wait(
-          `私もさっき着いたばかり。待たずに ${callname} に会えたわ。`,
+          `나도 방금 도착했어. 기다리지 않고 ${callname}을(를) 만났네.`,
         ),
       () =>
-        maru.say_and_wait(`手作り弁当、用意したの。ピクニックで食べてみて♪`),
+        maru.say_and_wait(`수제 도시락 준비했어. 피크닉에서 먹어봐♪`),
     );
     await get_random_entry(buffer)();
   },
@@ -699,19 +699,19 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(maru, callname) {
     const buffer = [];
     buffer.push(
       () =>
         maru.say_and_wait(
-          `ん、${
+          `응, ${
             maru.elder_sibling_sex_title
-          }は釣りが苦手なの。じゃあ ${callname} にお願いするわね`,
+          }은(는) 낚시가 서툴러. 그럼 ${callname}에게 부탁할게.`,
         ),
       () =>
         maru.say_and_wait(
-          `ふふ、${callname} の真剣な顔を見ていると、私も嬉しいわ`,
+          `후후, ${callname}의 진지한 얼굴을 보고 있으면 나도 기뻐.`,
         ),
     );
     await get_random_entry(buffer)();
@@ -720,17 +720,17 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(maru, callname) {
     const buffer = [];
     buffer.push(
       () =>
         maru.say_and_wait(
-          `岸の空気、新鮮ね。${callname} も、気分がよくなったんじゃない？`,
+          `강가 공기, 상쾌하네. ${callname}도 기분이 좋아지지 않았어?`,
         ),
       () =>
         maru.say_and_wait(
-          `岸で歌の練習をしている後輩の熱を見ていると、自分の気分まですごく良くなるわ`,
+          `강가에서 노래 연습을 하는 후배의 열정을 보고 있으면 내 기분까지 무척 좋아져.`,
         ),
     );
     await get_random_entry(buffer)();
@@ -740,29 +740,29 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(maru, you, callname) {
     const buffer = [];
     buffer.push(
       async () => {
-        await maru.say_and_wait(`${callname} も一緒に踊らない？`);
+        await maru.say_and_wait(`${callname}도 같이 춤출래?`);
         await era.printAndWait(
-          `マルゼンスキーはダンスゲームが初めてなのに、柔らかい体と生まれつきのリズム感で、すぐにこのゲームの法則を掴んだ。`,
+          `마루젠스키는 댄스 게임이 처음인데도 유연한 몸과 타고난 리듬감으로 금세 이 게임의 요령을 파악했다.`,
         );
       },
       async () => {
-        await maru.say_and_wait(`次はあっちの遊び、試してみましょう`);
+        await maru.say_and_wait(`다음엔 저쪽 게임도 해보자.`);
         await era.printAndWait(
-          `${maru.name} は新しいものに出会った子どもみたいに、目を輝かせている`,
+          `${maru.name}은(는) 새로운 것을 발견한 아이처럼 눈을 반짝이고 있다.`,
         );
       },
       async () => {
-        await maru.say_and_wait(`こんなに頑張るトレーナー、かわいいわね`, true);
+        await maru.say_and_wait(`이렇게 열심히 하는 트레이너, 귀엽네.`, true);
         await era.printAndWait([
           maru.get_colored_name(),
-          ' は笑顔で、クレーンゲームを操作する ',
+          '은(는) 미소 지으며 크레인 게임을 조작하는 ',
           you.get_colored_name(),
-          ' の緊張した顔を見つめている',
+          '의 긴장한 얼굴을 바라보고 있다.',
         ]);
       },
     );
@@ -773,59 +773,59 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(maru, you, callname) {
-    await maru.say_and_wait(`${callname} も運試し、してみる？`);
-    await era.printAndWait(`${maru.name} は商店街近くの抽選機を指した`);
+    await maru.say_and_wait(`${callname}도 운 시험 한번 해볼래?`);
+    await era.printAndWait(`${maru.name}은(는) 상점가 근처의 추첨기를 가리켰다.`);
     const buffer = [];
     buffer.push(
       async () => {
-        await maru.say_and_wait(`大丈夫、次の機会もあるわ`);
+        await maru.say_and_wait(`괜찮아, 다음 기회도 있어.`);
         await era.printAndWait([
           maru.get_colored_name(),
-          ' はティッシュを引いた ',
+          '은(는) 티슈를 뽑은 ',
           you.get_colored_name(),
-          ' を慰めている',
+          '을(를) 위로하고 있다.',
         ]);
       },
       async () => {
-        await maru.say_and_wait(`夜はにんじんにしましょう`);
-        await era.printAndWait(`${maru.name} は引いたにんじんを見ながら言った`);
+        await maru.say_and_wait(`저녁은 당근으로 하자.`);
+        await era.printAndWait(`${maru.name}은(는) 뽑은 당근을 보며 말했다.`);
       },
       async () => {
         await maru.say_and_wait(
-          `うん、にんじんがこんなにあるなら、訓練室でパーティーしましょう`,
+          `응, 당근이 이렇게 많으면 훈련실에서 파티하자.`,
         );
         await era.printAndWait(
-          `そのあと${maru.name}はテイオー${
+          `그 뒤 ${maru.name}은(는) 테이오 ${
             maru.couple_title
-          }を訓練室に呼んで、にんじんパーティーを楽しんだ`,
+          }을(를) 훈련실로 불러 당근 파티를 즐겼다.`,
         );
       },
       async () => {
-        await maru.say_and_wait(`すごっ！ にんじんバーガー！`);
+        await maru.say_and_wait(`대단해! 당근 버거!`);
         await era.printAndWait([
           '夜、',
           you.get_colored_name(),
-          ' と ',
+          '와(과) ',
           maru.get_colored_name(),
-          ' は、この幸運の贈り物を一緒に味わった',
+          '은(는) 이 행운의 선물을 함께 맛보았다.',
         ]);
       },
       async () => {
-        await era.printAndWait(`チリンチリン`);
+        await era.printAndWait(`딸랑딸랑`);
         await maru.say_and_wait('！', true);
-        await era.printAndWait(`抽選箱のそばの店員「おめでとうございます」`);
+        await era.printAndWait(`추첨함 옆 점원「축하드립니다.」`);
         await era.printAndWait([
           maru.get_colored_name(),
-          ' は、温泉旅行券を引いた ',
+          '은(는) 온천 여행권을 뽑은 ',
           you.get_colored_name(),
           '을(를) 바라보고 있다.',
         ]);
         await maru.say_and_wait(
-          `運がいいわね。暇なときに、一緒に温泉へ行きましょう`,
+          `운이 좋네. 한가할 때 같이 온천에 가자.`,
         );
-        await era.printAndWait(`そのあと、二人は機嫌よく訓練室へ戻った`);
+        await era.printAndWait(`그 뒤 두 사람은 기분 좋게 훈련실로 돌아갔다.`);
       },
     );
     await get_random_entry(buffer)();
@@ -835,14 +835,14 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(maru, you, callname) {
-    await maru.say_and_wait(`${callname}、この最新の流行歌、聞いてみて`);
+    await maru.say_and_wait(`${callname}, 이 최신 유행가 한번 들어봐.`);
     await era.printAndWait([
       maru.get_colored_name(),
-      ' はかなり懐古的な曲を選んだらしく、',
+      '은(는) 꽤 복고적인 곡을 고른 모양이라 ',
       you.get_colored_name(),
-      ' は懐かしさに浸った',
+      '은(는) 추억에 잠겼다.',
     ]);
   },
   /**
@@ -850,54 +850,54 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(maru, you, callname) {
     const buffer = [];
     buffer.push(
       async () => {
         await maru.say_and_wait(
-          `最近公開のラブコメが評判らしいわ。${callname}、一緒に見ない？`,
+          `최근 개봉한 러브 코미디가 평이 좋대. ${callname}, 같이 볼래?`,
         );
         await era.printAndWait(
-          `${maru.name} は映画おすすめの十大クラシック上映を指していた。`,
+          `${maru.name}은(는) 영화관 추천 10대 클래식 상영작을 가리키고 있었다.`,
         );
       },
       async () => {
         await maru.say_and_wait(
-          `刺激的なスタント映画、見たい？ あのバンバンパァンって感じ`,
+          `짜릿한 스턴트 영화 볼래? 그 빵빵, 파앙 하는 느낌 있잖아.`,
         );
-        await era.printAndWait(`二人は最新公開の映画について話していた`);
+        await era.printAndWait(`두 사람은 최신 개봉 영화에 대해 이야기하고 있었다.`);
       },
       async () => {
-        await maru.say_and_wait(`${callname}……もうだめ、脚がまだ震えてる`);
+        await maru.say_and_wait(`${callname}…… 이제 안 돼, 다리가 아직도 떨려.`);
         await era.printAndWait(
-          `気分でホラーに手を出した二人は、支え合いながら上映室を出た`,
+          `기분 내키는 대로 공포 영화에 도전한 두 사람은 서로 부축하며 상영관을 나왔다.`,
         );
       },
     );
     if (era.get('love:4') >= 75) {
       buffer.push(async () => {
-        await maru.say_and_wait(`ん……今日はラブコメにしましょう`);
+        await maru.say_and_wait(`음…… 오늘은 러브 코미디로 하자.`);
         await era.printAndWait(
-          `おバカなカップルは、映画が山場に来たとき、主人公と同じようにキスした`,
+          `바보 커플은 영화가 클라이맥스에 이르자 주인공들처럼 입을 맞췄다.`,
         );
       });
     } else if (era.get('love:4') >= 50) {
       buffer.push(
         async () => {
           await maru.say_and_wait(
-            `${callname} は結局、温かいのか、乾いているのかしら？`,
+            `${callname}은(는) 결국 따뜻한 쪽일까, 건조한 쪽일까?`,
           );
           await era.printAndWait(
-            `眠くなる映画の途中、${maru.name} が突然ひとりごとを始めた`,
+            `졸음이 오는 영화 도중 ${maru.name}이(가) 갑자기 혼잣말을 시작했다.`,
           );
         },
         async () => {
           await maru.say_and_wait(
-            `銀杏が落ち始める秋より、私は湿った夏のほうが好きね`,
+            `은행이 떨어지기 시작하는 가을보다 나는 습한 여름이 더 좋아.`,
           );
           await era.printAndWait(
-            `${maru.name} は映画のおすすめを見ながらつぶやいた`,
+            `${maru.name}은(는) 영화 추천 목록을 보며 중얼거렸다.`,
           );
         },
       );
@@ -912,112 +912,112 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] out_church
+  // [번역 완료] out_church
   async out_church(maru, darley, godolphin, byerley, you, callname) {
-    darley.name = '優しい女神';
-    godolphin.name = '賢い女神';
-    byerley.name = '厳しい女神';
-    await maru.say_and_wait(`${callname}、着いたわよ。`);
-    await era.printAndWait(`ある休日、二人は神社へお参りに行くことにした`);
+    darley.name = '상냥한 여신';
+    godolphin.name = '현명한 여신';
+    byerley.name = '엄격한 여신';
+    await maru.say_and_wait(`${callname}, 도착했어.`);
+    await era.printAndWait(`어느 휴일, 두 사람은 신사에 참배하러 가기로 했다.`);
     await era.printAndWait(
-      `伝承では、三女神が地上に降りたとき、ここの清水を飲んだという。それでこの山の小川は${
+      `전승에 따르면 세 여신이 지상에 내려왔을 때 이곳의 맑은 물을 마셨다고 한다. 그래서 이 산의 개울은 ${
         maru.sex
-      }の祝福を受けた`,
+      }의 축복을 받았다.`,
     );
     await era.printAndWait(
-      `昔の人たちはこの小川を囲んで神社を建て、参拝する人たちは仕事や恋の成就を祈った`,
+      `옛사람들은 이 개울을 둘러 신사를 세웠고, 참배객들은 일과 사랑이 이루어지기를 빌었다.`,
     );
     await maru.say_and_wait(
-      `神社に掛かっている鈴が鳴ると、誠実に祈った人は三女神の祝福を得られるらしいわ。${
+      `신사에 걸린 방울이 울리면 진심으로 기도한 사람은 세 여신의 축복을 받을 수 있다나 봐.${
         maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
-      }の私も、試してみたいの。`,
+      }인 나도 한번 시험해 보고 싶어.`,
     );
     await era.printAndWait(
-      `早起きして来たのに、前方のまばらな人だかりと、野営用のテントが見えた。`,
+      `일찍 일어나 왔는데도 앞에는 드문드문 모인 사람들과 야영용 텐트가 보였다.`,
     );
-    await era.printAndWait(`たぶん、昨夜から待っている人も多いのだろう。`);
-    era.printButton(`じゃあ、私たちも急いで並ぼう`, 1);
+    await era.printAndWait(`아마 어젯밤부터 기다린 사람도 많을 것이다.`);
+    era.printButton(`그럼 우리도 서둘러 줄 서자.`, 1);
     await era.input();
     await era.printAndWait(
-      `願掛けに来た人たちは、割り込みの混乱で三女神を怒らせたくないのか、列は整っていた。`,
+      `소원을 빌러 온 사람들은 새치기 소동으로 세 여신을 화나게 하고 싶지 않은지 줄을 질서 있게 서 있었다.`,
     );
-    await era.printAndWait(`鳥居をくぐり、この三女神の神社へ入った`);
+    await era.printAndWait(`도리이를 지나 세 여신의 신사 안으로 들어갔다.`);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は前の参拝客を真似て賽銭箱に硬貨を入れ、柏手を打って両手を合わせ、目を閉じて祈り始めた',
+      '은(는) 앞의 참배객을 따라 새전함에 동전을 넣고 손뼉을 친 뒤 두 손을 모아 눈을 감고 기도하기 시작했다.',
     ]);
     await maru.say_and_wait(`……`);
     await era.printAndWait([
       you.get_colored_name(),
-      ' はそっと ',
+      '은(는) 살며시 ',
       maru.get_colored_name(),
-      ` を見た。${maru.sex}の唇はわずかに開き、何か小さくつぶやいているようだった。`,
+      `을(를) 바라보았다. ${maru.sex}의 입술은 살짝 벌어져 무언가 작게 중얼거리는 듯했다.`,
     ]);
     if (Math.random() < 0.5) {
-      await era.printAndWait(`しばらく待っても、鈴の音は聞こえなかった。`);
-      await maru.say_and_wait(`残念ね。`);
+      await era.printAndWait(`한동안 기다려도 방울 소리는 들리지 않았다.`);
+      await maru.say_and_wait(`아쉽네.`);
       await era.printAndWait(
-        `${maru.name}は大事な願いをかけたらしく、耳を垂らして、とても惜しそうだ。`,
+        `${maru.name}은(는) 중요한 소원을 빈 모양이라 귀를 늘어뜨리고 몹시 아쉬워한다.`,
       );
-      era.printButton(`${maru.sex}の手を握る`, 1);
+      era.printButton(`${maru.sex}의 손을 잡는다.`, 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ` は${maru.sex}の手を握った`,
+        `은(는) ${maru.sex}의 손을 잡았다.`,
       ]);
-      await maru.say_and_wait(`……${callname}、ありがとう`);
+      await maru.say_and_wait(`……${callname}, 고마워.`);
       await maru.say_and_wait(
-        `じゃあ、愛車でドライブして、この気持ちを発散しましょう`,
+        `그럼 내 차로 드라이브하면서 이 기분을 풀자.`,
       );
       await era.printAndWait([
-        'そのあと ',
+        '그 뒤 ',
         you.get_colored_name(),
-        ' は意識がぼんやりするなか、三女神の笑顔を見た気がした',
+        '은(는) 의식이 흐릿해지는 가운데 세 여신의 미소를 본 것 같았다.',
       ]);
     } else {
       const buffer = [
-        () => darley.say_and_wait('頑張って、子どもたち'),
+        () => darley.say_and_wait('힘내렴, 아이들아.'),
         () =>
-          godolphin.say_and_wait('かわいい子どもたち、幸せでありますように'),
-        () => byerley.say_and_wait('走りなさい。希望は疾走の先に'),
+          godolphin.say_and_wait('사랑스러운 아이들이 행복하기를.'),
+        () => byerley.say_and_wait('달리거라. 희망은 질주의 끝에 있다.'),
       ];
       await get_random_entry(buffer)();
-      await era.printAndWait(`チリンチリン`);
-      await era.printAndWait(`三女神の低い声が聞こえた気がした。`);
+      await era.printAndWait(`딸랑딸랑`);
+      await era.printAndWait(`세 여신의 낮은 목소리가 들린 것 같았다.`);
       await era.printAndWait(
-        `そっと目を開けて、${maru.name}のほうをちらりと見た。`,
+        `살며시 눈을 뜨고 ${maru.name} 쪽을 슬쩍 바라보았다.`,
       );
-      await maru.say_and_wait(`……三女神さま、ありがとう、`);
+      await maru.say_and_wait(`……세 여신님, 고마워요.`);
       await era.printAndWait(
-        `願いが認められたらしく、${maru.name}はほっとした笑顔を見せた。`,
+        `소원이 받아들여진 모양인지 ${maru.name}은(는) 안도한 미소를 보였다.`,
       );
       await maru.say_and_wait(`${callname}`);
-      await era.printAndWait(`${maru.name}は鳥居を出てから、後ろで足を止めた`);
+      await era.printAndWait(`${maru.name}은(는) 도리이를 빠져나온 뒤 뒤에서 걸음을 멈췄다.`);
       if (era.get('love:4') >= 90) {
         await era.printAndWait(
-          `乾いた唇が、もう一枚の唇に潤された。あなたは思わず${maru.sex}の細い体を抱きしめた`,
+          `메마른 입술이 다른 입술에 의해 촉촉해졌다. 당신은 저도 모르게 ${maru.sex}의 가느다란 몸을 끌어안았다.`,
         );
-        await era.printAndWait(`今、二つの鼓動が、ようやく同じ気持ちになった`);
+        await era.printAndWait(`지금 두 심장박동이 마침내 같은 마음이 되었다.`);
         await era.printAndWait(
-          `時間も、名誉も、佳人以外のすべてが、もうどうでもよかった`,
+          `시간도 명예도, 사랑하는 사람 이외의 모든 것이 이제 아무래도 좋았다.`,
         );
-        await era.printAndWait(`今は、この優しさのなかに沈んでいたかった`);
+        await era.printAndWait(`지금은 이 다정함 속에 잠기고 싶었다.`);
         await era.printAndWait(
-          `息が苦しくなるまで、風に踊る二人はやっと、名残惜しそうに離れた`,
+          `숨이 가빠질 때까지 바람 속에서 춤추던 두 사람은 그제야 아쉬운 듯 떨어졌다.`,
         );
         await maru.say_and_wait(
-          `${callname}、もしかしてあなたが、違う、あなたが、私がずっと探していた炎よ。`,
+          `${callname}, 혹시 네가…… 아니, 네가 내가 줄곧 찾던 불꽃이야.`,
         );
         await era.printAndWait(
-          `${maru.name}はあなたの手を強く握った。あなたは黙って、その痛みに耐えた`,
+          `${maru.name}은(는) 당신의 손을 세게 쥐었다. 당신은 말없이 그 아픔을 견뎠다.`,
         );
-        await era.printAndWait(`そして二人は、また唇を重ねた。`);
-        await era.printAndWait(`炎は、結局あの乾きに勝った`);
+        await era.printAndWait(`그리고 두 사람은 다시 입술을 포갰다.`);
+        await era.printAndWait(`불꽃은 결국 그 메마름을 이겼다.`);
       } else {
         await era.printAndWait(
-          `湿った気配を感じた。${maru.name}は後ろを向いて、胸の高鳴りを抑えようとしている`,
+          `촉촉한 기척이 느껴졌다. ${maru.name}은(는) 등을 돌리고 가슴의 두근거림을 가라앉히려 한다.`,
         );
-        await era.printAndWait(`微妙な空気のまま、二人は学園へ戻った`);
+        await era.printAndWait(`미묘한 분위기 속에서 두 사람은 학원으로 돌아갔다.`);
       }
     }
   },
@@ -1025,28 +1025,28 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {CharaTalk} you プレイヤー
    */
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(maru, you) {
     const buffer = [];
     buffer.push(
       () =>
         maru.say_and_wait(
-          `このあたりに評判のいいスイーツ店があるらしいわ。次、一緒に行きましょう`,
+          `이 근처에 평판 좋은 디저트 가게가 있대. 다음에 같이 가자.`,
         ),
       async () => {
-        await maru.say_and_wait(`フルーツパフェ、もう一杯♪`);
-        await you.say_and_wait(`そんなに食べて大丈夫か？`);
+        await maru.say_and_wait(`과일 파르페, 한 잔 더♪`);
+        await you.say_and_wait(`그렇게 많이 먹어도 괜찮아?`);
         await era.printAndWait([
           you.get_colored_name(),
           '은(는) ',
           maru.get_colored_name(),
-          ' の胃が持つか、少し心配になった',
+          '의 위가 버틸지 조금 걱정됐다.',
         ]);
         await maru.say_and_wait(
-          `心配いらないわ。甘いものを食べるときは、甘いもの専用の胃があるのよ⭐`,
+          `걱정 마. 단 걸 먹을 때는 단것 전용 배가 따로 있는 거야⭐`,
         );
         await maru.say_and_wait(
-          `${maru.name}は大きな口でフルーツパフェを食べている`,
+          `${maru.name}은(는) 큰 입으로 과일 파르페를 먹고 있다.`,
         );
       },
     );
@@ -1057,22 +1057,22 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(maru, you, callname) {
     const buffer = [];
     buffer.push(
       async () => {
-        await maru.say_and_wait(`${callname} の手、温かいわね`);
+        await maru.say_and_wait(`${callname}의 손, 따뜻하네.`);
         await era.printAndWait([
           you.get_colored_name(),
-          ' にとって、',
+          '에게 ',
           maru.get_colored_name(),
-          ' は何なのだろう？',
+          '은(는) 어떤 존재일까?',
         ]);
       },
       () =>
         maru.say_and_wait(
-          `できれば ${callname} に、ずっと頼っていてほしいけれど`,
+          `가능하면 ${callname}이(가) 계속 나를 의지해 줬으면 하지만.`,
         ),
     );
     await get_random_entry(buffer)();
@@ -1081,14 +1081,14 @@ module.exports = {
    * @param {CharaTalk} maru マルゼンスキー
    * @param {string} callname マルゼンスキーのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_shopping
+  // [번역 완료] o_s_shopping
   async o_s_shopping(maru, callname) {
     const buffer = [];
     buffer.push(
-      () => maru.say_and_wait(`${callname}、買いたいものはある？`),
+      () => maru.say_and_wait(`${callname}, 사고 싶은 거 있어?`),
       () =>
         maru.say_and_wait(
-          `このあたりにスイーツ店が新しくできたらしいわ。あとで寄ってみましょう`,
+          `이 근처에 새 디저트 가게가 생겼대. 이따 들러보자.`,
         ),
     );
     await get_random_entry(buffer)();
