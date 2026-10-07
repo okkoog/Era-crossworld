@@ -1016,9 +1016,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sr_shoubu
+  // [번역 완료] sr_shoubu
   sr_shoubu: (() => {
-    const title = '本気で勝負だ！';
+    const title = '진심으로 승부다!';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} festa ナカヤマフェスタ
@@ -1029,32 +1029,32 @@ module.exports = {
     const f = async (gs, festa, you, call_49, success) => {
       const ret = [];
       await era.printAndWait(
-        `${you.name} と ${gs.name} は屋上で小休止を楽しんでいた……本来なら波もなく過ぎる時間だった——だが ${you.name} は ${festa.name} を見た。`,
+        `${you.name} と ${gs.name}은(는) 옥상에서 잠시 휴식을 즐기고 있었다…… 원래라면 아무 일 없이 지나갈 시간이었다——하지만 ${you.name} は ${festa.name}을(를) 보았다.`,
       );
       era.println();
 
-      await festa.say_and_wait('……よう、今日もご機嫌だな。');
+      await festa.say_and_wait('……여어, 오늘도 기분 좋아 보이네.');
       await gs.say_and_wait([call_49, '……！！']);
       era.println();
 
       await era.printAndWait(
-        `刹那！ 血が凍った！ ${festa.name} から漂う博徒の気迫に、あの ${gs.name} すら圧倒されてるァ……！！`,
+        `찰나! 피가 얼어붙었다! ${festa.name}에게서 풍겨 나오는 도박꾼의 기백에, 그 ${gs.name}조차 압도당하고 있어……!!`,
       );
       era.println();
 
       await festa.say_and_wait(
-        'ふんふん……そんな顔するなよ。そうされると、今すぐ勝負したくなる。',
+        '흐음…… 그런 얼굴 하지 마. 그러면 지금 당장 승부하고 싶어지잖아.',
       );
-      await gs.say_and_wait('勝負……！？');
+      await gs.say_and_wait('승부……!?');
 
-      era.printButton('「フェスタ、何を……！」', 1);
+      era.printButton('「페스타, 뭘 하려고……!」', 1);
       await era.input();
 
-      await festa.say_and_wait('もちろん……');
+      await festa.say_and_wait('물론……');
       era.println();
-      era.printButton(`${festa.name}「限定じゃんけん……！」`, 1);
-      era.printButton(`${festa.name}「エンペラー……！」`, 2);
-      era.printButton(`${festa.name}「……えっち❤️」`, 3, {
+      era.printButton(`${festa.name}「한정 가위바위보……!」`, 1);
+      era.printButton(`${festa.name}「엠퍼러……!」`, 2);
+      era.printButton(`${festa.name}「……야한 거❤️」`, 3, {
         disabled:
           era.get('cflag:49:招募状态') !== recruit_flags.yes ||
           era.get('love:49') < 50,
@@ -1062,54 +1062,54 @@ module.exports = {
       ret.push(await era.input());
       if (ret[0] === 3) {
         await era.printAndWait(
-          `${you.name} とゴールドシップは、突然の行為の誘いにはたと固まった。だがナカヤマフェスタの目の欲の炎は、もう待ちきれないと語っていた……`,
+          `${you.name}와(과) 골드 쉽은 갑작스러운 제안에 그대로 굳어버렸다. 하지만 나카야마 페스타의 눈에 타오르는 욕망은 더는 기다릴 수 없다고 말하고 있었다……`,
         );
         era.println();
         await festa.say_and_wait(
-          'なあ、想像しただけで下、濡れてる……早く勝負しようぜ❤️❤️❤️',
+          '야, 상상만 했는데도 아래가 젖었어…… 빨리 승부하자고❤️❤️❤️',
         );
       } else {
         if (ret[0] === 1) {
           await era.printAndWait(
-            '限定じゃんけん……！！ カードでじゃんけんし、相手の命を奪う恐ろしいゲーム……一歩間違えれば深淵へ落ちる！！',
+            '한정 가위바위보……!! 카드로 가위바위보를 해서 상대의 목숨을 빼앗는 무시무시한 게임…… 한 발만 잘못 디디면 심연으로 떨어진다!!',
           );
         } else {
           await era.printAndWait(
-            'エンペラー……！！ カードの大小で生死を決める恐ろしいゲーム……一歩間違えれば深淵へ落ちる！！',
+            '엠퍼러……!! 카드의 대소로 생사를 가르는 무시무시한 게임…… 한 발만 잘못 디디면 심연으로 떨어진다!!',
           );
         }
         era.println();
         await era.printAndWait(
           `まずい……${
             gs.couple_title
-          }の性格じゃ、片付くころには昼飯が冷めてる！ どうする、止めるべきか……！？`,
+          }의 성격이라면 끝날 즈음엔 점심이 다 식어버린다! 어떡하지, 말려야 하나……!?`,
         );
-        era.printButton('「いや、俺が代わりに立つ！」（体力+100）', 1);
+        era.printButton('「아니, 내가 대신 나선다!」(체력+100)', 1);
         era.printButton(
-          '「頑張れ……！」（【非根幹距離○】習得、スキルPt+60 または スキルPt+15）',
+          '「힘내……!」(【비근간거리○】 습득, 스킬 Pt+60 또는 스킬 Pt+15)',
           2,
         );
         ret.push(await era.input());
         if (ret[1] === 1) {
           await festa.say_and_wait(
-            'は？ けっこう肝が据わってるじゃねえか……面白え！',
+            '하? 제법 배짱 있잖아…… 재밌는데!',
           );
-          await festa.say_and_wait('よし！ 今日は付き合ってやる！');
-          await gs.say_and_wait('おいおいマジかよ！？ アタシだけ外された！？');
+          await festa.say_and_wait('좋아! 오늘은 상대해 주지!');
+          await gs.say_and_wait('어이 어이, 진짜냐!? 나만 빠진 거야!?');
           era.println();
 
           await era.printAndWait(
-            `${you.name} はありったけを出し、どうにか絶体絶命を生き抜いた……`,
+            `${you.name}은(는) 있는 힘을 다해 어떻게든 절체절명의 위기를 살아남았다……`,
           );
-          await era.printAndWait('だが昼休みは、気づかぬうちに過ぎていた！');
+          await era.printAndWait('하지만 점심시간은 어느새 지나가 버렸다!');
         } else if (success) {
           await era.printAndWait(
-            `${gs.name} はありったけを出し、どうにか絶体絶命を生き抜いた……`,
+            `${gs.name}은(는) 있는 힘을 다해 어떻게든 절체절명의 위기를 살아남았다……`,
           );
-          await era.printAndWait('だが昼休みは、気づかぬうちに過ぎていた！');
+          await era.printAndWait('하지만 점심시간은 어느새 지나가 버렸다!');
         } else {
           await era.printAndWait(
-            `${gs.name} はありったけを出したが、${festa.name} には勝てなかった……`,
+            `${gs.name}은(는) 있는 힘을 다했지만, ${festa.name}에게는 이기지 못했다……`,
           );
           await era.printAndWait('しかも昼休みは、気づかぬうちに過ぎていた！');
         }
@@ -1120,9 +1120,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] takz_kin_win_s
+  // [번역 완료] takz_kin_win_s
   takz_kin_win_s: (() => {
-    const title = 'キーワード';
+    const title = '키워드';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} flash エイシンフラッシュ
@@ -1142,76 +1142,76 @@ module.exports = {
       bad_result,
     ) => {
       await era.printAndWait(
-        `レース前に ${you.name} へ残した不安とは裏腹に、${gs.name} は力強く、見事なレースを見せた！`,
+        `레이스 전에 ${you.name}에게 남긴 불안과는 달리, ${gs.name}은(는) 힘차고 훌륭한 레이스를 보여줬다!`,
       );
       era.println();
-      await gs.say_and_wait(`ははは！ ${jordan.name}！ 勝ったぜ、第三部完！`);
+      await gs.say_and_wait(`하하하! ${jordan.name}! 이겼다, 제3부 완!`);
       era.println();
       await era.printAndWait(
-        `レース後、${gs.name} は得意げに、敵であり友でもあるギャル・${jordan.name} へ勝ちを見せつけていた。`,
+        `레이스 후, ${gs.name}은(는) 의기양양하게, 적이자 친구이기도 한 갸루 ${jordan.name}에게 승리를 과시하고 있었다.`,
       );
       era.println();
-      await jordan.say_and_wait('ぐ——覚えとけよ！');
-      await jordan.say_and_wait('あと、これも覚えとけ！');
+      await jordan.say_and_wait('크윽——두고 봐!');
+      await jordan.say_and_wait('그리고 이것도 기억해 둬!');
       era.println();
       await era.printAndWait(
-        `${jordan.name} は紙切れを ${gs.name} の手にねじ込み、ぷんすかと去っていった。`,
+        `${jordan.name}은(는) 종잇조각을 ${gs.name}의 손에 억지로 쥐여주고 씩씩거리며 떠나갔다.`,
       );
       era.println();
 
-      era.printButton('「あ、またエデンの手がかりか？」', 1);
+      era.printButton('「아, 또 에덴의 단서인가?」', 1);
       await era.input();
 
-      await gs.say_and_wait('ん……今度は『ゾ』だ。');
-      await gs.say_and_wait('全然分かんねえ——！');
+      await gs.say_and_wait('음…… 이번엔 『조』다.');
+      await gs.say_and_wait('전혀 모르겠어——!');
       era.println();
       await era.printAndWait(
-        `${flash.name} だけでなく、${jordan.name} まで加わっている……裏で糸を引く人物は、いったい何者だ？`,
+        `${flash.name}뿐만 아니라, ${jordan.name}까지 끼어 있다…… 뒤에서 조종하는 인물은 대체 누구지?`,
       );
       if (win_takz_kin_c) {
         await era.printAndWait(
-          `帰ろうとしたとき、傍らの観客が ${gs.name} に手を振り、声を上げた。`,
+          `돌아가려던 때, 옆에 있던 관객이 ${gs.name}에게 손을 흔들며 소리쳤다.`,
         );
         era.println();
-        await era.printAndWait('観客A「ゴールドシップ、すごすぎる！」');
-        await era.printAndWait('観客B「連覇おめでとう！」');
+        await era.printAndWait('관객A「골드 쉽, 너무 대단해!」');
+        await era.printAndWait('관객B「연패 축하해!」');
         era.println();
-        await era.printAndWait(`礼儀として、こちらも観客に応えた。`);
+        await era.printAndWait(`예의상 이쪽도 관객에게 화답했다.`);
         era.println();
-        await gs.say_and_wait('ありがとな！');
+        await gs.say_and_wait('고맙다!');
         era.println();
 
-        era.printButton('「応援ありがとう～」', 1);
+        era.printButton('「응원 고마워~」', 1);
         await era.input();
 
         await era.printAndWait(
-          `${gs.name} は振り返って ${you.name} に尋ねる。`,
+          `${gs.name}은(는) 뒤돌아 ${you.name}에게 물었다.`,
         );
         era.println();
-        await gs.say_and_wait(`${callname}、連覇って何だ？`);
+        await gs.say_and_wait(`${callname}, 연패가 뭐야?`);
         era.println();
 
-        era.printButton('「……去年も、このレースで勝ってるだろ。」', 1);
+        era.printButton('「……작년에도 이 레이스에서 이겼잖아.」', 1);
         await era.input();
 
-        await gs.say_and_wait('マジかよ？ じゃあアタシ、超すげえのか？');
+        await gs.say_and_wait('진짜냐? 그럼 나, 엄청 대단한 거야?');
         era.println();
 
-        era.printButton('「たしかに超すごい。」', 1);
-        era.print('（パワー+18、他ステータス+3）', { offset: 1, width: 23 });
-        era.printButton('「歴史に名を残せるすごさだ！」', 2);
+        era.printButton('「확실히 엄청 대단하지.」', 1);
+        era.print('(파워+18, 다른 스테이터스+3)', { offset: 1, width: 23 });
+        era.printButton('「역사에 이름을 남길 정도로 대단해!」', 2);
         era.print(
           [
-            '（全ステータス+3、「ゲート難」習得、スキルPt+45 または 全ステータス+8、スキルPt+75）',
+            '(모든 스테이터스+3, 「게이트 난항」 습득, 스킬 Pt+45 또는 모든 스테이터스+8, 스킬 Pt+75)',
           ],
           { offset: 1, width: 23 },
         );
         const ret = await era.input();
         if (ret === 2 && !bad_result) {
           await gs.say_and_wait(
-            'あーはっは～やっぱりゴルシは、褒められるとちゃんとする子なんだよな～',
+            '아하하~ 역시 고루시는 칭찬받으면 제대로 하는 애라니까~',
           );
-          await gs.say_and_wait('これからも、ちゃんと甘やかせよ～');
+          await gs.say_and_wait('앞으로도 제대로 오냐오냐해 줘~');
         }
         return [ret];
       }
