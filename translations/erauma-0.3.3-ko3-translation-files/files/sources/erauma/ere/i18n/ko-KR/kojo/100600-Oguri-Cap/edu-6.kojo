@@ -890,7 +890,7 @@ food:
     - color: %COLOR%
       content:
         - fontWeight: bold
-          content: オグリキャップ
+          content: 오구리 캡
         - 「응구, 암…… (하지만…… 식어……)」
     -
     - %YOU%은(는) 웅얼거리는 말에서 일부만 알아들었다.
@@ -902,7 +902,7 @@ food:
         - color: %COLOR%
           content:
             - fontWeight: bold
-              content: オグリキャップ
+              content: 오구리 캡
             - 「……알겠어.」
     - acc: 2
       content: 「무슨 말인지 못 알아듣겠어. 천천히 먹어.」 (연모+2)
@@ -910,7 +910,7 @@ food:
         - color: %COLOR%
           content:
             - fontWeight: bold
-              content: オグリキャップ
+              content: 오구리 캡
             - 「……알겠어.」
     -
     - 속도를 늦춘 오구리 캡은 조금 풀이 죽은 듯 보였다. 하지만 건강을 위해서다. 이 나쁜 버릇은 고쳐야 한다.
@@ -1616,7 +1616,7 @@ palace_start:
     - color: %COLOR%
       content:
         - fontWeight: bold
-          content: オグリキャップ
+          content: 오구리 캡
         - 「너희는……」
     -
     - acc: 1
@@ -1671,7 +1671,7 @@ palace_start:
     - color: %COLOR%
       content:
         - fontWeight: bold
-          content: オグリキャップ
+          content: 오구리 캡
         - 「타마……」
     -
     - 타마모 크로스는 사납게 웃기만 하며 엄지손가락으로 코스의 출발선을 나타내는 흰 선을 허공에 가리켰다.
@@ -2420,7 +2420,7 @@ truth:
     - color: %COLOR%
       content:
         - fontWeight: bold
-          content: オグリキャップ
+          content: 오구리 캡
         - 「%YOURNAME%!」
     -
     - 빛덩이가 오구리 캡에게 가하는 압박은 점차 약해졌다.
@@ -2489,7 +2489,7 @@ truth:
     - color: %COLOR%
       content:
         - fontWeight: bold
-          content: オグリキャップ
+          content: 오구리 캡
         - 「그, 그래도 그냥 꿈인 게……」
     -
     - %YOU%은(는) 고개를 저었다. 그것은 신이 %SEX%을(를) 위해 짠 레이스다.
@@ -2500,7 +2500,7 @@ truth:
     - color: %COLOR%
       content:
         - fontWeight: bold
-          content: オグリキャップ
+          content: 오구리 캡
         - 「하지만…… 꿈속 레이스를 어떻게 준비해야 해?」
     -
     - %YOU%은(는) 지금도 물항아리를 어깨에 멘 세 여신상을 바라보며 작게 웃었다.
