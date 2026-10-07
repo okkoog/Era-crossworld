@@ -14,19 +14,20 @@
 - 작업 단위: **3파일씩**
 - 진행 판단 기준: `coverage.json` / `manifest.json`보다 **실제 파일의 `[번역 대상]` 마커를 우선**한다. manifest는 완료 파일도 미완료처럼 남아 있어 참고용으로만 사용한다.
 - **작업 순서: `FILES.md`에 적힌 파일 순서를 위에서 아래로 그대로 따른다.** 번역 대상 개수, 파일 크기, 작업 난이도에 따라 순서를 바꾸지 않는다. 이미 실제 `[번역 대상]`이 0개인 파일만 건너뛰고, 그 다음 미완료 파일을 계속 진행한다.
+- **현재 연속 진행 위치:** `FILES.md` 기준 `kojo/100200-Silence-Suzuka/daily-2.kojo`까지 확인·완료. 다음 시작점은 `kojo/100200-Silence-Suzuka/edu-2.kojo`.
 - 이번 완료 배치:
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/103600-Air-Shakur/rec-36.kojo` — commit `a86121f4`
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/106100-King-Halo/rec-61.kojo` — commit `217bb9a5`
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/108500-Daiichi-Ruby/rec-85.js` — commit `2cab2746`
-- 위 3파일은 재검사 시 `[번역 대상]` **0개**, 코드/본문의 일본어 가나 잔존 **0줄** 확인 완료.
-- 작업 전제 보정: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
-- 직전 완료 배치: `101900-Agnes-Digital/rec-19.js`, `105600-Matikanefukukitaru/rec-56.js`, `104600-Smart-Falcon/rec-46.js`.
+  1. `files/sources/erauma/ere/i18n/ko-KR/chara/names.js` — 639개 완료; commits `5f9d1694` → `224426b6` → `4e48587f`
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/1000-Player/ero-0.js` — 9개 완료; commit `ddea3685`
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/daily-2.kojo` — 2개 완료; commit `ab0851a2`
+- 위 3파일은 재검사 시 `[번역 대상]` **0개**, 코드/본문의 일본어 가나 잔존 **0줄** 확인 완료. `chara/names.js`는 번역 대상 assignment의 한자 잔존도 **0줄** 확인.
+- 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
+- 직전 완료 배치: `103600-Air-Shakur/rec-36.kojo`, `106100-King-Halo/rec-61.kojo`, `108500-Daiichi-Ruby/rec-85.js`.
 - 다음 재개 지점(`FILES.md` 순서 기준, 실제 마커 확인 완료):
-  1. `files/sources/erauma/ere/i18n/ko-KR/chara/names.js` — `[번역 대상]` 639개
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/1000-Player/ero-0.js` — `[번역 대상]` 9개
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/daily-2.kojo` — `[번역 대상]` 2개
-- `FILES.md`상 이 사이에 있는 `chara/titles.js`, `entry.js`, `1000-Player/daily-0.js`, `1000-Player/entry.js`는 실제 `[번역 대상]`이 0개라 건너뛴다.
-- 매 배치 종료 시 이 섹션의 **이번 완료 배치 / 다음 재개 우선 후보**를 반드시 갱신한다.
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/edu-2.kojo` — `[번역 대상]` 36개
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/love-2.kojo` — `[번역 대상]` 4개
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100200-Silence-Suzuka/rec-2.kojo` — `[번역 대상]` 6개
+- `FILES.md`상 `daily-2.kojo`와 `love-2.kojo` 사이의 `entry.js`는 실제 `[번역 대상]`이 0개라 건너뛴다.
+- 매 배치 종료 시 이 섹션의 **현재 연속 진행 위치 / 이번 완료 배치 / 다음 재개 지점**을 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
 
