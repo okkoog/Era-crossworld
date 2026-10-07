@@ -11,452 +11,452 @@ const __JaOriginal = require('#/i18n/ja-JP/kojo/105600-Matikanefukukitaru/rec-56
 
 module.exports = {
   ...__JaOriginal,
-  // [번역 대상] rec
+  // [번역 완료] rec
   async rec(kitaru, you) {
     await era.printAndWait([
-      '選抜レース。',
+      '선발 레이스.',
       kitaru.uma_sex_title,
       "와 트레이너의 만남의 장이다.",
     ]);
     if (era.get('flag:当前声望') >= 200) {
       await era.printAndWait([
-        'トレーナーを務めて、もうしばらくになる。',
+        '트레이너로 일한 지도 어느덧 제법 시간이 흘렀다.',
         you.get_colored_name(),
-        ' はこの仕事にも、いくらか勘どころを掴んできた。',
+        '은(는) 이 일의 요령도 어느 정도 익혀 가고 있다.',
       ]);
       await era.printAndWait([
-        'そのひとつが――',
+        '그중 하나는――',
         kitaru.uma_sex_title,
-        'とトレーナーが担当の契りを結べば、三年にも及ぶ契約は、人生という長い旅路のなかで、互いの運命を一瞬でも絡ませる、ということ。',
+        '와(과) 트레이너가 담당 계약을 맺는다면, 3년에 이르는 계약은 인생이라는 긴 여정 속에서 서로의 운명을 잠시라도 얽어 놓는다는 것.',
       ]);
       await era.printAndWait(
-        'この先、人生の風雨をともに受けることになるかもしれない。',
+        '앞으로 인생의 비바람을 함께 맞게 될지도 모른다.',
       );
     } else {
       await era.printAndWait([
-        '先輩トレーナーから伝わる心得は多い。そのひとつが――',
+        '선배 트레이너들에게 전해 내려오는 조언은 많다. 그중 하나는――',
       ]);
       await era.printAndWait([
         kitaru.uma_sex_title,
-        'とトレーナーが担当の契りを結べば、三年にも及ぶ契約は、人生という長い旅路のなかで、互いの運命を一瞬でも絡ませる、ということ。',
+        '와(과) 트레이너가 담당 계약을 맺는다면, 3년에 이르는 계약은 인생이라는 긴 여정 속에서 서로의 운명을 잠시라도 얽어 놓는다는 것.',
       ]);
       await era.printAndWait(
-        'この先、人生の風雨をともに受けることになるかもしれない。',
+        '앞으로 인생의 비바람을 함께 맞게 될지도 모른다.',
       );
     }
     await era.printAndWait([
       you.get_colored_name(),
-      ' は両手でポケットを探りながら、神社の石畳を歩いていく。',
+      '은(는) 양손으로 주머니를 뒤적이며 신사의 돌길을 걸어갔다.',
     ]);
     await era.printAndWait([
-      'トレセンの生徒がよく通うあの神社は、選抜レースを控えて神頼みをするトレーナーと',
+      '트레센 학생들이 자주 찾는 그 신사는 선발 레이스를 앞두고 신에게 의지하려는 트레이너와 ',
       kitaru.uma_sex_title,
-      'たちで、いまごろごった返しているはずだ。',
+      '들로 지금쯤 북적이고 있을 것이다.',
     ]);
     await era.printAndWait([
-      'だから ',
+      '그래서 ',
       you.get_colored_name(),
-      ' は、その名高い神社には向かわず、勘に従って、トレセンへ行く途中の寄り道に小さな神社を選んだ。',
+      '은(는) 그 유명한 신사로 가지 않고, 감을 따라 트레센으로 가는 길에 들를 수 있는 작은 신사를 골랐다.',
     ]);
     await era.printAndWait([
-      '人里離れた、どの神を祀っているのかもわからないこの神社は、平日と変わらず閑散としている。',
+      '인적 드문 곳에 있어 어떤 신을 모시는지도 알 수 없는 이 신사는 평소처럼 한산했다.',
     ]);
     await era.printAndWait([
-      '朱色の鳥居をくぐると、',
+      '주홍빛 도리이를 지나자, ',
       you.get_colored_name(),
-      ' は神域に足を踏み入れた。太い注連縄を巻いた大木と、石灯籠がそこかしこに立っている。',
+      '은(는) 신역에 발을 들였다. 굵은 금줄을 두른 거목과 석등롱이 곳곳에 서 있었다.',
     ]);
     if (era.get('flag:当前声望') >= 200) {
       await era.printAndWait([
-        '神社の厳かな空気は、次の担当を心待ちにしている ',
+        '신사의 엄숙한 분위기는 다음 담당을 고대하고 있는 ',
         you.get_colored_name(),
-        ' にさえ、つかの間の静けさをもたらした。',
+        '에게조차 잠시나마 평온을 가져다주었다.',
       ]);
     } else {
       await era.printAndWait([
-        '神社の厳かな空気は、まだ先行きに迷っている ',
+        '신사의 엄숙한 분위기는 아직 앞날을 고민하고 있는 ',
         you.get_colored_name(),
-        ' にさえ、つかの間の静けさをもたらした。',
+        '에게조차 잠시나마 평온을 가져다주었다.',
       ]);
     }
     era.printButton('祈願', 1);
     await era.input();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は目を閉じ、深く息を吸った……',
+      '은(는) 눈을 감고 깊게 숨을 들이마셨다……',
     ]);
-    await kitaru.say_as_unknown_and_wait('おおおおおっ——————！！！！');
+    await kitaru.say_as_unknown_and_wait('오오오오옷——————!!!!');
     await era.printAndWait([
       you.get_colored_name(),
-      ' が参拝の次の所作に入るより早く、背後の叫び声に遮られた。',
+      '이(가) 참배의 다음 동작으로 넘어가기 전에 뒤에서 들린 외침이 흐름을 끊었다.',
     ]);
-    era.printButton('振り返る', 1);
+    era.printButton('뒤돌아본다', 1);
     await era.input();
     await era.printAndWait([
-      '残念ながら、言い伝えとは違い、鐘の音とともに現れたのは神ではなく、ひとりの',
+      '유감스럽게도 전설과 달리 종소리와 함께 나타난 것은 신이 아니라 한 명의 ',
       kitaru.uma_sex_title,
-      'だった。',
+      '였다.',
     ]);
     await era.printAndWait([
-      'やや乱れたオレンジの短髪。ピンと張った胸にリボンが持ち上げられ、稲荷神の狐使を思わせる細長い耳が、興奮に合わせてひらひらと揺れている。',
+      '조금 헝클어진 주황색 단발. 가슴팍의 리본이 팽팽하게 들려 있었고, 이나리 신의 여우 사자를 떠올리게 하는 길쭉한 귀가 흥분에 맞춰 팔랑팔랑 흔들리고 있었다.',
     ]);
     await era.printAndWait([
-      '溢れんばかりの元気な外見とは裏腹に、すぐ目の前に立つこの',
+      '넘칠 듯 활기찬 겉모습과 달리, 바로 눈앞에 선 이 ',
       kitaru.uma_sex_title,
-      'からは、この神社にも似た清涼で静かな体香がする。左耳には厳かな達磨、右耳には黄色い雛菊。',
+      '에게서는 이 신사를 닮은 맑고 고요한 향기가 났다. 왼쪽 귀에는 위엄 있는 달마, 오른쪽 귀에는 노란 데이지 장식.',
     ]);
     await era.printAndWait([
-      'まったく違う二つの要素が、',
+      '전혀 다른 두 요소가, ',
       you.get_colored_name(),
-      ' の眼前にいるこの',
+      '의 눈앞에 있는 이 ',
       kitaru.uma_sex_title,
-      'の上に重なっている。',
+      '에게 겹쳐져 있었다.',
     ]);
     await era.printAndWait([
-      'そして、顔を上げて ',
+      '그리고 고개를 들어 ',
       you.get_colored_name(),
-      ' を見たとき――星形の瞳は、',
+      '을(를) 바라봤을 때――별 모양의 눈동자는 ',
       kitaru.uma_sex_title,
-      'のなかでも珍しい部類だ。',
+      '중에서도 보기 드문 편이다.',
       you.get_colored_name(),
-      ' とぶつかった喜びに、きらきらと輝いている。',
+      '과(와) 마주친 기쁨으로 반짝반짝 빛나고 있었다.',
     ]);
-    era.printButton('よく見る', 1);
+    era.printButton('자세히 본다', 1);
     await era.input();
     await era.printAndWait([
-      'この賑やかな栗毛は、たしかにトレセンの生徒だ。着ている制服を見れば、',
+      '이 활기찬 밤색 머리의 아이는 틀림없이 트레센 학생이다. 입고 있는 교복을 보면 ',
       you.get_colored_name(),
-      ' にもわかる。',
+      '도 알 수 있었다.',
     ]);
-    await era.printAndWait('ただ……今は選抜レースの時間ではないのか？');
+    await era.printAndWait('그런데…… 지금은 선발 레이스가 열릴 시간이 아닌가?');
     await era.printAndWait([
       you.get_colored_name(),
-      ' の視線に疑問が混じっていると見て、',
+      '의 시선에 의문이 섞여 있음을 눈치챈 ',
       kitaru.get_colored_name(),
-      ' はすぐ応えた。',
+      '은(는) 곧바로 대답했다.',
     ]);
     await kitaru.say_as_unknown_and_wait(
-      'そうですそうです！ 自己紹介を忘れていました！',
+      '맞아요, 맞아요! 자기소개를 깜빡했네요!',
     );
     await kitaru.say_as_unknown_and_wait([
-      '私の名前は【',
+      '제 이름은 【',
       kitaru.get_colored_name(),
-      '】！ 白興様のお導きで、ここに参りました！',
+      '】! 백흥 님의 인도로 이곳에 왔습니다!',
     ]);
     await kitaru.say_and_wait([
-      '運命の人が来るのを待っていたんです！ つまり、トレーナー',
+      '운명의 사람이 오기를 기다리고 있었어요! 즉, 트레이너 ',
       you.adult_sex_title,
-      '、あなたのことですよ！',
+      ', 바로 당신 말이에요!',
     ]);
     await era.printAndWait([
-      'そう言うと、',
+      '그렇게 말하며, ',
       kitaru.sex,
-      'は ',
+      '은(는) ',
       you.get_colored_name(),
-      ' に向かって両腕を広げた。',
+      '을(를) 향해 두 팔을 활짝 벌렸다.',
     ]);
     await kitaru.say_and_wait(
-      'どうか！ どうか私のトレーナーになってください！',
+      '부디! 부디 제 트레이너가 되어 주세요!',
     );
     await era.printAndWait([
-      'この神社が効きすぎたのか。それとも三女神か、別の神の視線が、たまたま ',
+      '이 신사의 영험함이 지나치게 강했던 걸까. 아니면 삼여신이나 다른 신의 시선이 우연히 ',
       you.get_colored_name(),
-      ' に落ちたのか。',
+      '에게 닿은 걸까.',
     ]);
-    await era.printAndWait('たとえば、あの白興様、だろうか。');
-    era.printButton('学んだ民俗の知識を思い出す', 1);
-    era.printButton('似た神話を聞いたことがないか思い出す', 2);
+    await era.printAndWait('예를 들면 저 백흥 님이라든가.');
+    era.printButton('배운 민속 지식을 떠올린다', 1);
+    era.printButton('비슷한 신화를 들은 적이 없는지 떠올린다', 2);
     if ((await era.input()) === 1) {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は断言できる。学んだ範囲では、この神の名を聞いた覚えはない。',
+        '은(는) 단언할 수 있다. 배운 범위 안에서는 이 신의 이름을 들은 기억이 없다.',
       ]);
     } else {
       await era.printAndWait([
-        'ない。',
+        '없다.',
         you.get_colored_name(),
-        ' は、この神の名を聞いたことがないと確信した。',
+        '은(는) 이 신의 이름을 들어 본 적이 없다고 확신했다.',
       ]);
       await era.printAndWait([
-        '目の前の',
+        '눈앞의 ',
         kitaru.uma_sex_title,
-        'の妄想かもしれない。',
+        '의 망상일지도 모른다.',
       ]);
     }
     await kitaru.say_and_wait(
-      'さあ！ トレーナーさん！ トゥインクル・シリーズで、一緒に幸運をつかみましょう！',
+      '자! 트레이너님! 트윙클 시리즈에서 함께 행운을 붙잡아요!',
     );
-    era.printButton('断る', 1);
-    era.printButton('受け入れる', 2);
+    era.printButton('거절한다', 1);
+    era.printButton('받아들인다', 2);
     if ((await era.input()) === 1) {
       await era.printAndWait([
-        '何も知らないまま、',
+        '아무것도 모르는 상태로 ',
         kitaru.uma_sex_title,
-        'のトレーナーになるのは、どちらにとっても無責任だ。',
+        '의 트레이너가 되는 것은 어느 쪽에게도 무책임한 일이다.',
       ]);
-      await kitaru.say_and_wait('うぅ……');
+      await kitaru.say_and_wait('우우……');
       await era.printAndWait([
         you.get_colored_name(),
-        ' に断られた',
+        '에게 거절당한 ',
         kitaru.teen_sex_title,
-        'は、みるみる沈んでいく。跳ねていた両耳も、尻尾といっしょに力なく垂れた。',
+        '은(는) 눈에 띄게 풀이 죽었다. 쫑긋하던 두 귀도 꼬리와 함께 힘없이 늘어졌다.',
       ]);
       await era.printAndWait([
-        '少し胸が痛む。それでも ',
+        '조금 마음이 아팠다. 그래도 ',
         you.get_colored_name(),
-        ' はわかっている。この ',
+        '은(는) 알고 있다. 이 ',
         kitaru.get_colored_name(),
-        ' の言葉だけで',
+        '의 말만 듣고 ',
         kitaru.sex,
-        'のトレーナーになるのは、どちらにとっても無責任だ。',
+        '의 트레이너가 되는 것은 어느 쪽에게도 무책임한 일이다.',
       ]);
-      await era.printAndWait('ただ……');
+      await era.printAndWait('다만……');
       await era.printAndWait([
         you.get_colored_name(),
-        ' が気づくと、断ってから数秒も経たないうちに、',
+        '이(가) 문득 깨달았을 때는 거절한 지 몇 초도 지나지 않았는데, ',
         kitaru.get_colored_name(),
-        ' の顔に、また笑顔が戻っていた。',
+        '의 얼굴에 다시 미소가 돌아와 있었다.',
       ]);
       await era.printAndWait(
-        '笑顔、というより、長いあいだ身につけた癖のような、型どおりの笑みだ。',
+        '미소라기보다는 오랜 시간 몸에 밴 습관 같은, 틀에 박힌 웃음이었다.',
       );
-      await you.say_and_wait('……はあ');
+      await you.say_and_wait('……하아');
       await era.printAndWait([
-        'トレーナーとしての責任が、',
+        '트레이너로서의 책임감이 ',
         you.get_colored_name(),
-        ' を見過ごさせない。',
+        '이 일을 그냥 지나치게 두지 않았다.',
       ]);
     } else {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         kitaru.sex,
-        'のことをほとんど知らない。それでも、ついさっき祈った神に、自分の運命を預けることにした。',
+        '에 대해 거의 아는 것이 없다. 그래도 방금 전 기도했던 신에게 자신의 운명을 맡겨 보기로 했다.',
       ]);
       await era.printAndWait([
-        'とはいえ、このまま',
+        '그렇다고 해도 이대로 ',
         kitaru.uma_sex_title,
-        'のトレーナーになるのは、どちらにとっても無責任だ。',
+        '의 트레이너가 되는 것은 어느 쪽에게도 무책임한 일이다.',
       ]);
     }
     era.printButton(
-      '「君の選抜レースを見に行く。そのあとで決めよう、でどうだ？」',
+      '「네 선발 레이스를 보러 갈게. 그다음에 결정하는 건 어때?」',
       1,
     );
     await era.input();
-    await kitaru.say_and_wait('おお――！');
-    await kitaru.say_and_wait('そうですそうです！ まさにそれです！');
+    await kitaru.say_and_wait('오오――!');
+    await kitaru.say_and_wait('맞아요, 맞아요! 바로 그거예요!');
     await kitaru.say_and_wait(
-      'もうすぐの選抜レースで！ 私の実力、お見せしますから！',
+      '곧 열릴 선발 레이스에서! 제 실력을 보여 드릴 테니까요!',
     );
     await kitaru.say_and_wait([
-      'じゃあ、指切りしましょう！ えっと……',
+      '그럼 손가락 걸고 약속해요! 그러니까……',
       you.actual_name,
-      ' トレーナーさん！',
+      ' 트레이너님!',
     ]);
     await era.printAndWait([
       kitaru.get_colored_name(),
-      ' は胸の名札から ',
+      '은(는) 가슴의 명찰을 보고 ',
       you.get_colored_name(),
-      ' の名前を、少しぎこちなく読み上げ、',
+      '의 이름을 조금 서툴게 읽어 내린 뒤, ',
       you.get_colored_name(),
-      ' に手を差し出した。',
+      '에게 손을 내밀었다.',
     ]);
-    await kitaru.say_and_wait('ん？');
+    await kitaru.say_and_wait('응?');
     await era.printAndWait([
       you.get_colored_name(),
-      ' が戸惑っていると見て、',
+      '이(가) 당황하는 모습을 보고, ',
       kitaru.get_colored_name(),
-      ' は説明した。',
+      '은(는) 설명했다.',
     ]);
-    await kitaru.say_and_wait('これはお姉さんが教えてくれた儀式なんです！');
-    await kitaru.say_and_wait('指切りの儀式です！');
-    await kitaru.say_and_wait('約束したら、もう運命なんです！');
-    era.printButton('手を伸ばす', 1);
+    await kitaru.say_and_wait('이건 언니가 가르쳐 준 의식이에요!');
+    await kitaru.say_and_wait('손가락 걸기 의식이에요!');
+    await kitaru.say_and_wait('약속하면 이제 운명인 거예요!');
+    era.printButton('손을 내민다', 1);
     await era.input();
-    await kitaru.say_and_wait('よし！ じゃあ、決まりですね！');
+    await kitaru.say_and_wait('좋아요! 그럼 결정된 거네요!');
     await kitaru.say_and_wait(
-      '絶対に、トレーナーさんに！ 契約してもらいますから！ どうか、見に来てくださいね～！',
+      '반드시 트레이너님과! 계약하고 말 테니까요! 꼭 보러 와 주세요~!',
     );
     era.drawLine({ content: '翌日' });
     await era.printAndWait([
       kitaru.get_colored_name(),
-      ' の選抜レースが、ついに始まった。',
+      '의 선발 레이스가 마침내 시작되었다.',
     ]);
     await era.printAndWait([
-      '今日の運勢が悪かったのか、渋滞で少し遅れた。やっと人混みをかき分けて、',
+      '오늘 운세가 나빴던 건지 교통 체증 때문에 조금 늦었다. 간신히 인파를 헤치고, ',
       you.get_colored_name(),
-      ' は観衆の輪に滑り込む。',
+      '은(는) 관중들 사이로 비집고 들어갔다.',
     ]);
     await era.printAndWait([
-      'なにしろこの選抜レースには、新入生のあいだですでに大逃げで名を馳せた',
+      '무엇보다 이번 선발 레이스에는 신입생들 사이에서 이미 대도주로 이름을 날린 ',
       kitaru.uma_sex_title,
-      'も、メジロ家の新星も、三冠を狙える鹿毛の',
+      '도, 메지로 가문의 신성도, 삼관을 노릴 수 있는 밤색 털의 ',
       kitaru.uma_sex_title,
-      'もいる。ひとり取り出しても、トレーナーたちが殺到する相手だ。',
+      '도 있다. 누구 하나만 떼어 놓고 보더라도 트레이너들이 몰려들 만한 상대다.',
     ]);
     await era.printAndWait([
       kitaru.get_colored_name(),
-      ' は、その添え物にすぎない。周囲の噂を聞く限り、',
+      '은(는) 그저 들러리에 불과했다. 주변의 이야기를 들어 보면, ',
       kitaru.sex,
-      'を見ている者はほとんどいない。',
+      '을(를) 주목하는 사람은 거의 없었다.',
     ]);
     await era.printAndWait([
-      'それでも、人混みに押し込まれた観客席の隅から、',
+      '그럼에도 인파에 밀려난 관중석 구석에서, ',
       you.get_colored_name(),
-      ' はゲートへ向かう ',
+      '은(는) 게이트로 향하는 ',
       kitaru.get_colored_name(),
-      ' を捉えた。',
+      '을(를) 발견했다.',
     ]);
     await era.printAndWait([
-      '体操服が、',
+      '체육복은 ',
       kitaru.sex,
-      'の起伏のある体の線をはっきり見せている。白いストッキングの脚は、白くて長い。',
+      '의 굴곡 있는 몸선을 선명하게 드러내고 있었다. 흰 스타킹을 신은 다리는 희고 길었다.',
     ]);
     await era.printAndWait([
-      '外見だけなら、',
+      '겉모습만 본다면, ',
       kitaru.sex,
-      'はたしかに愛らしい',
+      '은(는) 분명 사랑스러운 ',
       kitaru.uma_sex_title,
-      'だ。',
+      '다.',
     ]);
     await era.printAndWait([
-      'ただ、',
+      '다만, ',
       kitaru.sex,
-      'の表情は少し困っている。光を失った星の瞳が、観客席の誰かを探しているようだ。人混みの隅にいる ',
+      '의 표정은 조금 난처해 보였다. 빛을 잃은 별 모양 눈동자가 관중석의 누군가를 찾는 듯했다. 인파 구석에 있는 ',
       you.get_colored_name(),
-      ' には、気づいていないらしい。',
+      '은(는) 눈치채지 못한 모양이다.',
     ]);
     await era.printAndWait([
-      '結局、スタッフに急かされて、',
+      '결국 스태프의 재촉을 받아, ',
       kitaru.get_colored_name(),
-      ' はゲートインした。',
+      '은(는) 게이트에 들어갔다.',
     ]);
-    era.drawLine({ content: '選抜レース終了後' });
+    era.drawLine({ content: '선발 레이스 종료 후' });
     await era.printAndWait('惨敗……');
     await era.printAndWait([
-      '惨敗と言っていい。褒めるなら、',
+      '참패라고 해도 좋았다. 굳이 칭찬하자면, ',
       kitaru.sex,
-      'の、かろうじて平均より上、と言える末脚くらいだ。',
+      '의 막판 스퍼트가 간신히 평균 이상이라고 할 수 있는 정도였다.',
     ]);
     await era.printAndWait([
-      '走りのフォームさえぎこちなく、スパートのタイミングも外して、着順は最下位だった。',
+      '달리는 폼마저 어색했고 스퍼트 타이밍도 놓쳐, 순위는 최하위였다.',
     ]);
     await era.printAndWait([
-      '本当に',
+      '정말로 ',
       kitaru.sex,
-      'を担当にするのか。',
+      '을(를) 담당으로 삼을 것인가.',
       you.get_colored_name(),
-      ' は迷わずにいられなかった。',
+      '은(는) 고민하지 않을 수 없었다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' には見えた。ちらほら声をかけてきたトレーナーを、',
+      '에게는 보였다. 간간이 말을 걸어 오는 트레이너들을 ',
       kitaru.get_colored_name(),
-      ' は断っている。',
+      '은(는) 거절하고 있었다.',
     ]);
     await era.printAndWait([
       kitaru.get_colored_name(),
-      ' という',
+      '이라는 ',
       kitaru.uma_sex_title,
-      'は、意外なほど、約束したら離さないタイプらしい。',
+      '은(는) 의외로 한번 약속하면 끝까지 지키는 타입인 듯했다.',
     ]);
     await kitaru.say_and_wait(
-      '申し訳ありません！ でも、私にはもう運命の人がいるんです！',
+      '죄송합니다! 하지만 저에겐 이미 운명의 사람이 있어요!',
     );
     await era.printAndWait([
       you.get_colored_name(),
-      ' は、近づこうとするトレーナーたちへ、',
+      '은(는) 다가오려는 트레이너들에게 ',
       kitaru.sex,
-      'が大きな声でそう言うのを聞いた。',
+      '이(가) 큰 소리로 그렇게 말하는 것을 들었다.',
     ]);
     await era.printAndWait([
-      'それでも笑顔を作ろうとしてはいる。だがサイコロの出目は失敗だけだ。栗色の尻尾が、力なく両脚のあいだに垂れている。',
+      '그래도 억지로 미소를 지으려 하고 있었다. 하지만 주사위는 실패만 나온 듯했다. 밤색 꼬리가 힘없이 두 다리 사이로 늘어져 있었다.',
     ]);
-    era.printButton(`（${kitaru.name} の担当になる）（募集を試みる）`, 1);
-    era.printButton('（やっぱりやめよう……）（募集を諦める）', 2);
+    era.printButton(`（${kitaru.name}의 담당이 된다）（모집을 시도한다）`, 1);
+    era.printButton('（역시 그만두자……）（모집을 포기한다）', 2);
     const ret = await era.input();
     if (ret === 1) {
       era.printButton(`「${kitaru.name}！」`, 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         kitaru.sex,
-        'の名前を大声で呼んだ。聞こえていないのでは、と、さらに大きな声で何度も繰り返した。',
+        '의 이름을 큰 소리로 불렀다. 들리지 않는 건가 싶어 더욱 큰 목소리로 몇 번이나 반복했다.',
       ]);
       era.printButton(`「${kitaru.name}！！！」`, 1);
       await era.input();
       await era.printAndWait([
-        'まず垂れていた耳が跳ねた。火が戻った星の瞳が、',
+        '먼저 축 처져 있던 귀가 번쩍 섰다. 불빛을 되찾은 별 모양 눈동자가 ',
         you.get_colored_name(),
-        ' のほうを向く。',
+        '을(를) 향했다.',
       ]);
       await era.printAndWait([
-        'それから、',
+        '그리고, ',
         you.get_colored_name(),
-        ' がこれまで見たなかでいちばん速い末脚――鮮やかなオレンジの稲妻が、',
+        '이(가) 지금까지 본 것 중 가장 빠른 막판 스퍼트――선명한 주황빛 번개가 ',
         you.get_colored_name(),
-        ' へ一直線に飛んできた。',
+        '에게 일직선으로 날아왔다.',
       ]);
       await era.printAndWait([
-        '距離感のない ',
+        '거리 감각이 없는 ',
         kitaru.get_colored_name(),
-        ' が止まらず ',
+        '이(가) 멈추지 못하고 ',
         you.get_colored_name(),
-        ' の胸へ倒れ込みそうになった瞬間、',
+        '의 가슴으로 쓰러지듯 부딪칠 것 같은 순간, ',
         you.get_colored_name(),
-        ' は素早く頭を押さえて、ぶつかってくる動きを止めた。',
+        '은(는) 재빨리 머리를 눌러 부딪쳐 오는 움직임을 막았다.',
       ]);
       await era.printAndWait([
         kitaru.uma_sex_title,
-        'の力は人間の数倍、のはずだ。',
+        '의 힘은 인간의 몇 배나 될 터다.',
         you.get_colored_name(),
-        ' に止められる道理はない。',
+        '이(가) 막을 수 있을 리 없다.',
       ]);
       await era.printAndWait([
-        'なのに ',
+        '그런데도 ',
         you.get_colored_name(),
-        ' の掌の下では、',
+        '의 손바닥 아래에서는 ',
         kitaru.sex,
-        'は力のない兎のように、ふらふらしている。',
+        '은(는) 힘 빠진 토끼처럼 비틀거리고 있었다.',
       ]);
       await kitaru.say_and_wait(
-        'やっぱり！ トレーナーさんは見に来てくれるって、わかってました！',
+        '역시! 트레이너님은 보러 와 주실 줄 알았어요!',
       );
-      await kitaru.say_and_wait('今日はやっぱり――');
-      await kitaru.say_and_wait('大吉です！ 福来たる！');
+      await kitaru.say_and_wait('오늘은 역시――');
+      await kitaru.say_and_wait('대길이에요! 복이 찾아왔어요!');
       await era.printAndWait([
         kitaru.sex,
-        'は両手を空へ掲げる、妙なポーズをとってから、',
+        '은(는) 두 손을 하늘로 치켜드는 묘한 포즈를 취한 뒤, ',
         you.get_colored_name(),
-        ' を見た。',
+        '을(를) 바라봤다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' には、',
+        '에게는 ',
         kitaru.sex,
-        'の意味がわかった。',
+        '의 뜻을 알 수 있었다.',
       ]);
       await era.printAndWait([
         '結局 ',
         you.get_colored_name(),
-        ' は、藁にもすがるようなその視線の前で、契約書を取り出した。',
+        '은(는) 지푸라기라도 잡으려는 듯한 그 시선 앞에서 계약서를 꺼냈다.',
       ]);
       await era.printAndWait([
         kitaru.get_colored_name(),
-        ' と、【運命？】の出会いを果たした。',
+        '과(와), 【운명?】의 만남을 이루었다.',
       ]);
 
       await era.printAndWait([
         kitaru.get_colored_name(),
-        ' と、契約を結んだ。',
+        '과(와) 계약을 맺었다.',
       ]);
     } else {
       await era.printAndWait([
-        'この子の精神状態は、担当にするには向かない気がする。手を出さないほうがいい。',
+        '이 아이의 정신 상태를 보면 담당으로 삼기에는 적합하지 않은 것 같다. 관여하지 않는 편이 좋겠다.',
         you.get_colored_name(),
-        ' はそっとその場を離れた。',
+        '은(는) 조용히 그 자리를 떠났다.',
       ]);
     }
     return ret;
