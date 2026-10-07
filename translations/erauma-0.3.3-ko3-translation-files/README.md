@@ -11,20 +11,20 @@
 ## 작업 인수인계 / 현재 진행 상태
 
 - 마지막 갱신: 2026-10-07
-- 작업 단위: 기본은 **3파일씩**. 단, **3파일 묶음으로 진행하면 중단 위험이 있을 정도로 작업량이 큰 파일은 예외적으로 단일 파일 배치로 처리하여 그 파일을 먼저 끝낸다.** 대형 파일을 단독 처리해도 `FILES.md` 순서는 바꾸지 않는다. 현재는 사용자 요청에 따라 **`edu-4.js`만 단독 마무리 후 정지**한다.
+- 작업 단위: 기본은 **3파일씩**. 단, **3파일 묶음으로 진행하면 중단 위험이 있을 정도로 작업량이 큰 파일은 예외적으로 단일 파일 배치로 처리하여 그 파일을 먼저 끝낸다.** 대형 파일을 단독 처리해도 `FILES.md` 순서는 바꾸지 않는다.
 - 진행 판단 기준: `coverage.json` / `manifest.json`보다 **실제 파일의 `[번역 대상]` 마커와 본문을 우선**한다. manifest는 완료 파일도 미완료처럼 남아 있어 참고용으로만 사용한다.
-- **작업 순서: `FILES.md`에 적힌 파일 순서를 위에서 아래로 그대로 따른다.** 번역 대상 개수, 파일 크기, 작업 난이도에 따라 순서를 바꾸지 않는다. 이미 실제 `[번역 대상]`이 0개인 파일만 건너뛰고, 그 다음 미완료 파일을 계속 진행한다.
-- **현재 체크포인트:** `kojo/100400-Maruzensky/daily-4.js`와 `kojo/100400-Maruzensky/edu-4.js`까지 완료. 사용자 요청에 따라 여기서 정지한다.
-- 현재 배치 상태:
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/daily-4.js` — **23/23 완료**; final commit `478e3e68`; 재검사 `[번역 대상]` 0개 / 코드·본문 일본어 가나 0줄.
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/edu-4.js` — **90/90 완료**; 기존 완료 commit `d8f9671c` 이후 한자-only 일본어 문자열까지 최종 정리한 commit `b1a1192c`; 최종 재검사 `[번역 대상]` 0개 / `[번역 완료]` 90개 / 코드·본문 일본어 가나 0줄 / 코드 문자열 내 일본어 한자 잔존 0개.
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — **미착수 상태 유지**. 이번 요청 범위에 포함하지 않는다.
-- `edu-4.js` 61~90구간 재개 이후 주요 commit 흐름: `daba8766` → `3071ea91` → `89c55a4e` → `509370eb` → `332914ad` → `d64b3efa` → `7c0f32ba` → `9cf83d4c` → `c76b2d5c` → `d9511ba5` → `d0ee60ca` → `9f5856f4` → `94518283` → `517a8b58` → `ec6695f1` → `72b0b41d` → `8263eafc` → `da995f3f` → `186e66e4` → `1b3bf296` → `dc98ebc7` → `50a9e3ec` → `79d3c5b5` → cleanup `2b2816be` → complete `d8f9671c` → final CJK cleanup `b1a1192c`.
+- **작업 순서: `FILES.md`에 적힌 파일 순서를 위에서 아래로 그대로 따른다.** 번역 대상 개수, 파일 크기, 난이도에 따라 순서를 바꾸지 않는다. 실제 `[번역 대상]`이 0개인 파일만 건너뛴다.
+- **대형 파일 단독 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100600-Oguri-Cap/edu-6.kojo` — **34/34 완료**, 최종 정리 commit `7aa8d735`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 34 / 코드·본문 일본어 가나 0 / 한자-only 일본어 잔존 0.
+- **직전 일반 배치 완료:**
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100600-Oguri-Cap/love-6.kojo` — **4/4 완료**, commit `5bc4bad8`; 재검사 `[번역 대상]` 0 / 가나 0.
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100600-Oguri-Cap/rec-6.kojo` — **1/1 완료**, commit `da17da1b`; 재검사 `[번역 대상]` 0 / 가나 0.
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/daily-7.js` — **18/18 완료**, translation commit `8c4d6094`, residual cleanup `25f3c927`.
+- 순서상 `100600-Oguri-Cap/entry.js`와 `100700-Gold-Ship/base-7.js`는 실제 확인 결과 이미 `[번역 대상]` 0개라 건너뛰었다.
+- **현재 체크포인트:** 다음 순번 `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js`. 실제 확인 기준 **2033줄 / `[번역 대상]` 27개 / 본문 일본어 가나 약 552줄**이므로 **대형 파일 단독 배치**로 처리한다.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
-- 직전 완료 배치: `100300-Tokai-Teio/edu-3.js`, `100300-Tokai-Teio/ero-3.js`, `100300-Tokai-Teio/love-3.js`.
-- 다음 재개 지점(`FILES.md` 순서 기준, **현재는 정지 상태**):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100400-Maruzensky/love-4.js` — 기존 확인 기준 `[번역 대상]` 6개.
-- `FILES.md`상 `edu-4.js`와 `love-4.js` 사이의 `entry.js`는 실제 `[번역 대상]`이 0개라 건너뛴다.
+- 다음 재개 지점(`FILES.md` 순서 기준):
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — 1번째 `[번역 대상]` 구간부터 단독 진행
+  2. `edu-7.js` 완료 후에만 다음 파일로 이동
 - 매 배치 종료 또는 중단 체크포인트 저장 시 이 섹션의 **현재 체크포인트 / 배치 상태 / 다음 재개 지점**을 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
