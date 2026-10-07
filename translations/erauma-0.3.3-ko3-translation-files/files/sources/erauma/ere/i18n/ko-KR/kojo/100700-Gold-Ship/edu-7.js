@@ -802,55 +802,55 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sa_heroine_red
+  // [번역 완료] sa_heroine_red
   sa_heroine_red: (() => {
-    const title = '主役の赤！';
+    const title = '주역의 빨강!';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
-      await era.printAndWait(`ある日、${you.name} が中庭を歩いていると——`);
-      await era.printAndWait(`勝負服を着た ${gs.name} がいた。`);
+      await era.printAndWait(`어느 날 ${you.name}이(가) 안뜰을 걷고 있는데——`);
+      await era.printAndWait(`승부복을 입은 ${gs.name}이(가) 있었다.`);
       era.println();
 
       await gs.say_and_wait(
-        `あ、${you.actual_name} じゃねえか。今日も元気に鰓呼吸しろよ。`,
+        `아, ${you.actual_name} 아니냐. 오늘도 힘차게 아가미 호흡해라.`,
       );
-      era.printButton('「……それより、なんで勝負服なんだ？」', 1);
+      era.printButton('「……그보다 왜 승부복이야?」', 1);
       await era.input();
-      await gs.say_and_wait('これは赤い主役の力を得るためだ。');
+      await gs.say_and_wait('이건 붉은 주역의 힘을 얻기 위해서다.');
       await gs.say_and_wait(
-        'その顔は何だ？ よく考えろ、子供のころ見た戦隊ヒーローも熱血漫画の主役も、みんな赤だろ？',
+        '그 표정은 뭐냐? 잘 생각해봐, 어릴 때 본 전대 히어로도 열혈 만화의 주인공도 다 빨강이잖아?',
       );
-      await gs.say_and_wait('赤を着てるやつが主役で、最後は必ず勝つんだ！');
+      await gs.say_and_wait('빨강을 입은 녀석이 주역이고 마지막에는 반드시 이긴다!');
       era.println();
 
       await era.printAndWait(
-        `少しズレてはいるが、${gs.name} の言うことは間違っていない……この機会に、少し教えておくか？`,
+        `조금 엇나가긴 했지만 ${gs.name}이(가) 하는 말이 틀린 건 아니다…… 이 기회에 조금 가르쳐줄까?`,
       );
-      era.printButton('「世の中には、いろんな赤がある。」（賢さ+20）', 1);
-      era.printButton('「自分の信念を貫け！」（根性+20）', 2);
+      era.printButton('「세상에는 여러 가지 빨강이 있어.」 (지능+20)', 1);
+      era.printButton('「자기 신념을 관철해!」 (근성+20)', 2);
       const ret = await era.input();
       if (ret === 1) {
-        await gs.say_and_wait('色っぽい赤も、悪役の赤もあるって！？');
-        await gs.say_and_wait('そっか、赤の力を甘く見てたな……');
+        await gs.say_and_wait('섹시한 빨강도, 악역의 빨강도 있다고!?');
+        await gs.say_and_wait('그렇구나, 빨강의 힘을 얕봤네……');
         await gs.say_and_wait(
-          'アタシは最初から、主役も悪役もこなせる力を得てたんだ！',
+          '나는 처음부터 주역도 악역도 소화할 수 있는 힘을 얻고 있었던 거야!',
         );
-        await gs.say_and_wait('しかも……色っぽさつきで魅力は無敵だぜ❤️');
+        await gs.say_and_wait('게다가…… 섹시함까지 붙어서 매력은 무적이다❤️');
         era.println();
 
         await era.printAndWait(
-          `${gs.name} は妖艶な視線を残し、興奮して去っていった。`,
+          `${gs.name}은(는) 요염한 시선을 남기고 흥분한 채 떠나갔다.`,
         );
       } else {
         await gs.say_and_wait(
-          `その通りだ！ ${gs.sex_code !== 1 ? 'アタシ' : 'オレ'}、参上！`,
+          `그렇다! ${gs.sex_code !== 1 ? '나' : '나'}, 등장!`,
         );
         era.println();
 
-        await era.printAndWait(`${gs.name} は元気よく去っていった。`);
+        await era.printAndWait(`${gs.name}은(는) 기운차게 떠나갔다.`);
       }
       return [ret];
     };
@@ -858,126 +858,126 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sa_sudden_look_back
+  // [번역 완료] sa_sudden_look_back
   sa_sudden_look_back: (() => {
-    const title = 'ゴルシの突然昔語り編！';
+    const title = '고루시의 갑작스런 옛날이야기 편!';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       await era.printAndWait(
-        `腹が減った。食堂のラーメンが評判らしい。${you.name} はトレセン食堂へ向かい、腹の虫を鎮めることにした。`,
+        `배가 고프다. 식당의 라멘이 평이 좋다. ${you.name}은(는) 트레센 식당으로 가 허기를 달래기로 했다.`,
       );
       era.println();
 
       await era.printAndWait(
-        `途中、${you.name} は遠くから中庭に座るゴールドシップを認めた。陽の光が揺れる枝葉の間から、黙った美人の上へ降り、きらめいている。`,
+        `도중에 ${you.name}은(는) 멀리 안뜰에 앉아 있는 골드 쉽을 알아봤다. 햇빛이 흔들리는 나뭇잎 사이로 말없는 미인의 몸 위에 내려앉아 반짝인다.`,
       );
       era.println();
 
-      await gs.say_and_wait(`あ、${you.actual_name} か。`);
+      await gs.say_and_wait(`아, ${you.actual_name}인가.`);
       era.println();
 
-      era.printButton('ここで何してるんだ？ 飯は食わないのか？', 1);
+      era.printButton('여기서 뭐 해? 밥은 안 먹어?', 1);
       await era.input();
 
-      await gs.say_and_wait('どう言えばいいか、昔を思い出してた。');
+      await gs.say_and_wait('뭐라고 해야 하나, 옛날 생각을 하고 있었어.');
       await gs.say_and_wait(
-        'ずっと前の吹雪の夜、幼いアタシは家のネジ工場の足しに、一人で街で金属バットを売っててな……',
+        '아주 오래전 눈보라 치던 밤, 어린 나는 집의 나사 공장에 보탬이 되려고 혼자 거리에서 금속 배트를 팔고 있었지……',
       );
       era.println();
 
-      era.printButton('ネジを打てよ。', 1);
+      era.printButton('나사를 팔라고.', 1);
       await era.input();
 
       await gs.say_and_wait(
-        '途中で骨まで凍る風にやられて、もう人の形じゃなくなって、寒さで泣いちまった。',
+        '도중에 뼈까지 얼어붙는 바람에 당해서 거의 사람 꼴도 아니게 됐고 추워서 울어버렸어.',
       );
       await gs.say_and_wait(
-        `それから……アタシの運命を変えた${gs.uma_sex_title}が現れた。`,
+        `그리고…… 내 운명을 바꾼 ${gs.uma_sex_title}이(가) 나타났지.`,
       );
       await gs.say_and_wait(
-        `${gs.sex}はアタシの前に来て、温かいラーメンスープの雑炊を差し出した。`,
+        `${gs.sex}은(는) 내 앞에 와서 따뜻한 라멘 국물 죽을 내밀었어.`,
       );
       era.println();
 
-      era.printButton('いま何の話をしてるか、自分で聞いてみろよ。', 1);
+      era.printButton('지금 무슨 이야기를 하는지 스스로 한번 들어봐.', 1);
       await era.input();
 
       await gs.say_and_wait(
         `${
           gs.sex
-        }はこう言った。『私も${gs.uma_sex_title}だけど走るのは苦手で、いまはラーメン屋をやってる。あなたも、人生の目標は自由に選んでいいのよ』ってな。`,
+        }은(는) 이렇게 말했어. 『나도${gs.uma_sex_title}이지만 달리는 건 서툴러서 지금은 라멘 가게를 하고 있어. 너도 인생의 목표는 자유롭게 골라도 돼』라고.`,
       );
       await gs.say_and_wait(
-        `その${gs.uma_sex_title}の言葉で気づいた。アタシは実家のネジ工場を継がなくていいんだ、って！`,
+        `その${gs.uma_sex_title}의 말을 듣고 깨달았어. 나는 본가의 나사 공장을 물려받지 않아도 된다는 걸!`,
       );
       era.println();
 
       await era.printAndWait(
-        '他人に左右されず、自分の道を歩く……それは、いかにもゴールドシップだ。',
+        '타인에게 휘둘리지 않고 자기 길을 걷는다…… 정말 골드 쉽답다.',
       );
       era.println();
 
       era.printButton(
-        '「当時のスープを再現してみるか？」（スタミナ＆賢さ+10）',
+        '「그때의 국물을 재현해볼까?」 (스태미나&지능+10)',
         1,
       );
-      era.printButton('「当時の場所を見に行こうか？」（スピード+20）', 2);
+      era.printButton('「그때의 장소를 보러 갈까?」 (스피드+20)', 2);
       const ret = await era.input();
       if (ret === 1) {
-        await gs.say_and_wait('スープの再現……アタシにできるか？');
+        await gs.say_and_wait('국물 재현…… 내가 할 수 있을까?');
         await gs.say_and_wait(
-          '……ふん、鍛え上げたアタシにできねえわけがねえ。ニンニクを山ほど入れた味、覚えてる！',
+          '……흥, 단련된 내가 못할 리가 없지. 마늘을 산더미처럼 넣었던 맛, 기억난다!',
         );
-        await gs.say_and_wait(`ついてこい！`);
+        await gs.say_and_wait(`따라와!`);
         era.println();
 
         await era.printAndWait(
-          `${you.name} はゴールドシップに食堂の厨房へ連れて行かれ、衆人環視の中で一角を占領し、ラーメンスープの研究を始めた。`,
+          `${you.name}은(는) 골드 쉽에게 식당 주방으로 끌려가 많은 사람이 지켜보는 가운데 한쪽을 점거하고 라멘 국물 연구를 시작했다.`,
         );
         era.println();
 
         await gs.say_and_wait(
-          'よし！ 完成だ！ ニンニクだらけのラーメン！ 一緒に味見しようぜ！',
+          '좋아! 완성이다! 마늘투성이 라멘! 같이 맛보자!',
         );
         era.println();
 
-        era.printButton('「辛すぎる————！！ ニンニク入れすぎで食えねえ！」', 1);
+        era.printButton('「너무 매워————!! 마늘을 너무 넣어서 못 먹겠어!」', 1);
         await era.input();
 
         await era.printAndWait(
-          `${you.name} とゴールドシップはあとで反省し、あの日あれほど濃い雑炊を飲み込めたのは、極寒という極端な事例だったと結論した。`,
+          `${you.name}와(과) 골드 쉽은 나중에 반성하며 그날 그렇게 진한 죽을 먹을 수 있었던 건 혹한이라는 극단적인 상황 때문이었다고 결론 내렸다.`,
         );
       } else {
-        await gs.say_and_wait('当時の場所……そうだ！ 堤防のそばだ！');
+        await gs.say_and_wait('그때의 장소…… 맞다! 제방 근처야!');
         await gs.say_and_wait(
-          '何も変わってなきゃ、あのラーメン屋台はまだあるはずだ！',
+          '아무것도 안 변했다면 그 라멘 포장마차는 아직 있을 거야!',
         );
         era.println();
 
         await era.printAndWait(
-          `${you.name} はゴールドシップに堤防へ連れて行かれ、謎のラーメン屋台を探したが、夜まで一粒も得られなかった……`,
+          `${you.name}은(는) 골드 쉽에게 제방으로 끌려가 수수께끼의 라멘 포장마차를 찾아봤지만 밤이 될 때까지 아무것도 찾지 못했다……`,
         );
       }
       era.println();
 
       await era.printAndWait(
-        `その後のある日、${you.name} はトレーナー室に夜まで残っていた。ゴールドシップのトレーナーとして、${gs.sex}のファンレターを管理するのも自分の務めだ。${you.name} は機械的にその一通を開き、意味深な文面を目にした……`,
+        `그 뒤 어느 날 ${you.name}은(는) 밤까지 트레이너실에 남아 있었다. 골드 쉽의 트레이너로서 ${gs.sex}의 팬레터를 관리하는 것도 자신의 업무다. ${you.name}은(는) 기계적으로 한 통을 열었다가 의미심장한 문구를 보게 됐다……`,
       );
       era.println();
 
       await era.printAndWait(
-        '？？？「どうやら、あなたは本当に自由に自分の道を選んでいるようね。私も、ずっと見守っているわ。」',
+        '???「아무래도 너는 정말 자유롭게 자기 길을 선택하고 있는 모양이네. 나도 계속 지켜보고 있어.」',
       );
       era.println();
 
-      era.printButton('この手紙は、ゴルシに見せておこう……', 1);
+      era.printButton('이 편지는 고루시에게 보여두자……', 1);
       await era.input();
 
       await era.printAndWait(
-        `手紙にはその文だけがあり、上書きも下書きもない。だが ${you.name} は、ゴールドシップの、ニンニクだらけの冬の物語を思わず思い出していた。`,
+        `편지에는 그 문장만 있고 덧글도 초안도 없다. 하지만 ${you.name}은(는) 골드 쉽의 마늘투성이 겨울 이야기를 저도 모르게 떠올리고 있었다.`,
       );
       return [ret];
     };
@@ -985,31 +985,31 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sats_sho_win
+  // [번역 완료] sats_sho_win
   sats_sho_win: (() => {
-    const title = '四月の仇';
+    const title = '4월의 원수';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
-      await gs.say_and_wait('セイヤー！ 五月の仇、討ったぜ！');
+      await gs.say_and_wait('세이야ー! 5월의 원수, 갚았다!');
       era.println();
       await era.printAndWait(
-        `なぜかは分からないが、${gs.sex}は四月開催なのに皐月賞と呼ぶ皐月賞に不服らしく、こうして皐月賞と喧嘩を売っていた。`,
+        `왜인지는 모르겠지만 ${gs.sex}은(는) 4월에 열리는데도 사츠키상이라고 부르는 사츠키상이 마음에 들지 않는 듯 이렇게 사츠키상에 싸움을 걸고 있었다.`,
       );
       era.println();
-      await gs.say_and_wait('来年も皐月賞に戻って、五月の仇をもう一回討つ！');
+      await gs.say_and_wait('내년에도 사츠키상으로 돌아와 5월의 원수를 한 번 더 갚는다!');
       era.println();
 
       era.printButton(
-        '「皐月賞はクラシック級だ、一生に一度しか走れないぞ！」',
+        '「사츠키상은 클래식급이야, 평생 한 번밖에 못 달려!」',
         1,
       );
       await era.input();
 
       await era.printAndWait(
-        `だが ${you.name} の声が届く前に、${gs.name} はもう遠くまで走っていた。`,
+        `하지만 ${you.name}의 목소리가 닿기도 전에 ${gs.name}은(는) 이미 멀리까지 달려가 있었다.`,
       );
     };
     f.title = title;
