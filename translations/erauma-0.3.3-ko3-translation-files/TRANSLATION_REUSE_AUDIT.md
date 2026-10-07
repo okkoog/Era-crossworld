@@ -839,11 +839,92 @@ strict에서 제외된 항목:
 - edu Palmer notify 미확정 4
 - ero D 2
 
+## base 실제 3자 대조 — 전수조사 완료
+
+`FILES.md`에는 base가 9파일 / 108파트로 기록되어 있으나, live 실제 마커를 다시 세면:
+- 이미 `[번역 완료]`: **27**
+  - Tokai Teio: 12
+  - Gold Ship: 4
+  - Mejiro McQueen: 11
+- 현재 `[번역 대상]`: **81**
+
+현재 감사 대상 81:
+- Manhattan Cafe: 13
+- Agnes Tachyon: 7
+- Haru Urara: 13
+- Mejiro Palmer: 11
+- Cheval Grand: 23
+- Dream Journey: 14
+
+old-source 매핑:
+- 기본 대응: `sources/eraumak_kr_2.21/game/ere/event/basement/basement-<ID>.js`
+- Cheval Grand: 추가로 `basement/base-events-89/*`
+- Haru Urara `first_prison`: 예외적으로 old `event/ero/ero-52.js` 첫 감금 분기
+
+### Manhattan Cafe
+- current 13 target 모두 live Korean prose 0.
+- 12개는 old basement에 동일 key/메서드가 직접 존재.
+- `rescue_from_tachyon`은 old `rescue_battle_success(owner_id === 32)`와 문장 단위로 대응.
+- **C: 13**
+
+### Agnes Tachyon
+- current 7 target 모두 live Korean prose 0.
+- old basement의 동일 key/분기와 대응.
+- **C: 7**
+
+### Haru Urara
+- current 13 target 모두 live Korean prose 0.
+- 12개는 old basement와 직접 대응.
+- `first_prison`은 old `ero-52.js`의 `!exp:52:감금횟수` 분기에 한국어 본문이 존재:
+  - “왜 이렇게 되어버린 걸까요?”
+  - “밀실의 반쯤 열린 문은 잠겨 있지 않았다”
+  - 남을지 나갈지 선택
+  - “정말로 나쁜 아이가 되어도 괜찮은 거야”
+- **C: 13**
+
+### Mejiro Palmer
+- current 11 target 모두 live Korean prose 0.
+- old `basement-64.js` 동일 key/분기와 대응.
+- **C: 11**
+
+### Cheval Grand
+- current 23 target 모두 live Korean prose 0.
+- 기본 15개는 old `basement-89.js`에 직접 대응.
+- 분할 helper 8개는 old `base-events-89`에서 대응:
+  - `ask_release_agree_first`
+  - `ask_release_reject_first`
+  - `find_escape_out`
+  - `flatter_after_battle`
+  - `flatter_after_strike`
+  - `flatter_no_escape_first`
+  - `flatter_no_escape_second`
+  - `flatter_no_escape_third`
+- **C: 23**
+
+### Dream Journey
+- current 14 target 모두 live Korean prose 0.
+- old `basement-119.js` 동일 key/분기와 대응.
+- **C: 14**
+
+### base 최종 결과
+- live 미완료 감사: **81 / 81 완료**
+- **C: 81**
+- **B+C: 81**
+
+전체 엄격 최소:
+- daily/rec 기록: **414**
+- timon: **130**
+- edu: **880**
+- love: **171**
+- ero: **213**
+- base: **81**
+- **합계: 1,889 작업 단위**
+
 ## 다음 조사 단계
 
 1. **kojo edu/love/ero 후보 풀 1,272파트는 실제 대조 완료.**
-2. 다음은 `base` 9파일의 old-source 영역을 별도 매핑해 3자 대조.
-3. 그다음 기록 밖 `daily/rec` 및 general-i18n/entry의 구버전 자료 존재 여부를 추가 검사.
+2. **base 9파일도 live 미완료 81 / 81 대조 완료.**
+3. 다음은 기록 밖 `daily/rec` 및 general-i18n/entry의 구버전 자료 존재 여부를 추가 검사.
 4. 각 파트를 같은 4분류로 유지:
    - **A: 구버전 KR 완전 반영**
    - **B: 구버전 KR 일부 반영 / 일부 미반영**
@@ -858,8 +939,9 @@ strict에서 제외된 항목:
 - edu 실제 3자 대조 최종 확정: **880**
 - love 실제 3자 대조 최종 확정: **171**
 - ero 실제 3자 대조 최종 확정: **213**
-- 합계: **1,808 작업 단위**
+- base 실제 3자 대조 최종 확정: **81**
+- 합계: **1,889 작업 단위**
 
-기록 밖 kojo의 edu/love/ero 후보 풀은 보정 후 **1,272 / 1,272 실제 대조 완료**했다.
+기록 밖 kojo의 edu/love/ero 후보 풀 **1,272 / 1,272**와 base live 미완료 **81 / 81**은 실제 대조 완료했다.
 
-따라서 **1,808은 현재까지 증명된 엄격 최소치**다. 다만 `base` 9파일, 기록 밖 `daily/rec`, general-i18n/entry의 old-source 존재 여부 검사는 아직 남아 있으므로 저장소 전체 최종 누락량은 더 증가할 수 있다.
+따라서 **1,889는 현재까지 증명된 엄격 최소치**다. 기록 밖 `daily/rec`, general-i18n/entry의 old-source 존재 여부 검사는 아직 남아 있으므로 저장소 전체 최종 누락량은 더 증가할 수 있다.
