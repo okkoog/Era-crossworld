@@ -849,7 +849,7 @@ module.exports = {
 
   // [번역 대상] before_sprg_sta
   before_sprg_sta: (() => {
-    const title = 'スプリングS前・火の蘭';
+    const title = '스프링 S 전・불꽃의 난초';
     /**
      * @param {CharaTalk} maru 마루젠 スキー
      * @param {CharaTalk} you プレイヤー
@@ -858,80 +858,80 @@ module.exports = {
     const f = async (maru, you, callname) => {
       await era.printAndWait(`대기실`);
       await era.printAndWait(
-        `スプリングステークス。皐月賞の前哨戦として、多くの${maru.uma_sex_title}が全力を尽くす場。`,
+        `스프링 스테이크스. 사츠키상의 전초전으로서 많은 ${maru.uma_sex_title}이(가) 전력을 다하는 무대다.`,
       );
-      await era.printAndWait(`だがこのとき。`);
+      await era.printAndWait(`하지만 이때.`);
       await you.say_as_passer_by_and_wait(
-        `スタッフ`,
-        `三度確認しました。${maru.name}を含めて、出走は五頭だけです。`,
+        `스태프`,
+        `세 번 확인했습니다. ${maru.name}을(를) 포함해 출주는 다섯 명뿐입니다.`,
       );
-      await you.say_and_wait(`あ……ありがとう。`);
+      await you.say_and_wait(`아…… 고마워요.`);
       await era.printAndWait(
-        `${maru.name}にとって、レース場で得られる楽しさは、レースの格と出走する${maru.uma_sex_title}に比例する。`,
+        `${maru.name}에게 레이스장에서 얻는 즐거움은 레이스의 격과 출주하는 ${maru.uma_sex_title}의 수준에 비례한다.`,
       );
       await era.printAndWait(
-        `つまり格が上がるほど、出られる${maru.uma_sex_title}の数と質も上がり、${maru.name}はより楽しむ。`,
+        `즉 격이 높아질수록 출전하는 ${maru.uma_sex_title}의 수와 질도 높아지고, ${maru.name}은(는) 더욱 즐거워한다.`,
       );
-      await era.printAndWait(`それだけならまだいい。`);
+      await era.printAndWait(`그것뿐이라면 아직 괜찮다.`);
       await you.say_as_passer_by_and_wait(
         `${maru.uma_sex_title}A`,
-        `ああ、わかるよ。このレースは絶対${maru.name}の勝ちだ。`,
+        `응, 알아. 이 레이스는 반드시 ${maru.name}이(가) 이길 거야.`,
       );
       await you.say_as_passer_by_and_wait(
         `${maru.uma_sex_title}B`,
-        `考える余地ある？ ${maru.name}以外が勝つなんて、${
+        `생각할 여지가 있어? ${maru.name} 말고 다른 누군가가 이긴다니, ${
           maru.sex
-        }をどうやって負かすか想像もつかない。`,
+        }을(를) 어떻게 이길지 상상조차 안 돼.`,
       );
       await you.say_as_passer_by_and_wait(
-        `出走する${maru.uma_sex_title}A`,
-        `もうどうでもいい。どうせ次は${maru.name}の勝ちだ。体力を残して次のレースに備えるよ。`,
+        `출주하는 ${maru.uma_sex_title} A`,
+        `이제 아무래도 좋아. 어차피 다음은 ${maru.name}의 승리야. 체력을 아껴 다음 레이스에 대비할래.`,
       );
       await you.say_as_passer_by_and_wait(
-        `出走する${maru.uma_sex_title}A`,
-        `そもそも、あの怪物に勝てる者はいない。`,
+        `출주하는 ${maru.uma_sex_title} A`,
+        `애초에 저 괴물을 이길 수 있는 자는 없어.`,
       );
-      await maru.say_and_wait(`${callname}、準備できたわ`);
-      await era.printAndWait(`場違いな声が ${you.name} の回想を遮った。`);
-      await you.say_and_wait(`うん、今回もレースを楽しもう。`);
+      await maru.say_and_wait(`${callname}, 준비됐어.`);
+      await era.printAndWait(`분위기와 어울리지 않는 목소리가 ${you.name}의 회상을 끊었다.`);
+      await you.say_and_wait(`응, 이번에도 레이스를 즐기자.`);
       await maru.say_and_wait(
-        `ええ、でも今回の出走頭数は、最低要件を満たしただけらしいわ。`,
+        `응, 그런데 이번 출주 수는 최소 요건만 겨우 채운 모양이야.`,
       );
-      await maru.say_and_wait(`みんな、もう少し前向きならいいのに。`);
+      await maru.say_and_wait(`다들 조금만 더 적극적이면 좋을 텐데.`);
       await era.printAndWait(
-        `${maru.name}の機嫌はあまりよくないようで、耳も下がっている。`,
+        `${maru.name}은(는) 기분이 별로 좋지 않은 듯 귀도 축 처져 있다.`,
       );
       era.printButton(
-        `${maru.name}、これまでのトレーニングの成果を、会場の観客にしっかり見せよう`,
+        `${maru.name}, 지금까지 훈련한 성과를 경기장 관객들에게 제대로 보여주자.`,
         1,
       );
       era.printButton(
-        `${maru.name}の走りが見られれば、${maru.couple_title}はきっと考えを変える`,
+        `${maru.name}의 달리기를 보면 ${maru.couple_title}도 분명 생각을 바꿀 거야.`,
         2,
       );
       if ((await era.input()) === 1) {
         await maru.say_and_wait(
-          `うん、${callname}は観客席で私の走りを見てて！`,
+          `응, ${callname}은(는) 관중석에서 내 달리기를 보고 있어줘!`,
         );
-        await maru.say_and_wait(`この真っ赤な姿を、心にしっかり刻んで！`);
+        await maru.say_and_wait(`이 새빨간 모습을 마음에 확실히 새겨둬!`);
       } else {
         await maru.say_and_wait(`……`);
         await you.say_and_wait(
-          `${maru.name}の背中で、気落ちしたみんなに希望を取り戻させよう`,
+          `${maru.name}의 뒷모습으로 풀이 죽은 모두에게 희망을 되찾아주자.`,
         );
-        await you.say_and_wait(`いつものトレーニングみたいに。`);
-        await maru.say_and_wait(`そうよ！`);
+        await you.say_and_wait(`평소 훈련처럼.`);
+        await maru.say_and_wait(`그래!`);
         await era.printAndWait(
-          `${maru.name}の下がっていた耳が、またまっすぐ立った。`,
+          `축 처져 있던 ${maru.name}의 귀가 다시 곧게 섰다.`,
         );
       }
       await era.printAndWait(
-        `まだ話したかったが、スタッフがマイクを調整する音が대기실まで届いた。`,
+        `아직 더 이야기하고 싶었지만 스태프가 마이크를 조정하는 소리가 대기실까지 들려왔다.`,
       );
-      await maru.say_and_wait(`そろそろ私の出番ね。${callname}、またあとで！`);
-      await you.say_and_wait(`どうして不安が走るんだ`, true);
+      await maru.say_and_wait(`슬슬 내 차례네. ${callname}, 이따 봐!`);
+      await you.say_and_wait(`왜 불안감이 스치는 거지.`, true);
       await era.printAndWait(
-        `${you.name}はその不安を深くしまい、愛馬がレース場へ向かうのを見た`,
+        `${you.name}은(는) 그 불안을 깊숙이 묻고 애마가 레이스장으로 향하는 것을 바라보았다.`,
       );
     };
     f.title = title;
@@ -940,107 +940,107 @@ module.exports = {
 
   // [번역 대상] before_tenn_sho_s
   before_tenn_sho_s: (() => {
-    const title = '天皇賞（秋）前・エデンの夢';
+    const title = '천황상(가을) 전・에덴의 꿈';
     /**
      * @param {CharaTalk} maru 마루젠 スキー
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname 마루젠 スキーのプレイヤーへの呼び方
      */
     const f = async (maru, you, callname) => {
-      await era.printAndWait(`皇帝との二度目の対決が、始まろうとしている。`);
+      await era.printAndWait(`황제와의 두 번째 대결이 시작되려 한다.`);
       await era.printAndWait(
-        `${maru.name} と皇帝の二度目の対決として、観客にとっては空前の盛況だ。`,
+        `${maru.name}과(와) 황제의 두 번째 대결이라 관객들에게는 전례 없는 성황이다.`,
       );
       era.drawLine({ content: '대기실' });
-      era.printButton(`「いちばんすばらしい背中を見せてくれ」`, 1);
+      era.printButton(`「가장 멋진 뒷모습을 보여줘.」`, 1);
       await era.input();
       await maru.say_and_wait(
-        `小ルドルフと同じ舞台で競えるなんて、間違いなくいちばんの舞台よ♪`,
+        `꼬마 루돌프와 같은 무대에서 겨룰 수 있다니, 틀림없이 최고의 무대야♪`,
       );
-      era.printButton(`「成功の見込みはあるか？」`, 1);
+      era.printButton(`「성공할 가능성은 있어?」`, 1);
       await era.input();
       await you.say_and_wait(
-        `名高い${maru.uma_sex_title}たちに挑み、${
+        `이름난 ${maru.uma_sex_title}들에게 도전하고, ${
           maru.sex
-        }たちと交わり、対抗し、勝敗を決める。`,
+        }들과 어울려 겨루고 승패를 가른다.`,
       );
-      await you.say_and_wait(`成功の見込みはあるか？`);
+      await you.say_and_wait(`성공할 가능성은 있어?`);
       await era.printAndWait(
-        `${maru.name}はしばらく沈黙したあと、答えを出した。`,
+        `${maru.name}은(는) 잠시 침묵한 뒤 답을 내놓았다.`,
       );
       await maru.say_and_wait(
-        `${callname}は、レース場で走る${maru.uma_sex_title}たちをどう見てる？`,
+        `${callname}은(는) 레이스장에서 달리는 ${maru.uma_sex_title}들을 어떻게 보고 있어?`,
       );
-      await you.say_and_wait(`レース場で勝つために、裏で汗と努力を払った。`);
-      await you.say_and_wait(`でも。`);
+      await you.say_and_wait(`레이스장에서 이기기 위해 보이지 않는 곳에서 땀과 노력을 쏟았지.`);
+      await you.say_and_wait(`하지만.`);
       await maru.say_and_wait(
-        `そうね。勝てる${maru.uma_sex_title}は一頭だけ。`,
-      );
-      await era.printAndWait(
-        `目の前に再び、生徒会室の中央にあるあの名言が浮かんだ。`,
-      );
-      await you.say_and_wait(`一頭が先んじ、万頭は沈黙。`);
-      await maru.say_and_wait(
-        `初めて見たとき、どう理解すればいいか、長く考えてもわからなかった。`,
-      );
-      await maru.say_and_wait(
-        `黙々と頑張る${maru.uma_sex_title}たちは、負けただけで、努力がすべて否定される。`,
-      );
-      await maru.say_and_wait(
-        `一頭の${maru.uma_sex_title}しか勝てないなら、他の${maru.uma_sex_title}の努力は全部無駄になるんじゃない？`,
-      );
-      await maru.say_and_wait(
-        `失敗が決まっている結末なら、最初から諦めて別の方向へ行くほうが賢いんじゃない？`,
-      );
-      await maru.say_and_wait(
-        `——でも、走ることこそ${maru.uma_sex_title}の天性でしょう？`,
-      );
-      await maru.say_and_wait(`スタート前、発走の合図を緊張して待つ。`);
-      await maru.say_and_wait(
-        `走りの中で、未知の世界と孤独に向き合う。でも想像ほど怖くはない。`,
-      );
-      await maru.say_and_wait(`スパートのとき、後方から届く踏み込みの音。`);
-      await maru.say_and_wait(
-        `前方の背中を超えたい。もっと速く走りたい。${maru.sex}より遠くまで踏み出したい。`,
-      );
-      await maru.say_and_wait(
-        `最後にゴールした瞬間は、かえってそれほど大事じゃなくなる。`,
-      );
-      await maru.say_and_wait(
-        `そんな思いを抱いて成功を取る。そうして後輩が前方の道が見えないとき、この道に従う。`,
-      );
-      await maru.say_and_wait(
-        `歩けると証明された道を、試してみたら行けるかもしれないという態度で。`,
-      );
-      await maru.say_and_wait(
-        `だから私の答えは——成否にかかわらず、この冒険にはやる価値がある。`,
-      );
-      await era.printAndWait(`レース開始を告げる放送が鳴った。`);
-      await maru.say_and_wait(`미안해.、うっかり話しすぎたわ。`);
-      await era.printAndWait(`少し照れた${maru.name}が顔を赤らめた。`);
-      await era.printAndWait(
-        `${maru.name}を募集してから、こんなに多くの出来事を経た。`,
+        `그래. 이길 수 있는 ${maru.uma_sex_title}은(는) 한 명뿐이야.`,
       );
       await era.printAndWait(
-        `泣きも、笑いも、慟哭も、喜びも、信頼も、裏切りも。`,
+        `눈앞에 다시 학생회실 중앙에 있던 그 문구가 떠올랐다.`,
       );
-      await era.printAndWait(`もう、全部一度は経験した。`);
-      await era.printAndWait(`${maru.name}にとって————`);
-      era.printButton(`「一緒に出発しよう。」`, 1);
+      await you.say_and_wait(`한 명이 앞서면 만 명은 침묵한다.`);
+      await maru.say_and_wait(
+        `처음 봤을 때 어떻게 이해해야 할지 오래 생각해도 알 수 없었어.`,
+      );
+      await maru.say_and_wait(
+        `묵묵히 노력하는 ${maru.uma_sex_title}들은 단지 패배했다는 이유로 모든 노력을 부정당해.`,
+      );
+      await maru.say_and_wait(
+        `한 명의 ${maru.uma_sex_title}만 이길 수 있다면 다른 ${maru.uma_sex_title}들의 노력은 전부 헛된 게 되는 것 아닐까?`,
+      );
+      await maru.say_and_wait(
+        `실패가 정해진 결말이라면 처음부터 포기하고 다른 길로 가는 편이 현명한 것 아닐까?`,
+      );
+      await maru.say_and_wait(
+        `——하지만 달리는 것이야말로 ${maru.uma_sex_title}의 천성이잖아?`,
+      );
+      await maru.say_and_wait(`출발 전, 긴장하며 발주 신호를 기다려.`);
+      await maru.say_and_wait(
+        `달리는 동안 미지의 세계와 고독을 마주해. 하지만 생각만큼 무섭지는 않아.`,
+      );
+      await maru.say_and_wait(`스퍼트할 때 뒤쪽에서 들려오는 발구름 소리.`);
+      await maru.say_and_wait(
+        `앞의 등을 넘고 싶어. 더 빠르게 달리고 싶어. ${maru.sex}보다 더 멀리 내딛고 싶어.`,
+      );
+      await maru.say_and_wait(
+        `마지막으로 골인하는 순간은 오히려 그렇게 중요하지 않게 돼.`,
+      );
+      await maru.say_and_wait(
+        `그런 마음을 품고 성공을 거머쥐는 거야. 그러면 후배들이 앞길을 볼 수 없을 때 이 길을 따라올 수 있어.`,
+      );
+      await maru.say_and_wait(
+        `누군가 걸을 수 있다고 증명한 길을, 나도 해보면 갈 수 있을지 모른다는 마음으로.`,
+      );
+      await maru.say_and_wait(
+        `그래서 내 대답은——성공 여부와 상관없이 이 모험은 해볼 가치가 있다는 거야.`,
+      );
+      await era.printAndWait(`레이스 시작을 알리는 방송이 울렸다.`);
+      await maru.say_and_wait(`미안해. 무심코 너무 많이 이야기했네.`);
+      await era.printAndWait(`조금 부끄러워진 ${maru.name}이(가) 얼굴을 붉혔다.`);
+      await era.printAndWait(
+        `${maru.name}을(를) 영입한 뒤 이렇게 많은 일을 겪었다.`,
+      );
+      await era.printAndWait(
+        `울음도 웃음도 통곡도 기쁨도 신뢰도 배신도.`,
+      );
+      await era.printAndWait(`이제 전부 한 번씩은 경험했다.`);
+      await era.printAndWait(`${maru.name}에게————`);
+      era.printButton(`「함께 출발하자.」`, 1);
       await era.input();
-      era.printButton(`「自分たちの物語を書こう。」`, 1);
+      era.printButton(`「우리의 이야기를 써 내려가자.」`, 1);
       await era.input();
-      await maru.say_and_wait(`……ふふ♪`);
-      await era.printAndWait(`${maru.name}は笑顔を見せた。`);
-      await maru.say_and_wait(`この先何が起きても。ずっとそばにいてね？`);
-      await maru.say_and_wait(`笑いでも、泣きでも。一緒に向き合うのよ？`);
+      await maru.say_and_wait(`……후후♪`);
+      await era.printAndWait(`${maru.name}은(는) 미소를 보였다.`);
+      await maru.say_and_wait(`앞으로 무슨 일이 일어나도 계속 곁에 있어줘?`);
+      await maru.say_and_wait(`웃음이든 눈물이든 함께 마주하는 거야?`);
       await era.printAndWait(
-        `${you.name} の記憶の中で、いちばん美しい笑顔だろう。`,
+        `${you.name}의 기억 속에서 가장 아름다운 미소일 것이다.`,
       );
-      await era.printAndWait(`${maru.name} はレース場へ向かった。`);
-      await era.printAndWait(`すぐ先で、皇帝が挑戦者を待っている。`);
-      await era.printAndWait(`${you.name}은(는)  ${maru.name} の勝利を祈った。`);
-      await era.printAndWait(`時間は、ここで流れる。`);
+      await era.printAndWait(`${maru.name}은(는) 레이스장으로 향했다.`);
+      await era.printAndWait(`바로 앞에서 황제가 도전자를 기다리고 있다.`);
+      await era.printAndWait(`${you.name}은(는) ${maru.name}의 승리를 빌었다.`);
+      await era.printAndWait(`시간은 이곳에서 흐른다.`);
     };
     f.title = title;
     return f;
@@ -1048,7 +1048,7 @@ module.exports = {
 
   // [번역 대상] before_toky_yus
   before_toky_yus: (() => {
-    const title = (maru) => `日本ダービー前・${maru.name}`;
+    const title = (maru) => `일본 더비 전・${maru.name}`;
     /**
      * @param {CharaTalk} maru 마루젠 スキー
      * @param {CharaTalk} you プレイヤー
@@ -1056,27 +1056,27 @@ module.exports = {
      */
     const f = async (maru, you, callname) => {
       await era.printAndWait(
-        `${maru.name}がもっと大きな舞台で違う感触を味わいたいと言ったので、日本ダービーに出ることにした。`,
+        `${maru.name}이(가) 더 큰 무대에서 다른 감각을 느껴보고 싶다고 해서 일본 더비에 출전하기로 했다.`,
       );
       await era.printAndWait(`훈련실内`);
       await maru.say_and_wait(
-        `さすがダービー。出てくる${maru.uma_sex_title}たちの水準、すごく高いわ`,
+        `역시 더비네. 출전하는 ${maru.uma_sex_title}들의 수준이 정말 높아.`,
       );
       await era.printAndWait(
-        `クラシック三冠の第二冠、東京優駿（日本ダービー）には、いちばん幸運な${maru.uma_sex_title}だけが勝つという俗説がある。`,
+        `클래식 삼관의 두 번째 관문, 도쿄 우준(일본 더비)은 가장 운이 좋은 ${maru.uma_sex_title}만이 이긴다는 속설이 있다.`,
       );
       await era.printAndWait(
-        `実力のある${maru.uma_sex_title}でも、ここで転ぶ例は数え切れない。だが${
+        `실력 있는 ${maru.uma_sex_title}이라도 여기서 무너진 사례는 셀 수 없이 많다. 하지만 ${
           maru.name
-        }にとっては`,
+        }에게는 `,
       );
-      await era.printAndWait(`${maru.name}の様子は普段と変わらない。`);
-      await era.printAndWait(`純粋にレースを楽しむために来たのだろう。`);
+      await era.printAndWait(`${maru.name}의 모습은 평소와 다르지 않다.`);
+      await era.printAndWait(`순수하게 레이스를 즐기기 위해 온 것이겠지.`);
       await maru.say_and_wait(
-        `${callname}、このあとは私の姿をちゃんと見ててね。`,
+        `${callname}, 이제부터 내 모습을 제대로 보고 있어줘.`,
       );
-      await era.printAndWait(`${maru.name}は準備を終え、地下通路へ向かった。`);
-      await you.say_and_wait(`俺も観客席へ行くか。`);
+      await era.printAndWait(`${maru.name}은(는) 준비를 마치고 지하 통로로 향했다.`);
+      await you.say_and_wait(`나도 관중석으로 갈까.`);
     };
     f.title = title;
     return f;
@@ -1091,33 +1091,33 @@ module.exports = {
      * @param {string} callname 마루젠 スキーのプレイヤーへの呼び方
      */
     const f = async (maru, you, callname) => {
-      await era.printAndWait(`${maru.name}は自由の風を追い、東京競馬場へ来た`);
-      await maru.say_and_wait(`今日の調子、とてもいいわ。`);
+      await era.printAndWait(`${maru.name}은(는) 자유의 바람을 쫓아 도쿄 경마장에 왔다.`);
+      await maru.say_and_wait(`오늘 컨디션, 아주 좋아.`);
       await era.printAndWait(
-        `${maru.name}の服の突起した皺を撫で伸ばしたあと、スーパーカーは準備完了`,
+        `${maru.name}의 옷에 튀어나온 주름을 펴주고 나니 슈퍼카는 준비 완료.`,
       );
       await maru.say_and_wait(
-        `後輩たちも今、私の背中を追って超えたいと思ってるわね。`,
+        `후배들도 지금 내 뒷모습을 쫓아 넘어보고 싶다고 생각하고 있겠지.`,
       );
       await era.printAndWait(
-        `レースの勝利より、${maru.name}は大切な後輩たちが自分と旧時代の栄光を超えることを望んでいる`,
+        `레이스의 승리보다 ${maru.name}은(는) 소중한 후배들이 자신과 옛 시대의 영광을 넘어서는 것을 바라고 있다.`,
       );
-      await maru.say_and_wait(`だから今の私も、燃えてるわ。`);
-      await maru.say_and_wait(`じゃあ定番の、${callname}。`);
+      await maru.say_and_wait(`그래서 지금의 나도 불타오르고 있어.`);
+      await maru.say_and_wait(`그럼 늘 하던 거, ${callname}.`);
       await era.printAndWait(
-        `${maru.name}の細い腰を軽く抱き、幸福の瞬間に沈んだ`,
+        `${maru.name}의 가느다란 허리를 가볍게 끌어안고 행복한 순간에 잠겼다.`,
       );
-      await maru.say_and_wait(`${callname}、ずっとずっと私の背中を見ててね。`);
+      await maru.say_and_wait(`${callname}, 계속 계속 내 뒷모습을 보고 있어줘.`);
       await maru.say_and_wait(
-        `他の${maru.uma_sex_title}を見てたら、${
+        `다른 ${maru.uma_sex_title}을(를) 보고 있으면 ${
           maru.elder_sibling_sex_title
-        }でも嫉妬するわよ。`,
+        }라도 질투할 거야.`,
       );
-      era.printButton(`「ずっと見てる」`, 1);
+      era.printButton(`「계속 보고 있을게.」`, 1);
       await era.input();
-      await maru.say_and_wait(`じゃあ、最後にもう一度♪`);
+      await maru.say_and_wait(`그럼 마지막으로 한 번 더♪`);
       await era.printAndWait(
-        `名残惜しそうに別れたあと、${maru.name} はレース場へ向かった。`,
+        `아쉬운 듯 떨어진 뒤 ${maru.name}은(는) 레이스장으로 향했다.`,
       );
     };
     f.title = title;
@@ -3984,7 +3984,7 @@ module.exports = {
         `およそ五分マッサージし、十指で太ももの内側を軽く押し、${maru.name} の反応を見ながら話を続けた。`,
       );
       await you.say_and_wait(`その勢いでダービーに挑もう！`);
-      await maru.say_and_wait(`そうよ！ この感じ！`);
+      await maru.say_and_wait(`그래! この感じ！`);
       await era.printAndWait(
         `マッサージのあと、${you.name}은(는) そっと ${maru.name} にブーツを履かせた。立ち上がった${maru.name}は気勢高く、次の目標を決めた。`,
       );
@@ -4004,34 +4004,34 @@ module.exports = {
     const f = async (maru, you, callname) => {
       await era.printAndWait(`ウイニングライブ\n`);
       await era.printAndWait(
-        `スタッフがウイニングライブの装置を確認して忙しそうだ。`,
+        `스태프がウイニングライブの装置を確認して忙しそうだ。`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフA`,
+        `스태프A`,
         `ウイニングライブはもうすぐです。最後の調整！`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフB`,
+        `스태프B`,
         `気柱機の位置、もう一度！ やっぱり、${maru.name} が勝つと思ってたわ。`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフB`,
+        `스태프B`,
         `メイクデビューのときから ${maru.sex} を見てたの。`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフC`,
+        `스태프C`,
         `ライトをもう少し左！ あ、私はホープフルSから見てたわ。`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフC`,
+        `스태프C`,
         `すごく速い ${maru.uma_sex_title} がいるとは聞いてたけど、現地で見ないとわからないわね。`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフB`,
+        `스태프B`,
         `準備完了！ 次の東京優駿の勝ちも、絶対 ${maru.sex} よ！`,
       );
       await you.say_as_passer_by_and_wait(
-        `スタッフA`,
+        `스태프A`,
         `全員！ 位置について！ 用意！`,
       );
       await era.printAndWait(`予想どおり、${maru.name} は勝った。`);
@@ -4502,7 +4502,7 @@ module.exports = {
         `8分ほど考えたあと、${you.name}はためらって答えを出した。`,
       );
       await maru.say_and_wait(
-        `そう。この循環自体は問題を解決しない。解決した感じだけを解決する。当事者にとっては、来週試験だとわかってても、まだ時間があるからゲーセンへ行く学生と同じ。`,
+        `そう。この循環自体は問題を解決しない。解決した感じだけを解決する。当事者에게는 、来週試験だとわかってても、まだ時間があるからゲーセンへ行く学生と同じ。`,
       );
       await maru.say_and_wait(`本質は、痛みが怖くて鎮痛剤で麻痺させてるだけ。`);
       await maru.say_and_wait(`だから、行動の動機を見つけないと。`);
@@ -4899,7 +4899,7 @@ module.exports = {
         `ダービーに出た ${maru.uma_sex_title} たちは、みんな ${maru.uma_sex_title} の精鋭ね。`,
       );
       era.printButton(
-        `「コースはダービーのいちばん外側だったけど、その不利でも。」`,
+        `「コースはダービーのいちばん外側だったけど、その不利하지만.」`,
         1,
       );
       await era.input();
@@ -5394,7 +5394,7 @@ module.exports = {
       era.printButton(`「この先のトレーニングも頑張らないと！」`, 1);
       await era.input();
       await maru.say_and_wait(
-        `そうよ！ ${
+        `그래! ${
           maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
         }な私も、この先のトレーニングはスパルタじゃないと！`,
       );
@@ -6034,7 +6034,7 @@ module.exports = {
       );
       await you.say_and_wait(` 人生は苦難に満ちていても。`);
       await you.say_and_wait(` 出会ったことのない物事に慌てても。`);
-      await you.say_and_wait(` その痛みを他人に話せなくて、深く抑えた心でも。`);
+      await you.say_and_wait(` その痛みを他人に話せなくて、深く抑えた心하지만.`);
       era.printButton(`「俺も、あの美しい背中を見たい。」`, 1);
       await era.input();
       await you.say_and_wait(
@@ -8515,7 +8515,7 @@ module.exports = {
       await era.printAndWait(
         `${you.name}は${maru.name}のだんだん温かくなる小さな手を握り、歩幅を上げて追星のファンを振り切ろうとした`,
       );
-      await maru.say_and_wait(`……ふふ♪`);
+      await maru.say_and_wait(`……후후♪`);
       await era.printAndWait(
         `後ろをぴったり追うファンの群れをやっと振り切ってから,市中心公園に着いたことに気づいた`,
       );
@@ -8914,7 +8914,7 @@ module.exports = {
         `最後の書類を処理したあと、${you.name}은(는) ペンを置き、長い息を吐いた。`,
       );
       await you.say_and_wait(`やっと終わった。`);
-      await you.say_and_wait(`でも。`);
+      await you.say_and_wait(`하지만.`);
       await era.printAndWait(`ずっと抱えていた疑問。`);
       await era.printAndWait(`強く押さえつけてきた。いや、思い出したくない。`);
       await you.say_and_wait(`${maru.name}。`);
@@ -8995,7 +8995,7 @@ module.exports = {
       await era.printAndWait(
         `${maru.uma_sex_title}の世界は、払えば返ってくる優しい世界ではない。`,
       );
-      await era.printAndWait(`それでも。`);
+      await era.printAndWait(`それ하지만.`);
       era.printButton(`「払ったものは、いつか返ってくる」`, 1);
       era.printButton(`「早く退くのも、一つの選択だ」`, 2);
       const ret = await era.input();
