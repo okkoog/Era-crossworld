@@ -5,159 +5,159 @@ const get_random_entry = require('#/utils/list-utils')["get_random_entry"];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/100300-Tokai-Teio/base-3"),
 
-  // [번역 대상] ask_release_agree
+  // [번역 완료] ask_release_agree
   async ask_release_agree(teio, you, callname) {
-    era.printButton('「もう充分遊んだだろ、テイオー。出してくれ」', 1);
-    era.printButton('「テイオーさま……わかった。出してください」', 2);
+    era.printButton('「이제 충분히 놀았잖아, 테이오. 내보내 줘.」', 1);
+    era.printButton('「테이오 님…… 알겠습니다. 내보내 주세요.」', 2);
     await era.input();
 
-    await teio.say_and_wait('……はあ。');
+    await teio.say_and_wait('……하아.');
     await era.printAndWait([
-      '向かいの椅子にまたがる小さな',
+      '맞은편 의자에 걸터앉은 작은 ',
       teio.uma_sex_title,
-      'が体を前へ傾け、全身をこちらへ寄せ、青黒い両目を瞬きもせず ',
+      '이(가) 몸을 앞으로 기울여 온몸을 이쪽으로 가까이 가져오고, 푸른빛 도는 검은 두 눈을 깜빡이지도 않은 채 ',
       you.get_colored_name(),
-      ' へ据える。墨色の扉のように、入り込もうとする光をすべて飲み込む。',
+      '에게 고정한다. 먹빛 문처럼 스며들려는 빛을 전부 삼켜버린다.',
     ]);
-    await teio.say_and_wait('そんなこと言うなんて……ボクのトレーナーが。');
+    await teio.say_and_wait('그런 말을 하다니…… 내 트레이너가.');
     await era.printAndWait([
       you.get_colored_name(),
-      ' は頭皮が粟立つが、今は弱気を見せたくなく、',
+      '은(는) 소름이 돋지만, 지금은 약한 모습을 보이고 싶지 않아 ',
       teio.sex,
-      'を睨み返す。ゆがんだ虹彩の向こうに、自分が大切にしてきたあの子を見つけたいという希望を、わずかに抱いたまま。',
+      '을(를) 노려본다. 일그러진 홍채 너머에서 자신이 소중히 여겨온 그 아이를 찾을 수 있기를 희미하게 바라면서.',
     ]);
     await era.printAndWait([
-      '半世紀ほども続いたような睨み合いのあと、',
+      '반세기쯤 이어진 것 같은 눈싸움 끝에 ',
       teio.get_colored_name(),
-      ' は頭を垂れた。',
+      '은(는) 고개를 떨궜다.',
     ]);
-    await teio.say_and_wait(['ごめん……', callname, '、ボクが悪かった。']);
-    await teio.say_and_wait('扉……今は開いてる。好きにして。');
+    await teio.say_and_wait(['미안……', callname, '、 내가 잘못했어.']);
+    await teio.say_and_wait('문…… 지금은 열려 있어. 마음대로 해.');
     await era.printAndWait([
-      '言い終えると、',
+      '말을 마치자 ',
       teio.sex,
-      'は自分の脚を抱えて身をひるがえし、横向きに ',
+      '은(는) 자신의 다리를 끌어안은 채 몸을 돌려 옆으로 ',
       you.get_colored_name(),
-      ' へ道を開ける。',
+      '에게 길을 내준다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は出口へ歩きながら、余光で、かつて ',
+      '은(는) 출구로 걸어가며 곁눈질로, 예전에 ',
       you.get_colored_name(),
-      ' が知っていた',
+      '이(가) 알고 있던 ',
       teio.child_sex_title,
-      'が体を震わせているのを見る——',
+      '이(가) 몸을 떨고 있는 모습을 본다——',
     ]);
-    era.printButton('放っておく', 1);
-    era.printButton(`${teio.sex}を連れていく`, 2);
+    era.printButton('내버려 둔다', 1);
+    era.printButton(`${teio.sex}을(를) 데리고 간다`, 2);
     const ret = await era.input();
     if (ret === 1) {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は一瞬も無駄にせず、自由な世界へ踏み出す——',
+        '은(는) 한순간도 낭비하지 않고 자유로운 세계로 발을 내딛는다——',
         teio.sex,
-        'は？ 少し懲らしめてやるべきだ。',
+        '은(는)? 조금 혼쭐을 내줘야 한다.',
       ]);
     } else {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は迷わず、丸くなった影へ歩み、手を伸ばして',
+        '은(는) 망설이지 않고 웅크린 그림자에게 다가가 손을 뻗어 ',
         teio.sex,
-        'の頭をそっと撫で、髪の根元から背を通り、尾の先まで辿る。小さな',
+        '의 머리를 살며시 쓰다듬고, 머리카락 뿌리에서 등을 지나 꼬리 끝까지 손길을 이어간다. 작은 ',
         teio.uma_sex_title,
-        'の体は最初さらに震え、やがて落ち着いていく。',
+        '의 몸은 처음에는 더 심하게 떨다가 이윽고 진정된다.',
       ]);
       await era.printAndWait([
-        'さらに近づき、両手で',
+        '더 가까이 다가가 두 손으로 ',
         teio.sex,
-        'のこめかみに触れ、指を曲げて振り返るよう示す。ゆっくりと、見慣れた顔が現れる。',
+        '의 관자놀이에 손을 대고 손가락을 구부려 돌아보라고 신호한다. 천천히 익숙한 얼굴이 드러난다.',
         you.get_colored_name(),
-        ' は、涙で洗われた空色の瞳を見て、思わず笑った。',
+        '은(는) 눈물에 씻긴 하늘빛 눈동자를 보고 저도 모르게 웃었다.',
       ]);
-      await you.say_and_wait('帰ろう、一緒に。');
-      await teio.say_and_wait('うっ……');
+      await you.say_and_wait('돌아가자, 같이.');
+      await teio.say_and_wait('윽……');
       await era.printAndWait([
         teio.sex,
-        'は顔を拭き、片手で慎重に、だが強く ',
+        '은(는) 얼굴을 닦고 한 손으로 조심스럽지만 힘주어 ',
         you.get_colored_name(),
-        ' の袖口を掴み、床へ滑り降り、よろよろと先を歩いて ',
+        '의 소매를 잡고 바닥으로 내려와 비틀거리며 앞장서 ',
         you.get_colored_name(),
-        ' を外へ導く。',
+        '을(를) 밖으로 이끈다.',
       ]);
     }
     return ret;
   },
 
-  // [번역 대상] ask_release_reject
+  // [번역 완료] ask_release_reject
   async ask_release_reject(teio, you) {
-    era.printButton('「もう充分遊んだだろ、テイオー。出してくれ」', 1);
-    era.printButton('「テイオーさま……わかった。出してください」', 2);
+    era.printButton('「이제 충분히 놀았잖아, 테이오. 내보내 줘.」', 1);
+    era.printButton('「테이오 님…… 알겠습니다. 내보내 주세요.」', 2);
     await era.input();
 
-    await teio.say_and_wait('……はあ。');
+    await teio.say_and_wait('……하아.');
     await era.printAndWait([
-      '向かいの椅子にまたがる小さな',
+      '맞은편 의자에 걸터앉은 작은 ',
       teio.uma_sex_title,
-      'が体を前へ傾け、全身をこちらへ寄せ、青黒い両目を瞬きもせず ',
+      '이(가) 몸을 앞으로 기울여 온몸을 이쪽으로 가까이 가져오고, 푸른빛 도는 검은 두 눈을 깜빡이지도 않은 채 ',
       you.get_colored_name(),
-      ' へ据える。墨色の扉のように、入り込もうとする光をすべて飲み込む。',
+      '에게 고정한다. 먹빛 문처럼 스며들려는 빛을 전부 삼켜버린다.',
     ]);
-    await teio.say_and_wait('そんなこと言うなんて……ボクのトレーナーが。');
+    await teio.say_and_wait('그런 말을 하다니…… 내 트레이너가.');
     await era.printAndWait([
       you.get_colored_name(),
-      ' は頭皮が粟立つが、今は弱気を見せたくなく、',
+      '은(는) 소름이 돋지만, 지금은 약한 모습을 보이고 싶지 않아 ',
       teio.sex,
-      'を睨み返す。ゆがんだ虹彩の向こうに、自分が大切にしてきたあの子を見つけたいという希望を、わずかに抱いたまま。',
+      '을(를) 노려본다. 일그러진 홍채 너머에서 자신이 소중히 여겨온 그 아이를 찾을 수 있기를 희미하게 바라면서.',
     ]);
-    await teio.say_and_wait('トレーナー……');
+    await teio.say_and_wait('트레이너……');
     await era.printAndWait([
       teio.sex,
-      'は首をかしげて微笑む——',
+      '은(는) 고개를 갸웃하며 미소 짓는다——',
       you.get_colored_name(),
-      ' はこの仕草を何度も見てきたのに、眼前のこの',
+      '은(는) 이 몸짓을 몇 번이나 봐왔는데도 눈앞의 이 ',
       teio.sex_code === 1 ? '雄獣' : '雌獣',
-      'を初めて見る気がした。',
+      '을(를) 처음 보는 듯한 기분이 들었다.',
     ]);
     await teio.say_and_wait(
-      '教えてくれたよね……現実に、幻想を抱きすぎちゃだめだって。',
+      '가르쳐 줬잖아…… 현실에 너무 많은 환상을 품으면 안 된다고.',
     );
     await era.printAndWait([
       you.get_colored_name(),
-      ' が何を期待していたかは自分でもわからないが、現状は明白だ。',
+      '이(가) 무엇을 기대했는지는 자신도 모르지만, 지금 상황은 명백하다.',
     ]);
   },
 
-  // [번역 대상] ask_time
+  // [번역 완료] ask_time
   async ask_time(teio, you, callname, security_level, cur_time) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      ' 은(는) ',
       teio.get_colored_name(),
-      ' に今の時刻を尋ねる……',
+      '에게 지금 시간을 묻는다……',
     ]);
     const buffer = [];
     if (security_level > 3 - era.get('status:3:腿伤')) {
       buffer.push(() =>
         teio.say_and_wait(
-          '知らないほうがいいこともあるよ……えへへ、ボクを子供扱いしてたころ、よくそう言ってたよね。',
+          '모르는 게 나은 것도 있어…… 에헤헤, 날 어린애 취급하던 시절에 자주 그렇게 말했잖아.',
         ),
       );
     } else {
       buffer.push(
-        () => teio.say_and_wait('一緒にいる時間……一生だよ❤️'),
+        () => teio.say_and_wait('함께 있는 시간…… 평생이야❤️'),
         () =>
           teio.say_and_wait([
             cur_time,
-            '～ふぅ……ふふ、焦らないで。',
+            '~후우…… 후후, 조급해하지 마.',
             callname,
-            ' は我慢できる大人でしょ',
+            '은(는) 참을 줄 아는 어른이잖아',
           ]),
       );
       if (era.get('status:3:腿伤') > 0) {
         buffer.push(() =>
           teio.say_and_wait([
             cur_time,
-            '……まだそんなに経ってないのに、もうボクに耐えられないの、',
+            '……아직 그렇게 오래 지나지도 않았는데, 벌써 나를 못 견디겠어, ',
             callname,
             '？',
           ]),
@@ -167,419 +167,419 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] battle_escape
+  // [번역 완료] battle_escape
   async battle_escape(teio, you) {
-    await teio.say_and_wait(['なにこれ、冗談でしょ……']);
+    await teio.say_and_wait(['뭐야 이거, 농담이지……']);
     era.println();
 
     await era.printAndWait([
       you.get_colored_name(),
-      ' の利き手が',
+      '의 주로 쓰는 손이 ',
       teio.sex,
-      'の後頸へ入る。',
+      '의 목 뒤로 들어간다.',
     ]);
     await era.printAndWait([
       teio.sex,
-      'は片手を上げ、',
+      '은(는) 한 손을 들어 ',
       you.get_colored_name(),
-      ' の肩へ置き、唇を開いて何か言おうとするが、体が緩み、倒れる。',
+      '의 어깨에 올리고 입을 열어 무언가 말하려 하지만, 몸에 힘이 풀리며 쓰러진다.',
     ]);
     await era.printAndWait([
-      '勝者となった ',
+      '승자가 된 ',
       you.get_colored_name(),
-      ' は慎重に',
+      '은(는) 조심스럽게 ',
       teio.sex,
-      'の体を支え、壁にもたせて座らせ、向きを変えて施錠された扉と向き合う。',
+      '의 몸을 받쳐 벽에 기대 앉힌 뒤 몸을 돌려 잠긴 문과 마주한다.',
     ]);
     await era.printAndWait([
-      'そろそろだ……長い監禁、沈思、戦いには、決着が必要だ。',
+      '이제 때가 됐다…… 긴 감금과 고뇌, 싸움에는 결말이 필요하다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は肌着から、粘土でこっそり取った ',
+      '은(는) 속옷 안에서 점토로 몰래 떠둔 ',
       teio.get_colored_name(),
-      ' の指紋を取り出し、記憶にある錠の位置へ手を伸ばす。',
+      '의 지문을 꺼내 기억 속 잠금장치 위치로 손을 뻗는다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' の計算が正しければ……これで出られる。',
+      '의 계산이 맞다면…… 이걸로 나갈 수 있다.',
     ]);
     era.println();
     await era.printAndWait([
-      '合図音が突然鳴り、',
+      '신호음이 갑자기 울리고 ',
       you.get_colored_name(),
-      ' は思わず驚く——幸い、解錠の自動音だった。',
+      '은(는) 저도 모르게 놀란다——다행히 잠금 해제 자동음이었다.',
       you.get_colored_name(),
-      ' は長く息を吐き、明るい外へ歩み出す……',
+      '은(는) 길게 숨을 내쉬고 밝은 바깥으로 걸어나간다……',
     ]);
   },
 
-  // [번역 대상] battle_fail
+  // [번역 완료] battle_fail
   async battle_fail(teio, you, callname) {
-    await era.printAndWait('どうすれば……だめだ……');
+    await era.printAndWait('어떻게 해야…… 안 돼……');
     await era.printAndWait([
       you.get_colored_name(),
-      'は今の状況をあれこれ考え、頭のなかで様々な状況と計画をシミュレートするが、どれも無理か、すでに無効だと証明されている。',
+      '은(는) 지금 상황을 이리저리 생각하며 머릿속으로 여러 상황과 계획을 시뮬레이션하지만, 모두 불가능하거나 이미 무효라는 게 증명되어 있다.',
       you.get_colored_name(),
-      ' は目を開き、いちばん単純で直接な方法を選ぶ——自分をここに閉じ込めた',
-      { color: teio.color, content: 'テイオー' },
-      'を、正面から倒す。',
+      '은(는) 눈을 뜨고 가장 단순하고 직접적인 방법을 택한다——자신을 여기에 가둔 ',
+      { color: teio.color, content: '테이오' },
+      '을(를), 정면에서 쓰러뜨린다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      'はトレーナーとして担当へ伝えてきた、筋肉の使い方を思い出し、深く息を吸って、今度は自ら実践する覚悟を決める。',
+      '은(는) 트레이너로서 담당에게 가르쳐 온 근육 사용법을 떠올리고 깊게 숨을 들이쉬며, 이번에는 자신이 직접 실행할 각오를 다진다.',
     ]);
     era.println();
     if (era.get('status:3:腿伤') > 0) {
       await teio.say_and_wait([
         callname,
-        '？ご、ごめん！でも、もう離れないで……',
+        '? 미, 미안! 하지만 이제 떠나지 마……',
       ]);
     } else {
       await teio.say_and_wait([
         callname,
-        '？！大丈夫……そんな方法、考えるなんて……',
+        '?! 괜찮아…… 그런 방법을 생각하다니……',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         teio.teen_sex_title,
-        'にあっさり抑えられ、',
+        '에게 너무도 쉽게 제압당하고 ',
         teio.sex,
-        'の驚きは怒りより大きいようだ。',
+        '의 놀람은 분노보다 더 큰 듯하다.',
       ]);
     }
   },
 
-  // [번역 대상] battle_prison
+  // [번역 완료] battle_prison
   async battle_prison(teio, you) {
-    await teio.say_and_wait(['なにこれ、冗談でしょ……']);
+    await teio.say_and_wait(['뭐야 이거, 농담이지……']);
     era.println();
 
     await era.printAndWait([
       you.get_colored_name(),
-      ' の利き手が',
+      '의 주로 쓰는 손이 ',
       teio.sex,
-      'の後頸へ入る。',
+      '의 목 뒤로 들어간다.',
     ]);
     await era.printAndWait([
       teio.sex,
-      'は片手を上げ、',
+      '은(는) 한 손을 들어 ',
       you.get_colored_name(),
-      ' の肩へ置き、唇を開いて何か言おうとするが、体が緩み、倒れる。',
+      '의 어깨에 올리고 입을 열어 무언가 말하려 하지만, 몸에 힘이 풀리며 쓰러진다.',
     ]);
     await era.printAndWait([
-      '勝者となった ',
+      '승자가 된 ',
       you.get_colored_name(),
-      ' は慎重に',
+      '은(는) 조심스럽게 ',
       teio.sex,
-      'の体を支え、壁にもたせて座らせ、向きを変えて施錠された扉と向き合う。',
+      '의 몸을 받쳐 벽에 기대 앉힌 뒤 몸을 돌려 잠긴 문과 마주한다.',
     ]);
     await era.printAndWait([
-      'そろそろだ……長い監禁、沈思、戦いには、決着が必要だ。',
+      '이제 때가 됐다…… 긴 감금과 고뇌, 싸움에는 결말이 필요하다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は肌着から、粘土でこっそり取った ',
+      '은(는) 속옷 안에서 점토로 몰래 떠둔 ',
       teio.get_colored_name(),
-      ' の指紋を取り出し、記憶にある錠の位置へ手を伸ばす。',
+      '의 지문을 꺼내 기억 속 잠금장치 위치로 손을 뻗는다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' の計算が正しければ……これで出られる。',
+      '의 계산이 맞다면…… 이걸로 나갈 수 있다.',
     ]);
     era.println();
     await era.printAndWait([
-      '合図音が鳴り、カチリと、扉は再び施錠される。',
+      '신호음이 울리고 철컥, 문은 다시 잠긴다.',
       you.get_colored_name(),
-      ' はまずいと悟り、数歩下がり、息を吐き、膝を曲げて力を溜め、生涯の力を尽くし、全身の重量を扉へ叩き込む。',
+      '은(는) 큰일이라고 깨닫고 몇 걸음 물러난 뒤 숨을 내쉬고 무릎을 굽혀 힘을 모아, 평생의 힘을 다해 온몸의 무게를 문에 들이받는다.',
     ]);
     era.println();
 
     await era.printAndWait([
-      '大きな音が地下の空間に響き、',
+      '큰 소리가 지하 공간에 울리고 ',
       you.get_colored_name(),
-      ' は弾き返されて目が回り、さっき',
+      '은(는) 튕겨나가 눈앞이 빙글 돌고, 아까 ',
       teio.uma_sex_title,
-      'とやり合った傷まで同時に疼く。',
+      '와(과) 맞붙으며 입은 상처까지 동시에 욱신거린다.',
       you.get_colored_name(),
-      ' は荒い息をつき、重心が沈んで座り込む。視線はちょうど、担当の眠った顔と向き合う。',
+      '은(는) 거칠게 숨을 몰아쉬며 주저앉는다. 시선은 마침 잠든 담당의 얼굴과 마주한다.',
     ]);
     era.println();
 
     await era.printAndWait([
       teio.sex,
-      'の顔は、',
+      '의 얼굴은 ',
       you.get_colored_name(),
-      ' がよく知る',
+      '이(가) 잘 아는 ',
       teio.uma_sex_title,
-      'のままに見える。',
+      '의 모습 그대로인 것 같다.',
     ]);
     era.println();
 
     await era.printAndWait([
       you.get_colored_name(),
-      ' は苦笑し、手を伸ばして',
+      '은(는) 쓴웃음을 지으며 손을 뻗어 ',
       teio.sex,
-      'の睫毛の雫を拭い、もう逆らわず、今の運命を受け入れた。',
+      '의 속눈썹에 맺힌 물방울을 닦아주고, 더는 저항하지 않은 채 지금의 운명을 받아들였다.',
     ]);
   },
 
-  // [번역 대상] battle_success
+  // [번역 완료] battle_success
   async battle_success(teio, you) {
-    await era.printAndWait('どうすれば……だめだ……');
+    await era.printAndWait('어떻게 해야…… 안 돼……');
     await era.printAndWait([
       you.get_colored_name(),
-      'は今の状況をあれこれ考え、頭のなかで様々な状況と計画をシミュレートするが、どれも無理か、すでに無効だと証明されている。',
+      '은(는) 지금 상황을 이리저리 생각하며 머릿속으로 여러 상황과 계획을 시뮬레이션하지만, 모두 불가능하거나 이미 무효라는 게 증명되어 있다.',
       you.get_colored_name(),
-      ' は目を開き、いちばん単純で直接な方法を選ぶ——自分をここに閉じ込めた',
-      { color: teio.color, content: 'テイオー' },
-      'を、正面から倒す。',
+      '은(는) 눈을 뜨고 가장 단순하고 직접적인 방법을 택한다——자신을 여기에 가둔 ',
+      { color: teio.color, content: '테이오' },
+      '을(를), 정면에서 쓰러뜨린다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      'はトレーナーとして担当へ伝えてきた、筋肉の使い方を思い出し、深く息を吸って、今度は自ら実践する覚悟を決める。',
+      '은(는) 트레이너로서 담당에게 가르쳐 온 근육 사용법을 떠올리고 깊게 숨을 들이쉬며, 이번에는 자신이 직접 실행할 각오를 다진다.',
     ]);
     era.println();
   },
 
-  // [번역 대상] find_escape
+  // [번역 완료] find_escape
   find_escape(teio, you) {
     era.print([
-      'なぜか、',
+      '어째서인지 ',
       teio.get_colored_name(),
-      ' はもうしばらく離れている。',
+      '은(는) 한동안 자리를 비운 상태다.',
     ]);
     era.print([
-      '授業か？ トレーニングか？ 催しか？ あるいは——ここまで考えると ',
+      '수업인가? 훈련인가? 행사인가? 아니면——여기까지 생각하자 ',
       you.get_colored_name(),
-      ' の頭はさらに痛む——学園の管理側へ、自分の失踪を説明する嘘を編んでいるのか？',
+      '의 머리는 더 아파진다——학원 운영진에게 자신의 실종을 설명할 거짓말을 꾸미고 있는 건가?',
     ]);
     era.print([
-      'これ以上先延ばしはできない、と ',
+      '더는 미룰 수 없다고 ',
       you.get_colored_name(),
-      ' は思う。救援を待つより、自分で機会を掴んで逃げるべきだ。',
+      '은(는) 생각한다. 구조를 기다리기보다 스스로 기회를 잡아 도망쳐야 한다.',
     ]);
     era.println();
     era.print([
       you.get_colored_name(),
-      ' は扉を軽く押す——今度は鍵がかかっていない！',
+      '은(는) 문을 살짝 민다——이번에는 잠겨 있지 않다!',
       you.get_colored_name(),
-      ' は喜び、敷居を跨ぎ、同時に胸を撫でて、跳ねる心臓を静めようとする。闇を驚かせないために……',
+      '은(는) 기뻐하며 문턱을 넘고 동시에 가슴을 쓸어내려 뛰는 심장을 진정시키려 한다. 어둠을 놀라게 하지 않기 위해……',
     ]);
-    teio.say('ああ……');
-    era.print(['その瞬間、さっきまで奔っていた血が固まる。']);
+    teio.say('아아……');
+    era.print(['그 순간, 방금 전까지 내달리던 피가 얼어붙는다.']);
     era.print([
-      '温かく、清らかな香りの体が寄り、細くて力のある両腕が ',
+      '따뜻하고 맑은 향이 나는 몸이 다가오고, 가늘지만 힘 있는 두 팔이 ',
       you.get_colored_name(),
-      ' の腰を抱き、',
+      '의 허리를 감싸며 ',
       you.get_colored_name(),
-      ' は動けなくなる。',
+      '은(는) 움직일 수 없게 된다.',
     ]);
     teio.say(
-      '前は、自主トレでサボってないか確かめるのに、この手を使ってたのに……大人の手管、ふふ。',
+      '전에는 자율훈련 때 게으름 피우는지 확인하려고 이 수법을 썼었는데…… 어른의 수법이네, 후후.',
     );
     era.print([
-      '立場が逆転した今、',
+      '입장이 뒤바뀐 지금 ',
       you.get_colored_name(),
-      ' は',
+      '은(는) ',
       teio.sex,
-      'に抱えられて室内へ戻り、「罰」を待つしかない……',
+      '에게 안겨 방 안으로 돌아가 「벌」을 기다릴 수밖에 없다……',
     ]);
   },
 
-  // [번역 대상] first_time
+  // [번역 완료] first_time
   first_time(another, you) {
     era.print([
-      '寮の外で、',
+      '기숙사 밖에서 ',
       you.get_colored_name(),
-      ' はちょうど ',
+      '은(는) 마침 ',
       another.get_colored_name(),
-      ' と出会い、',
+      '와(과) 만나 ',
       another.sex,
-      'と楽しげにしばらく話す。',
+      '와(과) 즐겁게 한동안 이야기를 나눈다.',
     ]);
     era.print([
-      'だが ',
+      '하지만 ',
       you.get_colored_name(),
-      ' は気づかない。遠くない場所で一対の目がずっとこちらを見ており、',
+      '은(는) 눈치채지 못한다. 멀지 않은 곳에서 한 쌍의 눈이 계속 이쪽을 바라보고 있고, ',
       you.get_colored_name(),
-      ' と',
+      '와 ',
       another.sex,
-      'のやり取りが長くなり、話題が私生活へ寄り、笑い声が大きくなるにつれ、その瞳も震えて、徐々に暗くなっていく……',
+      '의 대화가 길어지고 화제가 사생활로 옮겨가며 웃음소리가 커질수록 그 눈동자도 흔들리며 점점 어두워진다……',
     ]);
     era.println();
 
-    era.print(['その主の両手は周囲の物を強く握り、指の節が白くなる。']);
+    era.print(['그 눈의 주인은 두 손으로 주변 물건을 세게 움켜쥐어 손가락 마디가 하얗게 질린다.']);
     era.println();
 
     era.print([
       you.get_colored_name(),
-      ' は振り返り、それからぱっと目を開く。',
+      '은(는) 몸을 돌리고는 번쩍 눈을 뜬다.',
     ]);
-    era.print(['現実か？ 夢か？']);
+    era.print(['현실인가? 꿈인가?']);
     era.print([
       you.get_colored_name(),
-      ' は、少し子供っぽい装飾のダブルベッドに横たわっていることに気づく……',
+      '은(는) 조금 어린 취향의 장식이 달린 더블베드에 누워 있다는 걸 깨닫는다……',
     ]);
-    era.print(['眼前は見知らぬ天井……']);
+    era.print(['눈앞에는 낯선 천장……']);
   },
 
-  // [번역 대상] flatter
+  // [번역 완료] flatter
   async flatter(teio, you, callname) {
     if (era.get('status:3:腿伤')) {
       await teio.say_and_wait([
-        'ごめん、',
+        '미안, ',
         callname,
-        '。でも、どうしても、離れてほしくないんだ……',
+        '。 하지만 아무래도 떠나지 않았으면 해……',
       ]);
     } else {
       await era.printAndWait([
         you.get_colored_name(),
-        ' はいつもの調子で担当をなだめようとするが、明らかに通じない。',
+        '은(는) 평소처럼 담당을 달래려 하지만, 분명 통하지 않는다.',
       ]);
       era.println();
 
-      await teio.say_and_wait([callname, '……今は、テイオーさまの番だよ。']);
+      await teio.say_and_wait([callname, '……지금은 테이오 님 차례야.']);
     }
   },
 
-  // [번역 대상] strike_fail
+  // [번역 완료] strike_fail
   async strike_fail(teio, you, callname) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は目を閉じ、眠ったふりをしながら、今の状況を集中して考える。',
+      '은(는) 눈을 감고 잠든 척하면서 지금 상황을 집중해서 생각한다.',
     ]);
     await era.printAndWait([
-      '明らかに、救援は期待しにくい。自分を頼るしかない。そして ',
+      '분명 구조는 기대하기 어렵다. 자신에게 의지할 수밖에 없다. 그리고 ',
       you.get_colored_name(),
-      ' の担当の今の精神状態では……',
+      '의 담당의 현재 정신 상태로는……',
       you.get_colored_name(),
-      ' に、',
+      '에게 ',
       teio.sex,
-      'を説得して出してもらう自信はない。正面からやり合うのも、いい選択ではない。',
+      '을(를) 설득해 내보내 달라고 할 자신도 없다. 정면으로 맞붙는 것도 좋은 선택은 아니다.',
     ]);
-    await era.printAndWait(['なら、方法はひとつだ。']);
+    await era.printAndWait(['그렇다면 방법은 하나뿐이다.']);
     await era.printAndWait([
       you.get_colored_name(),
-      ' はトレーナーの頭で戦術を組み、自ら駒になり、時機を待つ。',
+      '은(는) 트레이너의 머리로 전술을 짜고 스스로 말이 되어 때를 기다린다.',
     ]);
     await era.printAndWait([
-      '細かな足音が近づき、気配が過ぎ、衣を脱ぐかすかな音がする……',
+      '가벼운 발소리가 다가오고 인기척이 지나가며 옷을 벗는 희미한 소리가 들린다……',
     ]);
     await era.printAndWait([
-      '今だ！',
+      '지금이다!',
       you.get_colored_name(),
-      ' は静から動へ転じ、ベッドから跳び上がり、両手を開いて',
+      '은(는) 정적에서 움직임으로 전환해 침대에서 뛰어오르며 두 손을 펼쳐 ',
       teio.sex,
-      'の髪と尻尾を掴む——',
+      '의 머리카락과 꼬리를 붙잡는다——',
     ]);
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は滑稽な姿勢でベッドへ倒れる。',
+      '은(는) 우스꽝스러운 자세로 침대에 쓰러진다.',
     ]);
-    era.println();
-
-    await teio.say_and_wait([callname, '……なにやってるの。']);
     era.println();
 
+    await teio.say_and_wait([callname, '……뭐 하는 거야.']);
+    era.println();
+
     await era.printAndWait([
-      '結果は、担当を笑わせかけただけで、',
+      '결과는 담당을 웃게 만들 뻔했을 뿐이고 ',
       teio.sex,
-      'の警戒を強めたようだ。',
+      '의 경계심만 더 강하게 만든 듯하다.',
     ]);
   },
 
-  // [번역 대상] strike_success
+  // [번역 완료] strike_success
   async strike_success(teio, you, callname) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は目を閉じ、眠ったふりをしながら、今の状況を集中して考える。',
+      '은(는) 눈을 감고 잠든 척하면서 지금 상황을 집중해서 생각한다.',
     ]);
     await era.printAndWait([
-      '明らかに、救援は期待しにくい。自分を頼るしかない。そして ',
+      '분명 구조는 기대하기 어렵다. 자신에게 의지할 수밖에 없다. 그리고 ',
       you.get_colored_name(),
-      ' の担当の今の精神状態では……',
+      '의 담당의 현재 정신 상태로는……',
       you.get_colored_name(),
-      ' に、',
+      '에게 ',
       teio.sex,
-      'を説得して出してもらう自信はない。正面からやり合うのも、いい選択ではない。',
+      '을(를) 설득해 내보내 달라고 할 자신도 없다. 정면으로 맞붙는 것도 좋은 선택은 아니다.',
     ]);
-    await era.printAndWait(['なら、方法はひとつだ。']);
+    await era.printAndWait(['그렇다면 방법은 하나뿐이다.']);
     await era.printAndWait([
       you.get_colored_name(),
-      ' はトレーナーの頭で戦術を組み、自ら駒になり、時機を待つ。',
+      '은(는) 트레이너의 머리로 전술을 짜고 스스로 말이 되어 때를 기다린다.',
     ]);
     await era.printAndWait([
-      '細かな足音が近づき、気配が過ぎ、衣を脱ぐかすかな音がする……',
+      '가벼운 발소리가 다가오고 인기척이 지나가며 옷을 벗는 희미한 소리가 들린다……',
     ]);
     await era.printAndWait([
-      '今だ！',
+      '지금이다!',
       you.get_colored_name(),
-      ' は静から動へ転じ、ベッドから跳び上がり、両手を開いて',
+      '은(는) 정적에서 움직임으로 전환해 침대에서 뛰어오르며 두 손을 펼쳐 ',
       teio.sex,
-      'の髪と尻尾を掴む——',
+      '의 머리카락과 꼬리를 붙잡는다——',
     ]);
     era.println();
     if (era.get('status:3:腿伤')) {
-      await teio.say_and_wait(['あっ——']);
+      await teio.say_and_wait(['앗——']);
       era.println();
 
       await era.printAndWait([
         teio.sex,
-        'の反応は速いが、体が一瞬遅れ、',
+        '의 반응은 빨랐지만 몸이 한순간 늦었고 ',
         you.get_colored_name(),
-        ' は勢い余って',
+        '은(는) 기세를 주체하지 못하고 ',
         teio.sex,
-        'のふくらはぎへ飛びつき、抱きついたまま、ふたりとも柔らかい寝具へ倒れ込む……',
+        '의 종아리에 달려들어 끌어안은 채 둘 다 부드러운 침구 위로 쓰러진다……',
       ]);
       era.println();
 
-      await teio.say_and_wait([callname, '……離れないで……']);
+      await teio.say_and_wait([callname, '……떠나지 마……']);
       era.println();
 
       await era.printAndWait([
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         teio.sex,
-        'を見て、何か言おうとするが、口は開かない。',
+        '을(를) 바라보며 무언가 말하려 하지만 입이 열리지 않는다.',
       ]);
       await era.printAndWait([
-        'トレーナーと、',
+        '트레이너와 ',
         you.sex,
-        'の担当',
+        '의 담당 ',
         teio.uma_sex_title,
-        'は長く見つめ合い、黙契のうちに双方が顔を逸らす。',
+        '은(는) 오랫동안 서로 바라보다가 말없는 합의처럼 동시에 얼굴을 돌린다.',
       ]);
       era.println();
 
-      await teio.say_and_wait(['……出すよ。']);
+      await teio.say_and_wait(['……내보내 줄게.']);
       era.println();
 
       await era.printAndWait([
         teio.sex,
-        'は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' の手を引き、外へ向かう。極細だがはっきりした言葉が ',
+        '의 손을 잡아끌고 밖으로 향한다. 아주 가늘지만 분명한 말이 ',
         you.get_colored_name(),
-        ' の耳へ届く。',
+        '의 귀에 닿는다.',
       ]);
       era.println();
 
-      await teio.say_and_wait(['ごめん。']);
+      await teio.say_and_wait(['미안.']);
     } else {
-      await teio.say_and_wait(['やっ！']);
+      await teio.say_and_wait(['앗!']);
       era.println();
 
       await era.printAndWait([
-        '久しぶりに聞く',
+        '오랜만에 듣는 ',
         teio.teen_sex_title,
-        '本来の悲鳴が上がり、',
+        '본래의 비명이 터져 나오고 ',
         teio.sex,
-        'は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' に抑えられ、立場が再び逆転する。',
+        '에게 제압당하며 입장이 다시 뒤바뀐다.',
       ]);
       era.println();
 
@@ -588,28 +588,28 @@ module.exports = {
 
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、慣れたマッサージと情愛の挑発を混ぜた手つきで',
+        '은(는) 익숙한 마사지와 애정 어린 장난을 섞은 손길로 ',
         teio.sex,
-        'に応える。',
+        '에게 응한다.',
         teio.sex,
-        'は徐々に力を失い、声は吐息へ変わる……',
+        '은(는) 점점 힘이 빠지고 목소리는 숨소리로 바뀐다……',
       ]);
       era.println();
 
-      await teio.say_and_wait(['鍵は……ない……ボク、持って……']);
+      await teio.say_and_wait(['열쇠는…… 없어…… 내가, 가지고……']);
       era.println();
 
       await era.printAndWait([
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         teio.sex,
-        'の意味を察し、',
+        '의 뜻을 알아차리고 ',
         teio.sex,
-        'を押したまま扉の前へ行き、勢いで押す。',
+        '을(를) 누른 채 문 앞으로 가서 힘껏 민다.',
       ]);
       era.println();
 
-      await era.printAndWait(['あっさりと、扉は開いた……']);
+      await era.printAndWait(['너무도 쉽게 문이 열렸다……']);
     }
   },
 };
