@@ -6,16 +6,17 @@
 - 작업 단위: **3파일씩**
 - 진행 판단 기준: `coverage.json` / `manifest.json`보다 **실제 파일의 `[번역 대상]` 마커를 우선**한다. manifest는 완료 파일도 미완료처럼 남아 있어 후보 탐색용으로만 사용한다.
 - 이번 완료 배치:
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/rec-19.js` — commit `d5d3d320`
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/105600-Matikanefukukitaru/rec-56.js` — commit `8c422a19`
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/104600-Smart-Falcon/rec-46.js` — commit `2c1f8b62`
-- 위 3파일은 재검사 시 `[번역 대상]` **0개**, 코드 문자열의 일본어 가나 잔존 **0줄** 확인 완료.
-- 직전 완료 배치: `race/clothes.js`, `timon/others/god-shop.js`, `timon/others/others.js`.
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/103600-Air-Shakur/rec-36.kojo` — commit `a86121f4`
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/106100-King-Halo/rec-61.kojo` — commit `217bb9a5`
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/108500-Daiichi-Ruby/rec-85.js` — commit `2cab2746`
+- 위 3파일은 재검사 시 `[번역 대상]` **0개**, 코드/본문의 일본어 가나 잔존 **0줄** 확인 완료.
+- 작업 전제 보정: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
+- 직전 완료 배치: `101900-Agnes-Digital/rec-19.js`, `105600-Matikanefukukitaru/rec-56.js`, `104600-Smart-Falcon/rec-46.js`.
 - 다음 재개 우선 후보(실제 마커 확인 완료):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/103600-Air-Shakur/rec-36.kojo` — `[번역 대상]` 3개
-  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/106100-King-Halo/rec-61.kojo` — `[번역 대상]` 2개
-  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/108500-Daiichi-Ruby/rec-85.js` — `[번역 대상]` 7개
-- 참고: `111900-Dream-Journey/rec-119.kojo`, `107400-Mejiro-Bright/daily-74.kojo`는 manifest상 후보지만 실제 `[번역 대상]`은 0개라 건너뛴다.
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/103700-Eishin-Flash/love-37.js` — `[번역 대상]` 1개
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100300-Tokai-Teio/base-3.js` — `[번역 대상]` 12개
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/105200-Haru-Urara/base-52.js` — `[번역 대상]` 13개
+- 참고: `timon/others/race.js`는 manifest상 후보지만 실제 `[번역 대상]`은 0개라 건너뛴다.
 - 매 배치 종료 시 이 섹션의 **이번 완료 배치 / 다음 재개 우선 후보**를 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
