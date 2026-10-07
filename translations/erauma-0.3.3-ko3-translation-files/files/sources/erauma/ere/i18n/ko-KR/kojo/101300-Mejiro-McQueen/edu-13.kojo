@@ -10,7 +10,7 @@ train:
       - 「가겠어요!」
   - 맥퀸의 투지에 찬 말과 함께, 훈련이 본격적으로 진행되었다.
 
-# [번역 대상] train_success
+# [번역 완료] train_success
 train_success:
   sync: true
   lines:
@@ -29,7 +29,7 @@ train_success:
         - 결과적으로 %YOU%의 끊이지 않는 칭찬을 몇 분 동안 듣고서야, 맥퀸의 가벼운 발길질과 함께 상황이 마무리되었다.
     -
 
-# [번역 대상] train_fail
+# [번역 완료] train_fail
 train_fail:
   title: 트레이닝 실패
   lines:
@@ -89,7 +89,7 @@ train_fail:
             - 「하아…… 다시금 죄송한 마음이 드네요.」
         - 의사의 치료를 마친 뒤, %YOU%은(는) 맥퀸을 기숙사로 돌려보내 휴식을 취하게 했다.
 
-# [번역 대상] train_add
+# [번역 완료] train_add
 train_add:
   title: 뒤처지고 싶지 않아
   lines:
@@ -155,7 +155,7 @@ train_add:
             - 「자신을 다스리지 못하면 미래는 없는 법. 『정정당당』이야말로 메지로 가문의 방식이니까요.」
         - 결과적으로 %트레이너%의 끊이지 않는 칭찬을 몇 분 동안 듣고서야, 맥퀸의 가벼운 발길질과 함께 상황이 마무리되었다.
 
-# [번역 대상] train_success_sex
+# [번역 완료] train_success_sex
 train_success_sex:
   - %트레이너%은(는) 훈련장에서 부상을 당한 맥퀸을 부축해 보건실로 데려가 %그녀%를 침대에 눕혔다.
   - 맥퀸은 몹시 분해하는 기색이었다.
@@ -180,7 +180,7 @@ train_success_sex:
     lines:
       - 실망스러운 대답을 들은 맥퀸은 귀를 축 늘어뜨린 채 원망 섞인 눈길을 보내며 떠나갔다.
 
-# [번역 대상] race_start
+# [번역 완료] race_start
 race_start:
   title: 레이스 전
   lines:
@@ -200,7 +200,7 @@ race_start:
         - 「그러니 %CALLNAME%, 제 또 다른 승리를 지켜봐 주세요.」
     - %YOU%과(와) 맥퀸은 함께 기합을 넣은 뒤 경기장으로 향했다.
 
-# [번역 대상] race_win
+# [번역 완료] race_win
 race_win:
   title: 레이스 승리
   lines:
@@ -241,7 +241,7 @@ race_win:
           content: %CHARA%
         - 「더욱 화려하게, 더욱 우아하게, 더욱 아름답게… 더 높은 목표를 향해 나아가죠.」
 
-# [번역 대상] race_5
+# [번역 완료] race_5
 race_5:
   title: 레이스 입상
   lines:
@@ -278,7 +278,7 @@ race_5:
           content: %CHARA%
         - 「그러기 위해서라도, 더욱 강해져야만 해요.」
 
-# [번역 대상] race_lose
+# [번역 완료] race_lose
 race_lose:
   title: 레이스 패배
   lines:
@@ -316,7 +316,7 @@ race_lose:
           content: %CHARA%
         - 「그러니 %CALLNAME%, 저를 더 강하게 만들어 주세요!」
 
-# [번역 대상] meet_mejiro
+# [번역 완료] meet_mejiro
 meet_mejiro:
   title: 메지로 가문의 %SIBLINGS%와 첫 대면
   lines:
@@ -360,7 +360,7 @@ meet_mejiro:
     - 메지로 아르당은 두 손을 모으고 열정적으로 대답했으며, 그 안에는 정적인 온화함이 묻어났다.
     - 메지로 파머는 %YOU%에게 윙크를 날리며 우아한 인상과는 다른 자유분방한 매력을 보여주었다.
     - 메지로 브라이트는 나른하고 달콤한 목소리로 길게 대답했는데, 정말 귀여웠다.
-    # CFLAGNAME:0 = 性別
+    # CFLAGNAME:0 = 성별
     - if: era.get('cflag:0:0') === 1
       content: 메지로 도베르는 시선을 피하며 모기 소리처럼 작은 목소리로 대답했다. 다가가기 어려워 보였다.
     - if: era.get('cflag:0:0') !== 1
@@ -454,7 +454,7 @@ meet_mejiro:
         - 「절대 참고 있는 게 아니에요, 그런 일은 없어요!」
     - %YOU%은(는) 하하 웃으며 앞에 놓인 식사를 맛보기 시작했다.
 
-# [번역 대상] begin_race
+# [번역 완료] begin_race
 begin_race:
   title: 메이크 데뷔 전
   lines:
@@ -507,7 +507,7 @@ begin_race:
       content: 「잘 다녀와!」
     - %YOU% 역시 웃으며, 경기장으로 향하는 메지로 맥퀸을 배웅했다.
 
-# [번역 대상] begin_race_win
+# [번역 완료] begin_race_win
 begin_race_win:
   title: 목표를 향해
   lines:
@@ -563,11 +563,11 @@ begin_race_win:
           content: %CHARA%
         - 「그럼 앞으로도 잘 부탁드릴게요, %CALLNAME%.」
 
-# [번역 대상] kiku_sho
+# [번역 완료] kiku_sho
 kiku_sho:
   title: 절차탁마
   lines:
-    # 菊花賞前
+    # 국화상 전
     # 강적: 라이언
     - 메지로 맥퀸이 목표로 삼은 G1 레이스이자, 클래식 삼관 중 하나인 레이스인 만큼 관람객은 원래부터 많았다.
     - 이번 레이스는 %SEX%의 트레이닝 성과를 검증하기에 매우 적합했다.
@@ -619,11 +619,11 @@ kiku_sho:
       content: 「가자, 너를 믿어.」
     - 메지로 맥퀸은 %YOU%에게 고개를 끄덕인 뒤, 메지로 라이언과 함께 준비실을 나섰다.
 
-# [번역 대상] kiku_sho_win
+# [번역 완료] kiku_sho_win
 kiku_sho_win:
   title: 멋진 한 판
   lines:
-    # 菊花賞後
+    # 국화상 후
     - content:
         - fontWeight: bold
           content: 해설
@@ -684,11 +684,11 @@ kiku_sho_win:
           content: %CHARA%
         - 「다음에도 너랑 겨룰 수 있길 기대할게.」
 
-# [번역 대상] tenn_spr
+# [번역 완료] tenn_spr
 tenn_spr:
   title: 제패 전야
   lines:
-    # 天皇賞（春）前
+    # 천황상(봄) 전
     # 강적: 라이언
     - 준비실 안.
     - 이전 몇 차례의 레이스와는 달리, 오늘의 준비실 안에는 긴장된 침묵이 감돌고 있었다.
@@ -738,11 +738,11 @@ tenn_spr:
           content: %CHARA%
         - 「우리 전력을 다해보자!」
 
-# [번역 대상] tenn_spr_win
+# [번역 완료] tenn_spr_win
 tenn_spr_win:
   title: 메지로 가문을 잇는 자
   lines:
-    # 天皇賞（春）後
+    # 천황상(봄) 후
     - content:
         - fontWeight: bold
           content: 해설
@@ -800,11 +800,11 @@ tenn_spr_win:
         - 「정말로 감사합니다. 그리고 저를 가르쳐 주신 %CALLNAME%께도 감사드려요!」
     - 말이 끝나자마자 관중석에서는 끊이지 않는 환호성이 터져 나왔다.
 
-# [번역 대상] takz_kin
+# [번역 완료] takz_kin
 takz_kin:
   title: 침착하게 맞이하다
   lines:
-    # 宝塚記念前
+    # 타카라즈카 기념 전
     # 강적: 라이언
     - 바깥 경기장에서는 국화상에 못지않은 환호성이 울려 퍼지고 있었다.
     - color: %COLOR%
@@ -848,11 +848,11 @@ takz_kin:
           content: %CHARA%
         - 「그리고 라이언에게 승리를 향한 제 각오를 반드시 보여줄 거예요.」
 
-# [번역 대상] takz_kin_win
+# [번역 완료] takz_kin_win
 takz_kin_win:
   title: 메지로 가문의 강함
   lines:
-    # 宝塚記念後
+    # 타카라즈카 기념 후
     - 오늘도 메지로 맥퀸은 평소처럼 1착의 기세로 결승선을 통과했다.
     - 이미 손에 익은 승리였기에, G1 레이스의 우승이 %SEX%에게 큰 동요를 일으키지는 않았다.
     - 메지로 맥퀸은 속도를 줄이며 멈춰 서서 관중석을 향해 손을 흔들었고, 관중들도 이에 환호하며 화답했다.
@@ -985,11 +985,11 @@ takz_kin_win:
         - 「네……!」
     - 그렇게 가을 텐노상이 다음 목표가 되었다.
 
-# [번역 대상] tenn_sho
+# [번역 완료] tenn_sho
 tenn_sho:
   title: 마지막 순간까지 빛나다
   lines:
-    # 天皇賞（秋）前
+    # 천황상(가을) 전
     - 가을 텐노상이 열리는 오늘, 하늘에서는 아침부터 비가 내리고 있었다. 멈출 기미가 보이지 않는 빗줄기는 마치 불길한 예감을 불러일으키는 듯했고, 수많은 인파가 몰린 경기장의 분위기를 무겁게 가라앉혔다.
     - 지하 통로 안에는 3년 동안 줄곧 곁을 지켜온 %YOU% 외에도 메지로 가문의 자매들이 함께하고 있었다.
     - 그곳에 모인 모든 이들이 메지로 맥퀸이 개척할 기적을 지켜보기를 고대하고 있었다.
@@ -1017,11 +1017,11 @@ tenn_sho:
     - 이어 %SEX%는 뒤도 돌아보지 않고 지하 통로를 나섰다. 관중석과 라이벌들을 향해 아무 말 없이, 그저 팔에 찬 메지로 가문의 완장을 살짝 매만질 뿐이었다.
     - 그리고 당당한 발걸음으로 게이트 뒤편으로 걸어가 워밍업을 시작했다.
 
-# [번역 대상] tenn_sho_win
+# [번역 완료] tenn_sho_win
 tenn_sho_win:
   title: 막을 내리다
   lines:
-    # 天皇賞（秋）後
+    # 천황상(가을) 후
     - 메지로 맥퀸이 결승선을 통과하는 순간, 관중석에서 긴장하며 기다리던 함성이 단숨에 한 단계 더 높아졌다.
     - content:
         - fontWeight: bold
@@ -1071,7 +1071,7 @@ tenn_sho_win:
     - acc: 1
       content: 「이제 가자.」
 
-# [번역 대상] new_year
+# [번역 완료] new_year
 new_year:
   title: 새해
   lines:
@@ -1116,7 +1116,7 @@ new_year:
           content: %CHARA%
         - 「그럼 새로운 한 해도 %YOU%, 잘 부탁드릴게요.」
 
-# [번역 대상] valentine
+# [번역 완료] valentine
 valentine:
   title: 발렌타인데이
   lines:
@@ -1220,7 +1220,7 @@ valentine:
             - 「하지만…… 한정판 초콜릿을 맛봤으니 한 입이라도 만족해요.」
         - %YOU%은 그 광경을 보며 웃으면서 메지로 맥퀸을 달래주었다. 발렌타인데이만의 특별한 일상이 그렇게 마무리되었다.
 
-# [번역 대상] halloween
+# [번역 완료] halloween
 halloween:
   title: 할로윈
   lines:
@@ -1313,7 +1313,7 @@ halloween:
           content: %CHARA%
         - 「네, 즐거운 할로윈이에요.」
 
-# [번역 대상] mejiro_family
+# [번역 완료] mejiro_family
 mejiro_family:
   title: 메지로 가문의 초대
   lines:
@@ -1355,7 +1355,7 @@ mejiro_family:
           content: %CHARA%
         - 「정말 기대하고 있을게요.」
 
-# [번역 대상] mejiro_party
+# [번역 완료] mejiro_party
 mejiro_party:
   title: 메지로 가문의 만찬회
   lines:
@@ -1814,11 +1814,11 @@ mejiro_party:
         - 「그럼 %CALLNAME%, 안녕히 주무세요.」
     - 그 뒤 %YOU%은 집사의 안내를 받아 깔끔하게 정돈된 객실로 향했다. 몸을 씻고 잠옷으로 갈아입은 뒤 침대에 누워 깊은 잠에 빠져들었다.
 
-# [번역 대상] want_dessert
+# [번역 완료] want_dessert
 want_dessert:
   title: 디저트가 먹고 싶어
   lines:
-    # 商店街
+    # 상점가
     - 맥퀸과 함께 외출하던 중 우연히 디저트 가게 앞을 지나게 되었고, 그 가게의 존재가 맥퀸의 시선을 단단히 사로잡았다.
     - color: %COLOR%
       content:
