@@ -155,111 +155,111 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 74-2-end
+  // [번역 완료] 74-2-end
   async '74-2-end'(gold_shp, you, callname) {
     const ret = [];
     era.drawLine();
     await era.printAndWait(
-      `この激しい馬跳びは、疑いようもなく痛快な体験だった。さっきまで爽やかだったトレーナー室は、いま精液と愛液の匂いが充満している。${you.name} は息を切らして ${gold_shp.name} の腕の中へ沈み、${gold_shp.sex}が絶えず放つホルモンを吸い込みながら、頭の中ではさっき何が起きたのかを考え続けていた。`,
+      `이 격렬한 정사는 의심할 여지 없이 강렬한 체험이었다. 조금 전까지 산뜻했던 트레이너실에는 이제 정액과 애액 냄새가 가득했다. ${you.name}은(는) 숨을 헐떡이며 ${gold_shp.name}의 품속에 파묻혔고, ${gold_shp.sex}이(가) 계속 풍기는 체취를 들이마시면서 방금 무슨 일이 있었는지 머릿속으로 계속 되짚고 있었다.`,
     );
     era.println();
     await gold_shp.say_and_wait(
-      `どうだ ${callname}……超絶美少女ゴルシの、汁だくおまんこ、気持ちよかったろ？`,
+      `어때 ${callname}…… 초절정 미소녀 고루시의 흠뻑 젖은 보지, 기분 좋았지?`,
     );
     era.println();
     await era.printAndWait(
-      `${gold_shp.name} は頬を紅潮させ、得意げに ${you.name} へ笑う。`,
+      `${gold_shp.name}은(는) 볼을 붉힌 채 의기양양하게 ${you.name}에게 웃어 보였다.`,
     );
     era.println();
 
-    era.printButton('「いつからそんなに下品になったんだ……」', 1);
+    era.printButton('「언제부터 그렇게 음란해진 거야……」', 1);
     await era.input();
 
     await gold_shp.say_and_wait(
-      'てめぇのせいだろ……ふふふ。アタシの前で鎖骨見せたり尻振ったり、まるで誘ってるみたいにさぁ。我慢の限界だったんだよ！',
+      '네 탓이잖아…… 후후후. 내 앞에서 쇄골을 보여주고 엉덩이를 흔들고, 꼭 유혹하는 것처럼 굴었잖아. 참는 것도 한계였다고!',
     );
     era.println();
 
-    era.printButton('「変態……強姦魔……」', 1);
+    era.printButton('「변태…… 강간마……」', 1);
     await era.input();
 
     await gold_shp.say_and_wait(
-      'なんて言われようと、もう抜き差しならねえ仲だ！',
+      '뭐라고 하든 이제 빼도 박도 못하는 사이야!',
     );
     era.println();
     await era.printAndWait(
-      `${gold_shp.name} は腕で ${you.name} の首を絡め、強引に胸元へ鎖した。少女の体香が、意識を蕩けさせる。`,
+      `${gold_shp.name}은(는) 팔로 ${you.name}의 목을 감싸 강제로 가슴께에 끌어안았다. 그녀의 체향이 의식을 녹여버릴 듯했다.`,
     );
     era.println();
-    await era.printAndWait(`長い沈黙のあと、${gold_shp.sex} が口を開く。`);
+    await era.printAndWait(`긴 침묵 끝에 ${gold_shp.sex}이(가) 입을 열었다.`);
     era.println();
-    await gold_shp.say_and_wait('だから……責任、取るから。その……');
-    await gold_shp.say_and_wait(`${callname}、アタシと……付き合え！`);
+    await gold_shp.say_and_wait('그러니까…… 책임질 테니까. 그……');
+    await gold_shp.say_and_wait(`${callname}, 나랑…… 사귀자!`);
     era.println();
 
-    era.printButton('「うん、いいよ。」（関係を進める）', 1);
-    era.printButton('「それはちょっと……」（まだ進めない）', 2);
+    era.printButton('「응, 좋아.」(관계를 진전시킨다)', 1);
+    era.printButton('「그건 좀……」(아직 진전시키지 않는다)', 2);
     ret.push(await era.input());
     if (ret[0] === 1) {
       await era.printAndWait(
-        `${you.name} が予想しなかったのは、${gold_shp.name} のほうが ${you.name} より驚いた顔をしていたことだ。`,
+        `${you.name}이(가) 예상하지 못한 것은 오히려 ${gold_shp.name} 쪽이 ${you.name}보다 더 놀란 표정을 짓고 있었다는 점이다.`,
       );
       era.println();
-      await gold_shp.say_and_wait('マジかよ？ 絶対に断られると思ってた！');
+      await gold_shp.say_and_wait('진짜냐? 절대로 거절당할 줄 알았는데!');
       await gold_shp.say_and_wait(
-        '……だから先に、生米を炊いて飯にしちまう作戦を選んだ。',
+        '……그래서 먼저 일을 저질러버리는 작전을 택한 거야.',
       );
       era.println();
 
       era.printButton(
-        'ゴルシ、焦ってるな（笑）。そんなに信用してなかったのか？',
+        '고루시, 엄청 초조했네(웃음). 그렇게까지 못 믿었어?',
         1,
       );
       await era.input();
 
       await gold_shp.say_and_wait(
-        'こんなことで焦んねえやついるか！ あと笑ってんじゃねえ！',
+        '이런 일에 안 초조한 녀석이 어디 있어! 그리고 웃지 마!',
       );
-      await gold_shp.say_and_wait('だって……成功すると思ってなかったし……');
+      await gold_shp.say_and_wait('왜냐면…… 성공할 거라고 생각 못 했으니까……');
       await gold_shp.say_and_wait(
-        'アタシ、普段から面倒で、不真面目で、面倒で……手が止まらなくて、いつもてめえを巻き込むし……',
+        '나 평소에도 귀찮게 굴고, 불성실하고, 또 귀찮게 굴고…… 손도 가만있질 못해서 늘 너를 휘말리게 하잖아……',
       );
       era.println();
       await era.printAndWait(
-        `${gold_shp.sex} は話しながら黙り込み、${you.name} は ${gold_shp.sex} の急な呼吸から、泣き出すまいと耐えているのが分かった。`,
+        `${gold_shp.sex}은(는) 이야기하다가 입을 다물었고, ${you.name}은(는) ${gold_shp.sex}의 가빠진 숨에서 울음을 참으려 애쓰고 있음을 알아챘다.`,
       );
       era.println();
       await you.say_and_wait(
-        '俺はトレーナーだ。担当のウマ娘を導き、大切にするのが使命だ。お前は俺の担当で、それは永遠に変わらない。',
+        '나는 트레이너야. 담당 우마무스메를 이끌고 소중히 여기는 게 내 사명이다. 너는 내 담당이고, 그건 영원히 변하지 않아.',
       );
       await you.say_and_wait(
-        '現実にも、世間にも、問題は山ほどあるだろう。でも俺の頭は、もうお前にめちゃくちゃにされてる。',
+        '현실에도 세상에도 문제는 산더미처럼 있겠지. 하지만 내 머리는 이미 너 때문에 엉망이 됐어.',
       );
-      await you.say_and_wait('いまは、お前と一緒に狂い続けたい。');
-      await you.say_and_wait('だから覚悟しろ——');
-      era.printButton('「愛してる♡」', 1);
-      era.printButton('「レ○プ魔♡」', 2);
+      await you.say_and_wait('지금은 너와 함께 계속 미쳐 있고 싶어.');
+      await you.say_and_wait('그러니까 각오해——');
+      era.printButton('「사랑해♡」', 1);
+      era.printButton('「강○마♡」', 2);
       ret.push(await era.input());
       await era.printAndWait(
-        `${you.name} と ${gold_shp.name} は固く抱き合った。このベッドはいま、${gold_shp.sex} の小さなすすり泣きと、できたての恋人たちを包んでいる。`,
+        `${you.name}와(과) ${gold_shp.name}은(는) 서로를 꽉 끌어안았다. 이 침대는 지금 ${gold_shp.sex}의 작은 흐느낌과 이제 막 연인이 된 두 사람을 감싸고 있었다.`,
       );
     } else {
       await era.printAndWait(
-        `${gold_shp.name} は、${you.name} が想像したように駄々をこねて転がったりはしなかった。寂しげに体を起こし、胸の双丘が垂れる。${gold_shp.sex}は口を開いて何か言おうとしたが、歯の隙間から出たのは、結局——`,
+        `${gold_shp.name}은(는) ${you.name}이(가) 상상했던 것처럼 떼를 쓰며 뒹굴지는 않았다. 쓸쓸한 표정으로 몸을 일으켰고, 가슴이 아래로 처졌다. ${gold_shp.sex}은(는) 입을 열어 무언가 말하려 했지만, 결국 이 사이로 나온 말은——`,
       );
       era.println();
-      await gold_shp.say_and_wait('うん、分かった。悪い。');
+      await gold_shp.say_and_wait('응, 알겠어. 미안.');
       era.println();
       await era.printAndWait(
-        `${gold_shp.sex} は黙ってベッドを離れ、床に落ちた服を着直す。`,
+        `${gold_shp.sex}은(는) 말없이 침대에서 내려와 바닥에 떨어진 옷을 다시 입었다.`,
       );
       era.println();
 
-      era.printButton('「あの、ゴルシ？」', 1);
+      era.printButton('「저기, 고루시?」', 1);
       await era.input();
 
       await era.printAndWait(
-        `${you.name} に返事はなかった。その人は一礼しただけで、扉を閉めて出ていった。`,
+        `${you.name}에게 돌아온 대답은 없었다. 그녀는 가볍게 인사만 하고 문을 닫은 뒤 나가버렸다.`,
       );
     }
     return ret;
