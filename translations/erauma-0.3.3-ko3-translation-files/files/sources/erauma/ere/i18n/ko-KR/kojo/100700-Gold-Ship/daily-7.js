@@ -530,130 +530,130 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {number} dice 祈りの出目。0-1 の小数、小さいほど良い
    */
-  // [번역 대상] o_c_pray
+  // [번역 완료] o_c_pray
   async o_c_pray(gs, you, dice) {
     await gs.say_and_wait([
-      { color: gold_color, content: 'はっ——ひょいひょい！' },
+      { color: gold_color, content: '핫——호이호이!' },
     ]);
     await era.printAndWait([
       gs.get_colored_name(),
-      ' は他人の神社の門口で、強風に煽られた草の根みたいに揺れ始め、口の中で何やら呟いている。',
+      '은(는) 남의 신사 입구에서 강풍에 흔들리는 풀뿌리처럼 몸을 흔들기 시작하며 입안으로 무언가 중얼거리고 있다.',
     ]);
     await gs.say_and_wait([
       {
         color: gold_color,
-        content: `${gs.uma_sex_title}をよこせ！ ${gs.uma_sex_title}をよこせ！`,
+        content: `${gs.uma_sex_title}을(를) 내놔! ${gs.uma_sex_title}을(를) 내놔!`,
       },
     ]);
-    era.printButton('「何やってんの？」', 1);
+    era.printButton('「뭐 하는 거야?」', 1);
     await era.input();
     await gs.say_and_wait([
-      { color: gold_color, content: '見て分からねえのか？ 神降ろしだよ。' },
+      { color: gold_color, content: '보고도 모르겠냐? 신내림이다.' },
     ]);
     await era.printAndWait([
       gs.sex,
-      'の得意げな顔に、',
+      '의 의기양양한 얼굴에,',
       you.get_colored_name(),
-      ' は少し苛立つ。だが',
+      '은(는) 조금 짜증이 난다. 하지만',
       gs.sex,
-      'は気にもしていない',
+      '은(는) 신경도 쓰지 않는다.',
     ]);
     await gs.say_and_wait([
       {
         color: gold_color,
-        content: '古来、神の前で舞って悦ばせるのは常識だろ！',
+        content: '예로부터 신 앞에서 춤춰 기쁘게 해드리는 건 상식이잖아!',
       },
     ]);
     await gs.say_and_wait([
       {
         color: gold_color,
         content:
-          '神に愛されしゴールドシップがディスコるんだ、神憑りくらいちょろいちょろい！',
+          '신에게 사랑받는 골드 쉽이 디스코를 추는 거다. 신들림 정도는 식은 죽 먹기지!',
       },
     ]);
     await era.printAndWait([
-      'そのとき、',
+      '그때,',
       gs.get_colored_name(),
-      ' の体が硬直し、目が見開かれた！',
+      '의 몸이 굳고 눈이 크게 뜨였다!',
     ]);
     if (dice < 0.8) {
       await gs.say_and_wait([
         {
           color: gold_color,
           content:
-            'イエスよ！ 御心は分かった、『よく食べてよく寝て、心を明るく保て』ってこったな！',
+            '예수여! 뜻은 알았다, 『잘 먹고 잘 자고 마음을 밝게 유지하라』는 거구나!',
         },
       ]);
       await era.printAndWait([
-        '右頬を引きつらせた ',
+        '오른쪽 뺨을 씰룩인 ',
         you.get_colored_name(),
-        ' は、なぜ神社にイエスがいるのか突っ込みたいし、そのお告げが末期の緩和ケアみたいなのも突っ込みたい。',
+        '은(는) 왜 신사에 예수가 있는지 태클 걸고 싶고 그 계시가 말기 완화의료 같은 것도 태클 걸고 싶다.',
       ]);
-      await era.printAndWait(`だが${gs.sex}は楽しそうだ。好きにさせておけ。`);
+      await era.printAndWait(`하지만 ${gs.sex}은(는) 즐거워 보인다. 하고 싶은 대로 두자.`);
     } else {
       await gs.say_and_wait([
         {
           color: gold_color,
           content:
-            '仏よ！ なぜアタシを見捨てる！ 『トレーナーの言うことをよく聞け』だと……',
+            '부처여! 왜 나를 버리는 거야! 『트레이너 말을 잘 들어라』고……',
         },
       ]);
       await era.printAndWait([
         gs.get_colored_name(),
-        ' の落ち込む姿を見て、',
+        '의 풀이 죽은 모습을 보고,',
         you.get_colored_name(),
-        ' の左頬の神経も引きつった。',
+        '의 왼쪽 뺨 근육도 씰룩였다.',
       ]);
       await era.printAndWait(
-        `だが${gs.sex}が素直に言うことを聞くなら、悪くはない……`,
+        `하지만 ${gs.sex}이(가) 얌전히 말을 듣는다면 나쁘지는 않다……`,
       );
-      await era.printAndWait('……だめだ、やっぱり少し苛立つ。');
+      await era.printAndWait('……안 돼, 역시 조금 짜증 난다.');
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、食事に行った……',
+      '은(는) 식사하러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
-        'コーヒー飲むか？',
+        '커피 마실래?',
         {
           color: gold_color,
-          content: 'ミルク、辣・油・に替えるよ♪',
+          content: '우유는 고・추・기・름으로 바꿔줄게♪',
         },
       ]);
     } else {
       await gs.say_and_wait([
-        'そういえばライスのやつ、パン派だってよ……',
+        '그러고 보니 라이스 녀석, 빵파라더라……',
         {
           color: gold_color,
-          content: `まさか${gs.sex}、自分の黒子なのか！？`,
+          content: `설마 ${gs.sex}, 자기 안티인 거냐!?`,
         },
       ]);
     }
   },
   /** @param {CharaTalk} gs ゴールドシップ */
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(gs) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、デートに行った……',
+      '은(는) 데이트하러 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait(
-        'なあ、百年後ひまか？ ひまだったら一緒に宇宙行こうぜ。',
+        '야, 100년 뒤에 한가하냐? 한가하면 같이 우주 가자.',
       );
     } else {
       await gs.say_and_wait([
         {
           color: gold_color,
           content:
-            'ゴルシから目を離すなよ！ 一秒後に何が起きるか、アタシにも分かんねえからな！',
+            '고루시에게서 눈 떼지 마! 1초 뒤에 무슨 일이 일어날지는 나도 모르니까!',
         },
       ]);
     }
@@ -662,27 +662,27 @@ module.exports = {
    * @param {CharaTalk} gs ゴールドシップ
    * @param {PrintedSpan} callname ゴールドシップのプレイヤーへの呼び方
    */
-  // [번역 대상] o_s_shopping
+  // [번역 완료] o_s_shopping
   async o_s_shopping(gs, callname) {
     await era.printAndWait([
-      'と ',
+      '와(과) ',
       gs.get_colored_name(),
-      ' は、ショッピングモールへ行った……',
+      '은(는) 쇼핑몰에 갔다……',
     ]);
     if (Math.random() < 0.5) {
       await gs.say_and_wait([
         'なあ ',
         callname,
-        '、手、繋ぐか？',
+        ', 손 잡을래?',
         {
           color: gold_color,
-          content: '……あっちの店、カップル八割引きだぜ！',
+          content: '……저 가게, 커플 80% 할인이라는데!',
         },
       ]);
     } else {
       await gs.say_and_wait([
         callname,
-        '、アタシでもマクドナルドでオリジナルチキンは頼まねぇだろ？',
+        ', 나라도 맥도날드에서 오리지널 치킨을 주문하진 않잖아?',
       ]);
     }
   },
@@ -706,92 +706,92 @@ module.exports = {
       ]);
     }
   },
-  // [번역 대상] slave_end
+  // [번역 완료] slave_end
   slave_end: (() => {
-    const title = '金の奴隷';
+    const title = '돈의 노예';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, you) => {
       await era.printAndWait([
-        'オフィスで、',
+        '사무실에서,',
         you.get_colored_name(),
-        'はデスクの前に座り、スーツに眼鏡、電卓を叩いている',
+        '은(는) 책상 앞에 앉아 정장에 안경 차림으로 계산기를 두드리는',
         gs.uma_sex_title,
-        'を、気まずい顔で見ていた。',
+        '을(를) 어색한 얼굴로 바라보고 있었다.',
       ]);
       await era.printAndWait([
         gs.sex,
-        'はTN液晶に浮かぶ数字を見て、綺麗な眉をひそめ、困ったように',
+        '은(는) TN 액정에 떠오른 숫자를 보고 예쁜 눈썹을 찌푸리며 곤란한 듯',
         you.get_colored_name(),
-        'を見る。',
+        '을(를) 바라본다.',
       ]);
       era.println();
       await gs.say_and_wait(
-        'お客様、そのウマコインじゃ、今月の利息にも届きませんねえ。',
+        '손님, 그 우마 코인으로는 이번 달 이자에도 못 미치네요.',
       );
       era.println();
       await gs.say_and_wait(
-        '土下座して泣きつき、必ず返すとおっしゃっても、弊社はすでに損失を出しております。',
+        '엎드려 울며 반드시 갚겠다고 하셔도 저희 회사는 이미 손실을 보고 있습니다.',
       );
       era.println();
       await era.printAndWait([
         gs.get_colored_name(),
-        ' が口を開き、',
+        '이(가) 입을 열고,',
         gs.sex,
-        'の手元の電卓には、胆を冷やす数字が出ていた。',
+        '의 손에 든 계산기에는 간담이 서늘해지는 숫자가 떠 있었다.',
       ]);
       await era.printAndWait([
         gs.sex,
-        'はペンを取り、廃紙の裏に書き殴る。内容は「サンクコスト」「資産流用」「事務手数料」といったものばかり。',
+        '은(는) 펜을 들어 폐지 뒷면에 마구 적는다. 내용은 「매몰비용」「자산 유용」「사무 수수료」 같은 것뿐이다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        'はなすすべなく頭を垂れ、黙った——反論の余地など、最初からない。',
+        '은(는) 어쩔 도리 없이 고개를 숙이고 침묵했다——애초부터 반론의 여지 따위 없었다.',
       ]);
       era.println();
       await gs.say_and_wait(
-        'はぁ、ゴルシ銀行は慈善事業じゃありませんからねえ。',
+        '하아, 고루시 은행은 자선사업이 아니니까요.',
       );
       era.println();
       await era.printAndWait([
-        'ところが',
+        '그런데',
         gs.sex,
-        'の口調が一転する。客を気遣うフリをしていた担当者は、一転して、眼前の獲物を罠へ誘う甘い餌になった。',
+        '의 말투가 돌변한다. 손님을 배려하는 척하던 담당자는 돌연 눈앞의 먹잇감을 함정으로 유혹하는 달콤한 미끼가 됐다.',
       ]);
       era.println();
       await gs.say_and_wait([
-        '「でも、ご興味はありますか……',
+        '「하지만 관심 있으신가요……',
         {
           color: gold_color,
-          content: 'ひょっとしたら人生を一発逆転できる、そんなゲームに？',
+          content: '어쩌면 인생을 한 방에 뒤집을 수 있는, 그런 게임에?',
         },
       ]);
       era.println();
       await era.printAndWait([
-        'ローンを一気に返す、唯一の救命綱にすがるため、',
+        '대출을 단번에 갚을 유일한 생명줄에 매달리기 위해,',
         you.get_colored_name(),
-        'はゴールドシップに、『ホープゴルシ号』という名の遊覧船へ連れ込まれた……',
+        '은(는) 골드 쉽에게 『호프 고루시호』라는 이름의 유람선으로 끌려갔다……',
       ]);
       await era.printAndWait([
-        '命がけの博打からどう生還するかは、もはや流れに身を任せた',
+        '목숨을 건 도박에서 어떻게 살아 돌아올지는 이제 흐름에 몸을 맡긴',
         you.get_colored_name(),
-        'の手にはない。',
+        '의 손에 달려 있지 않다.',
       ]);
       era.println();
       await era.printAndWait([
-        '金の縁に囚われ、',
+        '돈의 인연에 사로잡혀,',
         you.get_colored_name(),
-        'は結末を迎えた……',
+        '은(는) 결말을 맞았다……',
       ]);
     };
     f.title = title;
     return f;
   })(),
-  // [번역 대상] basement_end
+  // [번역 완료] basement_end
   basement_end: (() => {
-    const title = '愛の檻';
+    const title = '사랑의 우리';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} you プレイヤー
@@ -799,81 +799,81 @@ module.exports = {
     const f = async (gs, you) => {
       await era.printAndWait([
         you.get_colored_name(),
-        'は目を開けた。周囲は薄暗く、頭上の黄色い電球だけが懸命に働いている。',
+        '은(는) 눈을 떴다. 주변은 어둑하고 머리 위의 노란 전구만 열심히 빛나고 있다.',
       ]);
       await era.printAndWait([
-        '必死に動いてみて、',
+        '필사적으로 움직여 보고,',
         you.get_colored_name(),
-        'は手足の金属枷が、力だけでは外れないと悟った。',
+        '은(는) 손발의 금속 족쇄가 힘만으로는 풀리지 않는다는 걸 깨달았다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        'の正面、少し左の床には古い真空管テレビが据えられている。',
+        '의 정면에서 조금 왼쪽 바닥에는 낡은 진공관 TV가 놓여 있다.',
         you.get_colored_name(),
-        'は、このあと何が起きるか、もう分かっている気がした。',
+        '은(는) 이 뒤에 무슨 일이 일어날지 이미 알 것 같은 기분이 들었다.',
       ]);
       era.println();
       await era.printAndWait(
-        '案の定、耳を刺すカチッという音とともに、画面が点く。',
+        '예상대로 귀를 찌르는 딸깍 소리와 함께 화면이 켜졌다.',
       );
       await era.printAndWait([
-        'そこに映ったのは、小さな',
+        '화면에 비친 것은 작은',
         gs.uma_sex_title,
-        'の人形。顔には不気味な仮面がついている。',
+        '의 인형. 얼굴에는 섬뜩한 가면이 씌워져 있다.',
       ]);
       await era.printAndWait([
-        '人形がある角度へ動いたとき、',
+        '인형이 어느 각도로 움직였을 때,',
         you.get_colored_name(),
-        'は、その下で誰かの手が操っているのを見た。',
+        '은(는) 그 아래에서 누군가의 손이 조종하고 있는 것을 보았다.',
       ]);
       era.println();
       await gs.say_as_unknown_and_wait([
-        'こんにちは、',
+        '안녕하세요,',
         you.get_colored_actual_name(),
-        '。ゲームをしよう——',
+        '. 게임을 하자——',
       ]);
       era.println();
       await era.printAndWait([
-        'ひどく歪ませた',
-        gs.sex_code === 1 ? '男声' : '女声',
-        'だ。だが',
+        '심하게 변조한',
+        gs.sex_code === 1 ? '남성 목소리' : '여성 목소리',
+        '다. 하지만',
         you.get_colored_name(),
-        'はソフトの助けなどなくても、犯人の見当がつく。',
+        '은(는) 소프트웨어의 도움 따위 없이도 범인이 누구인지 짐작할 수 있다.',
       ]);
       era.println();
       await gs.say_and_wait([
-        '長いあいだ、契約を結んだ',
+        '오랫동안 계약을 맺은',
         gs.uma_sex_title,
-        'を放っておいた。そのせいで',
+        '을(를) 내버려뒀다. 그 탓에',
         gs.sex,
-        'の恋心は行き場を失った。',
+        '의 연심은 갈 곳을 잃었다.',
       ]);
       era.println();
       await gs.say_and_wait([
         {
           color: gold_color,
-          content: `いま、その${gs.uma_sex_title}が部屋に入り、貴様と死闘を始める。`,
+          content: `이제 그 ${gs.uma_sex_title}이(가) 방으로 들어가 네놈과 사투를 시작한다.`,
         },
       ]);
       era.println();
       await era.printAndWait(
-        '画面の中で適当に揺れていた人形が置かれ、見慣れた影がその下から現れた。',
+        '화면 속에서 이리저리 흔들리던 인형이 내려놓이고 익숙한 그림자가 그 아래에서 나타났다.',
       );
       await era.printAndWait([
         gs.sex,
-        'はカメラに向かってにっこり笑い、変顔をした。',
+        '은(는) 카메라를 향해 활짝 웃더니 우스꽝스러운 표정을 지었다.',
       ]);
       await era.printAndWait([
         gs.sex,
-        'は拳を開く。コンドームの袋が滝のように落ち、それから撮影範囲から消えた。',
+        '은(는) 주먹을 펼쳤다. 콘돔 포장이 폭포처럼 쏟아진 뒤 촬영 범위 밖으로 사라졌다.',
       ]);
       era.println();
-      await era.printAndWait('鍵が開いた。');
+      await era.printAndWait('자물쇠가 열렸다.');
       era.println();
       await era.printAndWait([
-        'ゴールドシップの想いの檻に囚われ、',
+        '골드 쉽의 마음이 만든 우리에 갇혀,',
         you.get_colored_name(),
-        'は結末を迎えた……',
+        '은(는) 결말을 맞았다……',
       ]);
     };
     f.title = title;
