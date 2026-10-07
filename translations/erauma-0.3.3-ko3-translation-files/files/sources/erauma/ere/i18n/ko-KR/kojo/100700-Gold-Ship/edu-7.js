@@ -70,7 +70,7 @@ module.exports = {
       era.println();
 
       await era.printAndWait(
-        `なんにせよ、${gs.name}의 레이스를 향한 열정이 더욱 높아졌다. 나쁜 일은 아니다!`,
+        `어쨌든, ${gs.name}의 레이스를 향한 열정이 더욱 높아졌다. 나쁜 일은 아니다!`,
       );
     };
     f.title = title;
@@ -330,7 +330,7 @@ module.exports = {
         '이(가) 다가가 살펴보니 형태는 제대로 갖춰져 있다. 위는 은색, 아래는 검은색이며 스포크는 보통 세그웨이보다 한 치수 크다.',
       ]);
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         you.get_colored_name(),
         '은(는) 세그웨이에 대해 잘 몰라 특주품인지 판단할 수 없다.',
       ]);
@@ -477,7 +477,7 @@ module.exports = {
       era.println();
 
       await era.printAndWait(
-        `${you.name} は ${flash.name}이(가) 작게 「그게 뭔데요」라고 중얼거리는 걸 들었지만 못 들은 척했다.`,
+        `${you.name}은(는) ${flash.name}이(가) 작게 「그게 뭔데요」라고 중얼거리는 걸 들었지만 못 들은 척했다.`,
       );
       era.println();
 
@@ -769,7 +769,7 @@ module.exports = {
       era.printButton('「그래, 이 기회에 장난이나 쳐볼까~?」', 1);
       await era.input();
 
-      await festa.say_and_wait('……むっ！');
+      await festa.say_and_wait('……읏!');
       await gs.say_and_wait('……');
       era.println();
 
@@ -911,7 +911,7 @@ module.exports = {
         }은(는) 이렇게 말했어. 『나도${gs.uma_sex_title}이지만 달리는 건 서툴러서 지금은 라멘 가게를 하고 있어. 너도 인생의 목표는 자유롭게 골라도 돼』라고.`,
       );
       await gs.say_and_wait(
-        `その${gs.uma_sex_title}의 말을 듣고 깨달았어. 나는 본가의 나사 공장을 물려받지 않아도 된다는 걸!`,
+        `그 ${gs.uma_sex_title}의 말을 듣고 깨달았어. 나는 본가의 나사 공장을 물려받지 않아도 된다는 걸!`,
       );
       era.println();
 
@@ -1029,7 +1029,7 @@ module.exports = {
     const f = async (gs, festa, you, call_49, success) => {
       const ret = [];
       await era.printAndWait(
-        `${you.name} と ${gs.name}은(는) 옥상에서 잠시 휴식을 즐기고 있었다…… 원래라면 아무 일 없이 지나갈 시간이었다——하지만 ${you.name} は ${festa.name}을(를) 보았다.`,
+        `${you.name}와(과) ${gs.name}은(는) 옥상에서 잠시 휴식을 즐기고 있었다…… 원래라면 아무 일 없이 지나갈 시간이었다——하지만 ${you.name}은(는) ${festa.name}을(를) 보았다.`,
       );
       era.println();
 
@@ -1111,7 +1111,7 @@ module.exports = {
           await era.printAndWait(
             `${gs.name}은(는) 있는 힘을 다했지만, ${festa.name}에게는 이기지 못했다……`,
           );
-          await era.printAndWait('しかも昼休みは、気づかぬうちに過ぎていた！');
+          await era.printAndWait('게다가 점심시간은 어느새 지나가 버렸다!');
         }
       }
       return ret;
