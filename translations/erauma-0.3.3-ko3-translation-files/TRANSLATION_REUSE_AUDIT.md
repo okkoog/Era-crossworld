@@ -468,6 +468,107 @@ edu 누적 엄격 확정:
 
 Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목은 위 “미조사 588”과 별개로 계속 보류 상태다.
 
+## 기록 밖 edu 실제 3자 대조 — 4차 확정 / edu 전수조사 완료
+
+3차 이후 남아 있던 edu current target **202개**를 모두 대조했다.
+
+### Satono Diamond `edu-67-99.js`
+
+- live target: **66**
+- live target 블록 visible Korean prose string: 전부 **0**
+- old `edu-67.js` + `edu-events-67-1` 전체의 `print_event_name` 이벤트: **정확히 66**
+- back-school / entrypoint / out-start / race-end / race-start / school-atrium / week-end / week-start의 제목과 이벤트 의미가 current 66 target와 전부 대응.
+- **C: 66**
+
+### Kitasan Black `edu-68.js`
+
+- live target: **44**
+- live target 블록 visible Korean prose string: 전부 **0**
+- old `edu-68.js` + `edu-events-68` 실제 제목 이벤트: **정확히 44**
+- 일반 육성/주간/외출/레이스/엔딩 이벤트까지 current와 전부 대응.
+- **C: 44**
+
+### Daiichi Ruby `edu-85.js` + `edu-85-be-ntr.js`
+
+- live target: **31 + 1 = 32**
+- live target 블록 visible Korean prose string: 전부 **0**
+- old `edu-85.js` + `edu-events-85` 실제 제목 이벤트: **정확히 32**
+- `be_ntr`는 old `crazy-fan-end.js`에 실제 한국어 NTR 엔딩 본문으로 존재.
+- **C: 32**
+
+### Wonder Acute `edu-100.js`
+
+- live target: **15**
+- live target 블록 visible Korean prose string: 전부 **0**
+- old 제목 이벤트는 13개지만, current의 `begin_race_win` / `begin_race_lose` 2개는 old `race_end()` 안의 데뷔전 승리/패배 분기가 별도 함수로 분리된 것.
+- 따라서 15개 모두 old KR 대응 확인.
+- **C: 15**
+
+### Treve `edu-205.js`
+
+- live target: **18**
+- live target 블록 visible Korean prose string: 전부 **0**
+- old 제목 이벤트는 17개지만, current `we_95_42_end`는 old `week-end.js`의 `95 + 42` 이벤트 후반부에 포함되어 있던 한국어 본문을 별도 함수로 분리한 것.
+- old 본문에서 미성년자 성추행 사건/다음날 아침/고백 후반까지 직접 확인.
+- **C: 18**
+
+### Sunday Silence `edu-400.js`
+
+- live target: **27**
+- live target 블록 visible Korean prose string: 전부 **0**
+- old `edu-400.js` + `edu-events-400` 실제 제목 이벤트: **정확히 27**
+- current 27 target와 전부 대응.
+- **C: 27**
+
+### 이번 4차 edu 추가 확정치
+
+- Satono Diamond: **66 C**
+- Kitasan Black: **44 C**
+- Daiichi Ruby: **32 C**
+- Wonder Acute: **15 C**
+- Treve: **18 C**
+- Sunday Silence: **27 C**
+
+합계:
+- **C: 202**
+
+### edu 최종 감사 상태
+
+확인된 current edu 후보 풀:
+- 초기 동일-ID 탐색: 819
+- 파일명 변형 누락 보정: +67
+- **총 886 target**
+
+실제 대조 완료:
+- **886 / 886 (100%)**
+
+엄격 old-KR 미반영 확정:
+- 1차: **183**
+- 2차: **267**
+- 3차: **228**
+- 4차: **202**
+- **합계: 880**
+
+별도 비확정/신규:
+- Agnes Digital `ws_palace`: old KR 대응 없음 후보(D), strict 수치 제외
+- Smart Falcon `rooftop_idol`: old mark/check만 있고 실제 old KR 이벤트 본문 없음(D), strict 수치 제외
+- Mejiro Palmer notify 4개: 대응 여부 미확정, strict 수치 제외
+
+따라서 edu는 **모든 current target를 실제 조사 완료**했으며, strict B+C 기준 **880 작업 단위**가 구버전 한국어 재사용 누락으로 확정된다.
+
+전체 엄격 최소:
+- daily/rec: **414**
+- timon: **130**
+- edu: **880**
+- **합계: 1,424 작업 단위**
+
+기록 밖 kojo 후보 풀도 파일명 변형 67개를 포함해 최소 **1,272 (= edu 886 + love 171 + ero 215)**로 정정한다.
+현재 남은 미조사 후보:
+- edu: **0**
+- love: **171**
+- ero: **215**
+- **합계: 386**
+
 ## 다음 조사 단계
 
 1. 기록 밖 kojo 후보 **1,205파트**를 `FILES.md` 순서로 실제 3자 대조.
@@ -484,9 +585,9 @@ Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목�
 전수조사 완료 전 **엄격 최소 확정치**:
 - kojo daily/rec 기록 기반 현재 미반영: **414**
 - timon 기록/본문 기반 현재 미반영: **130**
-- 기록 밖 edu 실제 3자 대조 누적 확정: **678**
-- 합계: **1,222 작업 단위**
+- edu 실제 3자 대조 최종 확정: **880**
+- 합계: **1,424 작업 단위**
 
-초기 단순 동일-ID 탐색의 old-KR 보유 edu 후보 819에 파일명 변형으로 누락됐던 **67 target**(`edu-67-99.js` 66 + `edu-85-be-ntr.js` 1)을 추가하면, 현재 확인된 edu 후보 풀은 최소 **886**이다. 그중 **684 current target 후보를 실제 대조 완료**했다. 아직 미조사 후보는 **588파트**(edu 202 + love 171 + ero 215)이며, 이미 조사한 파일 안의 별도 미확정 항목은 따로 남아 있다.
+edu는 보정된 후보 풀 **886 / 886 전수조사 완료**했다. 파일명 변형 누락까지 반영한 기록 밖 kojo 후보 풀은 최소 **1,272파트**(edu 886 + love 171 + ero 215)이며, 현재 남은 미조사 후보는 **386파트**(love 171 + ero 215)다.
 
-따라서 **1,222는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
+따라서 **1,424는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 love/ero 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
