@@ -615,29 +615,29 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_end_win
+  // [번역 완료] race_end_win
   race_end_win: (() => {
-    const title = 'レース勝利！';
+    const title = '레이스 승리!';
     /** @param {CharaTalk} gs ゴールドシップ */
     const f = async (gs) => {
       await gs.say_and_wait(
-        'どうだ！ トレーナー、アタシの熱い走り、頭に焼きついたか！？',
+        '어때! 트레이너, 내 뜨거운 달리기 머리에 확실히 새겨졌냐!?',
       );
-      era.printButton('「最高だった！」', 1);
-      era.printButton('「もっと上を目指そう！」', 2);
+      era.printButton('「최고였어!」', 1);
+      era.printButton('「더 높은 곳을 노리자!」', 2);
       if ((await era.input()) === 1) {
-        await gs.say_and_wait('だろ？ 言われなくても分かってる。');
+        await gs.say_and_wait('그렇지? 말 안 해도 안다고.');
       } else {
-        await gs.say_and_wait('いいぜ——！ 地核の中心になってやる！！');
+        await gs.say_and_wait('좋아——! 지핵의 중심이 되어주겠어!!');
       }
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] sa_47_3
+  // [번역 완료] sa_47_3
   sa_47_3: (() => {
-    const title = '母は神より強い編';
+    const title = '엄마는 신보다 강하다 편';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} gs2 ゴールドシップ（第二配色、ふざけ状態）
@@ -645,76 +645,76 @@ module.exports = {
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (gs, gs2, creek, you) => {
-      await gs2.say_as_unknown_and_wait('海底に眠る黄金の船よ……');
-      await gs2.say_as_unknown_and_wait('いまこそ目覚めのとき……');
+      await gs2.say_as_unknown_and_wait('해저에 잠든 황금의 배여……');
+      await gs2.say_as_unknown_and_wait('지금이야말로 깨어날 때……');
       await gs2.say_as_unknown_and_wait(
-        'その力を発揮し、前人未到の境地へ至れ……',
+        '그 힘을 발휘해 전인미답의 경지에 이르라……',
       );
       era.println();
 
-      await gs.say_and_wait('……ん？ いまの声、なんだ……？');
+      await gs.say_and_wait('……응? 방금 목소리, 뭐지……?');
       era.println();
 
-      era.printButton('「ついに幻聴か？」', 1);
+      era.printButton('「드디어 환청까지 들리냐?」', 1);
       await era.input();
 
       await gs.say_and_wait(
-        '神を自称する声が聞こえた。それともゴルシの体内の第二人格か？',
+        '신을 자칭하는 목소리가 들렸어. 아니면 고루시 몸속의 제2인격인가?',
       );
       era.println();
-      era.printButton('「心療の専門家、予約しておくか……」', 1);
+      era.printButton('「정신건강 전문가 예약해둘까……」', 1);
       await era.input();
 
-      await gs.say_and_wait('ちがう、あいつアタシを『エデン』へ行けって……');
+      await gs.say_and_wait('아니, 그 녀석이 나한테 『에덴』으로 가라고……');
       era.println();
 
       await era.printAndWait(
-        `クラシック三冠の初戦、皐月賞はもう近い。プリンのことは考えないほうがいい……だが ${gs.name} は勝手に一目散に飛び出し、その「エデン」を探しに行った。`,
+        `클래식 삼관의 첫 경기 사츠키상이 벌써 가까워졌다. 푸딩 같은 건 생각하지 않는 편이 좋다…… 하지만 ${gs.name}은(는) 제멋대로 쏜살같이 뛰쳐나가 그 「에덴」을 찾으러 갔다.`,
       );
       era.println();
 
-      await gs.say_and_wait('I AM GODSHIP（アタシは神金船だ）——！');
+      await gs.say_and_wait('I AM GODSHIP(나는 신의 금선이다)——!');
       era.println();
 
       await era.printAndWait(
-        `${you.name} は室内での切り返し旋回速度を全開にして、どうにか ${
+        `${you.name}은(는) 실내에서 방향 전환 선회 속도를 최대로 끌어올려 어떻게든 ${
           gs.name
-        } の後ろを追う——すると${
+        }의 뒤를 쫓는다——그러자${
           gs.sex
-        }は別の${gs.uma_sex_title}に真正面からぶつかり、後ろから追いついた ${
+        }은(는) 다른${gs.uma_sex_title}에게 정면으로 부딪치고 뒤에서 따라붙은 ${
           you.name
-        } に挟まれた。`,
+        }에게 끼였다.`,
       );
       era.println();
 
-      await gs.say_and_wait('アタシは……金星が見える……金星に公園が……');
+      await gs.say_and_wait('나는…… 금성이 보여…… 금성에 공원이……');
       await gs.say_and_wait(
-        'ちがう、てめえ誰だ！ 神金船の衝撃に耐えやがって……！',
+        '아니, 네놈 누구야! 신금선의 충격을 버티다니……!',
       );
       await creek.say_and_wait(
-        `あらあら、こんにちは、${gs.name} さん。今日も元気ですこと。`,
+        `어머어머, 안녕하세요, ${gs.name} 씨. 오늘도 건강하시네요.`,
       );
       era.println();
 
       await era.printAndWait(
-        `あれほどの衝撃に耐えるとは、実に乳……違う、実に耐久に優れた${creek.uma_sex_title}だ！`,
+        `그 정도 충격을 버티다니, 정말 가슴…… 아니, 정말 내구력이 뛰어난${creek.uma_sex_title}이(가)군!`,
       );
       era.println();
 
-      era.printButton('「神でも、お母さんには敵わないらしい……」', 1);
+      era.printButton('「신이라도 엄마한테는 못 이기나 보네……」', 1);
       await era.input();
 
       await era.printAndWait(
-        `${you.name} は ${creek.name} に謝ってから、頭のクラクラした ${gs.name} を訓練室へ引きずって戻った。`,
+        `${you.name}은(는) ${creek.name}에게 사과한 뒤 머리가 어질어질한 ${gs.name}을(를) 훈련실로 끌고 돌아갔다.`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] sa_95_41
+  // [번역 완료] sa_95_41
   sa_95_41: (() => {
-    const title = '真剣勝負編';
+    const title = '진검승부 편';
     /**
      * @param {CharaTalk} gs ゴールドシップ
      * @param {CharaTalk} festa ナカヤマフェスタ
@@ -722,22 +722,22 @@ module.exports = {
      */
     const f = async (gs, festa, you) => {
       await era.printAndWait(
-        `${you.name} とゴールドシップをエデンへ導く謎の人物……`,
+        `${you.name}와(과) 골드 쉽을 에덴으로 이끄는 수수께끼의 인물……`,
       );
       era.println();
 
       await era.printAndWait(
-        'その人物は、ゴールドシップに出走のやる気を出させるために、これほど手をかけているのだろう。なんにせよ、それがゴールドシップの原動力になるなら……三者とも得をする局面だ。',
+        '그 인물은 골드 쉽이 레이스에 나설 의욕을 내게 하려고 이렇게까지 손을 쓰는 것이겠지. 어쨌든 그것이 골드 쉽의 원동력이 된다면…… 세 쪽 모두 이득인 상황이다.',
       );
       era.println();
 
-      era.printButton('（で、こいつらは何やってんだ……）', 1);
+      era.printButton('(그래서 얘들은 뭐 하는 거지……)', 1);
       await era.input();
 
       await era.printAndWait(
         `${
           you.name
-        } の眼前には、生き写しの${gs.uma_sex_title}像が二つ立っている……生き写しというより、本人だ。`,
+        }의 눈앞에는 빼닮은${gs.uma_sex_title}의 모습이 둘 서 있다…… 빼닮은 게 아니라 본인들이다.`,
       );
       era.println();
 
@@ -746,7 +746,7 @@ module.exports = {
       era.println();
 
       await era.printAndWait(
-        '二人は人通りのある中庭に佇んでいる。微動だにしないのに、かえって目立つ。',
+        '두 사람은 사람들이 오가는 안뜰에 서 있다. 꼼짝도 하지 않는데 오히려 더 눈에 띈다.',
       );
       era.println();
 
@@ -755,45 +755,45 @@ module.exports = {
       era.println();
 
       await era.printAndWait(
-        `また訳の分からない対決をしているのだろう、動くなチャレンジとか。このとき ${you.name} は、面白いことを思いついた。`,
+        `또 영문 모를 대결을 하는 모양이다. 움직이면 지는 챌린지 같은 것. 이때 ${you.name}은(는) 재미있는 생각을 떠올렸다.`,
       );
       era.println();
 
-      era.printButton('「うわ、いい年してだるまさんがころんだか。」', 1);
+      era.printButton('「와, 다 큰 것들이 무궁화 꽃이 피었습니다냐.」', 1);
       await era.input();
 
       await gs.say_and_wait('……');
       await festa.say_and_wait('……！');
       era.println();
 
-      era.printButton('「そうだ、この機会に悪戯でもするか～？」', 1);
+      era.printButton('「그래, 이 기회에 장난이나 쳐볼까~?」', 1);
       await era.input();
 
       await festa.say_and_wait('……むっ！');
       await gs.say_and_wait('……');
       era.println();
 
-      era.printButton('「おや、ジャーニーさんじゃないですか！」', 1);
-      era.printButton('二人の腰の敏感なところを愛撫する。', 2, {
+      era.printButton('「어라, 저니 씨 아니십니까!」', 1);
+      era.printButton('두 사람 허리의 민감한 곳을 쓰다듬는다.', 2, {
         disabled:
           era.get('cflag:49:招募状态') !== recruit_flags.yes ||
           era.get('love:49') < 50,
       });
       const ret = await era.input();
       if (ret === 1) {
-        await festa.say_and_wait('ちっ、見られたか！？ ……嘘だろ！');
-        await gs.say_and_wait('よし、アタシの勝ち！！');
+        await festa.say_and_wait('칫, 들켰나!? ……거짓말이지!');
+        await gs.say_and_wait('좋아, 내 승리!!');
         await festa.say_and_wait(
-          'くそ！ ゴールドシップの野郎！ いいだろう！ 次はアタシの得意分野で、正々堂々と倒してやる！',
+          '젠장! 골드 쉽 이 자식! 좋아! 다음엔 내가 잘하는 분야에서 정정당당하게 쓰러뜨려주마!',
         );
-        await gs.say_and_wait('はっ！ ならゴール横で待ってるぜ！');
+        await gs.say_and_wait('핫! 그럼 골 옆에서 기다리고 있으마!');
       } else {
-        await festa.say_and_wait('……てめえ❤️！');
+        await festa.say_and_wait('……네놈❤️!');
         await gs.say_and_wait('……❤️');
         era.println();
 
         await era.printAndWait(
-          `${you.name} のわざとらしい愛撫に、二人の心は焦れに焦れ、呼吸は荒くなり、香しい唇から洩れる甘い声が、${you.name} の手が禁域へ進むにつれてさらに急になった。勝負の結果など、もうどうでもよくなっていた……`,
+          `${you.name}의 노골적인 애무에 두 사람의 마음은 애가 타고 호흡은 거칠어졌으며 향기로운 입술에서 새어나오는 달콤한 목소리는,${you.name}의 손이 금역으로 나아갈수록 더욱 빨라졌다. 승부 결과 따위는 이미 아무래도 좋게 되었다……`,
         );
       }
       return [ret];
