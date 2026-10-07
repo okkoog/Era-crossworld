@@ -20,12 +20,13 @@
   2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100600-Oguri-Cap/rec-6.kojo` — **1/1 완료**, commit `da17da1b`; 재검사 `[번역 대상]` 0 / 가나 0.
   3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/daily-7.js` — **18/18 완료**, translation commit `8c4d6094`, residual cleanup `25f3c927`.
 - 순서상 `100600-Oguri-Cap/entry.js`와 `100700-Gold-Ship/base-7.js`는 실제 확인 결과 이미 `[번역 대상]` 0개라 건너뛰었다.
-- **현재 체크포인트:** 다음 순번 `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js`. 실제 확인 기준 **2033줄 / `[번역 대상]` 27개 / 본문 일본어 가나 약 552줄**이므로 **대형 파일 단독 배치**로 처리한다.
-- **Gold-Ship 대형 파일 진행 체크포인트:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — 실제 마커 기준 **15/27 완료, 12구간 남음**. 다음 미완료 구간: **`sr_shoubu`**. 파일 전체 일본어 가나 잔존 282줄(미완료 구간 포함). 이 파일을 단독으로 끝내기 전에는 다음 파일로 이동하지 않는다.
+- **현재 체크포인트:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` 대형 파일 단독 작업을 완료했다. 실제 확인 기준 **2033줄 / 27/27 완료 / `[번역 대상]` 0 / 본문 일본어 가나 literal 0 / JS 구문 정상**.
+- **Gold-Ship 대형 파일 완료:** `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **27/27 완료**, 최종 residual cleanup commit `a0db3897`; 재검사 `[번역 대상]` 0 / `[번역 완료]` 27 / 본문 일본어 가나 literal 0 / JS 구문 정상.
 - 작업 전제: 이 게임은 **등장인물이 전원 성인**이라는 전제를 따른다. 캐릭터 외형·대사 표현만으로 연령을 임의 추정해 파일을 제외하지 않는다.
 - 다음 재개 지점(`FILES.md` 순서 기준):
-  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/edu-7.js` — **`sr_shoubu`부터** 단독 진행 (현재 15/27 완료, 12구간 남음)
-  2. `edu-7.js` 완료 후에만 다음 파일로 이동
+  1. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/entry.js` — 실제 `[번역 대상]` 0개라 건너뜀
+  2. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/ero-7.js` — 실제 `[번역 대상]` 0개라 건너뜀
+  3. `files/sources/erauma/ere/i18n/ko-KR/kojo/100700-Gold-Ship/love-7.js` — 실제 `[번역 대상]` **5개**, 다음 작업 시작점 **`49`**
 - 매 배치 종료 또는 중단 체크포인트 저장 시 이 섹션의 **현재 체크포인트 / 배치 상태 / 다음 재개 지점**을 반드시 갱신한다.
 
 이제 번역 원고와 최종 한국어 파일이 같은 파일입니다. `files/sources/erauma/ere/i18n/ko-KR/`에서 파일 하나를 번역하면 그 파일 자체를 실제 `ko-KR` 동일 경로에 사용할 수 있습니다. 번역된 일본어 파일에서 함수를 추출하거나 다른 형식으로 다시 조립하지 않습니다.
