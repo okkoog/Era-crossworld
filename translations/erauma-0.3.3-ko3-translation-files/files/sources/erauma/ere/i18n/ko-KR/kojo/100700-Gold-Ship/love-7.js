@@ -6,7 +6,7 @@ const buff_colors = require('#/data/color-const')["buff_colors"];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/100700-Gold-Ship/love-7"),
 
-  // [번역 대상] 49
+  // [번역 완료] 49
   49: (() => {
     /**
      * @param {CharaTalk} gold_shp ゴールドシップ
@@ -15,104 +15,104 @@ module.exports = {
      */
     const f = async (gold_shp, you, callname) => {
       await gold_shp.print_and_wait(
-        `因果の始まりは、${gold_shp.name} のあの選抜レースだった。あのレースのあと、${gold_shp.sex}は ${callname} と契約し、公式の舞台に立てるウマ娘になった。`,
+        `인연의 시작은 ${gold_shp.name}의 그 선발 레이스였다. 그 레이스가 끝난 뒤 ${gold_shp.sex}은(는) ${callname}와(과) 계약해 공식 무대에 설 수 있는 우마무스메가 되었다.`,
       );
       era.println();
       await gold_shp.say_and_wait(
-        'なんであいつを気に入ったのか、今さらもう分からねえ。',
+        '왜 그 녀석이 마음에 들었는지, 이제 와선 나도 모르겠어.',
       );
       era.println();
       await gold_shp.print_and_wait(
-        `${gold_shp.name} は夕陽の遊園地の滑り台の上で沈思している。${gold_shp.sex}は顎を手すりに預け、銀の髪を滝のように落とす。傍らで戯れる子供たちが視界を出入りしても、心はずっと、ここにいない誰かに置かれたままだ。`,
+        `${gold_shp.name}은(는) 석양이 비치는 놀이공원의 미끄럼틀 위에서 깊은 생각에 잠겨 있었다. ${gold_shp.sex}은(는) 턱을 난간에 기대고 은빛 머리카락을 폭포처럼 늘어뜨렸다. 옆에서 뛰노는 아이들이 시야를 오가도 마음은 줄곧 이곳에 없는 누군가에게 가 있었다.`,
       );
       era.println();
       await gold_shp.print_and_wait([
-        `最初から、${gold_shp.sex}は自分の行動が理解できなかった。普通、ウマ娘とトレーナーの間では、トレーナー側が選手を募集する。だが ${callname} との契約は、スカウトされたというより、`,
+        `처음부터 ${gold_shp.sex}은(는) 자신의 행동을 이해하지 못했다. 보통 우마무스메와 트레이너 사이에서는 트레이너 쪽이 선수를 모집한다. 하지만 ${callname}와(과)의 계약은 스카우트됐다기보다,`,
         {
           color: gold_color,
-          content: `${gold_shp.name} があいつに売りつけた、と言ったほうが近い。`,
+          content: `${gold_shp.name}이(가) 그 녀석에게 자신을 떠넘겼다고 하는 편이 더 가까웠다.`,
         },
       ]);
       era.println();
       await gold_shp.print_and_wait(
-        `${gold_shp.name} が出走するには、トレーナーと契約する必要がある。それは確かだ。`,
+        `${gold_shp.name}이(가) 출주하려면 트레이너와 계약해야 한다. 그건 확실하다.`,
       );
       era.println();
       await gold_shp.print_and_wait(
-        `${you.actual_name} はトレーナーだ。それも確かだ。`,
+        `${you.actual_name}은(는) 트레이너다. 그것도 확실하다.`,
       );
       era.println();
       if (era.get('flag:当前声望') < 1000) {
         await gold_shp.print_and_wait(
-          `${you.actual_name} なら、${gold_shp.name} が自分のエデンを見つける助けになるかもしれない。`,
+          `${you.actual_name}이라면 ${gold_shp.name}이(가) 자신의 에덴을 찾는 데 도움이 될지도 모른다.`,
         );
       } else {
         await gold_shp.print_and_wait(
-          `${you.actual_name} の腕は確かで、${gold_shp.name} が自分のエデンを見つける助けになる。`,
+          `${you.actual_name}의 실력은 확실하고, ${gold_shp.name}이(가) 자신의 에덴을 찾는 데 도움이 된다.`,
         );
       }
       era.println();
       if (era.get('exp:7:性爱次数') > 0) {
         await gold_shp.print_and_wait(
-          `後出しだが、${you.actual_name} はベッドの上で、火照った体を慰めてくれるのも確かだ。`,
+          `덧붙이자면 ${you.actual_name}은(는) 침대 위에서 달아오른 몸을 달래주는 데에도 확실히 도움이 된다.`,
         );
         era.println();
       }
       await gold_shp.print_and_wait(
-        'だが——くそっ、だからってこの黄金の旅に、あいつが必要不可欠ってわけじゃねえ！',
+        '하지만——젠장, 그렇다고 이 황금의 여행에 그 녀석이 반드시 필요한 건 아니잖아!',
       );
       era.println();
       await gold_shp.print_and_wait(
-        '中央トレセンは優秀だ。ウマ娘もトレーナーも、良い選択肢は腐るほどある！ ロク叔父トレーナー（歳を取りすぎかも）、ナセトレーナー（真面目すぎるかも）、桐生院トレーナー（若すぎるかも）だって、かつてはエデンへ続く道の相棒候補だった。',
+        '중앙 트레센은 우수하다. 우마무스메도 트레이너도 좋은 선택지는 넘쳐난다! 로쿠 아저씨 트레이너(너무 나이가 많을지도), 나세 트레이너(너무 진지할지도), 키류인 트레이너(너무 젊을지도)도 한때는 에덴으로 가는 길의 동료 후보였다.',
       );
       era.println();
       await gold_shp.print_and_wait([
-        'なのに——あいつを見た',
+        '그런데도——그 녀석을 본',
         {
           color: gold_color,
-          content: '0.0000001秒で、両脚に命令を下してしまった。',
+          content: '0.0000001초 만에 두 다리에 명령을 내려버렸다.',
         },
       ]);
 
-      era.printButton('「黄金星の天啓、か……」（関係を進める）', 1);
-      era.printButton('「アタシは何やってんだ……」（まだ進めない）', 2);
+      era.printButton('「황금별의 계시인가……」(관계를 진전시킨다)', 1);
+      era.printButton('「나 뭐 하는 거냐……」(아직 진전시키지 않는다)', 2);
       const ret = await era.input();
       if (ret === 1) {
         await gold_shp.print_and_wait(
-          `その言い訳は、${gold_shp.name} 自身すら騙せなかった。${gold_shp.sex}は目を閉じる。だが心に焼きついた影は消えない。${gold_shp.sex}は力いっぱい首を振ってあいつを見まいとするのに、頭はあいつについての思考を強いてくる。`,
+          `그 변명은 ${gold_shp.name} 자신조차 속이지 못했다. ${gold_shp.sex}은(는) 눈을 감는다. 하지만 마음에 새겨진 그림자는 사라지지 않는다. ${gold_shp.sex}은(는) 힘껏 고개를 저으며 그 녀석을 떠올리지 않으려 하지만, 머리는 계속 그 녀석을 생각하게 만든다.`,
         );
       } else {
         await gold_shp.print_and_wait(
-          `${gold_shp.sex}は目を閉じる。だが心に焼きついた影は消えない。${gold_shp.sex}は力いっぱい首を振ってあいつを見まいとするのに、頭はあいつについての思考を強いてくる。`,
+          `${gold_shp.sex}은(는) 눈을 감는다. 하지만 마음에 새겨진 그림자는 사라지지 않는다. ${gold_shp.sex}은(는) 힘껏 고개를 저으며 그 녀석을 떠올리지 않으려 하지만, 머리는 계속 그 녀석을 생각하게 만든다.`,
         );
       }
       era.println();
       await gold_shp.print_and_wait(
-        `いま、半分の ${gold_shp.name} は自分を説得している。世の中には一目惚れなんてものがあって、ゴルシとトレーナーは愛の神の矢に真正面から射抜かれた天生の一対なんだ、と。`,
+        `지금 절반의 ${gold_shp.name}은(는) 자신을 설득하고 있다. 세상에는 첫눈에 반한다는 게 있고, 고루시와 트레이너는 사랑의 신의 화살을 정면으로 맞은 천생연분이라고.`,
       );
       era.println();
       await gold_shp.print_and_wait(
-        `残りの半分の ${gold_shp.name} は反対する。これは単にゴルシとトレーナーの仲がいい証拠で、それ以上の何も証明しない、と。`,
+        `나머지 절반의 ${gold_shp.name}은(는) 반대한다. 이건 단지 고루시와 트레이너 사이가 좋다는 증거일 뿐, 그 이상은 아무것도 증명하지 않는다고.`,
       );
       era.println();
       if (ret === 1) {
         await gold_shp.print_and_wait(
-          `ついには、感性の ${gold_shp.name} が優勢を取った。${gold_shp.name} の目は迷いから決意へ変わり、体を起こしてトレセンの方を見る。`,
+          `마침내 감성 쪽 ${gold_shp.name}이(가) 우세를 점했다. ${gold_shp.name}의 눈빛은 망설임에서 결의로 바뀌었고, 몸을 일으켜 트레센 쪽을 바라봤다.`,
         );
         era.println();
-        await gold_shp.say_and_wait('違う、これは一目惚れだ。');
+        await gold_shp.say_and_wait('아니야, 이건 첫눈에 반한 거야.');
       } else {
         await gold_shp.print_and_wait(
-          `ついには、理性の ${gold_shp.name} が優勢を取った。だが抑えきれない想念は、雲の影みたいに頭上を徘徊したままだ。${gold_shp.name} ですら簡単に振り切れないこの苦悩は、いったいいつまで続くのか。`,
+          `마침내 이성 쪽 ${gold_shp.name}이(가) 우세를 점했다. 하지만 억누를 수 없는 생각은 구름 그림자처럼 머리 위를 떠돌고 있었다. ${gold_shp.name}조차 쉽게 떨쳐낼 수 없는 이 고민은 대체 언제까지 이어질까.`,
         );
       }
       return [ret];
     };
-    f.title = [{ color: gold_color, content: '感性と理性' }];
+    f.title = [{ color: gold_color, content: '감성과 이성' }];
     return f;
   })(),
 
-  // [번역 대상] 74-1
+  // [번역 완료] 74-1
   '74-1': (() => {
     /**
      * @param {CharaTalk} gold_shp ゴールドシップ
@@ -121,37 +121,37 @@ module.exports = {
      */
     const f = async (gold_shp, you, callname) => {
       await gold_shp.print_and_wait(
-        `ある夜、${gold_shp.name} は鼻と上唇で鉛筆を挟み、ふかふかの寮のベッドに半ば横たわっていた。${gold_shp.sex}は両脚と強い腰で体幹を浮かせたまま、頭だけはマットに密着させている。鉛筆の木と塗料の混ざった匂いも、${gold_shp.sex}の思考の速度を妨げない。いま、この世の万象が ${gold_shp.name} の中で素早く分析され、分解され、また組み立てられている。`,
+        `어느 밤, ${gold_shp.name}은(는) 코와 윗입술 사이에 연필을 끼운 채 푹신한 기숙사 침대에 반쯤 누워 있었다. ${gold_shp.sex}은(는) 두 다리와 강한 허리로 몸통을 띄운 채 머리만 매트에 딱 붙이고 있다. 연필의 나무와 도료가 섞인 냄새도 ${gold_shp.sex}의 사고 속도를 방해하지 못한다. 지금 이 세상의 만물이 ${gold_shp.name} 안에서 빠르게 분석되고, 분해되고, 다시 조립되고 있다.`,
       );
       era.println();
-      await era.printAndWait('常温超電導に勝ち目はあるか？ ない。', {
+      await era.printAndWait('상온 초전도에 승산은 있는가? 없다.', {
         color: gold_color,
       });
       era.println();
-      await era.printAndWait('恐竜は巨大な鶏か？ そうだ。', {
+      await era.printAndWait('공룡은 거대한 닭인가? 그렇다.', {
         color: gold_color,
       });
       era.println();
-      await era.printAndWait('ペプシかコーラか？ 白湯。', {
+      await era.printAndWait('펩시인가 콜라인가? 따뜻한 물.', {
         color: gold_color,
       });
       era.println();
       await gold_shp.print_and_wait('……');
       era.println();
       await gold_shp.print_and_wait(
-        `${gold_shp.name} は ${callname} のことが好きか？ 好きだ。`,
+        `${gold_shp.name}은(는) ${callname}을(를) 좋아하는가? 좋아한다.`,
       );
       era.println();
       await gold_shp.print_and_wait(
-        `${gold_shp.name} は両脚に力を込め、宙へ跳ね上がると、頭と両手の三点でベッドに逆立ちした！ 血液がいま、${gold_shp.sex}の脳へ、作戦に必要なエネルギーを送り込み続ける——気持ちが決まったなら、次にやることは一つしかない……！`,
+        `${gold_shp.name}은(는) 두 다리에 힘을 주고 허공으로 튀어 올라 머리와 양손 세 점으로 침대 위에 물구나무를 섰다! 지금 혈액이 ${gold_shp.sex}의 뇌로 작전에 필요한 에너지를 계속 보내고 있다——마음이 정해졌다면 다음에 할 일은 하나뿐이다……!`,
       );
       era.println();
 
-      era.printButton('「作戦を立てて、攻勢開始！」（関係を進める）', 1);
-      era.printButton('「慎重に、長期戦でいけ！」（まだ進めない）', 2);
+      era.printButton('「작전을 세우고 공세 개시!」(관계를 진전시킨다)', 1);
+      era.printButton('「신중하게, 장기전으로 간다!」(아직 진전시키지 않는다)', 2);
       return [await era.input()];
     };
-    f.title = [{ color: gold_color, content: '戦術決断' }];
+    f.title = [{ color: gold_color, content: '전술 결정' }];
     return f;
   })(),
 
