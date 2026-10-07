@@ -47,7 +47,7 @@ good_morning:
             - fontWeight: bold
               content: 메지로 맥퀸
             - 「좋은 아침이에요. 멋진 하루를 보내기 위해 기운을 내 볼까요.」
-    # STATUSNAME:1 = 徹夜
+    # STATUSNAME:1 = 철야
     - if: era.get('status:13:1') > 0
       random: true
       lines:
@@ -76,8 +76,8 @@ good_morning:
 select:
   sync: true
   lines:
-    # STATUSNAME:10 = 昏睡
-    # STATUSNAME:39 = 馬跳S
+    # STATUSNAME:10 = 혼수
+    # STATUSNAME:39 = 우마뾰이S
     - if: era.get('status:13:10') === 0 && era.get('status:13:39') === 0
       random: true
       lines:
@@ -220,7 +220,7 @@ talk:
           - fontWeight: bold
             content: 메지로 맥퀸
           - 「메지로 저택은 매우 넓어서, 어릴 적에는 길을 찾기 위해 인형으로 표시를 해두곤 했답니다.」
-  # CFLAGNAME:66 = 募集状態
+  # CFLAGNAME:66 = 모집상태
   - if: era.get('cflag:7:66') === 1
     random: true
     lines:
@@ -399,7 +399,7 @@ o_s_ktv:
       - 위닝 라이브 연습을 위해, %YOU%과 맥퀸은 카라오케를 찾았다.
       - 「역시 맥퀸의 목소리는 천상의 목소리구나.」
       - 맥퀸의 노래를 다 들은 %YOU%은(는) 자신도 모르게 인자한 아버지 같은 미소를 지었다.
-  # CFLAGNAME:57 = 拡張変数
+  # CFLAGNAME:57 = 확장변수
   - if: era.get('cflag:13:57')?.love_40 === 2
     random: true
     lines:
