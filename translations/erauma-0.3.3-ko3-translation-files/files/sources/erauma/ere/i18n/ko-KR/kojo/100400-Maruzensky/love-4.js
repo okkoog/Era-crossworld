@@ -695,7 +695,7 @@ module.exports = {
     await era.printAndWait([
       '소등 전,',
       maru.get_colored_name(),
-      ' が ',
+      '이(가) ',
       you.get_colored_name(),
       '에게 권한 소녀만화를 몇 페이지 넘겨본 뒤 잠든다.',
     ]);
