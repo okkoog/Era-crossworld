@@ -65,13 +65,15 @@
 - **이미 [번역 완료]: 90파트**
 - **마커 없음/별도 상태: 13파트**
 
-따라서 **현재 시점에서 확정적으로 "구버전 KR이 존재하지만 live ko3에 아직 미반영"인 최소 수량은 413파트**다.
+무마커 13파트를 본문까지 재검사한 결과:
+- **12파트는 이미 한국어 override가 실제 반영된 상태**였고 마커만 없었다.
+- **1파트 — `Daiichi-Ruby/rec-85.js: rec_start` — 는 override가 없어 일본어 상속 상태**였다.
 
-마커 없음 13파트는 별도 본문 검사를 통해
-- 이미 한국어가 들어가 마커가 필요 없는 상태인지
-- inherited override인지
-- 실제 누락인지
-를 추가 판정해야 한다.
+따라서 이 기록 범위 516파트의 현재 상태는:
+- **미반영/작업 필요: 414파트**
+- **이미 반영: 102파트**
+
+즉 kojo daily/rec 기록만으로도 **구버전 KR이 존재하지만 live ko3에 아직 반영되지 않은 최소 414파트**가 확정된다.
 
 ### 이미 완료되어 제외되는 대표 사례
 
@@ -83,39 +85,108 @@
 - Matikanefukukitaru `rec-56.js`: 기록 1파트 완료
 - Wonder Acute `rec-100.js`: 기록 1파트 완료
 
-## timon 기록에서 확인된 별도 문제
+## timon 기록 전수 재검사
 
 `REUSE_HANDOFF_STATUS.json` 자체가 다음을 명시한다.
 - `classificationIsFullTranslation: false`
 - `freshKoreanProseWritten: false`
 - 구조가 달라진 일부는 current Japanese fallback / external translation-adaptation handoff로 남김.
 
-즉 kojo daily/rec뿐 아니라 timon에도 **구버전 KR 존재 + 부분 재사용 + 남은 일본어 fallback** 사례가 있다.
+29개의 `timon/REUSE_*.json`과 `timon/PENDING_REUSE.md`를 live ko3에 다시 대조했다.
 
-대표:
-- `timon/base.js`: 3 full reuse + 9 partial reuse. 부분 재사용 항목에는 구버전 KR 일부가 대응하지만 구조가 달라 현재 일본어가 남은 구간 존재.
-- `timon/daily.js`: 일부 full/partial reuse와 구조 fallback 기록 존재.
-- `timon/edu.js`: 4개 항목이 partial neutral reuse로 분류됨.
-- `timon/sex/ero-common.js`, `ero-rape.js` 등도 구버전 소스 메타데이터 대응은 확인되었으나 일부 current Japanese fallback 유지 기록이 존재.
-- `timon/mejiro/cum.js`: 구조/의미 차이 때문에 직접 재사용하지 않은 항목 기록 존재.
+### 명시적 partial reuse
 
-이 영역은 **"구버전 KR 존재하지만 실제 문자열을 안전하게 재사용할 수 있는가"**와 **"구버전에는 비슷한 자료만 있고 현재 의미가 달라 신규 번역이 필요한가"**를 분리해서 재판정해야 하므로, 위 413과 아직 합산하지 않았다.
+표준 residual 기록에서 **35키**가 partial reuse로 명시되어 있었다.
+- live에서 아직 `[번역 대상]`: **27**
+- 이미 `[번역 완료]`: **8**
+
+### 구버전 KR은 있으나 구조 차이 때문에 통째 fallback
+
+daily/edu 기록에서 문자열 분할·배열 경계·동적 삽입 차이 때문에 직접 이식하지 않은 키:
+- `timon/daily.js`: **14**
+- `timon/edu.js`: **1**
+- 합계 **15**, 전부 현재 `[번역 대상]`.
+
+### 비표준 handoff 기록
+
+`PENDING_REUSE.md`에 별도 서술로 남은 구조 불일치/부분재사용 항목 **85키**를 live에 대조:
+- `[번역 대상]`: **72**
+- `[번역 완료]`: **11**
+- 무마커: **2**
+
+무마커 2개 `pregnant-slave.js: punish_first / punish`를 직접 확인한 결과 실제 한국어 override 안에 일본어 잔여가 남아 있어 둘 다 **부분 미반영**으로 판정.
+
+따라서 이 묶음의 현재 작업 필요 수는 **74키**.
+
+### sex/system 엄격 구조 불일치
+
+구버전 한국어 동적 조각/템플릿이 실제 존재하지만 3.113이 전용 고정 문자열로 분리·일반화하여 재조합을 포기한 것만 엄격히 추출:
+- `get_chara_have_liquid`
+- `unsatisfied_nipple`
+- `unsatisfied_hidden_nipple`
+- `unsatisfied_sadism`
+- `unsatisfied_sadism_zero_stamina`
+- `unsatisfied_masochism`
+- `unsatisfied_masochism_zero_stamina`
+
+**7키**, 전부 현재 `[번역 대상]`.
+
+### mejiro/cum 엄격 구조 불일치
+
+값/의미 자체가 바뀐 항목과 중국어 혼합 항목은 제외하고, 기존 한국어의 분할·병합·동적 문구 일반화 때문에 못 넣은 것만 추출:
+- `calling_buttons`
+- `get_header`
+- `city_bs_ero_deeper`
+- `city_bs_ero_deeper_limit_tip`
+- `city_bs_ero_shallower`
+- `city_bs_ero_shallower_limit_tip`
+- `city_mg_trained_talent_template`
+
+**7키**, 전부 현재 `[번역 대상]`.
+
+### timon 엄격 확정치
+
+현재 live에서 구버전 한국어 대응/조각이 존재하면서 구조 차이 때문에 일본어가 남아 있는 것으로 엄격히 확정한 항목:
+- 표준 partial: **27**
+- 구조 full fallback: **15**
+- 비표준 handoff partial/fallback: **74**
+- sex/system 구조 후보: **7**
+- mejiro/cum 구조 후보: **7**
+
+합계 **130 작업 단위**.
+
+중요: 구버전 파일은 있으나 실제 해당 문장이 중국어뿐이거나, 숫자/의미/의도 자체가 바뀐 항목은 이 130에서 제외했다.
+
+## 기록 밖 kojo 영역의 실제 후보 풀
+
+구버전 이벤트 파일의 존재 여부를 현재 파일명의 이벤트 ID(`edu-19`, `love-19` 등) 기준으로 다시 매핑했다.
+
+### edu
+- 39 작업 파일 중 **34파일**에 대응하는 구버전 edu/edu-events 자료가 존재.
+- 그 34파일의 현재 live `[번역 대상]`: **819파트**.
+
+### love
+- 37 작업 파일 중 **32파일**에 대응하는 구버전 love 자료가 존재.
+- 그 32파일의 현재 live `[번역 대상]`: **171파트**.
+
+### ero
+- 22 작업 파일 중 **19파일**에 대응하는 구버전 ero 자료가 존재.
+- 그 19파일의 현재 live `[번역 대상]`: **215파트**.
+
+따라서 기록이 없는 kojo 영역에서 앞으로 실제 3자 대조해야 하는 후보는:
+
+**819 + 171 + 215 = 1,205파트**
+
+이 **1,205는 미반영 확정치가 아니다.** 구버전 대응 파일이 존재하면서 현재 아직 target인 실제 후보 풀이다. 각 파트별로 old KR ↔ current ja-JP ↔ live ko3 대응을 확인해야 한다.
+
+`base`는 구버전의 동일 `event/base/base-ID` 경로가 없으므로 별도 소스 영역 매핑이 필요하며, 단순히 “구버전 없음”으로 판정하지 않는다.
 
 ## 다음 조사 단계
 
-1. 위 516 중 **무마커 13파트** 본문 판정.
-2. `timon`의 partial reuse / fallback 항목을 현재 live ko3와 대조하여
-   - 구버전 KR 실질 미반영
-   - 의미 변경으로 재사용 불가
-   - 이미 반영됨
-   로 분리.
-3. 기존 kojo reuse 기록이 없는 영역 전수 대조:
-   - `base`
-   - `edu`
-   - `love`
-   - `ero`
-   - 기록 밖의 `daily/rec`
-4. 각 파트별로 최종 4분류:
+1. 기록 밖 kojo 후보 **1,205파트**를 `FILES.md` 순서로 실제 3자 대조.
+2. `base` 9파일은 별도 old-source 영역 매핑 후 대조.
+3. 기록 밖 `daily/rec` 및 general-i18n/entry의 구버전 자료 존재 여부를 추가 검사.
+4. 각 파트를 최종 4분류:
    - **A: 구버전 KR 완전 반영**
    - **B: 구버전 KR 일부 반영 / 일부 미반영**
    - **C: 구버전 KR 존재 / 현재 미반영**
@@ -123,7 +194,11 @@
 
 ## 현재 결론
 
-전수조사 완료 전 최소 확정치:
-- **C 또는 B에 해당한다고 기존 기록이 명시한 항목: 516파트 / 30파일**
-- 그중 **현재 live ko3에서 명백히 아직 [번역 대상]인 항목: 413파트**
-- 이 숫자는 `edu/love/ero/base` 등 기록이 없는 영역을 아직 포함하지 않은 **최소치**다.
+전수조사 완료 전 **엄격 최소 확정치**:
+- kojo daily/rec 기록 기반 현재 미반영: **414**
+- timon 기록/본문 기반 현재 미반영: **130**
+- 합계: **544 작업 단위**
+
+추가로 기록 밖 kojo에서 실제 3자 대조해야 하는 현재 후보: **1,205파트**.
+
+따라서 **544는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 1,205 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
