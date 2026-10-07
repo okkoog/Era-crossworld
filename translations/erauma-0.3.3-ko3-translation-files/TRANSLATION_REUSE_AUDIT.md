@@ -277,6 +277,99 @@ C 5개:
 
 이 727에는 Palmer의 미확정 notify 4개와 Agnes `ws_palace` D 후보는 포함하지 않는다.
 
+## 기록 밖 edu 실제 3자 대조 — 2차 확정
+
+앞선 1차 확정 이후 `FILES.md` 순서의 old-KR 보유 edu 파일을 계속 대조했다. 아래 수치는 live의 실제 `[번역 대상]` 블록마다 **현재 Korean prose 존재 여부**를 확인하고, 구버전의 직접 파일 및 분리 `edu-events-XX` 모듈이 실제 같은 이벤트를 보유하는지 대조한 결과다.
+
+### Mayano Top Gun `edu-24.js`
+
+- live target: **56**
+- 구버전 `edu-24.js` + `edu-events-24` 10개 모듈이 현재 56 target를 전부 대응.
+- week-start/week-end/office-study/school-atrium/back-school/out-start/race-start/race-end 및 직접 race/train 이벤트가 현재 키 분할과 일치.
+- 56개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- **C: 56**
+
+### Manhattan Cafe `edu-25.js`
+
+- live target: **41**
+- 구버전 `edu-25.js` + `edu-events-25` 6개 모듈이 현재 41 target를 전부 대응.
+- `beginning`, `palace`, `scared`, race 전후 이벤트와 직접 `back_school/crazy_fan_end/out_church` 분할까지 대응 확인.
+- 41개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- **C: 41**
+
+### Rice Shower `edu-30.js`
+
+- live target: **43**
+- 구버전 `edu-30.js` + `edu-events-30` 5개 모듈이 현재 43 target를 전부 대응.
+- week-start/week-end/race-end/school-atrium/out-shopping 및 직접 office/race/train 이벤트의 분할 대응 확인.
+- 43개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- **C: 43**
+
+### Agnes Tachyon `edu-32-plan-a.js` / `edu-32-plan-b.js` / `edu-32.js`
+
+현재 target:
+- plan A: **26**
+- plan B: **26**
+- main: **35**
+- 합계: **87**
+
+구버전은 단일 `edu-32.js`와 `edu-events-32`의 다수 분리 모듈로 구성되어 있다. 직접 require되는 27개 모듈과 그 안에서 참조되는 `force-bad-ending.js`까지 대조했다.
+
+확인한 대표 구조:
+- 공통 이벤트가 현재 A/B 키로 분리된 week-start / race-start / race-end 분기
+- `palace_a/palace_b`, `ending_a/ending_b`
+- 온천 `hot_spring_a/hot_spring_b/hot_spring_b_sex_end`
+- `be_betray` ↔ old `force-bad-ending.js`
+- `be_crazy_fan` ↔ old `crazy-fan-end.js`
+- train / train-fail / train-success의 현재 세분화 키
+
+87개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존이며 구버전 대응 한국어 구현이 존재한다.
+- **C: 87**
+
+### Eishin Flash `edu-37.js`
+
+- live target: **40**
+- 구버전 `edu-37.js` + `edu-events-37`의 race-start/race-end/week-start 모듈이 현재 40 target를 전부 대응.
+- old race-start 11 이벤트 ↔ current before 계열 11개.
+- old race-end의 분기 포함 8 이벤트 단위 ↔ current 8개.
+- week-start의 47+18 분리까지 포함해 current 13개.
+- 직접 out/train/week-end 이벤트 8개.
+- 40개 target 블록 모두 visible Korean prose string **0**, 일본어 prose 잔존.
+- **C: 40**
+
+### 이번 2차 edu 추가 확정치
+
+새로 엄격 확정:
+- Mayano Top Gun: **56 C**
+- Manhattan Cafe: **41 C**
+- Rice Shower: **43 C**
+- Agnes Tachyon: **87 C**
+- Eishin Flash: **40 C**
+
+합계:
+- **B: 0**
+- **C: 267**
+- **B+C: 267**
+
+edu 누적 엄격 확정:
+- 1차: **183**
+- 2차: **267**
+- 합계: **450**
+
+전체 엄격 최소:
+- daily/rec: **414**
+- timon: **130**
+- 기록 밖 edu: **450**
+- 합계: **994 작업 단위**
+
+원래 기록 밖 kojo 후보 1,205 중 old-KR 보유 edu 후보는 819였다. 현재 old-KR 보유 edu target 후보 **455개(1차 조사 파일 188 + 이번 267)**를 실제 대조했으므로, 아직 미조사 후보는:
+- edu: **364**
+- love: **171**
+- ero: **215**
+- 합계: **750**
+
+Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목은 위 “미조사 750”과 별개로 계속 보류 상태다.
+
 ## 다음 조사 단계
 
 1. 기록 밖 kojo 후보 **1,205파트**를 `FILES.md` 순서로 실제 3자 대조.
@@ -293,9 +386,9 @@ C 5개:
 전수조사 완료 전 **엄격 최소 확정치**:
 - kojo daily/rec 기록 기반 현재 미반영: **414**
 - timon 기록/본문 기반 현재 미반영: **130**
-- 기록 밖 edu 실제 3자 대조 1차 추가 확정: **183**
-- 합계: **727 작업 단위**
+- 기록 밖 edu 실제 3자 대조 누적 확정: **450**
+- 합계: **994 작업 단위**
 
-추가로 기록 밖 kojo에서 실제 3자 대조해야 하는 현재 후보: **1,205파트**.
+원래 기록 밖 kojo 후보 1,205 중 **455 edu 후보를 실제 대조 완료**했다. 아직 미조사 후보는 **750파트**(edu 364 + love 171 + ero 215)이며, 이미 조사한 파일 안의 별도 미확정 항목은 따로 남아 있다.
 
-따라서 **727은 최종 누락량이 아니라 현재까지 증명된 최소치**다. 1,205 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
+따라서 **994는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
