@@ -920,12 +920,108 @@ old-source 매핑:
 - base: **81**
 - **합계: 1,889 작업 단위**
 
+## 기록 밖 daily/rec 및 general-i18n 검사
+
+### 기록 밖 daily
+
+old `event/daily`에 character-specific 소스가 존재하는 current daily 파일을 실제 directory ID와 교차했다.
+
+- current daily 파일 중 old-source ID 대응: **29파일**
+- `REUSE_DAILY_BATCH_01~09`의 character 기록과 교차:
+  - **29 / 29 모두 기존 감사 기록에 포함**
+- 따라서 파일 단위로 완전히 기록 밖인 old-KR daily 후보: **0**
+
+추가 strict B/C:
+- **0**
+
+### 기록 밖 rec
+
+old `event/rec` ID와 current rec를 교차했을 때 기존 `REUSE_REC_BATCH_01~14`의 character 기록에 없는 파일이 3개 보였다.
+
+- Silence Suzuka `rec-2.kojo`
+- Oguri Cap `rec-6.kojo`
+- Mejiro McQueen `rec-13.kojo`
+
+그러나 live 실제 마커를 확인하면 세 파일 모두 이미 `[번역 완료]` 상태다.
+- Suzuka: 6 완료
+- Oguri: 1 완료
+- McQueen: 4 완료
+- 실제 `[번역 대상]`: **0**
+
+따라서 기록 밖 rec의 추가 strict B/C:
+- **0**
+
+### general-i18n
+
+현재 non-kojo/timon general 파일은 FILES 기준 8개:
+- `chara/names.js`
+- `chara/titles.js`
+- global `entry.js`
+- `race/clothes.js`
+- `race/races.js`
+- `race/skills.js`
+- `snippets.js`
+- `table/param.js`
+
+live 실제 상태:
+- names: target 0 / done 639
+- titles: target 0 / done 81
+- global entry: target 0 / 연결·보조
+- clothes: target 0 / done 75
+- races: target 0 / done 44
+- snippets: target 0 / done 1
+- param: target 0 / done 18
+- `race/skills.js`: **target marker 70**
+
+#### `race/skills.js` marker 재검증
+
+70 marker를 실제 assignment 값으로 검사하면:
+- 숫자 skill ID: **45**
+  - 현재 값이 전부 이미 한국어.
+  - 일부는 old `data/race/skill/skill-<ID>.js`와 이름이 정확히 일치하고, 나머지도 live 값 자체가 이미 한국어이므로 strict 미반영에 포함하지 않음.
+- 공통 symbolic key: **25**
+  - 현재 값이 중국어.
+
+old 대응이 직접 확인된 24개:
+- `learnt` → old `page-train.js`의 `[습득함]`
+- `n_type` → `기술 유형`
+- `n_ground` → `마장 유형`
+- `n_dis` → `거리 유형`
+- `n_style` → `각질 유형`
+- `n_ability` → `효과 유형`
+- `n_t_buff / n_t_heal / n_t_speed / n_t_control / n_t_debuff`
+  - old `uma-skill.js`의 `패시브 / 회복 / 버프 / 디버프 / 약화`
+- `r_normal / r_advanced / r_spe / r_evol / r_ero_normal / r_ero_advanced`
+  - old `uma-skill.js`의 `공용 / 전설 / 고유 / 진화 / 공용 · 조교 / 강화 · 조교`
+- `t_currentSpeed / t_hpRate / t_targetSpeed / t_temp / t_tempPer / t_laneMove / t_ero`
+  - old ability tag names의 `순간속도 / 지구력 / 목표속도 / 흥분 / 흥분확률 / 돌파 / 조교`
+
+따라서:
+- **C: 24**
+
+old 대응이 없는 신규 tag:
+- `t_accelFull`
+- current에는 `ability_type_enum.AccelFullSpeed = 48`, `ability_tag_enum.accelFull`이 새로 존재.
+- old 2.21 `uma-skill.js`에는 `AccelFullSpeed` 및 `accelFull` 자체가 없음.
+- **D: 1**
+
+general-i18n 추가 strict:
+- **24**
+
+### 이 단계 반영 후 엄격 최소
+
+- 이전 strict: **1,889**
+- general-i18n C: **+24**
+- 기록 밖 daily/rec: **+0**
+- **합계: 1,913 작업 단위**
+
 ## 다음 조사 단계
 
 1. **kojo edu/love/ero 후보 풀 1,272파트는 실제 대조 완료.**
 2. **base 9파일도 live 미완료 81 / 81 대조 완료.**
-3. 다음은 기록 밖 `daily/rec` 및 general-i18n/entry의 구버전 자료 존재 여부를 추가 검사.
-4. 각 파트를 같은 4분류로 유지:
+3. **기록 밖 daily/rec 및 general-i18n 검사는 완료.**
+4. 다음은 character `entry.js`의 live 실제 미완료 target를 재집계하고 old-source를 매핑한다.
+5. 각 파트를 같은 4분류로 유지:
    - **A: 구버전 KR 완전 반영**
    - **B: 구버전 KR 일부 반영 / 일부 미반영**
    - **C: 구버전 KR 존재 / 현재 미반영**
@@ -940,8 +1036,9 @@ old-source 매핑:
 - love 실제 3자 대조 최종 확정: **171**
 - ero 실제 3자 대조 최종 확정: **213**
 - base 실제 3자 대조 최종 확정: **81**
-- 합계: **1,889 작업 단위**
+- general-i18n 실제 추가 확정: **24**
+- 합계: **1,913 작업 단위**
 
-기록 밖 kojo의 edu/love/ero 후보 풀 **1,272 / 1,272**와 base live 미완료 **81 / 81**은 실제 대조 완료했다.
+기록 밖 kojo의 edu/love/ero 후보 풀 **1,272 / 1,272**, base live 미완료 **81 / 81**, 기록 밖 daily/rec 및 general-i18n 검사는 완료했다.
 
-따라서 **1,889는 현재까지 증명된 엄격 최소치**다. 기록 밖 `daily/rec`, general-i18n/entry의 old-source 존재 여부 검사는 아직 남아 있으므로 저장소 전체 최종 누락량은 더 증가할 수 있다.
+따라서 **1,913은 현재까지 증명된 엄격 최소치**다. character `entry.js`의 old-source 매핑/실제 대조가 아직 남아 있으므로 저장소 전체 최종 누락량은 더 증가할 수 있다.
