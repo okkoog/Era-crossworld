@@ -20,88 +20,88 @@ module.exports = {
     if (era.get('base:4:体力') < era.get('maxbase:4:体力') / 3) {
       if (era.get('love:4') >= 75) {
         buffer.push(() => {
-          maru.say('ん〜、もう少し寝かせて');
-          maru.say('昨日、つい漫画を遅くまで読んじゃったの');
+          maru.say('음~ 조금만 더 자게 해줘.');
+          maru.say('어제 그만 만화를 늦게까지 읽어버렸거든.');
           era.print([
             you.get_colored_name(),
-            ` は仕方なく${maru.name}を揺り起こし、姿見の前で${maru.sex}の髪を整えてあげた`,
+            `은(는) 어쩔 수 없이 ${maru.name}을(를) 흔들어 깨우고 전신거울 앞에서 ${maru.sex}의 머리를 정돈해 주었다.`,
           ]);
         });
       } else {
         buffer.push(() => {
-          maru.say('頭がくらくら……こんな姿、後輩には見せられないわね');
-          era.print([maru.get_colored_name(), ' は、かなり眠そうだ']);
+          maru.say('머리가 어질어질…… 이런 모습은 후배들한테 보여줄 수 없겠네.');
+          era.print([maru.get_colored_name(), '은(는) 꽤 졸려 보인다.']);
         });
       }
     } else {
       buffer.push(() => {
-        maru.say('今日のトレーニングメニューは何かしら？');
+        maru.say('오늘 훈련 메뉴는 뭘까?');
         maru.say([
-          maru.sex_code === 1 ? 'ハンサム' : 'お嬢さん',
-          'の私は、もう準備できてるわよ',
+          maru.sex_code === 1 ? '멋진 남자' : '아가씨',
+          '인 나는 이미 준비 끝났어.',
         ]);
-        era.print(`${maru.name}は、はやる顔をしている`);
+        era.print(`${maru.name}은(는) 들뜬 표정을 하고 있다.`);
       });
       buffer.push(() => {
-        maru.say('芝を走る感じ、本当に気持ちいいわね');
-        maru.say(`あら、${callname} だったの。`);
+        maru.say('잔디 위를 달리는 느낌, 정말 기분 좋네.');
+        maru.say(`어머, ${callname}이었구나.`);
         era.print([
           you.get_colored_name(),
-          ' が時間どおりコースへ着くと、',
+          '이(가) 시간 맞춰 코스에 도착하자 ',
           maru.get_colored_name(),
-          ' はもう何周も走っていた',
+          '은(는) 이미 몇 바퀴나 달리고 있었다.',
         ]);
       });
       if (era.get('love:4') >= 75) {
         buffer.push(() => {
-          maru.say(`${callname} おはよう⭐`);
-          maru.say('……なんで隣の部屋まで起こしに来たかって？');
+          maru.say(`${callname}, 좋은 아침⭐`);
+          maru.say('……왜 옆방까지 깨우러 왔냐고?');
           maru.say(
-            `起こしてくれる優しい大${
+            `깨워주는 다정한 ${
               maru.elder_sibling_sex_title
-            }がいるなんて、幸せだと思わない？`,
+            }이(가) 있다니, 행복하다고 생각하지 않아?`,
           );
           era.print([
             maru.get_colored_name(),
-            ' は ',
+            '은(는) ',
             you.get_colored_name(),
-            ' の布団を剥がして、早く身支度するよう急かした',
+            '의 이불을 걷어내고 빨리 준비하라고 재촉했다.',
           ]);
         });
       } else if (era.get('love:4') >= 50) {
         buffer.push(() => {
-          maru.say(`${callname} には、まだ目覚めてない力が眠ってそうね`);
-          maru.say('まだ弱いけど、もうすぐ顔を出すんじゃないかしら');
+          maru.say(`${callname}에게는 아직 깨어나지 않은 힘이 잠들어 있는 것 같네.`);
+          maru.say('아직 약하지만 곧 모습을 드러내지 않을까?');
           era.print([
             maru.get_colored_name(),
-            ' は考え込むように ',
+            '은(는) 골똘히 생각하듯 ',
             you.get_colored_name(),
-            ' を値踏みしている',
+            '을(를) 평가하듯 바라보고 있다.',
           ]);
         });
         buffer.push(() => {
           maru.say(
-            `${callname}、困ったことがあったら${
+            `${callname}, 곤란한 일이 있으면 ${
               maru.elder_sibling_sex_title
-            }に言ってちょうだい`,
+            }에게 말해줘.`,
           );
           maru.say(
-            'ずっと胸にしまっておくと、万能キーでも錆びた鍵穴には入らないわ',
+            '계속 가슴속에만 담아두면 만능 열쇠라도 녹슨 열쇠구멍에는 들어가지 못해.',
           );
           era.print([
             maru.get_colored_name(),
-            'は心配そうに ',
+            '은(는) 걱정스러운 듯 ',
             you.get_colored_name(),
-            ' を見ている',
+            '을(를) 바라보고 있다.',
           ]);
         });
       } else {
         buffer.push(() => {
           maru.say(
-            '全力で走っていると、妙な感じがするの。ふわふわして、芝の上に浮かんでいるみたい。',
+            '전력으로 달리다 보면 묘한 느낌이 들어. 둥실둥실해서 잔디 위에 떠 있는 것 같아.',
           );
-          maru.say(`……あ、${callname}おはよう`);
-          era.print(`芝を走っていた ${maru.name} は、考え込んでいる`);
+          maru.say(`……아, ${callname} 좋은 아침.`);
+          era.print(`잔디를 달리던 ${maru.name}은(는) 생각에 잠겨 있다.`);
         });
       }
     }
@@ -117,13 +117,13 @@ module.exports = {
     const buffer = [];
     if (era.get('base:4:体力') < era.get('maxbase:4:体力') / 3) {
       buffer.push(() => {
-        maru.say('『この程度じゃ足りない。あなたはもっとできる』');
-        maru.say(`あちゃー。${callname} の頼みなら……`);
+        maru.say('『이 정도로는 부족해. 너라면 더 할 수 있어.』');
+        maru.say(`아차~. ${callname}의 부탁이라면……`);
         era.print([
           maru.get_colored_name(),
-          ' は複雑な顔で ',
+          '은(는) 복잡한 표정으로 ',
           you.get_colored_name(),
-          ' を見ている',
+          '을(를) 바라보고 있다.',
         ]);
       });
     } else {
@@ -131,83 +131,83 @@ module.exports = {
         () => {
           era.print([
             maru.get_colored_name(),
-            ' は、走っているときに当たる風を楽しんでいる。',
+            '은(는) 달릴 때 맞는 바람을 즐기고 있다.',
           ]);
           maru.say(
-            `${callname} に悩みがあるなら、${
+            `${callname}, 고민이 있다면 ${
               maru.elder_sibling_sex_title
-            }に言ってちょうだい`,
+            }에게 말해줘.`,
           );
           era.print([
             maru.get_colored_name(),
-            ' は余裕のある笑顔で ',
+            '은(는) 여유로운 미소로 ',
             you.get_colored_name(),
-            ' を見ている',
+            '을(를) 바라보고 있다.',
           ]);
         },
         () => {
           maru.say(
-            `今日のメニューは何？何でも${maru.elder_sibling_sex_title}は余裕よ`,
+            `오늘 메뉴는 뭐야? 뭐든 ${maru.elder_sibling_sex_title}인 나는 여유롭지.`,
           );
           era.print(
-            `いつの間にか周りに${maru.uma_sex_title}が集まっていた。これが ${
+            `어느새 주변에 ${maru.uma_sex_title}들이 모여 있었다. 이것이 ${
               maru.name
-            } の魅力だ。`,
+            }의 매력이다.`,
           );
         },
       );
       if (era.get('love:4') >= 75) {
         buffer.push(() => {
-          maru.say(`${callname}、トレーニングのあと、愛車でドライブしない？`);
+          maru.say(`${callname}, 훈련 끝나고 내 차로 드라이브하지 않을래?`);
           maru.say(
-            `夜の冷たい風に当たると、${maru.uma_sex_title}も人も、気分が上がるものよ`,
+            `밤의 차가운 바람을 맞으면 ${maru.uma_sex_title}도 사람도 기분이 들뜨는 법이야.`,
           );
           era.print([
             maru.get_colored_name(),
-            ' は体ごと ',
+            '은(는) 몸째로 ',
             you.get_colored_name(),
-            ' の腕に寄りかかり、いつの間にか尻尾も ',
+            '의 팔에 기대고, 어느새 꼬리도 ',
             you.get_colored_name(),
-            ' の太ももに巻きついていた',
+            '의 허벅지에 감겨 있었다.',
           ]);
         });
       } else if (era.get('love:4') >= 50) {
         buffer.push(
           () => {
             maru.say(
-              'ん〜、四季の風はそれぞれ違うけど、選ぶなら春風がいちばん好き。',
+              '음~ 사계절 바람은 저마다 다르지만, 고르라면 봄바람이 제일 좋아.',
             );
-            maru.say(`${callname} は、どの季節の風が好きかしら？`);
+            maru.say(`${callname}은(는) 어느 계절 바람을 좋아하려나?`);
             era.print([
               maru.get_colored_name(),
-              ' は微笑んで ',
+              '은(는) 미소 지으며 ',
               you.get_colored_name(),
-              ' を見ている',
+              '을(를) 바라보고 있다.',
             ]);
           },
           () => {
             maru.say(
-              '『春には魔力がある。「もっと良い自分になりたい」と思わせる魔力』',
+              '『봄에는 마력이 있어. 「더 나은 내가 되고 싶다」고 생각하게 하는 마력.』',
             );
-            maru.say(`${callname} はどう思う？`);
+            maru.say(`${callname}은(는) 어떻게 생각해?`);
             era.print([
-              'ストレッチの前、',
+              '스트레칭을 하기 전, ',
               maru.get_colored_name(),
-              ' との雑談で',
+              '와(과) 잡담을 나누다가 ',
               maru.sex,
-              'が ',
+              '이(가) ',
               you.get_colored_name(),
-              ' にそう聞いた',
+              '에게 그렇게 물었다.',
             ]);
           },
         );
       } else {
         buffer.push(() => {
           maru.say(
-            `風の魅力を、私に憧れる後輩たちへ。希望の風の化身、${maru.name}よ〜`,
+            `바람의 매력을 나를 동경하는 후배들에게. 희망의 바람의 화신, ${maru.name}이야~`,
           );
-          maru.say(`ふふ、${callname}、この台詞どうかしら？`);
-          era.print(`笑顔の${maru.name}は、機嫌よく尻尾を揺らしている。`);
+          maru.say(`후후, ${callname}, 이 대사 어때?`);
+          era.print(`미소 짓는 ${maru.name}은(는) 기분 좋게 꼬리를 흔들고 있다.`);
         });
       }
     }
@@ -221,21 +221,21 @@ module.exports = {
   // [번역 대상] select_after_recruit
   select_after_recruit(maru, you, callname) {
     maru.say(
-      `ハイ〜${you.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'}、私は ${maru.name} よ。`,
+      `하이~ ${you.sex_code !== 1 ? '아가씨' : '멋진 남자'}, 나는 ${maru.name}이야.`,
     );
     maru.say(
-      `レース場で、憧れてくれる後輩たちに${maru.elder_sibling_sex_title}の格好いい背中を見せたいわね。`,
+      `레이스장에서 나를 동경하는 후배들에게 ${maru.elder_sibling_sex_title}의 멋진 뒷모습을 보여주고 싶네.`,
     );
     maru.say(
-      `それにしても ${callname}、かわいいわね。夏が人に与える感じそのもの。`,
+      `그나저나 ${callname}, 귀엽네. 여름이 사람에게 주는 느낌 그 자체야.`,
     );
   },
   /** @param {CharaTalk} maru マルゼンスキー */
   // [번역 대상] select_sister_annoyance
   select_sister_annoyance(maru) {
-    maru.say('もっと大きな舞台で走ると、気持ちまでキラキラするわね♪');
-    maru.say(`何かあったら、必ず${maru.elder_sibling_sex_title}に相談してね？`);
-    maru.say('……私たちの間に秘密がなければいいのに。');
+    maru.say('더 큰 무대에서 달리면 기분까지 반짝반짝해지네♪');
+    maru.say(`무슨 일 있으면 반드시 ${maru.elder_sibling_sex_title}에게 상담해 줘?`);
+    maru.say('……우리 사이에 비밀이 없으면 좋을 텐데.');
   },
   /**
    * @param {CharaTalk} maru マルゼンスキー
@@ -243,17 +243,17 @@ module.exports = {
    */
   // [번역 대상] select_girls_blue
   select_girls_blue(maru, callname) {
-    maru.say('膝が、前よりずっと痛い。', true);
-    maru.say('あとどれくらい持つのかしら。', true);
-    maru.say(`少なくとも、${callname} には悟られないように。`, true);
+    maru.say('무릎이 전보다 훨씬 아파.', true);
+    maru.say('앞으로 얼마나 더 버틸 수 있을까.', true);
+    maru.say(`적어도 ${callname}에게는 들키지 않도록.`, true);
   },
   /** @param {CharaTalk} maru マルゼンスキー */
   // [번역 대상] select_true_end
   select_true_end(maru) {
-    maru.say('同じ後悔を、二度としないために。');
-    maru.say('少なくとも、迷っている後輩たちに、参考になる道を残すために。');
-    maru.say('これからも頑張らないと！');
-    maru.say('こうして、かっかかっと Back step よ！');
+    maru.say('같은 후회를 두 번 다시 하지 않기 위해서.');
+    maru.say('적어도 길을 잃고 고민하는 후배들에게 참고가 될 길을 남기기 위해서.');
+    maru.say('앞으로도 힘내야지!');
+    maru.say('이렇게 해서, 캇카캇 하고 Back step이야!');
   },
   /**
    * @param {CharaTalk} maru マルゼンスキー
@@ -263,14 +263,14 @@ module.exports = {
   // [번역 대상] select_good_end
   select_good_end(maru, you, callname) {
     maru.say(
-      `苦しさも、孤独も、${callname} と一緒なら、たいしたものじゃないみたい。`,
+      `괴로움도 외로움도 ${callname}과(와) 함께라면 별것 아닌 것 같아.`,
     );
     maru.say(
-      `ウマ娘の道で${callname}に出会えたのは、一生の幸運かもしれないわね。`,
+      `우마무스메의 길에서 ${callname}을(를) 만난 건 평생의 행운일지도 모르겠네.`,
     );
-    maru.say('ずっと、助けてくれてありがとう。');
-    maru.say('これからも一緒に頑張らないとね？');
-    maru.say(`ん、${callname} に負荷かけすぎかしら？`);
+    maru.say('계속 도와줘서 고마워.');
+    maru.say('앞으로도 같이 힘내야겠지?');
+    maru.say(`음, ${callname}에게 너무 부담을 주는 걸까?`);
   },
   /**
    * @param {CharaTalk} maru マルゼンスキー
@@ -283,32 +283,32 @@ module.exports = {
   select_by_wind(maru, you, callname, wind) {
     switch (wind) {
       case 1:
-        maru.say(`これからもよろしくね。${callname}♪`);
+        maru.say(`앞으로도 잘 부탁해, ${callname}♪`);
         break;
       case 5:
         maru.say(
-          `これは${maru.sex_code === 1 ? 'ハンサム' : 'お嬢さん'}の私への？`,
+          `이건 ${maru.sex_code === 1 ? '멋진 남자' : '아가씨'}인 나한테 주는 거야?`,
         );
-        maru.say(`じゃあ、${callname}、ありがとう♪`);
-        maru.say('ふふ〜、きれいね。');
+        maru.say(`그럼 ${callname}, 고마워♪`);
+        maru.say('후후~ 예쁘네.');
         break;
       case 10:
         maru.say(
-          '芝の上を何度走っても、あの頃の感じが戻らない。生きてる甲斐がないわね。',
+          '잔디 위를 몇 번을 달려도 그때의 느낌이 돌아오지 않아. 살아 있는 보람이 없네.',
         );
         maru.say('……');
-        maru.say('風が止んだ。');
+        maru.say('바람이 멈췄어.');
         break;
       case 15:
-        maru.say(`トレセンのあの夜、芝で走っていた${maru.uma_sex_title}たち。`);
-        maru.say(`支えてくれる後輩たち、そしてそばにいる${callname}。`);
-        maru.say('心から、幸せだと思ったわ。');
+        maru.say(`트레센의 그 밤, 잔디 위를 달리던 ${maru.uma_sex_title}들.`);
+        maru.say(`나를 지지해 주는 후배들, 그리고 곁에 있는 ${callname}.`);
+        maru.say('진심으로 행복하다고 생각했어.');
         break;
       case 20:
-        maru.say('空と、芝と、徘徊する私たち。');
-        maru.say('懐かしい湿った夏と、乾いた秋。');
+        maru.say('하늘과 잔디와, 그 위를 떠도는 우리.');
+        maru.say('그리운 습한 여름과 건조한 가을.');
         maru.say(
-          `これからも一緒に歩いていきましょう？${you.sex_code === 1 ? 'ト・レ・ー・ナ・ー・くん' : 'ト・レ・ー・ナ・ー・ちゃん'}♪`,
+          `앞으로도 함께 걸어가자? ${you.sex_code === 1 ? '트・레・이・너・군' : '트・레・이・너・짱'}♪`,
         );
         break;
       default:
@@ -322,9 +322,9 @@ module.exports = {
    */
   // [번역 대상] select_Self_contempt
   select_Self_contempt(maru, callname) {
-    maru.say(`どうして、そんなに沈んでるの？`);
-    maru.say('早く元気出して！');
-    maru.say(`私はずっと ${callname} を待ってるんだから！`);
+    maru.say(`왜 그렇게 풀이 죽어 있어?`);
+    maru.say('빨리 기운 내!');
+    maru.say(`나는 계속 ${callname}을(를) 기다리고 있으니까!`);
   },
   /**
    * @param {CharaTalk} maru マルゼンスキー
@@ -332,9 +332,9 @@ module.exports = {
    */
   // [번역 대상] select_happiness_day
   select_happiness_day(maru, callname) {
-    maru.say(`真っ青な空、新しい芝。なんだか懐かしい感じがするわね。`);
-    maru.say(`あら、${callname}、いつ来たの。`);
-    maru.say('じゃあ、いい一日を一緒に楽しみましょう。');
+    maru.say(`새파란 하늘, 새 잔디. 왠지 그리운 느낌이 드네.`);
+    maru.say(`어머, ${callname}, 언제 왔어?`);
+    maru.say('그럼 좋은 하루를 함께 즐기자.');
   },
   /**
    * @param {CharaTalk} maru マルゼンスキー
@@ -434,7 +434,7 @@ module.exports = {
             () =>
               maru.say_and_wait(
                 `${callname} に何かあったら、私に話してちょうだい。というか${
-                  maru.sex_code === 1 ? 'ハンサム' : 'お嬢さん'
+                  maru.sex_code === 1 ? '멋진 남자' : '아가씨'
                 }の私、大歓迎よ♪`,
               ),
           );
@@ -820,7 +820,7 @@ module.exports = {
           maru.get_colored_name(),
           ' は、温泉旅行券を引いた ',
           you.get_colored_name(),
-          ' を見ている',
+          '을(를) 바라보고 있다.',
         ]);
         await maru.say_and_wait(
           `運がいいわね。暇なときに、一緒に温泉へ行きましょう`,
@@ -929,7 +929,7 @@ module.exports = {
     );
     await maru.say_and_wait(
       `神社に掛かっている鈴が鳴ると、誠実に祈った人は三女神の祝福を得られるらしいわ。${
-        maru.sex_code !== 1 ? 'お嬢さん' : 'ハンサム'
+        maru.sex_code !== 1 ? '아가씨' : '멋진 남자'
       }の私も、試してみたいの。`,
     );
     await era.printAndWait(
@@ -1038,7 +1038,7 @@ module.exports = {
         await you.say_and_wait(`そんなに食べて大丈夫か？`);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           maru.get_colored_name(),
           ' の胃が持つか、少し心配になった',
         ]);
