@@ -706,12 +706,145 @@ love 후보에서는 D가 새로 확인되지 않았다.
 
 현재 남은 미조사 후보는 **ero 215개**다.
 
+## 기록 밖 ero 실제 3자 대조 — 전수조사 완료
+
+old-KR ero 소스가 존재하는 current live 파일을 실제 마커 기준으로 재집계했다.
+
+- old-KR 대응 ID가 있는 ero 파일 중 이미 `[번역 완료]`된 항목은 제외.
+- 현재 실제 `[번역 대상]`이 남은 파일은 **5개**뿐:
+  - Agnes Tachyon: 49
+  - Matikanefukukitaru: 56
+  - Mejiro Palmer: 34
+  - Wonder Acute: 74
+  - Treve: 2
+- 합계: **215 target**
+
+### Agnes Tachyon `ero-32.js`
+
+current target: **49**
+
+old 대응:
+- 일반 커맨드: `ero-lines-32/normal-communications.js`, `normal-fucking.js`, `normal-making-outs.js`, `normal-sm.js`
+- `betrayed1/2`: old `betrayed-1.js`, `betrayed-2.js`
+- reward / 일반 cuckold start: old `ero-start.js`
+- `mark_*`: old `ero-32.js:get_mark()`
+- `cum_in_*`, `orgasm_non_penetrative`: old `ero-32.js:orgasm()`
+- `lure_by_tachyon`: old `normal-communications.js:lure()`의 Tachyon 주도 분기
+- `use_love_eggs_in_anal`: old `items.js:use_item()`의 love-eggs + anal 분기
+
+old KR 실제 본문이 직접 대응하는 항목:
+- **C: 47**
+
+old KR 대응을 찾지 못한 신규/변경 helper:
+- `ero_start_cuckold_coffee`
+- `ero_end_cuckold_coffee`
+
+이 두 항목은 old `ero-25.js`, old `ero-32.js`, old `ero-lines-32/ero-start.js`까지 직접 확인했으나 현재 대사에 대응하는 한국어 문장이 없다. old Coffee/Tachyon NTR 코드는 존재하지만 대사 구조와 내용이 다르다.
+- **D: 2**
+
+### Matikanefukukitaru `ero-56.js`
+
+current target: **56**
+
+live target 블록의 visible Korean prose: 전부 **0**.
+
+old 대응:
+- 동일 이름 일반 커맨드는 `ero-lines-56/normal-communications.js`, `normal-fucking.js`, `normal-making-outs.js`, `normal-sm.js`.
+- `mark_ero / mark_hate / mark_meek / mark_pain / mark_pleasure / mark_shame`는 old `ero-56.js:get_mark()` 각 분기와 직접 대응.
+- `orgasm_standing / orgasm_hug_standing`은 old `ero-56.js:orgasm()`의 standing / hug_standing 분리.
+- `pet_breast_from_back`은 old `normal-making-outs.js:pet_breast()`의 삽입 중 후방 가슴 애무 분기.
+- `kitaru_pet_breast_first`는 같은 old `pet_breast()`의 attacker/defender 반전 분기.
+- `stimulate_sleep_glans_by_virgin`은 old `sleep-fucking.js:stimulate_glans_by_virgin()`의 sleep 전용 분기.
+
+따라서:
+- **C: 56**
+
+### Mejiro Palmer `ero-64.kojo`
+
+current target: **34**
+
+old `ero-64.js`, `ero-64.kojo`, `ero-lines-64/*` 전체와 대조.
+
+current에 Korean prose와 Japanese prose가 함께 남아 있는 **B 13**:
+- `prepare_anal`
+- `ask_blow_job`
+- `ask_foot_job`
+- `missionary`
+- `doggy_style`
+- `sitting`
+- `hug_standing`
+- `ask_cowgirl`
+- `hit_anal`
+- `mark_meek`
+- `get_semen_blow_job`
+- `get_semen_missionary`
+- `get_semen_doggy_style`
+
+나머지 **21개는 C**.
+- **B: 13**
+- **C: 21**
+
+### Wonder Acute `ero-100.js`
+
+current target: **74**
+
+live target 블록의 visible Korean prose: 전부 **0**.
+
+old `ero-lines-100` 실제 메서드와 교차:
+- **72개**는 current key와 old 메서드명이 그대로 일치.
+- `sleep_kiss` / `sleep_french_kiss`는 old `sleep-communications.js`의 `kiss` / `french_kiss`가 current에서 sleep 전용 key로 분리된 것.
+
+따라서:
+- **C: 74**
+
+### Treve `ero-205.js`
+
+current target:
+- `ero_start`
+- `ero_end`
+
+old `ero-205.js`의 `ero_start()`, `ero_end()`에 한국어 본문이 직접 대응.
+- **C: 2**
+
+### ero 최종 결과
+
+전수조사:
+- **215 / 215 완료**
+
+분류:
+- **B: 13**
+- **C: 200**
+- **D: 2**
+- **B+C: 213**
+
+전체 엄격 최소:
+- daily/rec 기록: **414**
+- timon: **130**
+- edu: **880**
+- love: **171**
+- ero: **213**
+- **합계: 1,808 작업 단위**
+
+기록 밖 kojo 후보 풀:
+- edu: **886 / 886 조사 완료**
+- love: **171 / 171 조사 완료**
+- ero: **215 / 215 조사 완료**
+- **합계: 1,272 / 1,272 조사 완료**
+
+kojo edu/love/ero 후보 풀에서 strict B+C:
+- edu 880 + love 171 + ero 213 = **1,264**
+
+strict에서 제외된 항목:
+- edu D 2
+- edu Palmer notify 미확정 4
+- ero D 2
+
 ## 다음 조사 단계
 
-1. 기록 밖 kojo 후보 **1,205파트**를 `FILES.md` 순서로 실제 3자 대조.
-2. `base` 9파일은 별도 old-source 영역 매핑 후 대조.
-3. 기록 밖 `daily/rec` 및 general-i18n/entry의 구버전 자료 존재 여부를 추가 검사.
-4. 각 파트를 최종 4분류:
+1. **kojo edu/love/ero 후보 풀 1,272파트는 실제 대조 완료.**
+2. 다음은 `base` 9파일의 old-source 영역을 별도 매핑해 3자 대조.
+3. 그다음 기록 밖 `daily/rec` 및 general-i18n/entry의 구버전 자료 존재 여부를 추가 검사.
+4. 각 파트를 같은 4분류로 유지:
    - **A: 구버전 KR 완전 반영**
    - **B: 구버전 KR 일부 반영 / 일부 미반영**
    - **C: 구버전 KR 존재 / 현재 미반영**
@@ -719,13 +852,14 @@ love 후보에서는 D가 새로 확인되지 않았다.
 
 ## 현재 결론
 
-전수조사 완료 전 **엄격 최소 확정치**:
+저장소 전체 감사 완료 전 **엄격 최소 확정치**:
 - kojo daily/rec 기록 기반 현재 미반영: **414**
 - timon 기록/본문 기반 현재 미반영: **130**
 - edu 실제 3자 대조 최종 확정: **880**
 - love 실제 3자 대조 최종 확정: **171**
-- 합계: **1,595 작업 단위**
+- ero 실제 3자 대조 최종 확정: **213**
+- 합계: **1,808 작업 단위**
 
-edu는 **886 / 886**, love는 **171 / 171** 전수조사 완료했다. 기록 밖 kojo 후보 풀은 최소 **1,272파트**(edu 886 + love 171 + ero 215)이며, 현재 남은 미조사 후보는 **ero 215파트**다.
+기록 밖 kojo의 edu/love/ero 후보 풀은 보정 후 **1,272 / 1,272 실제 대조 완료**했다.
 
-따라서 **1,595는 최종 누락량이 아니라 현재까지 증명된 최소치**다. 남은 ero 후보의 파트별 대조 결과에 따라 최종 누락량은 증가한다.
+따라서 **1,808은 현재까지 증명된 엄격 최소치**다. 다만 `base` 9파일, 기록 밖 `daily/rec`, general-i18n/entry의 old-source 존재 여부 검사는 아직 남아 있으므로 저장소 전체 최종 누락량은 더 증가할 수 있다.
