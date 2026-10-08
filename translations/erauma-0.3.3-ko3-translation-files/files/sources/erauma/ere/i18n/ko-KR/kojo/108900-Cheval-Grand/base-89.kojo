@@ -781,7 +781,7 @@ flatter_after_strike:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「……ほ、包帯、巻けました。箪笥……倒れるなんて、思わなくて。」
+      - 「……붕, 붕대 다 감았어요. 옷장이…… 그렇게 넘어질 줄은 몰랐는데.」
   - color: %COLOR%
     content:
       - fontWeight: bold

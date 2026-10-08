@@ -1499,78 +1499,78 @@ module.exports = class extends I18nSkills {
   t_accel = '가속력';
 
 
-  // [번역 대상] learnt
-  learnt = '[已习得]';
+  // [번역 완료] learnt
+  learnt = "[습득함]";
 
-  // [번역 대상] n_ability
-  n_ability = '效果类型';
+  // [번역 완료] n_ability
+  n_ability = "효과 유형";
 
-  // [번역 대상] n_dis
-  n_dis = '距离类型';
+  // [번역 완료] n_dis
+  n_dis = "거리 유형";
 
-  // [번역 대상] n_ground
-  n_ground = '场地类型';
+  // [번역 완료] n_ground
+  n_ground = "마장 유형";
 
-  // [번역 대상] n_style
-  n_style = '策略类型';
+  // [번역 완료] n_style
+  n_style = "각질 유형";
 
-  // [번역 대상] n_t_buff
-  n_t_buff = '常时';
+  // [번역 완료] n_t_buff
+  n_t_buff = "패시브";
 
-  // [번역 대상] n_t_control
-  n_t_control = '控制';
+  // [번역 완료] n_t_control
+  n_t_control = "디버프";
 
-  // [번역 대상] n_t_debuff
-  n_t_debuff = '劣势';
+  // [번역 완료] n_t_debuff
+  n_t_debuff = "약화";
 
-  // [번역 대상] n_t_heal
-  n_t_heal = '恢复';
+  // [번역 완료] n_t_heal
+  n_t_heal = "회복";
 
-  // [번역 대상] n_t_speed
-  n_t_speed = '增幅';
+  // [번역 완료] n_t_speed
+  n_t_speed = "버프";
 
-  // [번역 대상] n_type
-  n_type = '技能类型';
+  // [번역 완료] n_type
+  n_type = "기술 유형";
 
-  // [번역 대상] r_advanced
-  r_advanced = '传说';
+  // [번역 완료] r_advanced
+  r_advanced = "전설";
 
-  // [번역 대상] r_ero_advanced
-  r_ero_advanced = '强化 · 调教';
+  // [번역 완료] r_ero_advanced
+  r_ero_advanced = "강화 · 조교";
 
-  // [번역 대상] r_ero_normal
-  r_ero_normal = '普通 · 调教';
+  // [번역 완료] r_ero_normal
+  r_ero_normal = "공용 · 조교";
 
-  // [번역 대상] r_evol
-  r_evol = '进化';
+  // [번역 완료] r_evol
+  r_evol = "진화";
 
-  // [번역 대상] r_normal
-  r_normal = '普通';
+  // [번역 완료] r_normal
+  r_normal = "공용";
 
-  // [번역 대상] r_spe
-  r_spe = '独有';
+  // [번역 완료] r_spe
+  r_spe = "고유";
 
   // [번역 대상] t_accelFull
   t_accelFull = '冲刺力';
 
-  // [번역 대상] t_currentSpeed
-  t_currentSpeed = '即时速度';
+  // [번역 완료] t_currentSpeed
+  t_currentSpeed = "순간속도";
 
-  // [번역 대상] t_ero
-  t_ero = '调教';
+  // [번역 완료] t_ero
+  t_ero = "조교";
 
-  // [번역 대상] t_hpRate
-  t_hpRate = '持久力';
+  // [번역 완료] t_hpRate
+  t_hpRate = "지구력";
 
-  // [번역 대상] t_laneMove
-  t_laneMove = '突围';
+  // [번역 완료] t_laneMove
+  t_laneMove = "돌파";
 
-  // [번역 대상] t_targetSpeed
-  t_targetSpeed = '目标速度';
+  // [번역 완료] t_targetSpeed
+  t_targetSpeed = "목표속도";
 
-  // [번역 대상] t_temp
-  t_temp = '焦躁';
+  // [번역 완료] t_temp
+  t_temp = "흥분";
 
-  // [번역 대상] t_tempPer
-  t_tempPer = '焦躁概率';
+  // [번역 완료] t_tempPer
+  t_tempPer = "흥분확률";
 };

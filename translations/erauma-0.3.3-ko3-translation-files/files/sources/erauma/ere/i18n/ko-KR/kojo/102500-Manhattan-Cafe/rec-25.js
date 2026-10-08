@@ -24,7 +24,7 @@ module.exports = {
       coffee.sex,
       'の姿はもうなかった。最初からいなかったように。',
     ]);
-    await you.say_and_wait('目の錯覚か？ 帰って休もう', true);
+    await you.say_and_wait('헛것을 본 건가? 일단 돌아가서 좀 쉬어야겠군.', true);
   },
 
   // [번역 대상] goto_playground

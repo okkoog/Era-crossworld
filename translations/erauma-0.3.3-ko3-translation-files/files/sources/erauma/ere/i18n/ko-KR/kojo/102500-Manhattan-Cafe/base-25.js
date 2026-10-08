@@ -151,11 +151,11 @@ module.exports = {
   async ask_time(coffee, cur_time) {
     if (Math.random() < 0.5) {
       await coffee.say_and_wait(['時間、ですか……いまは ', cur_time]);
-      await coffee.say_and_wait('心配いりません。時間は、十分にあります……');
+      await coffee.say_and_wait('걱정 마세요, 시간은 아주 충분하니까요……');
     } else {
       await coffee.say_and_wait([cur_time, '……どうかしましたか？']);
       await coffee.say_and_wait(
-        '何か急ぎの用事があるなら……『誰か』が代わりに済ませてくれます',
+        '혹시 급한 일이라도 있다면…… 대신해 줄 『사람』이 있어요.',
       );
     }
   },
@@ -367,9 +367,9 @@ module.exports = {
   // [번역 대상] rescue_from_tachyon
   async rescue_from_tachyon(coffee, you, callname, c_call_t) {
     await coffee.say_and_wait(
-      'いまさら心を見せるのですか……その姿、みっともないです……',
+      '이제 와서야 속마음을 털어놓고 싶은 건가요…… 그 모습, 너무 보기 흉하네요……',
     );
-    await coffee.say_and_wait('非難、疑問、糾弾……呪い……');
+    await coffee.say_and_wait('비난, 의구심, 견책…… 욕설……');
     await coffee.say_and_wait([
       'あなたの独走のせいで……',
       callname,
