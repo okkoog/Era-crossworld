@@ -233,7 +233,7 @@ B 5개:
 - `ak_c46_kiss_sex_end`
 - `party_sex_end`
 
-추가 분리 target인 `important_place_notify`, `golf_notify`, `lottery_notify`, `hot_spring_notify` 4개는 구버전의 본 이벤트에서 분리된 조각인지 추가 판정이 필요하므로 아직 확정치에 넣지 않는다. `rain_notify`는 현재 target가 아니다.
+추가 분리 target인 `important_place_notify`, `golf_notify`, `lottery_notify`, `hot_spring_notify` 4개는 후속 전수검사에서 **D 4**로 확정했다. 대응하는 본 이벤트 자체는 old KR에 존재하지만, 현재 notify 문장은 이벤트 진입 조건을 새 UI용으로 요약한 신규 문장이라 old KR에 동일/직접 대응 문장이 없다. `rain_notify`는 현재 target가 아니다.
 
 ### Mejiro Ardan `edu-71.kojo`
 
@@ -275,7 +275,7 @@ C 5개:
 
 **544 + 183 = 727 작업 단위**
 
-이 727에는 Palmer의 미확정 notify 4개와 Agnes `ws_palace` D 후보는 포함하지 않는다.
+이 단계의 727에는 당시 Palmer notify 4개와 Agnes `ws_palace` D 후보를 포함하지 않았다. Palmer notify 4개는 후속 전수검사에서 **D**로 확정되어 strict B+C에는 계속 포함되지 않는다.
 
 ## 기록 밖 edu 실제 3자 대조 — 2차 확정
 
@@ -368,7 +368,7 @@ edu 누적 엄격 확정:
 - ero: **215**
 - 합계: **750**
 
-Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목은 위 “미조사 750”과 별개로 계속 보류 상태다.
+Palmer notify 4개는 당시 별도 보류했으며, 후속 전수검사에서 **D 4**로 확정했다.
 
 ## 기록 밖 edu 실제 3자 대조 — 3차 확정
 
@@ -466,7 +466,7 @@ edu 누적 엄격 확정:
 - ero: **215**
 - 합계: **588**
 
-Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목은 위 “미조사 588”과 별개로 계속 보류 상태다.
+Palmer notify 4개는 당시 별도 보류했으며, 후속 전수검사에서 **D 4**로 확정했다.
 
 ## 기록 밖 edu 실제 3자 대조 — 4차 확정 / edu 전수조사 완료
 
@@ -552,7 +552,7 @@ Palmer의 미확정 notify 4개처럼 이미 본 파일 안의 미확정 항목�
 별도 비확정/신규:
 - Agnes Digital `ws_palace`: old KR 대응 없음 후보(D), strict 수치 제외
 - Smart Falcon `rooftop_idol`: old mark/check만 있고 실제 old KR 이벤트 본문 없음(D), strict 수치 제외
-- Mejiro Palmer notify 4개: 대응 여부 미확정, strict 수치 제외
+- Mejiro Palmer notify 4개: **D 4 확정**, strict B+C 수치 제외
 
 따라서 edu는 **모든 current target를 실제 조사 완료**했으며, strict B+C 기준 **880 작업 단위**가 구버전 한국어 재사용 누락으로 확정된다.
 
@@ -836,7 +836,7 @@ kojo edu/love/ero 후보 풀에서 strict B+C:
 
 strict에서 제외된 항목:
 - edu D 2
-- edu Palmer notify 미확정 4
+- edu Palmer notify **D 4**
 - ero D 2
 
 ## base 실제 3자 대조 — 전수조사 완료
@@ -1015,30 +1015,101 @@ general-i18n 추가 strict:
 - 기록 밖 daily/rec: **+0**
 - **합계: 1,913 작업 단위**
 
-## 다음 조사 단계
+## character entry 및 잔여 계열 최종 검사
 
-1. **kojo edu/love/ero 후보 풀 1,272파트는 실제 대조 완료.**
-2. **base 9파일도 live 미완료 81 / 81 대조 완료.**
-3. **기록 밖 daily/rec 및 general-i18n 검사는 완료.**
-4. 다음은 character `entry.js`의 live 실제 미완료 target를 재집계하고 old-source를 매핑한다.
-5. 각 파트를 같은 4분류로 유지:
-   - **A: 구버전 KR 완전 반영**
-   - **B: 구버전 KR 일부 반영 / 일부 미반영**
-   - **C: 구버전 KR 존재 / 현재 미반영**
-   - **D: 대응 구버전 KR 없음 / 신규 번역 필요**
+### character `entry.js`
 
-## 현재 결론
+`FILES.md`의 character entry 목록을 live 실제 마커 기준으로 다시 검사했다.
 
-저장소 전체 감사 완료 전 **엄격 최소 확정치**:
-- kojo daily/rec 기록 기반 현재 미반영: **414**
-- timon 기록/본문 기반 현재 미반영: **130**
-- edu 실제 3자 대조 최종 확정: **880**
-- love 실제 3자 대조 최종 확정: **171**
-- ero 실제 3자 대조 최종 확정: **213**
-- base 실제 3자 대조 최종 확정: **81**
-- general-i18n 실제 추가 확정: **24**
-- 합계: **1,913 작업 단위**
+- character `entry.js`: **86파일**
+- 86 / 86 파일의 실제 `[번역 대상]`: **0**
+- 과거 `FILES.md`에 target로 남아 있던 항목들은 현재 모두 `[번역 완료]` 또는 연결/보조 상태.
+- 따라서 character entry의 추가 strict B/C: **0**
 
-기록 밖 kojo의 edu/love/ero 후보 풀 **1,272 / 1,272**, base live 미완료 **81 / 81**, 기록 밖 daily/rec 및 general-i18n 검사는 완료했다.
+추가로 FILES 분류에서 별도 확인:
+- root `kojo/entry.js`: 연결 파일, target 0
+- `kojo/av-sister/daily.kojo`: `select` 이미 `[번역 완료]`, target 0
 
-따라서 **1,913은 현재까지 증명된 엄격 최소치**다. character `entry.js`의 old-source 매핑/실제 대조가 아직 남아 있으므로 저장소 전체 최종 누락량은 더 증가할 수 있다.
+### Mejiro Palmer edu notify 4개 최종 판정
+
+대상:
+- `important_place_notify`
+- `golf_notify`
+- `lottery_notify`
+- `hot_spring_notify`
+
+old `edu-64.kojo`에는 각각의 본 이벤트가 존재한다.
+- 프리 레이스
+- 상점가/골프 관련 이벤트
+- 경품 추첨
+- 온천 여행
+
+하지만 current notify의 짧은 UI 알림 문장 자체는 old KR에 존재하지 않는다.
+이 문장들은 현재판에서 이벤트 진입 조건을 별도 안내하기 위해 새로 분리/추가된 요약문이다.
+
+따라서:
+- **D: 4**
+- strict B+C 증가: **0**
+
+### FILES 전체 계열 커버리지
+
+`FILES.md` 301파일을 계열별로 확인:
+- general: 8
+- kojo/daily: 39
+- kojo/entry: 87 (character 86 + root connector 1)
+- kojo/ero: 22
+- kojo/edu: 39
+- kojo/love: 37
+- kojo/rec: 33
+- kojo/base: 9
+- kojo/other: 1 (`av-sister/daily.kojo`)
+- timon: 26
+
+위 계열은 모두 기존 감사 기록 또는 이번 실제 재검증 범위에 포함되었다.
+**미검사 파일 계열 없음.**
+
+### 전수조사 최종 strict old-KR 미반영 확정치
+
+- daily/rec 기록 기반: **414**
+- timon: **130**
+- edu: **880**
+- love: **171**
+- ero: **213**
+- base: **81**
+- general-i18n: **24**
+- character entry 추가: **0**
+- **최종 합계: 1,913 작업 단위**
+
+## 전수조사 완료 / 다음 실행 단계
+
+구버전 한국어 재사용 가능성 전수조사는 완료했다.
+
+다음 작업 우선순위:
+1. **strict B+C 1,913 작업 단위의 old-KR 재사용 반영**
+2. 재사용 반영 후 live `[번역 대상]` 재집계
+3. 그 뒤에만 D 및 진짜 신규 번역 대상으로 돌아간다.
+
+분류 기준은 계속 유지:
+- **A: 구버전 KR 완전 반영**
+- **B: 구버전 KR 일부 반영 / 일부 미반영**
+- **C: 구버전 KR 존재 / 현재 미반영**
+- **D: 대응 구버전 KR 없음 / 신규 번역 필요**
+
+## 최종 결론
+
+구버전 한국어 재사용 전수조사는 **완료**했다.
+
+strict 기준 old-KR이 존재하지만 현재 live ko3에 반영되지 않은 확정량:
+- kojo daily/rec: **414**
+- timon: **130**
+- edu: **880**
+- love: **171**
+- ero: **213**
+- base: **81**
+- general-i18n: **24**
+- character entry 추가: **0**
+- **최종 strict B+C: 1,913 작업 단위**
+
+`FILES.md`의 301파일 계열은 모두 감사 범위에 포함되었고, 마지막 Palmer notify 4개도 **D**로 확정했다. 따라서 더 이상 “미확정이라 strict에서 보류 중인 항목”은 없다.
+
+이제 새 번역을 계속하기 전에 **1,913 작업 단위의 구버전 KR 재사용 반영을 우선**하는 것이 맞다.
