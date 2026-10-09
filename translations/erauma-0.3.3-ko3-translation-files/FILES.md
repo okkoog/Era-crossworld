@@ -767,7 +767,8 @@
   - 번역 대상: cum_in_womb
 
 - [kojo/904200-Byerley-Turk/love-342.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/904200-Byerley-Turk/love-342.kojo)
-  - 번역 대상: 49, 50, after_sex_50, pray
+  - 번역 대상: 49, 50
+  - 복구 완료: after_sex_50, pray
 
 - [kojo/904300-Satake-Mei/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/904300-Satake-Mei/entry.js)
   - 번역 대상: dream_chaser, dream_chaser_desc
