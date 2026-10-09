@@ -2,7 +2,7 @@
 # @file メジロブライト - 恋慕
 # @author KUN
 # 49恋慕、ターン終了時
-# [번역 대상] 49
+# [번역 완료] 49
 49:
   title: 우리 둘만의 코코아나무
   lines:
@@ -36,7 +36,7 @@
           content: %CHARA%
         - 「이거, 제가 직접 만든 거랍니다～」
     - 고개를 갸웃거리는 %YOU%을(를) 바라보며 %CHARA%는 자신도 모르게 싱긋 미소를 지었다.
-    - 目の前の箱をそっと前へ押し、次の動きを少し期待して見つめている。
+    - 이내 눈앞의 상자를 살포시 앞으로 밀어내며, 다음에 보일 반응을 내심 기대 섞인 눈빛으로 바라보았다.
     - 이내 눈앞의 상자를 살포시 앞으로 밀어내며, %YOU%이(가) 다음에 보일 반응을 내심 기대 섞인 눈빛으로 바라보았다.
     - 가볍게 한 입 베어 물고 나서야, 겉보기에 왜 이토록 투박했는지 그 이유를 깨달을 수 있었다.
     - acc: 1
@@ -260,7 +260,7 @@
     - 느긋하게, 아주 느긋하게, 마침내 다가올 그날을 기다리면서 말이다.
 
 # 89恋慕、一緒に小憩で発火
-# [번역 대상] 89
+# [번역 완료] 89
 89:
   title: 자각 없이 빠져든 깊은 사랑
   lines:
@@ -370,7 +370,7 @@
         - 「느낌이, 갈 것만 같아……」
     - 고요하기만 하던 방 안에 이윽고 은밀하고 기묘한 소리가 낮게 울려 퍼졌다.
     - 자신의 몸에 일어난 해프닝을 마주하자, 평소 좀처럼 당황하지 않던 느긋한 성격의 %CHARA%조차 이 순간만큼은 몹시 허둥대며 뒷수습을 서둘렀다.
-    - どうにか片付けたころ、普段なら目覚める時間になっていた。
+    - 간신히 옷가지와 흔적을 정리하고 나니, 마침 평소에 일어날 시간이 다다라 있었다.
     - acc: 1
       content: 「아, 브라이트?」
     - 눈앞에 마주한 %CHARA%의 얼굴에 아직 가시지 않은 붉은 홍조가 남아 있는 것을 보고도, 막 잠에서 깬 %YOU%은(는) 그저 방금 잠에서 깨어나 얼굴이 달아오른 것이라 여기며 대수롭지 않게 넘겼다.
@@ -484,21 +484,21 @@
         content: %CHARA%
       - 「그렇지만, %CALLNAME%도 기분 아주 좋으셨죠? 후훗～」
 
-# [번역 대상] 99_1
+# [번역 완료] 99_1
 99_1:
   title: 그 누구라 할 것 없이, 이미 깊이 빠져든 우리
   lines:
     # 99恋慕、ターン終了
     - color: %COLOR%
-      content: 休日の%CHARA%は自室にぼんやり座り、窓の外の夜空を見ている。
+      content: 휴일을 맞이한 %CHARA%는 자신의 방안에 멍하니 앉아 창문 너머로 펼쳐진 밤하늘을 올려다보고 있었다.
     - color: %COLOR%
-      content: 少女らしい部屋には、対になった人形が並んでいる。
+      content: 소녀 감성이 물씬 풍기는 아기자기한 방 안에는 짝을 이룬 인형들이 가득 진열되어 있었다.
     - color: %COLOR%
-      content: いつのころからか、散らばっていた人形にも、それぞれ連れができた。
+      content: 언제부터였을까, 방 안에 무질서하게 놓여 있던 인형들에게 어느샌가 저마다의 반려가 생겨나 있었다.
     - color: %COLOR%
-      content: 小さな人形のそばには、どれも対になるもう一体が座っている。
+      content: 자그마한 인형들의 옆자리에는 예외 없이 또 다른 인형 하나가 다정하게 세트를 이루어 앉아 있었다.
     - color: %COLOR%
-      content: いまこの部屋でひとりなのは、%CHARA%自身だけ……
+      content: 허나 지금 이 순간, 이 방 안에서 오롯이 홀로 남아 외로움을 곱씹는 존재는 오직 %CHARA% 자신뿐이었다……
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -510,18 +510,18 @@
           content: %CHARA%
         - 「만약 %CALLNAME%께서 곁에 계셔 주신다면 참 좋았을 텐데 말이죠……」
     - color: %COLOR%
-      content: いちばん好きな二つのぬいぐるみを抱き、床に届かない小さな脚をそっと揺らす。
+      content: 그녀가 가장 아끼는 인형 두 개를 품에 꼭 안은 채, 침대 밑으로 채 닿지 않는 가느다란 다리를 앞뒤로 살랑살랑 흔들었다.
     - color: %COLOR%
-      content: 上半身を揺らしながら脇を見る——隣に空けた、もう一つの場所を。
+      content: 상체를 가볍게 들썩이며 자신의 옆자리를 바라보았다―― 누군가를 위해 비워둔 또 하나의 빈 공간을.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
         - 「%CALLNAME%……」
     - color: %COLOR%
-      content: ゆっくり身を屈め、懐の人形を抱きしめて、顔の半分を隠す。
+      content: 허리를 서서히 숙이며 품 안의 인형을 더욱 세게 끌어안아 자신의 얼굴을 절반쯤 파묻었다.
     - color: %COLOR%
-      content: 瞳に映る部屋のなかに、%YOU%の姿がある。
+      content: 애달픈 눈동자 속에 비친 방 안의 풍경에는, 어느덧 %YOU%의 환영이 짙게 일렁이고 있었다.
     - if: era.get('cflag:0:0') === 1
       color: %COLOR%
       content:
@@ -767,7 +767,7 @@
 
 # week_end
 # 愛欲以上、ドーベルときめき、5月1週、男T
-# [번역 대상] small_party
+# [번역 완료] small_party
 small_party:
   title: 작은 모임
   lines:
@@ -799,7 +799,7 @@ small_party:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「担当%UMA%は、トレーナーと仲よくしなくては～」
+        - 「담당 %UMA%는 트레이너 님과 사이좋게 지내야 하니까요～」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -912,7 +912,7 @@ small_party:
       content:
         - fontWeight: bold
           content: %D_NAME%
-        - 「トレーナーと%UMA%が、こんなに密着するなんて……」
+        - 「트레이너랑 %UMA%가 이렇게까지 밀착하다니……」
     - 나직하게 투덜거리는 소리였지만, %CHARA%는 귀를 부드럽게 쫑긋 세웠다.
     - 그러고는 말랑말랑한 두 손으로 %YOU%의 팔을 꼬옥 껴안으며 어깨에 머리를 기대어 왔다.
     - color: %COLOR%
@@ -1094,7 +1094,7 @@ all_along:
     - acc: 2
       content: 「조금 더운 것쯤은 상관없겠지.」
       lines:
-        - 少し熱いくらい構わない。エアコンもある。
+        - 에어컨이 켜져 있으니 조금 더워도 상관없을 것이라 생각하며, 그대로 소파에 누워 피로에 지친 눈을 감고 휴식을 청했다.
         - 에어컨이 켜져 있으니 조금 더워도 상관없을 것이라 생각하며, %YOU%은(는) 그대로 소파에 누워 피로에 지친 눈을 감고 휴식을 청했다.
         - 본래대로라면 이런 낮잠은 오후 늦게까지 이어져, 알람 소리나 집무실을 찾아온 누군가에 의해 깨어나는 것이 당연한 수순이었다.
         - color: %COLOR%
@@ -1102,41 +1102,41 @@ all_along:
             - fontWeight: bold
               content: ？？？
             - 「응…… 으응……」
-        - 体感温度が上がり続け、%YOU% の忍耐がいくら強くても、目を開けずにはいられない。
+        - 점차 차오르는 체온에 아무리 인내심이 강한 %YOU%라도 눈을 뜨지 않을 수 없었다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「あ…… こんにちは、%CALLNAME%❤️」
-        - 寝ぼけた様子の %CHARA% が %YOU% の太ももに伏せ、顔を上げて見上げている。
+            - 「아…… 좋은 낮이에요, %CALLNAME%❤️」
+        - 아직 잠이 덜 깬 부스스한 얼굴의 %CHARA%가 %YOU%의 허벅지 위에 엎드린 채 고개를 들어 올려다보고 있었다.
         - 「저, 이 냄새를 꽤 좋아하는지도 모르겠어요❤️」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「あ、%CALLNAME%…… こうされるの、お好きですの？」
-        - %YOU% の視線のなか、%CHARA% はゆっくり口を開けてファスナーを咥え、下へ下ろす。
+            - 「아하…… %CALLNAME%, 이런 게 좋으신가요?」
+        - %YOU%의 시선이 머무는 가운데, %CHARA%는 천천히 입을 벌려 옷의 지퍼를 물고 아래로 스르륵 내렸다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALLNAME%の熱…… ふふ～」
+            - 「%CALLNAME%의 체온…… 후훗❤️」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「この匂い、私、好きですわ❤️」
+            - 「저, 이 냄새를 꽤 좋아하는지도 모르겠어요❤️」
         - 「저희에게 주어진 시간은 아주 많으니까요～」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「さあ、%CALLNAME%～」
+            - 「이리 오세요, %CALLNAME%～」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「私たちの時間は、たくさんありますわよ～」
+            - 「저희에게 주어진 시간은 아주 많으니까요～」
         - acc: 1
           key: sex
           content: （%SEX%を押さえる！）
@@ -1149,7 +1149,7 @@ all_along_sex:
 
 # out_station
 # 良縁以上、パーマー熱恋、非処女、ウマ娘
-# [번역 대상] miss_tram
+# [번역 완료] miss_tram
 miss_tram:
   title: 지나쳐 버린 전차
   lines:
@@ -1199,7 +1199,7 @@ miss_tram:
       content:
         - fontWeight: bold
           content: %P_NAME%
-        - 「ブライト%SEX%、すごいよね？」
+        - 「%SEX%는 참 대단하지?」
     - color: %P_COLOR%
       content:
         - fontWeight: bold
@@ -1216,7 +1216,7 @@ miss_tram:
       content:
         - fontWeight: bold
           content: %P_NAME%
-        - 「ブライト%SEX%は私の自慢の%YOUNGER_SISTER%だよ。超好きだし！」
+        - 「%SEX%는 내가 자랑스러워하는 %YOUNGER_SISTER%인걸, 난 브라이트를 엄청 좋아하니까!」
     - 과장되게 손을 흔들며 뒤로 물러서던 그녀는 튼튼한 등받이에 등을 부딪쳤고, 한적한 객실 안에 둔탁한 소리가 맑게 울려 퍼졌다.
     - color: %P_COLOR%
       content:
@@ -1254,7 +1254,7 @@ miss_tram:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALL_64%、匂いがしますわよ？」
+        - 「%CALL_64%, 무슨 냄새가 나는데요?」
     - 신나서 이리저리 흔들리던 꼬리가 찰나의 순간 꼿꼿하게 굳어졌다.
     - %YOU%이(가) 볼 수 없는 각도에서, %CHARA%의 얼굴에 묘하게 차분한 미소가 떠올랐다.
     - color: %P_COLOR%
@@ -1266,12 +1266,12 @@ miss_tram:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALL_64%の体に、たくさん～%CALLNAME%の匂いがしますわよ？」
+        - 「%CALL_64%의 몸에서, 잔뜩～ %CALLNAME%의 냄새가 나고 있어요?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「もしかして %CALL_64%、あなたも、そういうことを考えていらっしゃいますの？」
+        - 「설마 %CALL_64%, 당신도 그런 쪽의 생각을 하고 계셨던 건가요?」
     - color: %P_COLOR%
       content:
         - fontWeight: bold
@@ -1308,7 +1308,7 @@ miss_tram:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「そうですわよね？ %CALL_64%～」
+        - 「그렇죠? %CALL_64%～」
     - color: %P_COLOR%
       content:
         - fontWeight: bold
@@ -1331,7 +1331,7 @@ miss_tram:
     - acc: 2
       content: 「정말이지 너희 두 사람은 못 말리겠네～」
 
-# [번역 대상] miss_tram_sex
+# [번역 완료] miss_tram_sex
 miss_tram_sex:
   - color: %P_COLOR%
     content:
@@ -1347,9 +1347,9 @@ miss_tram_sex:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALL_64%、そんなこと仰らないで～」
+      - 「%CALL_64%, 너무 그렇게 투덜거리지 마세요～」
   - 전차에 나란히 앉은 두 자매는 서로 장난을 치며, 양옆에서 가운데 낀 %YOU%을(를) 콕콕 찔러댔다.
-  - ただ、もう眠そうな %YOU% は、%THEY%のじゃれ合いに答えない。
+  - 하지만 이미 졸음이 쏟아지던 %YOU%은(는) %THEY%의 장난에 대답할 기운이 없었다.
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1359,7 +1359,7 @@ miss_tram_sex:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「帰りましょう、%CALL_64%～」
+      - 「이제 집으로 돌아가요, %CALL_64%～」
 
 # week_end
 # 良縁以上、ドーベル熱恋、ともに非処女、ウマ娘
@@ -1495,7 +1495,7 @@ dear_sister:
 
 # week_start
 # 良縁以上、バレンタイン
-# [번역 대상] the_fruit
+# [번역 완료] the_fruit
 the_fruit:
   title: 우리들의 노력의 결실이랍니다~
   lines:
@@ -1509,7 +1509,7 @@ the_fruit:
         - fontWeight: bold
           content: %CHARA%
         - 「절 조금만 도와주실 수 있으신가요~」
-    - %YOU% の仕事が少ない空き時間に、%CHARA% が突然現れた。
+    - %YOU%에게 별다른 업무가 없어 한가한 시간에, %CHARA%가 무척이나 갑작스럽게 찾아왔다.
     - %CHARA%는 능청스럽게 %YOU%의 손을 맞잡고는 응석을 부리듯 가볍게 잡아당겼다.
     - color: %COLOR%
       content:
@@ -1596,7 +1596,7 @@ the_fruit:
         - fontWeight: bold
           content: %CHARA%
         - 「죄송해요, %CALLNAME%. 귀한 시간을 내어 도와주러 오셨는데도 불구하고……」
-    - %CHARA% の失敗を惜しむ暇もなく、すぐ作業を続ける。
+    - %CHARA%의 실망감에 잠길 틈도 주지 않은 채, 곧바로 남은 작업을 이어 나갔다.
     - 마침내 %CHARA%의 눈앞에서 모양이 조금 비뚤비뚤하고 기묘한 초콜릿이 완성되자, %CHARA%는 신기하다는 듯이 %YOU%을(를) 쳐다보았다.
     - acc: 1
       content: 「어쨌든 이렇게 완성됐어, 브라이트.」
@@ -1687,7 +1687,7 @@ know_us:
     - acc: 1
       content: （브라이트가 아무런 준비도 없이 나를 초대한 건 꽤 드문 일이네）
     - acc: 2
-      content: （でも、%SEX%が好きなら、これでもいい）
+      content: （뭐, %SEX%가 즐거워한다면 이런 것도 괜찮겠지）
     - %YOU%은(는) 반짝이는 %CHARA%의 생기 넘치는 금빛 눈동자를 바라보며, 자신도 모르게 슬며시 미소를 지었다.
     - color: %COLOR%
       content:
@@ -1706,7 +1706,7 @@ know_us:
         - 「実は%ELDER_SISTER%%THEY%と一緒にいるときも、私は……」
     - acc: 1
       content: 「전혀 그렇지 않아.」
-    - %CHARA%の少し沈んだ言葉を遮り、笑顔はそのまま。
+    - 조금 가라앉으려던 %CHARA%의 말허리를 부드럽게 끊어내며, 여전히 변함없는 미소를 보여주었다.
     - acc: 1
       content: 「나는 브라이트가 좋으니까, 단 한 번도 힘들거나 곤란했던 적은 없었어.」
     -
@@ -1740,7 +1740,7 @@ know_us:
 
 # week_end
 # 良縁以上、ライアンが良縁または熱恋（know_us後）、男Tウマ娘
-# [번역 대상] dear_elder_sister
+# [번역 완료] dear_elder_sister
 dear_elder_sister:
   title: 제가 가장 좋아하는 언니
   lines:
@@ -1818,7 +1818,7 @@ dear_elder_sister:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「でも%CALL_27%、%CALLNAME%に見ていただかなければ……」
+        - 「하지만 %CALL_27%, 이렇게 %CALLNAME%께 보여드리지 않으면……」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -1833,7 +1833,7 @@ dear_elder_sister:
         - fontWeight: bold
           content: %CHARA%
         - 「영차아~」
-    - 胸を隠していた両手を突然上げ、もともと隠しきれなかった谷間を出す。
+    - 그녀는 가슴을 가리고 있던 양손을 기습적으로 번쩍 들어 올렸고, 숨기기 힘들 정도로 깊고 아찔하게 파인 가슴골을 고스란히 노출시켰다.
     - color: %R_COLOR%
       content:
         - fontWeight: bold
@@ -1856,7 +1856,7 @@ dear_elder_sister:
     - 주변 사람들의 의아하고 기묘한 시선을 뒤로한 채, %YOU%은(는) 두 마리의 %UMA%를 이끌고 서둘러 휴게실 안으로 대피했다.
     - 평소라면 이용객으로 붐볐을 방이었지만, 묘하게도 오늘은 신기할 정도로 내부에 아무도 없었다.
     - (어째서 오늘따라 이렇게 유독 조용한 거지?)
-    - %YOU% が理由を考えているとき、%CHARA%が後ろから来てそっと摘む。
+    - %YOU%이(가) 그 기묘한 원인에 대해 생각하려던 찰나, %CHARA%가 등 뒤로 살포시 다가와 허리를 가볍게 꼬집었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -1895,7 +1895,7 @@ dear_elder_sister:
             - fontWeight: bold
               content: %CHARA%
             - 「에에~ 제가 무엇을 도와드리면 되는 걸까요?」
-        - %CHARA% に先に %R_NAME% へ服を着せてもらうつもりだったが、%CHARA%の目はずっと %YOU% に固定され、知りつつとぼけている。
+        - %CHARA%가 어서 %R_NAME%에게 옷을 입혀주기를 바랐으나, %CHARA%의 은밀한 시선은 오직 %YOU%만을 집요하게 가두고 있었고, 뻔히 알면서도 모르는 척 시치미를 떼고 있었다.
         - %YOU%이(가) 그녀의 의도를 파악하기도 전에, %CHARA%는 아주 완만하고 부드러운 걸음걸이로 한 걸음씩 다가왔다.
         - 상체를 숙여, %YOU%의 코앞까지 얼굴을 밀착시켰다.
         - 그리고 일부러 들으라는 듯 크게 숨을 들이쉬는 소리와 함께, %YOU%의 얼굴은 순식간에 붉게 달아올랐다.
@@ -1908,7 +1908,7 @@ dear_elder_sister:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「この匂いですと、%CALL_27%より先に助けが要りそうですわね～」
+            - 「이 강렬한 냄새를 보니, 어쩌면 %CALL_27%보다 당신 쪽이 훨씬 더 도움의 손길이 필요해 보이는데요~」
         - acc: 1
           content: 「어, 어라? 무슨 소리야?」
         - 말랑말랑하고 부드러운 얼굴을 %YOU%의 바지춤 근처에 바짝 밀착시킨 채, 그녀의 맑은 두 눈동자가 아래에서 위를 향해 슬며시 치켜 올라갔다.
@@ -1921,16 +1921,16 @@ dear_elder_sister:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALL_27%…… あなたも、したくなりましたわよね？」
+            - 「%CALL_27%…… 언니도 이미 하고 싶어서 참을 수 없는 상태잖아요?」
         - 마찬가지로 전신에서 터져 나오는 뜨거운 열기를 감추지 못한 %R_NAME%가, 어느샌가 %CHARA%의 등 뒤에 바짝 다가와 서 있었다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
             - 「그러니 %CALLNAME%…… 헛된 저항은 하지 않는 편이 좋으실 거예요~」
-        - 強く力のある両手が、%YOU% をソファへ押し倒す。
+        - 강력하고 거부할 수 없는 억센 두 손이, %YOU%의 어깨를 무자비하게 눌러 소파 위로 눕혀버렸다.
     - acc: 2
-      content: 「%YOU_CALL_27%、先に落ち着いて、水を飲め」
+      content: 「%YOU_CALL_27%, 일단 좀 진정하고 물이라도 좀 마셔 봐.」
       lines:
         - color: %R_COLOR%
           content:
@@ -1943,7 +1943,7 @@ dear_elder_sister:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALL_27%～ お水～」
+            - 「%CALL_27%~ 여기 물이에요~」
         - color: %R_COLOR%
           content:
             - fontWeight: bold
@@ -1976,7 +1976,7 @@ dear_elder_sister:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「さあ、%CALL_27%、お水をたくさん補いましょう～」
+            - 「자, %CALL_27%, 땀을 많이 흘리셨으니 수분을 듬뿍 보충하셔야 해요~」
         - %R_NAME%가 허겁지겁 %YOU%이(가) 숄더백을 여는 것을 막으려던 그 찰나, %CHARA%가 타이밍 좋게 다시 물컵을 들이밀었다.
         - 그리고 아무런 의심의 여지 없이, 두 사람은 보기 좋게 정면으로 충돌하고 말았다.
         - 컵에 담겨 있던 물이 쏟아져 내리며 딱 한 장 걸치고 있던 스포츠 브라를 적셨고, 하필이면 가장 결정적이고 은밀한 부위를 흠뻑 물들이고 말았다.
@@ -1989,7 +1989,7 @@ dear_elder_sister:
               content: %R_NAME%
             - 「와, 와와와……」
         - acc: 1
-          content: 「%YOU_CALL_27%、この丈はどういうつもりか、少し説明してくれ」
+          content: 「%YOU_CALL_27%, 이 바지의 지나치게 아슬아슬한 길이에 대해 설명 좀 해 줄 수 있을까?」
         - color: %R_COLOR%
           content:
             - fontWeight: bold
@@ -1999,7 +1999,7 @@ dear_elder_sister:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%CALL_27%が、わざわざお買いになったのですわ～」
+            - 「%CALL_27%가 특별히 공들여 새로 산 옷이랍니다아~」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -2009,7 +2009,7 @@ dear_elder_sister:
         - 물에 푹 젖어버린 얇은 스포츠 브라 너머로, 격렬해진 움직임에 따라 도드라진 두 봉우리의 끝이 선명하게 형태를 드러내고 있었다.
         - (이런 아수라장 같은 상황 속에서도 결국 흥분해 버리고 말다니.)
         - (이대로 아무것도 하지 않고 넘어가는 건 도저히 불가능하겠네.)
-        - （%YOU_CALL_27%の詰問？ 後回しだ。）
+        - (%YOU_CALL_27%의 원망 섞인 시선? 그런 건 일단 나중 일로 미뤄두자.)
         - acc: 1
           content: 「브라이트, 나 좀 도와줘~」
         - color: %COLOR%
