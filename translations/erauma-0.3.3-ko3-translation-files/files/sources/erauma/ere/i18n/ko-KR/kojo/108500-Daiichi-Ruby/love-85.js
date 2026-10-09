@@ -117,9 +117,9 @@ module.exports = {
     await era.input();
   },
 
-  // [번역 대상] 89
+  // [번역 완료] 89
   89: (() => {
-    const title = '良縁';
+    const title = '천생연분';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
@@ -127,188 +127,188 @@ module.exports = {
     const f = async (ruby, you) => {
       const ret = [];
       await era.printAndWait([
-        'ある日、',
+        '어느 날, ',
         ruby.get_colored_name(),
-        ' はひとり、',
+        '는 홀로 ',
         you.get_colored_name(),
-        ' のトレーナー室で悄然としていた。',
+        '의 트레이닝실에서 원망 섞인 한탄을 하고 있었다.',
       ]);
-      await ruby.say_and_wait('結局、口に出せませんの？');
-      era.printButton('「何か、わたしに言いたいことがあるのか？」', 1);
+      await ruby.say_and_wait('결국, 난 말할 용기가 없는 걸까?');
+      era.printButton('「나한테 하고 싶은 말이라도 있어?」', 1);
       await era.input();
       await ruby.say_and_wait('！');
       await ruby.say_and_wait([
         ruby.get_colored_name(),
-        ' の表情は、「しまった」と言っているようで、視線を逸らした。',
+        '는 마치 「아차」 하는 듯한 기색으로 시선을 돌렸다.',
       ]);
       await ruby.say_and_wait([
-        'しばらく沈黙したあと、',
+        '한동안 침묵이 흐른 후, ',
         ruby.get_colored_name(),
-        ' は決心したように息を吐いた。',
+        '는 결심한 듯이 한숨을 내쉬었다.',
       ]);
-      await ruby.say_and_wait('ええ。');
-      era.printButton('では、聞かせてくれ。', 1);
+      await ruby.say_and_wait('네, 맞아요.');
+      era.printButton('그럼 들어볼까.', 1);
       await era.input();
-      await ruby.say_and_wait('大変申し訳ありませんわ。お教えできませんわ。');
+      await ruby.say_and_wait('대단히 죄송합니다, 말씀드릴 수 없어요.');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の頬が赤く染まった。',
+        '의 뺨이 붉게 물들었다.',
       ]);
       await era.printAndWait(
-        'とても可愛く、まともな男性の思考を短絡させそうだった。',
+        '그 모습이 너무나도 귀여워, 평범한 남성의 뇌 회로를 단선시켜 버릴 정도였다.',
       );
       era.printButton(
-        `「わたしはルビーの専属トレーナーだ。何を言われても構わない。」`,
+        `「나는 루비의 전속 트레이너니까, 뭐든지 편하게 말해도 좋아.」`,
         1,
       );
       await era.input();
-      await ruby.say_and_wait('いいえ、それでもお教えできませんわ。');
+      await ruby.say_and_wait('아니요, 그러니까 더더욱 말씀드릴 수 없어요.');
       await ruby.say_and_wait('……');
-      await ruby.say_and_wait('何を申しても、お受けくださいますの？');
-      era.printButton('「もちろん！ 何を言われても受ける。約束する。」', 1);
+      await ruby.say_and_wait('무슨 말을 하든, 전부 받아들여 주실 건가요?');
+      era.printButton('「당연하지! 네가 무슨 말을 하든 다 받아들인다고 약속할게.」', 1);
       era.printButton(
-        '「お前が幸せなら、それが一番だ。だからどんな決断でも、支える。」',
+        '「네가 행복해질 수만 있다면 그게 내 최고의 소원이니까, 어떤 결정을 내리든 난 널 지지해 줄 거야.」',
         2,
       );
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' はしばらく沈思し、ゆっくり深く息をしてから口を開いた。',
+        '는 잠시 깊은 생각에 잠기더니, 천천히 심호흡을 하고 입을 열었다.',
       ]);
-      await ruby.say_and_wait('先ほどのお言葉、忘れないでくださいまし。');
+      await ruby.say_and_wait('방금 하신 말씀, 부디 잊지 말아 주세요.');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' のいるソファへ歩み、優雅に ',
+        '이(가) 있는 소파 쪽으로 걸어와, 우아하게 ',
         you.get_colored_name(),
-        ' の傍らへ座った。',
+        '의 곁에 걸터앉았다.',
       ]);
       await era.printAndWait([
-        '冷たい指先が ',
+        '차가운 손가락 끝이 ',
         you.get_colored_name(),
-        ' の腕を這い、柔らかな感触とともに甘い体香が届いた。',
+        '의 팔을 타고 올라왔고, 부드러운 촉감과 함께 달콤한 체향이 풍겨왔다.',
       ]);
-      await ruby.say_and_wait('お耳を、拝借いたしますわ。');
-      await era.printAndWait([you.get_colored_name(), ' は従って頭を下げた。']);
-      await era.printAndWait([ruby.get_colored_name(), ' は軽く息をした。']);
-      await ruby.say_and_wait('お母さまになりたいですわ……');
+      await ruby.say_and_wait('귀 좀 잠시 빌려주세요.');
+      await era.printAndWait([you.get_colored_name(), '은(는) 순종적으로 고개를 숙였다.']);
+      await era.printAndWait([ruby.get_colored_name(), '는 가볍게 숨을 들이쉬었다.']);
+      await ruby.say_and_wait('엄마가 되고 싶어요……');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' の顔を見て、微かに笑った。',
+        '의 표정을 바라보며 살짝 미소를 지었다.',
       ]);
-      await ruby.say_and_wait('欲しいのです。あなたとのお子が。');
-      await ruby.say_and_wait('ねえ、よろしいですわね？');
-      era.printButton('「では、いつがいい？」（関係を深める）', 1);
-      era.printButton('「まだ、その時ではない」（深化を見送る）', 2);
+      await ruby.say_and_wait('당신과의 아이를, 갖고 싶어요.');
+      await ruby.say_and_wait('저기, 괜찮겠죠?');
+      era.printButton('「그럼, 언제가 좋을까?」 (관계 진전)', 1);
+      era.printButton('「아직은 때가 아니야」 (관계 진전 보류)', 2);
       era.printButton(
-        `（ルビーは、別の人と結婚するかもしれない。）（推奨しない）`,
+        `(지키지 못할 약속이라면 차라리 거절하자.) (권장하지 않음)`,
         3,
       );
       ret.push(await era.input());
       switch (ret[0]) {
         case 1:
-          await ruby.say_and_wait('え？');
-          await you.say_and_wait('私たちの子どもを、早く見たい。');
-          await ruby.say_and_wait('え……え？');
+          await ruby.say_and_wait('엣?');
+          await you.say_and_wait('우리 아이라면 나도 빨리 만나보고 싶어.');
+          await ruby.say_and_wait('에…… 엣?');
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             ruby.get_colored_name(),
-            ' の手を取り、息を互いの頬へ吐いた。',
+            '의 손을 잡았고, 서로의 뺨에 뜨거운 숨결이 닿았다.',
           ]);
           await ruby.say_and_wait(
-            '待って！ 執事がまだ……こんな時間は、いくら何でもいけませんわ！',
+            '잠깐만요! 집사님이 아직 계시는데…… 아무리 그래도 이런 시간에는 안 돼요!',
           );
-          era.printButton('「では、どの程度までならいい？」', 1);
+          era.printButton('「그럼, 어느 정도까지는 괜찮은데?」', 1);
           await era.input();
-          await ruby.say_and_wait('どの程度も、いけませんわ！');
-          era.printButton('「どうしても、するとしたら？」', 1);
+          await ruby.say_and_wait('어느 정도고 뭐고 다 안 돼요!');
+          era.printButton('「만약 내가 무슨 일이 있어도 하고 싶다고 한다면?」', 1);
           await era.input();
           await ruby.say_and_wait('……');
-          await ruby.say_and_wait('分かりましたわ。');
+          await ruby.say_and_wait('알겠습니다.');
           await era.printAndWait([
             ruby.get_colored_name(),
-            ' は気が進まなそうに立ち上がった。',
+            '는 다소 내키지 않는 기색으로 자리에서 일어났다.',
           ]);
           await era.printAndWait([
-            '一瞬、',
+            '순간, ',
             you.get_colored_name(),
-            ' は嫌な予感を覚えた。',
+            '은(는) 불길한 예감이 들었다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' が慌てて立ち上がる途中、悪戯っぽく笑う ',
+            '이(가) 허둥지둥 몸을 일으키려던 찰나, 장난스럽게 웃는 ',
             ruby.get_colored_name(),
-            ' にソファへ押し倒された。',
+            '에게 밀려 소파 위로 도로 자빠졌다.',
           ]);
           await era.printAndWait([
             ruby.get_colored_name(),
-            ' は唇を ',
+            '는 자신의 입술을 ',
             you.get_colored_name(),
-            ' の唇に重ね、何度も啄んだ。',
+            '의 입술 위에 겹치고는, 몇 번이고 가볍게 쪼아대듯 입을 맞추었다.',
           ]);
           await era.printAndWait(
-            'やがて軽い口づけは消え、深い濡れた口づけに代わった。',
+            '점차 가벼운 입맞춤은 사라지고, 그 자리를 깊고 진한 타액의 교환이 채우기 시작했다.',
           );
           await era.printAndWait(
-            '互いの舌先が触れただけで絡み、痺れる快感が全身を走った。',
+            '서로의 혀끝이 닿기만 해도 짜릿하게 얽혀들었고, 아찔한 쾌감이 온몸으로 퍼져나갔다.',
           );
           await era.printAndWait([
             you.get_colored_name(),
-            ' は手を ',
+            '은(는) 손을 뻗어 ',
             ruby.get_colored_name(),
-            ' の背へ回し、彼女を ',
+            '의 등을 감싸 안아, 그녀를 ',
             you.get_colored_name(),
-            ' の体へ密着させた。',
+            '의 몸에 완전히 밀착시켰다.',
           ]);
           await era.printAndWait([
-            '愛馬の柔らかな肢体と甘い匂いが、',
+            '사랑스러운 담당 우마무스메의 부드러운 육체와 달콤한 향기에, ',
             you.get_colored_name(),
-            ' の頭をからからにした。',
+            '은(는) 머릿속이 하얘지는 것만 같았다.',
           ]);
           await era.printAndWait([
             ruby.get_colored_name(),
-            ' も ',
+            ' 역시 ',
             you.get_colored_name(),
-            ' の頭を抱き返し、',
+            '의 머리를 안아 오며, ',
             you.get_colored_name(),
-            ' の感触を貪った。',
+            '의 촉감을 탐닉했다.',
           ]);
           await era.printAndWait([
-            '時折漏れる淫らな換気の音が、',
+            '간헐적으로 터져 나오는 외설스러운 숨소리가 ',
             you.get_colored_name(),
-            ' をさらに昂らせた。',
+            '을(를) 더욱 흥분시켰다.',
           ]);
           await era.printAndWait(
-            'やがて、どちらとも知れぬ唾が糸を引いて離れた。',
+            '이윽고 누구의 것인지 모를 은밀한 타액이 실을 길게 늘어뜨리며 떨어져 나갔다.',
           );
           await era.printAndWait([
             ruby.get_colored_name(),
-            ' の名残惜しそうな顔に、',
+            '의 아쉬워하는 듯한 표정은, ',
             you.get_colored_name(),
-            ' は再び抱きしめたくなった。',
+            '(으)로 하여금 당장이라도 다시 그녀를 끌어안고 싶게 만들었다.',
           ]);
-          await ruby.say_and_wait('もう、よろしいでしょう……');
-          era.printButton('「ああ、ありがとう。」', 1);
+          await ruby.say_and_wait('이제 이쯤 해두죠……');
+          era.printButton('「응, 고마워.」', 1);
           await era.input();
           await era.printAndWait([
             ruby.get_colored_name(),
-            ' は ',
+            '는 ',
             you.get_colored_name(),
-            ' の傍を離れ、少し乱れた服を整え始めた。',
+            '의 곁을 떠나 조금 흐트러진 옷가지를 정리하기 시작했다.',
           ]);
           await era.printAndWait([
-            '先ほどの妖しい空気は跡形もなく、二人は普段のトレーニングのときの感触に戻った。',
+            '방금 전까지 흐르던 요염한 분위기는 온데간데없이 사라지고, ',
           ]);
           break;
         case 2:
-          await ruby.say_and_wait('……分かりましたわ');
+          await ruby.say_and_wait('……알겠어요.');
           await era.printAndWait([
             ruby.get_colored_name(),
-            ' は黙って去っていった……',
+            '은(는) 묵묵히 방을 나섰다……',
           ]);
       }
       return ret;
@@ -317,249 +317,249 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 99
+  // [번역 완료] 99
   99: (() => {
-    const title = '依存';
+    const title = '의존';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
-      await ruby.say_and_wait('寂しいですわ。');
+      await ruby.say_and_wait('외로워요.');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は率直に ',
+        '는 ',
         you.get_colored_name(),
-        ' へそう言った。拒まれも無視もされず、黙って ',
+        '이(가) 거절하지도, 무시하지도 않는 것을 보며 가만히 ',
         you.get_colored_name(),
-        ' を見ていた。',
+        '을(를) 바라보았다.',
       ]);
-      era.printButton('腕を開く。', 1);
+      era.printButton('팔을 벌린다.', 1);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' の仕草を真似て両腕を開き、それから……',
+        '의 동작을 따라 하듯 두 팔을 벌리더니……',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' を覆い尽くすように抱きついてきた。',
+        '을(를) 덮어누르듯이 안겨 왔다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は慌てて愛馬を受け止めた。椅子の擦れる音とともに、少女の匂いが鼻へ押し寄せた。',
+        '은(는) 당황하며 담당 우마무스메를 받아안았다. 의자가 쓸리는 소리와 함께, 소녀의 향기가 코끝을 찔렀다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' をきつく抱きしめた。',
+        '를 꼭 끌어안았다.',
       ]);
       await ruby.say_and_wait(
-        '寂しいですわ。せっかくの休日なのに、あなたは一日中お仕事ですわ。',
+        '외로워요, 모처럼의 휴일인 오늘도 당신은 하루 종일 일만 하시고.',
       );
-      era.printButton('「すまない。」', 1);
+      era.printButton('「미안해.」', 1);
       await era.input();
-      await ruby.say_and_wait('お詫びより、先になさるべきことがありませんの？');
+      await ruby.say_and_wait('사과보다는, 더 먼저 해야 할 일이 있지 않나요?');
       await ruby.say_and_wait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' の膝に座り、',
+        '의 무릎 위에 앉아, ',
         you.get_colored_name(),
-        ' の顔を見た。',
+        '의 얼굴을 지긋이 응시했다.',
       ]);
       await era.printAndWait([
-        '少し前へ出せば、彼女の唇に ',
+        '조금 앞으로 다가온 그녀의 입술 위로 ',
         you.get_colored_name(),
-        ' のものが重なった。',
+        '의 입술이 겹쳐졌다.',
       ]);
       await era.printAndWait(
-        'コーヒーの味の口づけ。ブラックなのに、口づけは甘かった。',
+        '커피 맛이 나는 키스. 분명 블랙커피인데도, 입맞춤은 감미롭기 그지없었다.',
       );
-      await ruby.say_and_wait('お母様が、早く孫の顔が見たいと仰っていますわ。');
-      era.printButton('「では、夜が楽しみだな。」', 1);
-      era.printButton(`ルビーを抱きしめる。`, 2, {
+      await ruby.say_and_wait('어머님께서 하루라도 빨리 손주를 보고 싶다고 하셨어요.');
+      era.printButton('「그럼, 오늘 밤이 기대되는걸.」', 1);
+      era.printButton(`루비를 안는다.`, 2, {
         disabled: era.get('relation:85:0') <= 525,
       });
       const ret = await era.input();
       if (ret === 1) {
-        await ruby.say_and_wait('お仕事、励んでくださいまし。');
+        await ruby.say_and_wait('...부디 일에 정진해 주세요.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' の悲痛な叫びを無視し、',
+          '의 비통한 부르짖음을 무시한 채, ',
           ruby.get_colored_name(),
-          ' は無情に扉を閉じた。',
+          '는 냉정하게 방 문을 닫아버렸다.',
         ]);
         await era.printAndWait([
-          '彼女を選んだのは ',
+          '그녀를 선택한 것은 ',
           you.get_colored_name(),
           '、',
           you.get_colored_name(),
-          ' を選んだのは彼女。それが、二人にとって最も幸福な形なのだろう。',
+          '에게 있어 가장 행복한 형태일지도 모른다.',
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' はふと、懐の ',
+          '은(는) 문득, 품 안의 ',
           ruby.get_colored_name(),
-          ' が途轍もなく妖しくなったと感じた。',
+          '가 말할 수 없이 요염해졌다고 느꼈다.',
         ]);
         await era.printAndWait(
-          '少女の甘さではない。女の、人妻になってからの熟れた媚びだった。',
+          '소녀의 달콤한 매력과는 다른, 어엿한 한 명의 여성이자 아내가 된 이의 숙성된 매력이었다.',
         );
-        await ruby.say_and_wait('わたくしの顔に、何か？');
+        await ruby.say_and_wait('제 얼굴에 뭐라도 묻었나요?');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は愛馬に構わず、その柔らかな美肉を掴んだ。',
+          '은(는) 대답 대신 담당 우마무스메의 부드럽고 풍만한 살결을 그대로 움켜쥐었다.',
         ]);
         await era.printAndWait([
-          '容赦なく ',
+          '자비 없이 부드러운 가슴을 쥐어짜며 주물러대도, ',
           ruby.get_colored_name(),
-          ' の乳房を揉んだ。彼女も気にしなかった。',
+          '는 개의치 않았다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は ',
+          '는 ',
           you.get_colored_name(),
-          ' を許し、甘い声で痴れて喘いだ。',
+          '의 행동을 용인하며, 교태 섞인 신음을 흘렸다.',
         ]);
-        await ruby.say_and_wait('ん……好きですわ……どう揉まれても、好きですわ……');
+        await ruby.say_and_wait('응…… 좋아요…… 어떻게 주무르시든 다 괜찮아요……');
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は ',
+          '가 ',
           you.get_colored_name(),
-          ' を見上げ、美しい瞳の色はもう蕩けていた。',
+          '을(를) 바라보았다. 아름다운 눈동자는 이미 쾌감으로 흐려져 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           ruby.get_colored_name(),
-          ' の痴態を見て、力を弱めた。',
+          '의 황홀해하는 모습을 보며 힘을 살짝 뺐다.',
         ]);
         await era.printAndWait(
-          'それでも愛馬の小さな胸に夢中で、揉み、擦った。',
+          '하지만 여전히 담당 우마무스메의 앙증맞은 유방에 빠져들어 쉴 새 없이 주무르고 문질러댔다.',
         );
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は香る舌を出し、',
+          '는 향기로운 혀를 내밀어 ',
           you.get_colored_name(),
-          ' の口角を一度舐めた。',
+          '의 입가를 살짝 핥았다.',
         ]);
         await ruby.say_and_wait(
-          '構いませんわ、乱暴でも……どうして、中へ入れて撫でてくださらないの？',
+          '괜찮아요, 조금 거칠게 하셔도…… 왜 옷 안으로 손을 넣어서 만져주지 않으시나요?',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' は愛馬の桜の唇に口づけを返し、上衣を捲り、確かに愛馬の美しい胸に触れた。',
+          '은(는) 그녀의 앵두 같은 입술에 다시 한번 입을 맞추고는, 윗옷을 걷어 올려 마침내 그녀의 뽀얀 가슴을 부드럽게 움켜쥐었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の乳頭はもう硬く、周りの愛らしい乳暈にも細かい粒が立っていた。',
+          '의 유두는 이미 딱딱하게 서 있었고, 사랑스러운 유륜 주변까지 작은 돌기들이 돋아나 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は愛馬の変化を痛感した。最初は、愛撫だけでここまで動情しなかった。',
+          '은(는) 담당 우마무스메의 변화를 뼈저리게 실감했다. 처음에는 겨우 이런 애무만으로 이토록 흥분하는 아이가 아니었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の上がった尻が後ろへ突き、',
+          '의 풍만한 엉덩이가 뒤로 쑥 밀려들며, ',
           you.get_colored_name(),
-          ' の勃起した肉棒を擦った。',
+          '의 발기한 성기를 강하게 압박했다.',
         ]);
         await era.printAndWait([
-          '彼女は小さな舌で ',
+          '그녀는 다시 작은 혀로 ',
           you.get_colored_name(),
-          ' の顎を擦り、目は蕩けていた。',
+          '의 턱을 간지럽히며 요염한 눈빛을 보냈다.',
         ]);
-        await ruby.say_and_wait('ここで、わたくしを孕ませますの？');
+        await ruby.say_and_wait('여기서 저를 임신시켜 주실 건가요?');
         await era.printAndWait([
-          '制服のスカートは長くなく、',
+          '교복 스커트는 그리 길지 않아서, ',
           you.get_colored_name(),
-          ' が乳房を弄ぶうち、裾が上がっていた。',
-        ]);
-        await era.printAndWait([
-          ruby.get_colored_name(),
-          ' の尻を包んでいたのは、なんと色っぽいTバックだった。',
+          '에게 가슴을 유린당하는 동안 이미 엉덩이 위까지 말려 올라가 있었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は小さな下着をずらし、',
-          you.get_colored_name(),
-          ' の肉棒を尻の溝へ入れた。',
+          '의 엉덩이를 감싸고 있는 것은, 뜻밖에도 섹시한 티팬티였다.',
         ]);
         await era.printAndWait([
-          '彼女の柔い尻肉が ',
+          ruby.get_colored_name(),
+          '는 자신의 작은 속옷을 옆으로 밀어 젖히며, ',
           you.get_colored_name(),
-          ' を焦らした。',
+          '의 성기를 풍만한 둔부 골짜기 사이에 끼워 넣었다.',
         ]);
-        await ruby.say_and_wait('肉の穴……それとも、お尻？');
-        await ruby.say_and_wait('どちらでも……');
-        era.printButton('「お前を、壊す。」', 1);
+        await era.printAndWait([
+          '그녀의 부드러운 엉덩이 살이 ',
+          you.get_colored_name(),
+          '의 이성을 마구 흔들어 놓았다.',
+        ]);
+        await ruby.say_and_wait('보지…… 아니면, 뒷구멍?');
+        await ruby.say_and_wait('어디든 다 괜찮아요……');
+        era.printButton('「죽을 정도로 박겠어.」', 1);
         await era.input();
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は ',
+          '는 ',
           you.get_colored_name(),
-          ' の抱擁の中で、体をより急に捩った。',
+          '의 품 안에서 가냘픈 몸을 더욱 격렬하게 비틀었다.',
         ]);
         await ruby.say_and_wait(
-          'あなたの立派な肉棒で、わたくしを犯してくださいまし……',
+          '여보의 커다란 자지로, 제가 죽을 정도로 박아주세요……',
         );
-        era.printButton(`「ルビー、永遠に愛している。」`, 1);
+        era.printButton(`「루비, 영원히 사랑해.」`, 1);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
-          ' が愛馬の耳元で囁くと、彼女は満足げに激しく口づけてきた。',
+          '이(가) 귀를 간지럽히듯 속삭이자, 그녀는 만족스러운 듯 격렬하게 입을 맞추어 왔다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は熱く ',
+          '는 열정적으로 ',
           you.get_colored_name(),
-          ' に口づけし、',
+          '에게 키스하며, ',
           you.get_colored_name(),
-          ' の舌を香る口へ吸い、',
+          '의 혀를 자신의 작은 입안으로 삼키고는 ',
           you.get_colored_name(),
-          ' の舌先の唾を啜った。',
+          '의 타액을 갈구하듯 빨아들였다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' の両手はまだ彼女の乳房を揉み、肉棒は ',
+          '의 양손은 여전히 그녀의 가슴을 주무르고 있었고, 성기는 ',
           ruby.get_colored_name(),
-          ' の小さな穴を突いていた。',
+          '의 비부를 단단히 압박하고 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は身を翻し、',
+          '은(는) 몸을 뒤집어 ',
           ruby.get_colored_name(),
-          ' の愛らしい体を押し伏せた。',
+          '의 사랑스러운 몸을 아래에 깔고 압박했다.',
         ]);
         await era.printAndWait(
-          '下の担当は糸のような媚びた目で、熱い息を吐いていた。',
+          '몸 아래에 깔린 담당 우마무스메는 눈가가 촉촉해진 채, 뜨거운 숨을 토해내고 있었다.',
         );
         await ruby.say_and_wait(
-          'あなた、わたくしを犯して。その肉棒で突き通して、壊して。欲しいですわ、永遠にあなたのもの……',
+          '제 사랑, 박아줘요, 당신의 자지로 절 죽을 정도로 찔러주세요. 당신을 원해요, 전 영원히 당신의 것이니까……',
         );
         await era.printAndWait([
-          '深い告白に、',
+          '진심 어린 고백은 ',
           you.get_colored_name(),
-          ' は ',
+          '(으)로 하여금 ',
           ruby.get_colored_name(),
-          ' の普段の端正な姿を忘れた。',
+          '가 평소에 가졌던 단정한 자태를 까맣게 잊게 만들었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は彼女の美しい両脚をM字に開き、肉棒を挺した。',
+          '은(는) 그녀의 가냘프고 아름다운 두 다리를 M자 형태로 벌린 뒤, 성기를 들이밀었다.',
         ]);
-        await era.printAndWait('ぷちっ。');
+        await era.printAndWait('푸슉.');
         await era.printAndWait([
-          '肉棒が ',
+          '성기가 ',
           ruby.get_colored_name(),
-          ' の滑る腔へ刺さった。',
+          '의 애액으로 젖어 끈적이는 질 내부로 미끄러져 들어갔다.',
         ]);
         await era.printAndWait(
-          '驚きの声が口から漏れ、艶やかな顔に、夢中で満ち足りた笑みが浮かんだ。',
+          '침대 가득 번진 끈적한 애액과 정액에 개의치 않고, ',
         );
       }
       return [ret];
@@ -568,38 +568,38 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 99-after
+  // [번역 완료] 99-after
   async '99-after'(ruby, you) {
     era.drawLine();
     await era.printAndWait([
-      'この日、',
+      '이날, ',
       you.get_colored_name(),
-      ' は愛馬を何度も絶頂させ、彼女が気を失いかけたところで一気に注いだ。',
+      '은(는) 담당 우마무스메를 끊임없이 절정에 이르게 만들었고, 그녀가 정신을 잃기 직전이 되어서야 정액을 세차게 뿜어냈다.',
     ]);
     await era.printAndWait([
-      '正気を戻した ',
+      '정신을 차린 ',
       ruby.get_colored_name(),
-      ' は ',
+      '는 ',
       you.get_colored_name(),
-      ' をベッドへ押し倒し、桜の唇で ',
+      '을(를) 침대 위로 밀어눕히고는, 입술로 ',
       you.get_colored_name(),
-      ' の全身に口づけした。',
+      '의 온몸 구석구석에 키스를 남겼다.',
     ]);
     await era.printAndWait([
-      '深夜、二人は睦みを終えたが、風呂には入らなかった。',
+      '깊은 밤, 둘은 정사를 끝마쳤음에도 샤워하러 가지 않았다.',
     ]);
     await era.printAndWait([
-      'ベッドいっぱいに広がる湿った淫水など構わず、',
+      '침대 가득 번진 끈적한 애액에 개의치 않고, ',
       you.get_colored_name(),
-      ' と ',
+      '과(와) ',
       ruby.get_colored_name(),
-      ' は抱き合い、昏々と眠った。',
+      '는 서로를 꼭 껴안은 채 깊은 잠에 빠져들었다.',
     ]);
   },
 
-  // [번역 대상] clinic
+  // [번역 완료] clinic
   clinic: (() => {
-    const title = '保健室';
+    const title = '보건실';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
@@ -608,1165 +608,1165 @@ module.exports = {
     const f = async (ruby, you, callname) => {
       await ruby.say_and_wait([
         callname,
-        '……ルビー、ここが具合悪いですわ……ルビーの体、診てくださいます……？',
+        '……루비, 여기가 좋지 않아요…… 루비의 몸을 한 번 진찰해 주시지 않겠어요……',
       ]);
       await ruby.say_and_wait([
-        'はっ……',
+        '하아…… ',
         callname,
-        '……そんなこと……まだ学園の中ですわ……見られますわ……あっ……いけません……ストッキングが破れて……',
+        '…… 어떻게 이러실 수가…… 우린 아직 학원에 있는걸요…… 누가 보면 어쩌려고…… 아…… 안 돼요…… 스타킹이 찢어져 버리잖아요……',
       ]);
       await ruby.say_and_wait(
-        'だめですわ……このあと校医が体を診に……はっ……何を……',
+        '안 돼요…… 조금 있으면 보건 선생님이 검사하러 오실 텐데…… 하아…… 왜라뇨……',
       );
-      await ruby.say_and_wait('ルビーは患者ですわ……んっ……待って……はっ……あっ……');
+      await ruby.say_and_wait('루비가 바로 환자인걸요…… 읏…… 잠시만요…… 하아…… 아윽……');
       await ruby.say_and_wait(
-        'ルビーは痴れ者じゃ……ありませんわ……ただの、体の反応ですわ……',
+        '루비는 음란한 아이가 아니에요…… 절대 아니란 말이에요…… 이건 정상적인 신체 반응일 뿐……',
       );
-      await ruby.say_and_wait('淫水ですって……ルビーは知りませんわ……');
+      await ruby.say_and_wait('이 끈적한 물이 뭔지…… 루비는 몰라요……');
       await ruby.say_and_wait([
-        'ルビーを離して……今日のルビーは……はっ……どうして ',
+        '루비를 제발 놓아주세요…… 오늘…… 하아…… 어쩌다 ',
         callname,
-        ' に診療室で押さえられて……',
+        '에게 진료실 침대 위로 짓눌리게 된 건지……',
       ]);
       await ruby.say_and_wait(
-        'んっ……大きい……熱い……太い……あっ……これは……だめ……大きすぎますわ……',
-      );
-      await ruby.say_and_wait([
-        callname,
-        '……服を脱がさないで……ううう……ルビーが悪うございましたわ……',
-      ]);
-      await ruby.say_and_wait(
-        'ルビーのお尻を叩かないで……はっ……待って……だめですわ……',
-      );
-      await ruby.say_and_wait('あっ……叩かれて、おかしいですわ……');
-      await ruby.say_and_wait(
-        'そんなこと……叩かれて淫水が飛ぶはずが……違いますわ……ルビーは今日、水を飲みすぎただけ……',
-      );
-      await ruby.say_and_wait(
-        '本当ですわ……あああっ……またお尻を……ルビーのお尻が赤く……もうだめ……そこが疼いて……んっ……',
-      );
-      await ruby.say_and_wait(
-        'そんな……はっ……口づけはいけませんわ……んっ……体が虚く……はっ……少し、欲しく……',
-      );
-      await ruby.say_and_wait(
-        'いけませんわ……ルビーはそんな人間じゃ……あっ……入った……痛い……痛いですわ……ゆっくり……大きすぎて……壊されますわ……',
-      );
-      await ruby.say_and_wait(
-        'ううう……大きな亀頭に突かれると、気持ちよくなって……',
-      );
-      await ruby.say_and_wait([
-        'ルビーを気持ちよくしたら……ルビーは大きな肉棒の ',
-        callname,
-        ' の性奴になってしまうのでは……',
-      ]);
-      await ruby.say_and_wait(
-        'はっ……何を……そんなはずが……ルビーにそんな奇妙な癖が……大きな肉棒を崇めるなんて……ありえませんわ……',
-      );
-      await ruby.say_and_wait(
-        'はっ……大きい……漲りますわ……ゆっくり、また突いて……満たされますわ……はっ……',
-      );
-      await ruby.say_and_wait(
-        '少しずつ突かれて……この感じ、おかしいですわ……心身が征服されていくよう……',
-      );
-      await ruby.say_and_wait(
-        'んっ……入った……また入った……まだ入るの……そこは……まだ突かれたことのない柔い肉のよう……',
-      );
-      await ruby.say_and_wait(
-        'はっ……敏感ですわ……擦られて絶頂しそう……どうしてこんなに奇妙……はっ……自分でするときは、めったに絶頂しないのに……',
-      );
-      await ruby.say_and_wait(
-        'あっ……やはり……大きな肉棒なら……ルビーは耐えられない……大きな肉棒が突いてくる……ルビー……もうだめですわ……',
+        '으음…… 너무 크고…… 뜨겁고…… 굵어요…… 아…… 이게 대체 뭐죠…… 안 돼요…… 너무 커서…… 찢어져 버릴 것만 같아……',
       );
       await ruby.say_and_wait([
         callname,
-        '……ルビーは ',
-        callname,
-        ' の大きな肉棒に……そのまま雌犬にされましたわ……',
-      ]);
-      await ruby.say_and_wait([
-        'はっ……何を……',
-        callname,
-        ' はとうに知って……ルビーはずっと、満たされずにいた……',
+        '…… 옷은 벗기지 말아 주세요…… 흑흑…… 루비가 잘못했어요……',
       ]);
       await ruby.say_and_wait(
-        'ルビーは、レースの出走者になど相応しくありませんわ……',
+        '루비의 엉덩이를 때리지 마세요…… 하아…… 멈춰주세요…… 안 된대도요……',
+      );
+      await ruby.say_and_wait('아…… 매를 맞을 때마다 기분이 이상해져요……');
+      await ruby.say_and_wait(
+        '그럴 리가 없잖아요…… 엉덩이를 맞는다고 어떻게 애액이 사방으로 튈 수가 있겠어요…… 그건…… 루비가 그저 오늘 물을 너무 많이 마셨을 뿐이라서……',
+      );
+      await ruby.say_and_wait(
+        '정말이에요…… 아아아앙…… 또 루비의 엉덩이를 때리시다니…… 루비 엉덩이가 온통 빨개져 버렸잖아요…… 이제 안 돼요…… 그곳이 너무 간지러워요…… 으음……',
+      );
+      await ruby.say_and_wait(
+        '어떻게 이런…… 하아…… 키스하면 안 되는 건데…… 읏…… 온몸에 힘이 다 풀려버리는 것 같아…… 하아…… 조금 원하게 되어버렸을지도……',
+      );
+      await ruby.say_and_wait(
+        '안 돼요…… 루비는 그런 음란한 아이가…… 아앗…… 들어와 버렸어…… 아파…… 너무 아파요…… 살살 해주세요…… 너무 커서…… 진짜로 망가져 버릴 것 같아요……',
+      );
+      await ruby.say_and_wait(
+        '우우우…… 커다란 귀두가 쑤시고 들어오니까 너무 기분 좋아져 버렸어요……',
       );
       await ruby.say_and_wait([
-        'はっ……何を……',
+        '만약 루비가 이대로 가 버리면…… 루비는 정말로 커다란 자지를 가진 ',
         callname,
-        ' も、こんなに淫らで下賤なルビーが……好き……',
+        '의 성노예가 되어버리는 걸까요……',
+      ]);
+      await ruby.say_and_wait(
+        '하아…… 무슨 말씀이세요…… 말도 안 돼요…… 루비에게 어떻게 그런 이상한 성벽이 있을 수가 있겠어요…… 커다란 자지를 숭배한다니…… 그럴 리가 없잖아요……',
+      );
+      await ruby.say_and_wait(
+        '하아…… 너무 크고…… 가득 차서 터질 것 같아요…… 천천히 다시 박아주세요…… 너무 만족스러워요…… 하아……',
+      );
+      await ruby.say_and_wait(
+        '조금씩 쑤셔 박히는…… 이 느낌 너무 이상해요…… 마치 제 몸과 마음이 전부 굴복당하는 기분이라……',
+      );
+      await ruby.say_and_wait(
+        '으음…… 끝까지 들어왔어…… 또 들어왔어…… 어떻게 이렇게 깊은 곳까지 들어올 수가 있죠…… 거긴…… 한 번도 유린당한 적 없는 연약한 속살인데……',
+      );
+      await ruby.say_and_wait(
+        '하아…… 너무 민감해요…… 자지가 스칠 때마다 가 버릴 것만 같아…… 어째서 이렇게 신기한 기분이 드는 거죠…… 하아…… 분명 자위할 때는 거의 절정에 가본 적이 없었는데……',
+      );
+      await ruby.say_and_wait(
+        '아…… 역시…… 커다란 자지만 있으면…… 루비는 버텨낼 수가 없나 봐요…… 커다란 자지가 안을 마구 헤집어 놓으니까…… 루비…… 이제 한계예요……',
+      );
+      await ruby.say_and_wait([
+        callname,
+        '…… 루비는 결국 ',
+        callname,
+        '의 그 커다란 자지에…… 완전히 길들여진 암캐가 되어버렸어요……',
       ]);
       await ruby.say_and_wait([
-        'あっ……好かれる感じ、素敵ですわ……もうだめ……',
+        '하아…… 뭐라고요…… ',
+        callname,
+        '은 진작부터 다 알고 계셨다고요…… 루비가 항상 욕구불만에 시달리고 있었다는 것을……',
+      ]);
+      await ruby.say_and_wait(
+        '루비는 정말로 레이스 우마무스메로서 실격이에요……',
+      );
+      await ruby.say_and_wait([
+        '하아…… 그렇지만…… ',
+        callname,
+        '도 좋아하신다고…… 이렇게 음탕하고 천박하게 달라붙는 루비를 좋아하신다고 들으니……',
+      ]);
+      await ruby.say_and_wait([
+        '아…… 사랑받고 있다는 느낌은 정말 최고예요…… 이제 버틸 수 없어요…… ',
         callname,
         '……',
       ]);
       await ruby.say_and_wait(
-        'んっ……ルビー、壊れましたわ……はっ……少し休ませて……あっ……ゆっくり……突いて……入った……',
+        '으음…… 루비 머릿속이 망가져 버려요…… 하아…… 루비 숨 좀 돌리게 해주세요…… 아앗…… 조금만 살살…… 또 푹 박아 넣으셨어……',
       );
       await ruby.say_and_wait(
-        'あっ……淫らな穴が、もうだめそう……淫水がたくさん……ううう……',
+        '아…… 좁은 보지 구멍이 벌써 말을 안 듣기 시작했어요…… 애액이 너무 많이 나와요…… 우우우……',
       );
       await ruby.say_and_wait([
-        'そのまま ',
+        '결국 ',
         callname,
-        ' に突かれて絶頂……あっ……好きですわ……',
+        '에게 잔뜩 박혀서 가 버렸어요…… 아…… 너무 좋아요……',
       ]);
       await ruby.say_and_wait(
-        '大きな肉棒に……突かれて絶頂するのが、本当の絶頂……',
+        '커다란 자지에 박혀서 맞이하는 절정이야말로 진짜 절정이에요……',
       );
       await ruby.say_and_wait([
-        'こうして……ルビーは……',
+        '이대로…… 루비는…… 완전히 ',
         callname,
-        ' の性奴になりましたわ……',
+        '의 성노예가 되어버렸네요……',
       ]);
       await ruby.say_and_wait([
-        'はっ……専属の性奴……いつか看護師長になったルビーは……部下の看護婦をみんな ',
+        '하아…… 전속 성노예라니…… 나중에 간호부장이 된 루비는…… 부하 간호사들을 전부 ',
         callname,
-        ' に捧げて犯させますわ……二つのこんな快楽……大きな肉棒がもたらす絶頂の快楽……はっ……また絶頂……',
+        '에게 바쳐서 박히게 만들겠어요…… 그런 가차 없는 쾌락…… 커다란 자지가 가져다주는 절정의 기쁨…… 하아…… 또 가 버려요……',
       ]);
       await ruby.say_and_wait([
         callname,
-        ' の前では……少し気を抜けば……壊れてしまいますわ……',
-      ]);
-      await ruby.say_and_wait(
-        'あっ……これが大きな肉棒の快楽……抑えられない……絶頂が、本当に気持ちよすぎますわ……',
-      );
-      await ruby.say_and_wait([
-        '雌犬でいるのは素敵ですわ……',
-        callname,
-        ' の雌犬……',
+        '의 앞에서…… 아주 조금 이성을 놓았을 뿐인데…… 완전히 망가져 버리다니……',
       ]);
       await ruby.say_and_wait(
-        'こんな絶頂を味わう……波のように壊れていく快感……本当に多すぎますわ……',
+        '아…… 이것이 바로 대물 자지가 주는 기쁨이군요…… 도저히 억누를 수가 없어요…… 절정 너무나 기분 좋아서……',
       );
       await ruby.say_and_wait([
-        '一生、',
+        '암캐가 되는 건 정말 멋진 일이에요…… ',
         callname,
-        ' の大きな肉棒に突かれ続けたい……ずっと、痴れ者ルビーの淫らな穴の中に……',
+        '의 암캐가 되는 건……',
       ]);
       await ruby.say_and_wait(
-        '本当に気持ちいい……絶頂……絶え間ない絶頂……絶頂の快感……すっかり沈んでしまいますわ……',
+        '이런 절정을 맛보다니…… 이렇게 파도처럼 밀려오는 짜릿한 쾌감은…… 정말이지 너무 과해요……',
+      );
+      await ruby.say_and_wait([
+        '평생 동안 ',
+        callname,
+        '의 커다란 자지에 꿰뚫린 채 지내고 싶어요…… 음란한 루비의 보지 구멍 속에 항상 꽂아두고서……',
+      ]);
+      await ruby.say_and_wait(
+        '정말로 너무 기분 좋아요…… 절정…… 멈추지 않는 연속된 절정…… 오르가슴의 쾌감이…… 사람을 완전히 미치게 만들어요……',
       );
       await ruby.say_and_wait(
-        '壊れました……また壊れましたわ……ううう……ルビー、もうだめ……',
+        '망가졌어…… 또 망가져 버렸어요…… 우우우…… 루비 이제 한계예요……',
       );
-      await ruby.say_and_wait('頭が真っ白……色とりどりで……');
+      await ruby.say_and_wait('머릿속이 하얘져서…… 아무것도 안 보여요……');
       await ruby.say_and_wait([
-        'あっ……痴れ者ルビー……雌犬ルビー……',
+        '아…… 음탕한 루비…… 암캐 루비는…… ',
         you.get_colored_actual_name(),
-        ' ご主人さまが、たまらなく好きですわ',
+        '님을 너무나도 갈망해요오',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] dance
+  // [번역 완료] dance
   dance: (() => {
-    const title = 'ダンス室';
+    const title = '무용실';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
       await era.printAndWait(
-        '正午近い日差しは明るく、地面を打ち、鬱陶しい熱気を立ち昇らせていた。',
+        '정오에 가까워진 햇살은 눈이 시릴 만큼 이글거렸고, 바닥에 부딪혀 후끈거리는 불쾌한 열기를 뿜어내고 있었다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の小柄な体には、清楚な白いワンピースのバレエ衣装。下は白いタイツに包まれた、細く長い脚だった。',
+        '의 아담한 몸 위에는 순결하고 우아한 흰색 원피스 발레복이 입혀져 있었고, 그 아래로는 흰색 타이즈로 꽉 감싸인 가늘고 긴 미각이 뻗어 있었다.',
       ]);
       await era.printAndWait(
-        '端正で精緻な五官が、午後に青りんごのような甘い稚さを放っていた。',
+        '단정하고 정교한 이목구비는 한낮의 열기 속에서 청사과처럼 풋풋하고 달콤한 분위기를 풍겼다.',
       );
       await era.printAndWait([
-        '陽の下、揺れ舞いする ',
+        '조명처럼 쏟아지는 햇살 아래에서, 사뿐사뿐 춤을 추는 ',
         ruby.get_colored_name(),
-        ' は体を柔らかく広げ、美しい曲線を余さず見せた。',
+        '는 몸을 유연하게 늘어뜨리며 우아한 곡선미를 완벽하게 드러냈다.',
       ]);
       await era.printAndWait([
-        '彼女の柔い横顔が ',
+        '그녀의 가녀린 옆얼굴이 ',
         you.get_colored_name(),
-        ' を見ても、上げた足は止まらなかった。',
+        '쪽을 향했으나, 들어 올린 스텝은 멈추지 않았다.',
       ]);
       await era.printAndWait(
-        '胸の一対の雪白が、体の前傾に合わせて漣のように揺れた。',
+        '가슴 앞의 부드러운 두 둔덕은 그녀의 상체가 앞으로 쏠릴 때마다 출렁이며 하얀 파문을 그려냈다.',
       );
       await era.printAndWait([
-        '一曲が憩うと、',
+        '한 곡이 끝나고 잠시 숨을 고를 때, ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' の上がった美尻の後ろに立ち、手を上げて軽く叩いた。',
+        '의 한껏 치켜 올라간 예쁜 엉덩이 뒤에 서서 가볍게 박수를 쳤다.',
       ]);
       await era.printAndWait([
-        '舞いに沈んでいた ',
+        '춤에 푹 몰두해 있던 ',
         ruby.get_colored_name(),
-        ' は、小さく驚いた。',
+        '는 조그맣게 깜짝 놀랐다.',
       ]);
       await era.printAndWait([
-        '彼女は目を伏せ、小柄な体を回し、',
+        '그녀는 시선을 아래로 내린 채 가녀린 몸을 돌리더니, ',
         you.get_colored_name(),
-        ' の下で高く張り出したズボンの股を見て、薄い顔に羞じを帯びた。',
+        '의 하반신에서 터질 듯이 부풀어 오른 정장 바지 가랑이를 힐끗 쳐다보고는 얼굴을 붉혔다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は手を伸ばし、',
+        '은(는) 손을 뻗어 ',
         ruby.get_colored_name(),
-        ' の顔を包んだ。',
+        '의 뺨을 부드럽게 감싸 쥐었다.',
       ]);
       await era.printAndWait([
-        '次の瞬間、大きな口が ',
+        '다음 순간, 두툼한 입술이 ',
         ruby.get_colored_name(),
-        ' の薄紅の唇を完全に塞いだ。',
+        '의 핑크빛 입술을 남김없이 집어삼켰다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の顔は、心の中で息を吐いているようだった。',
+        '의 눈빛은 마치 마음속으로 깊은 한숨을 내쉬는 듯했다.',
       ]);
       await era.printAndWait([
-        '久しぶりにバレエを練習するつもりが、今は仕方なく ',
+        '오랜만에 발레 연습을 좀 해보려 했건만, 결국 지금 이 순간만큼은 속수무책으로 ',
         you.get_colored_name(),
-        ' との舌の口づけを味わうしかなかった。',
+        '과(와)의 농밀한 키스를 즐길 수밖에 없었다.',
       ]);
       await era.printAndWait([
-        '甘い体香が ',
+        '달콤한 체향이 ',
         you.get_colored_name(),
-        ' の鼻腔を満たし、極上の香りのように神経を酔わせた。',
+        '의 코끝을 가득 채웠고, 마치 최고급 아로마처럼 신경을 황홀하게 매료시켰다.',
       ]);
       await era.printAndWait([
-        '主客を逆転した ',
+        '이내 주도권을 빼앗아 온 ',
         ruby.get_colored_name(),
-        ' は欲深く ',
+        '는 탐욕스럽게 ',
         you.get_colored_name(),
-        ' の唾を吸い、両手でそっと ',
+        '의 타액을 빨아들였고, 가녀린 두 손은 ',
         you.get_colored_name(),
-        ' の背を撫でた。',
+        '의 등을 부드러운 손길로 쓸어내렸다.',
       ]);
       await era.printAndWait([
-        '男の荒い息と、娘の情に動いた甘い喘ぎの中で、',
+        '남성의 거친 거친 호흡과 소녀의 정에 겨운 가쁜 숨소리가 얽히는 와중에, ',
         you.get_colored_name(),
-        ' の大きな手が白いストッキングの美尻を揉み、弄んだ。',
+        '의 커다란 손은 흰색 타이즈에 감싸인 탄력 있는 엉덩이를 쥐고 주무르기 시작했다.',
       ]);
       await era.printAndWait([
-        '股の下の小さなトレーナーも、無意識に ',
+        '바지 바깥으로 솟구친 성기 역시 자연스럽게 ',
         ruby.get_colored_name(),
-        ' の柔らかな体を擦っていた。',
+        '의 부드럽고 연약한 육체를 부비며 압박했다.',
       ]);
-      await era.printAndWait('淫らな舌の口づけが終わった。');
+      await era.printAndWait('음란했던 입맞춤이 막을 내렸다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' に抱きついた ',
+        '의 품에 안겨 있는 ',
         ruby.get_colored_name(),
-        ' は、矜持のある羞じを帯び、軽く唾を飲み込んだ。',
+        '는 특유의 수줍은 기색을 띤 채 마른침을 작게 삼켰다.',
       ]);
       await era.printAndWait([
-        '小さな手が ',
+        '조그만 손 하나가 슬그머니 ',
         you.get_colored_name(),
-        ' の高く上がった股を探り、繊い指が慣れた手つきでズボンを解いた。',
+        '의 터질 듯이 성을 내고 있는 사타구니를 찾아내더니, 가녀린 손가락으로 능숙하게 정장 바지 지퍼를 내렸다.',
       ]);
       await ruby.say_and_wait(
-        '近頃、わたくしと二人きりのとき、ますます大きくなりやすいですわね……',
+        '요즘 저랑 단둘이 있을 때마다, 유독 쉽게 커지시는 것 같은데……',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は、愛しくもあり恐ろしくもある大きなものを、軽く擦った。',
+        '는 자신을 겁주면서도 애틋하게 만드는 커다란 물건에 제 몸을 살짝 비벼대었다.',
       ]);
       await era.printAndWait([
-        '雪白の精緻な小さな顎を袋の上に置き、',
+        '눈처럼 하얗고 정교한 턱을 음낭 위에 턱 하니 걸쳐놓아, ',
         you.get_colored_name(),
-        ' の陰茎の亀頭が少女の雪白の額に届くようにした。',
+        '의 성기의 귀두가 소녀의 새하얀 이마 끝에 곧바로 닿도록 만들었다.',
       ]);
       await ruby.say_and_wait(
-        'ふふ……ご主人とは違って、とても覇気のある子ですわね。',
+        '후훗…… 트레이너님 본인과는 다르게, 아주 늠름하고 무서운 아이네요.',
       );
       await era.printAndWait([
-        '濃い男性の精の匂いが一気に ',
+        '진한 남성의 정취가 ',
         ruby.get_colored_name(),
-        ' の鼻へ入った。彼女には、濃い愛情の匂いと感じられるそれが、ますます抗えなくなっていた。',
+        '의 비강 속으로 고스란히 들이닥쳤고, 그녀는 자신을 향한 농밀한 애정이 담긴 이 냄새에 갈수록 저항할 수 없게 되어갔다.',
       ]);
       await era.printAndWait(
-        '踊りを終えたばかりの愛馬には、運動後の薄い汗が残っていた。',
+        '방금 막 무용을 마친 담당 우마무스메의 몸에는 운동 뒤의 미열과 가벼운 땀방울이 배어 있었다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は両手で ',
+        '는 두 손으로 ',
         you.get_colored_name(),
-        ' の興奮して震える下を握り、優しく前後に扱いた。',
+        '의 흥분하여 떨리는 하체를 감싸 쥐고, 부드러운 손길로 앞뒤로 가볍게 흔들며 풀어주었다.',
       ]);
       await era.printAndWait([
-        '彼女は濡れた薄紅の柔い舌を少し出し、笑みを含んで ',
+        '그녀는 촉촉하고 핑크빛인 부드러운 혀끝을 살짝 내밀며, 눈을 반짝이며 ',
         you.get_colored_name(),
-        ' を見た。',
+        '을(를) 올려다보았다.',
       ]);
-      era.printButton(`ルビーが美しすぎる。見るたびに痛いくらい硬くなる。`, 1);
+      era.printButton(`「그건 루비가 너무 예쁜 탓이야. 매번 볼 때마다 발기해서 아플 정도라고.」`, 1);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' はそれを聞くと、先走りを吐く馬眼を何度か巻き、亀頭を小さな口へ含んでゆっくり吸った。',
+        '는 그 말을 듣고는, ',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の両手も遊ばず、愛馬の後ろへ上がった尻を揉み、それからバレエの短いスカートの下、白いストッキングの溝へ滑った。',
+        '의 두 손 역시 가만히 있지 않았다. 그녀의 위로 치켜 올라간 골반과 엉덩이를 부드럽게 주무르다, 발레 스커트 아래 숨겨진 타이즈의 엉덩이 골 사이로 손가락을 밀어 넣었다.',
       ]);
       await era.printAndWait(
-        '軽く抉ると、高級なストッキングを滲んだ愛液が指をたやすく包んだ。',
+        '연약한 틈새를 몇 번이고 살며시 매만지자, 고급 실크 스타킹을 흠뻑 적시며 스며 나온 애액이 손가락 위를 부드럽게 뒤덮었다.',
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] date
+  // [번역 완료] date
   date: (() => {
-    const title = 'デート';
+    const title = '데이트';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
       await you.say_as_passer_by_and_wait(
-        '執事',
-        '失礼いたします、トレーナー様。',
+        '데이트',
+        '집사 「실례하겠습니다, 트레이너님.」',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の執事が ',
+        '의 전속 집사가 ',
         you.get_colored_name(),
-        ' のトレーナー室を訪れた。用向きは、おそらく ',
+        '의 트레이닝실을 방문했다. 방문한 목적은 필시 ',
         ruby.get_colored_name(),
-        ' だろう。',
+        '와 관련된 일이리라.',
       ]);
       await you.say_as_passer_by_and_wait(
-        '執事',
-        'お嬢さまは邸のプールで泳いでおります。お送りいたします。',
+        '집사 「아가씨께서 저택의 프라이빗 수영장에서 수영을 즐기고 계십니다. 제가 그곳으로 모시겠습니다.」',
+        '아가씨께서는 저택의 수영장에서 수영을 즐기고 계십니다. 제가 그곳으로 모시겠습니다.',
       );
       await era.printAndWait([
-        '執事が部屋を出たあと、',
+        '집사가 방을 나선 뒤, ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' を調教するための道具をスポーツバッグへ詰め、後を追った。',
+        '를 조교할 때 사용하는 전용 도구들을 스포츠 가방에 남김없이 챙겨 넣고는 그 뒤를 따랐다.',
       ]);
       await era.printAndWait([
-        '月明かりの屋外プールで、',
+        '은은한 달빛이 내리쬐는 야외 루프탑 수영장 안에서, ',
         ruby.get_colored_name(),
-        ' は人魚のような艶いで、ゆったりと泳いでいた。',
+        '는 마치 한 마리의 매혹적인 인어와도 같은 자태로 유유히 헤엄치고 있었다.',
       ]);
-      era.printButton('「こんな夜まで鍛えて、ご苦労だ。」', 1);
+      era.printButton('「이 밤늦은 시각까지 훈련이라니 고생이 많네.」', 1);
       await era.input();
       await ruby.say_and_wait(
-        '恐れ入りますわ。それで、迎えにいらしたのですの？',
+        '과분한 말씀이셔요. 그래서, 절 데리러 오신 건가요?',
       );
-      era.printButton('「いや、少し話がある。」', 1);
+      era.printButton('「아니, 너한테 좀 할 이야기가 있어서 말이지.」', 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はバッグを置き、プールの縁に座った。',
+        '은(는) 스포츠 가방을 내려놓고 수영장 가장자리에 걸터앉았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' が水から顔を出し、',
+        '가 물속에서 얼굴을 내밀며 ',
         you.get_colored_name(),
-        ' に近づいたとき、胸も目に入った。',
+        '의 곁으로 다가왔을 때, 그녀의 풍만한 가슴골이 단숨에 시야에 가득 들어왔다.',
       ]);
       await era.printAndWait(
-        '肉棒は生殖の欲に駆られ、気づかぬうちに勃起していた。',
+        '남근이 본능적인 번식 욕구에 지배당해, 자신도 모르는 사이에 딱딱하게 발기했다.',
       );
       await ruby.say_and_wait(
-        'あいにくですわ。急に、もう少し泳ぎたくなりましたの。',
+        '하지만 아주 유감스럽게도, 전 갑자기 수영을 더 하고 싶어졌는걸요.',
       );
-      await ruby.say_and_wait('お話をなさりたいなら、こちらへ……');
+      await ruby.say_and_wait('만약 저와 대화를 나누고 싶으시다면, 이쪽으로 들어오셔요……');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' に手を伸ばした。',
+        '를 향해 부드러운 손길을 내밀었다.',
       ]);
       await ruby.say_and_wait(
-        '今ここには、あなたとわたくしだけですわ。裸でも構いませんわ。',
+        '지금 이곳에는 오직 당신과 저뿐이니, 전 당신의 알몸 따윈 개의치 않아요.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' の前で服を脱ぎ、半ば勃起した生殖器を晒した。',
+        '의 목전에서 옷을 전부 거침없이 벗어던져, 반쯤 발기한 성기를 고스란히 노출시켰다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の顔が、余裕のある表情から、自分が雄に征服されると悟った表情へ変わるとき。',
+        '의 얼굴이 방금 전까지의 여유롭던 표정에서, 자신이 강인한 수컷에게 완전히 굴복당하기 직전의 가련한 암컷의 표정으로 급변하는 바로 그 순간.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の肉棒に血管と青筋が浮いた。',
+        '의 육봉 위로 굵직한 혈관과 청진이 흉포하게 도드라졌다.',
       ]);
       await era.printAndWait(
-        'それから、わざと上下する下をプールへ入れ、目の前へ差し出された豊かな肉を掴んだ。',
+        '그리고 일부러 하반신을 음란하게 들썩이며 수영장 물속으로 뛰어들어, 눈앞에 대령한 풍만한 엉덩이 살덩이를 왁살스럽게 움켜쥐었다.',
       );
       await era.printAndWait([
-        '完全に勃起した肉棒を腹へ押し、乱暴に ',
+        '완전히 발기한 성기를 그녀의 배꼽 밑에 거칠게 밀착시킨 채, 폭압적으로 ',
         ruby.get_colored_name(),
-        ' の唇を奪った。',
+        '의 입술을 빼앗았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の口を無理にこじ開け、舌で口腔を蹂躙した。',
+        '의 입안을 비집어 열고는, 혀뿌리로 구강 내부를 무참히 짓밟고 유린했다.',
       ]);
-      await era.printAndWait('余地なく舐め回し、舌の上の唾を吸い取った。');
+      await era.printAndWait('한 치의 여지도 남기지 않고 구석구석 핥아 내리며, 혀끝에 고인 은밀한 타액을 남김없이 빨아 당겼다.');
       await era.printAndWait(
-        'さらに舌を口の中へ引き込み、絡み合わせて唾を交わした。',
+        '이어 그녀의 혀를 자신의 입안으로 깊숙이 끌어들여, 서로 격렬하게 얽히며 진득한 웅덩이를 교환했다.',
       );
       await era.printAndWait([
-        '交わりのように濃い激しい口づけが終わったとき、',
+        '마치 실제 성교를 나누는 듯 농밀하고 격정적인 키스가 끝났을 때, ',
         ruby.get_colored_name(),
-        ' の余裕はもう跡形もなかった。',
+        '의 고결한 여유는 이미 흔적도 없이 박살 나 있었다.',
       ]);
-      await ruby.say_and_wait('ひどいですわ……');
-      era.printButton('「それで、次は何をする？」', 1);
+      await ruby.say_and_wait('너무해요……');
+      era.printButton('「자, 그럼 이제 다음엔 뭘 해줄까?」', 1);
       await era.input();
-      await ruby.say_and_wait('話を聞いてくださいまし。');
-      era.printButton('「言わなければ、何も分からない。」', 1);
+      await ruby.say_and_wait('제 말을 좀 들어주셔요……');
+      era.printButton('「네가 솔직하게 불지 않으면, 난 아무것도 모른다고?」', 1);
       await era.input();
-      await ruby.say_and_wait('どうか、優しく……');
+      await ruby.say_and_wait('부디, 부드럽게 해주세요……');
       await era.printAndWait(
-        'そう言い、彼女はプールから上がり、壁に手を当てた。',
+        '그렇게 속삭이며, 그녀는 수영장 물가에서 기어 올라와 양손을 차가운 벽면에 짚었다.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は水着をずらし、優しい愛撫を始めた。',
+        '은(는) 그녀의 젖은 수영복을 옆으로 젖혀버리고는, 은밀한 애무를 개시했다.',
       ]);
       await era.printAndWait(
-        '指先で、最低限の陰毛さえ整えられた雌の穴に触れた。',
+        '손가락 끝으로 최소한의 음모조차 정갈하게 제모하고 관리된 암컷의 비소를 매끄럽게 애무했다.',
       );
       await era.printAndWait(
-        '動きは優しくとも、肉棒の存在そのものが乱暴だった。',
+        '비록 손길 자체는 지극히 부드러웠으나, 밀착해 오는 거대한 성기의 존재감만큼은 그 자체로 흉포하기 짝이 없었다.',
       );
       era.printButton(
-        '「下品な声だな。華麗一族なら、もう少し品を持てないのか？」',
+        '「아주 상스러운 소리를 내네, 화려한 일족은 품위 유지가 불가능하 거야?」',
         1,
       );
       era.printButton(
-        '「これならウマ娘より、雌豚と呼ぶ方が似つかわしい。」',
+        '「이래서야 우마무스메라기보단, 발정 난 암컷이라고 부르는 게 훨씬 어울리겠어.」',
         2,
       );
       await era.input();
-      await ruby.say_and_wait('それは、あなたのせい……');
-      era.printButton('「俺のせいだと言いたいのか？」', 1);
+      await ruby.say_and_wait('그건 전부 당신이……');
+      era.printButton('「지금 그게 내 탓이라고 우기는 거야?」', 1);
       era.printButton(
-        '「雌豚と呼ばれて、淫水をだらだら噴いている。本当に下賤な豚だ。」',
+        '「암컷이라고 불리는 주제에, 보지에서 액을 줄줄 흘려대며 뿜어대다니. 정말 천박한 암컷이네.」',
         2,
       );
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は片手の指を ',
+        '은(는) 한 손의 손가락들을 ',
         ruby.get_colored_name(),
-        ' の尻穴へ入れ、',
+        '의 항문 속으로 사정없이 쑤셔 박아 처넣으며, ',
         ruby.get_colored_name(),
-        ' に腰を上げさせた。',
+        '의 허리를 강제로 높이 치켜들게 만들었다.',
       ]);
-      await era.printAndWait('もう一方の手は遠慮なく、華麗な尻を叩いた。');
+      await era.printAndWait('다른 한 손으로는 고귀한 일족의 잘 여문 엉덩이를 철썩철썩 방자하게 후려쳤다.');
       await era.printAndWait([
-        '被虐が火をつけたのか、',
+        '숨겨진 피학증이 극치로 자극당해서였을까, ',
         ruby.get_colored_name(),
-        ' は体を捩り、潮を盛大に地面へ撒いた。',
+        '는 신체를 거칠게 비틀며, 바닥 위로 막대한 양의 분수를 성대하게 뿜어냈다.',
       ]);
-      await ruby.say_and_wait('ああ……分かりましたわ。');
-      await ruby.say_and_wait('わたくしは、あなたの雌豚ですわ。');
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' が手を ',
-        ruby.get_colored_name(),
-        ' の尻から離すと、彼女の姿勢はその場で崩れた。',
-      ]);
-      await era.printAndWait('潮吹きの余韻に浸り、時折、下品な喘ぎが漏れた。');
+      await ruby.say_and_wait('아윽…… 저, 인정할게요.');
+      await ruby.say_and_wait('저는, 당신의 암컷이에요.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' はバッグから紐つきの首輪を出し、',
+        '이(가) 손을 ',
         ruby.get_colored_name(),
-        ' の首に嵌めた。',
+        '의 엉덩이에서 가차 없이 떼어내자, 그녀의 자세는 그 자리에서 무참히 무너져 내렸다.',
+      ]);
+      await era.printAndWait('격렬한 분출의 나른한 여운에 푹 침전된 채, 그녀는 간헐적으로 상스러운 신음을 흘려댔다.');
+      await era.printAndWait([
+        you.get_colored_name(),
+        '은(는) 스포츠 가방에서 줄이 길게 늘어진 가죽 개목줄을 꺼내어, ',
+        ruby.get_colored_name(),
+        '의 고결한 목덜미에 단단히 채워 넣었다.',
       ]);
       await era.printAndWait(
-        '家畜らしくはなった。だが、まだ不自然なところがある。',
+        '이로써 완벽한 암컷의 형상을 띠게 되었으나, 아직 어딘가 부자연스럽고 불완전한 구석이 남아있었다.',
       );
-      await ruby.say_and_wait('あ、あなた、まだ何を……？');
-      await era.printAndWait('どこが、ちぐはぐなのだろう。');
-      era.printButton('今の彼女は、押し倒されて種を注がれたい。', 1);
-      era.printButton('「服を着た畜生など、いないだろう。」', 2);
+      await ruby.say_and_wait('다, 당신, 대체 뭘 더 하실 생각인가요?');
+      await era.printAndWait('과연 어디가 부조화스러운 것일까?');
+      era.printButton('그녀는 지금 당장 나에게 짓눌린 채, 자궁 깊숙이 씨앗이 주입되기를 갈망하고 있다.', 1);
+      era.printButton('「옷을 입고 있는 암컷이 세상에 어디 있어.」', 2);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' に服を脱げと命じた。',
+        '에게 당장 걸치고 있는 모든 수영복을 벗어 던지라고 명령했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の顔にはいくらか反抗があった。だが ',
+        '의 표정에 일순 반발심이 서렸으나, ',
         you.get_colored_name(),
-        ' が肉棒で顔を何度か叩くと、動きはすぐ速くなった。',
+        '이(가) 거대한 육봉으로 그녀의 뺨을 찰싹찰싹 몇 차례 후려치자, 그녀의 손놀림은 이내 무시무시하게 빨라졌다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の足元には、雌汁がすでに水溜まりを作っていた。',
+        '의 발밑에는 이미 그녀의 비소에서 뿜어져 나온 암컷의 진득한 액으로 커다란 웅덩이가 형성되어 있었다.',
       ]);
       await era.printAndWait(
-        '彼女は蹲り、両脚を開き、腋を晒す色情の蹲踞をした。',
+        '그녀는 바닥에 주저앉아 두 다리를 활짝 벌린 채, 매끄러운 겨드랑이를 고스란히 노출하는 상스러운 엠자 쪼그려 앉기 자세를 취했다.',
       );
       await era.printAndWait(
-        'それから口を開き、薄紅の舌を出し、軽く息を吐いた。',
-      );
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' が肉棒を ',
-        ruby.get_colored_name(),
-        ' の喉の奥まで押し込むと、彼女の顔には嘔吐のような苦しさが浮かんだ。',
-      ]);
-      await era.printAndWait(
-        '舌と食道を犯される感触に耐えながら、精を搾り出そうと努めて奉仕した。',
+        '이어 입을 벌려 분홍빛 혀를 길게 내밀고는, 하아하아 가느다란 가쁜 숨을 내쉬었다.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は気ままに ',
+        '은(는) 거대한 성기를 ',
         ruby.get_colored_name(),
-        ' の髪を掴み、腰を打った。',
+        '의 목구멍 깊숙한 내부까지 사정없이 밀어 넣었고, 그녀의 얼굴에는 구역질을 참지 못하는 극심한 고통의 신색이 역력히 비쳤다.',
       ]);
-      await era.printAndWait([
-        '根まで完全に押し込んでも、',
-        ruby.get_colored_name(),
-        ' は頬を窪ませ、真面目に口で奉仕した。',
-      ]);
-      await era.printAndWait('射精した！');
       await era.printAndWait(
-        '一番奥で射精すれば、嫌がっても精液は胃へ直接注がれる。',
+        '혀와 식도가 거칠게 침범당하는 끔찍한 가학을 고스란히 감내하면서도, 그녀는 어떻게든 성심성의껏 수컷을 모시며 정액을 짜내기 위해 필사적으로 입굴을 움직였다.',
       );
       await era.printAndWait([
-        '射精が終わったとき、',
+        you.get_colored_name(),
+        '은(는) 제멋대로 ',
         ruby.get_colored_name(),
-        ' の胃は、使い終えた避妊具のように膨らんでいた。',
+        '의 머리채를 무자비하게 움켜쥔 채, 허리를 격렬하게 몰아붙였다.',
       ]);
-      await era.printAndWait('外から見ても、腹は明らかに膨らんでいた。');
-      await ruby.say_and_wait('これで、ご満足ですの？');
+      await era.printAndWait([
+        '육봉의 뿌리 끝까지 목구멍 속에 완전히 박아 넣었음에도, ',
+        ruby.get_colored_name(),
+        '는 양 뺨이 푹 꺼질 정도로 필사적이고 진지하게 구강 성교에 임했다.',
+      ]);
+      await era.printAndWait('사정한다!');
+      await era.printAndWait(
+        '목구멍 가장 깊숙한 성역에서 정액을 사출하자, 그녀가 원하든 원치 않든 막대한 양의 정액이 식도를 타고 위장 내부로 다이렉트로 주입되었다.',
+      );
+      await era.printAndWait([
+        '사정이 완전히 끝났을 때, ',
+        ruby.get_colored_name(),
+        '의 위장은 마치 정액을 가득 채워 넣은 콘돔처럼 팽팽하게 부풀어 올랐다.',
+      ]);
+      await era.printAndWait('외부에서 육안으로 바라보아도, 그녀의 아랫배가 확연하게 볼록 튀어나와 있었다.');
+      await ruby.say_and_wait('당신…… 이제야, 만족하셨나요?');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は愛馬を、一晩中犯した。',
+        '은(는) 이 가련한 담당을 밤새도록 무참히 침범하고 유린했다.',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] delicious
+  // [번역 완료] delicious
   delicious: (() => {
-    const title = '美食';
+    const title = '미식';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
-      await era.printAndWait(['どういうわけか、話が食事のことになった。']);
+      await era.printAndWait(['어느 날, ']);
       await era.printAndWait([
-        'そこで ',
+        '그리하여, ',
         you.get_colored_name(),
-        ' は自分で台所に立ち、',
+        '은(는) 직접 주방으로 가 ',
         ruby.get_colored_name(),
-        ' のために中華の家庭料理を一卓作ることにした。',
+        '를 위해 미식을 한 상 가득 요리하기로 결정했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' の乗り気を見て、付き合うことにした。もちろん、',
+        '을(를) 그냥 따라주었고, 당연히 ',
         you.get_colored_name(),
-        ' についてきた。',
+        '의 뒤를 따라왔다.',
       ]);
       await era.printAndWait([
-        '華麗一族の倉には、白い米の艶が、',
+        '화려한 일족의 창고에 있는 하얗고 뽀얀 쌀은, ',
         you.get_colored_name(),
-        ' が以前食べたものより一段も二段も上だった。',
+        '이(가) 이전에 먹었던 것보다 몇 배는 더 좋아 보였다.',
       ]);
       await era.printAndWait(
-        '台所では、葱、生姜、蒜、醤油、料理酒といった調味料も容易に見つかった。',
+        '주방에서는 파, 생강, 마늘, 간장, 맛술 등의 조미료를 아주 쉽게 찾을 수 있었다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は豚肉をほとんど食べず、牛や羊が主だ。それでも ',
+        '는 돼지고기를 거의 먹지 않고 대부분 소나 양고기를 위주로 먹지만, ',
         you.get_colored_name(),
-        ' は臘肉を一塊、見つけた。',
+        '은(는) 용케도 훈제 베이컨 한 덩이를 찾아냈다.',
       ]);
       await era.printAndWait([
-        '食事は華麗な広間で行われた。傍らに立つ執事のほかは、',
+        '식사는 화려하고 커다란 홀에서 진행되었는다. 한쪽에 서 있는 집사를 제외하면 오직 ',
         ruby.get_colored_name(),
-        ' だけが中央に座っていた。',
+        '만이 중앙 자리에 앉아 있었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は料理を運ぶのに忙しく、がらんとした部屋は少し寂しい。幸い、炉の火と佳人がいた。',
+        '이(가) 분주히 요리를 나르는 동안, 텅 빈 방 안은 어딘지 모르게 쓸쓸한 기운이 감돌았지만, 다행히도 따스한 화로와 사랑하는 이가 함께 있었다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は半信半疑で箸を動かした。',
+        '는 반신반의하며 젓가락을 움직였다.',
       ]);
-      await ruby.say_and_wait('ん、とても美味ですわ。');
+      await ruby.say_and_wait('음, 정말 맛있네요.');
       await era.printAndWait([
-        '実際、',
+        '사실 ',
         you.get_colored_name(),
-        ' が作ったのはごく普通の家庭料理で、味も ',
+        '이(가) 만든 것은 그저 평범한 가정식 요리였고, ',
         you.get_colored_name(),
-        ' から見れば並だった。',
+        '이(가) 느끼기에도 그저 평범한 맛이었다.',
       ]);
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         ruby.get_colored_name(),
-        ' にとっては、こうした味の刺激は十分に美味と呼べた。',
+        '에게 있어서 이런 미각적 자극은 절대적으로 맛있다고 표현하기에 부족함이 없었다.',
       ]);
-      era.printButton('「気に入ったなら、教えてもいい。」', 1);
+      era.printButton('「네가 좋다면, 내가 가르쳐 줄 수도 있어.」', 1);
       await era.input();
-      await ruby.say_and_wait('ええ。');
+      await ruby.say_and_wait('좋아요.');
       await era.printAndWait([
-        '食後の散歩は欠かせない。機嫌がよい ',
+        '식후 산책은 빠질 수 없는 법, 기분이 무척 좋아진 ',
         ruby.get_colored_name(),
-        ' は本館を出た。',
+        '는 본관 밖으로 나섰다.',
       ]);
       await era.printAndWait([
-        '石の小径を歩いた。荘園へ続く道だが、ただぶらぶらしているだけだ。',
-      ]);
-      await era.printAndWait([
-        ruby.get_colored_name(),
-        ' の口角はずっと上がっていた。',
-        you.get_colored_name(),
-        ' の腕を取り、',
-        you.get_colored_name(),
-        ' の知らない旋律を口ずさんだ。',
-      ]);
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' は後ろから ',
-        ruby.get_colored_name(),
-        ' の腰へ手を回し、それからゆっくり抱き寄せた。',
+        '은 정원으로 이어지는 돌길을 따라 걸었다. 딱히 정처 없이 편하게 거닐 뿐이었다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の機嫌は頂点で、',
+        '의 입꼬리는 연신 올라가 있었고, 그녀는 ',
         you.get_colored_name(),
-        ' の動きに身を任せた。',
+        '의 팔짱을 낀 채, ',
+        you.get_colored_name(),
+        '이(가) 들어본 적 없는 콧노래를 흥얼거렸다.',
       ]);
       await era.printAndWait([
-        '部屋に戻ると、',
         you.get_colored_name(),
-        ' は興奮し始めた。',
+        '은(는) 등 뒤에서 슬그머니 손을 뻗어 ',
+        ruby.get_colored_name(),
+        '의 허리에 올린 뒤, 천천히 끌어안았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は服を脱ぎ、浴室へ入った。',
-      ]);
-      await ruby.say_and_wait('いらして。');
-      await era.printAndWait([
-        'ようやく叶った ',
+        '는 기분이 최고조에 달해 있었기에, ',
         you.get_colored_name(),
-        ' は、力加減を少し失った。',
+        '의 행동을 그대로 받아들였다.',
+      ]);
+      await era.printAndWait([
+        '방으로 돌아오자, ',
+        you.get_colored_name(),
+        '은(는) 흥분하기 시작했다.',
+      ]);
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        '는 옷을 벗고 욕실로 발을 들였다.',
+      ]);
+      await ruby.say_and_wait('들어오세요.');
+      await era.printAndWait([
+        '마침내 소원을 성취한 ',
+        you.get_colored_name(),
+        '은(는) 힘 조절을 제대로 하지 못했다.',
       ]);
       await era.printAndWait(
-        '軽く口づけるつもりが、猛々しい噛みつきになり、食い千切りそうだった。',
+        '본래는 가볍게 입을 맞추려 했으나, 마치 물어뜯을 듯이 격렬하게 탐하는 입맞춤으로 변해버렸다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は口を開き、舌で ',
+        '는 입을 열어, 자신의 혀로 ',
         you.get_colored_name(),
-        ' という獣をなだめた。',
+        '(아)라는 이름의 짐승을 달래주었다.',
       ]);
       await era.printAndWait([
-        '彼女が手で ',
+        '그녀가 손을 뻗어 ',
         you.get_colored_name(),
-        ' の脇腹を摘むまで、',
+        '의 옆구리를 꼬집고 나서야, ',
         you.get_colored_name(),
-        ' は自分がキスしすぎたことに気づかなかった。',
+        '은(는) 자신이 너무 지나치게 몰입했다는 것을 깨달았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は少し後ろへ引き、体を床へ移した。',
+        '는 뒤로 조금 물러나며, 몸 전체를 바닥으로 옮겼다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は唾を飲み、両手で ',
+        '은(는) 마른침을 삼키며, 두 손으로 ',
         ruby.get_colored_name(),
-        ' の足を支え、趾から拝み始めた。',
+        '의 발을 받쳐 들고는 발가락부터 정성스레 탐닉하기 시작했다.',
       ]);
-      await era.printAndWait('親指を含み、舌を休めず回した。');
-      await era.printAndWait('それから一本ずつ指を、ピンと張った足の甲を。');
+      await era.printAndWait('엄지발가락을 입에 머금고 혀를 끊임없이 굴린다.');
+      await era.printAndWait('이어서 발가락 하나하나와 꼿꼿하게 펴진 발등까지.');
       await era.printAndWait([
-        '湯の流しとは違い、',
+        '단순히 씻어내리는 목욕물과는 다르게, ',
         you.get_colored_name(),
-        ' の唾液は彼女の肌で、催淫のように働いた。',
+        '의 타액은 그녀의 몸 위에서 마치 미약과도 같은 작용을 일으켰다.',
       ]);
-      await ruby.say_and_wait('早く。');
+      await ruby.say_and_wait('빨리요……');
       await era.printAndWait([
-        '繊い肌にいつまでも留まる ',
+        '섬세한 살결에 매료된 ',
         you.get_colored_name(),
-        ' は口を動かすのが惜しく、太ももまで舐め、脚の付け根まで舐めた。',
+        '은(는) 입술을 떼지 못한 채 허벅지 위로, 그리고 허벅지 안쪽 깊은 곳까지 핥아 올렸다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は腰を挺し、自分の陰茎で ',
+        '은(는) 허리를 슬쩍 들어 올려, 자신의 성기를 ',
         ruby.get_colored_name(),
-        ' の頬を叩いた。',
-      ]);
-      await era.printAndWait([
-        ruby.get_colored_name(),
-        ' は素直でない肉棒を掴み、先端から舐め始めた。',
-      ]);
-      await ruby.say_and_wait('あっ……ん……');
-      await era.printAndWait([
-        '遠慮のない声に、',
-        you.get_colored_name(),
-        ' は我慢がきかなくなった。',
-      ]);
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' は片手で目の前に垂れた頭を掴み、片手で ',
-        ruby.get_colored_name(),
-        ' の耳を揉んだ。',
-      ]);
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' は両手で、懸命に奉仕する ',
-        ruby.get_colored_name(),
-        ' の頭を抱え、自分からも前後に動いた。',
-      ]);
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' は柔らかさと熱に包まれ、搾る圧力に気分が高ぶった。',
-      ]);
-      await era.printAndWait([
-        '陰毛が ',
-        ruby.get_colored_name(),
-        ' の頬を言葉にできないほど刺激し、',
-        ruby.get_colored_name(),
-        ' はさらに熱心に咥えた。',
+        '의 뺨에 가볍게 부딪혔다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 짓궂게 구는 육봉을 붙잡고 귀두 끝부분부터 핥기 시작했다.',
+      ]);
+      await ruby.say_and_wait('아…… 으응……');
+      await era.printAndWait([
+        '아무런 거침없이 터져 나오는 신음 소리에 ',
         you.get_colored_name(),
-        ' の精液を飲み込んだ。',
+        '은(는) 더 이상 참을 수 없게 되었다.',
       ]);
       await era.printAndWait([
-        '美味ではない。それでも飲み込んだ。それは ',
         you.get_colored_name(),
-        ' のものだったから。',
-      ]);
-      await era.printAndWait([
-        '自分の体の中に ',
-        you.get_colored_name(),
-        ' の液体がある。それは口づけより、ずっと意味がある。',
-      ]);
-      await era.printAndWait('だが、愛馬はまだ解放されていない。');
-      await era.printAndWait([
-        '彼女が足を上げると、',
-        you.get_colored_name(),
-        ' は意地悪く ',
+        '은(는) 한 손으로 눈앞에서 늘어진 머리를 붙잡고, 다른 한 손으로는 ',
         ruby.get_colored_name(),
-        ' の勃起した乳頭を弄り、指の隙間に挟んで引っ張った。',
+        '의 귀를 만지작거리며 비벼대었다.',
       ]);
       await era.printAndWait([
+        you.get_colored_name(),
+        '은(는) 열심히 봉사하고 있는 ',
         ruby.get_colored_name(),
-        ' は ',
-        you.get_colored_name(),
-        ' の落ち着かない手を掴み、下へ移した。',
+        '의 머리를 두 손으로 감싸 쥔 채, 스스로도 앞뒤로 허리를 흔들기 시작했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が熱い勃起物に触れると、',
+        '은(는) 자신이 부드럽고 따스한 온기에 온통 둘러싸인 것을 느꼈고, 조여드는 압박감에 ',
+      ]);
+      await era.printAndWait([
+        '음모가 ',
         ruby.get_colored_name(),
-        ' に睨まれた。',
-      ]);
-      await era.printAndWait([
-        '彼女の趾もわずかにすぼまり、',
-        you.get_colored_name(),
-        ' の爪が陰核を滑ったとき、思わず震えた。',
+        '의 뺨을 스치며 말로 다 표현할 수 없는 자극을 주었고, 이는 ',
+        ruby.get_colored_name(),
+        '가 더욱 열렬하게 입을 놀리도록 만들었다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' が絶頂するまで、かなりの時間がかかった。',
+        '는 ',
+        you.get_colored_name(),
+        '의 정액을 삼켰다.',
       ]);
       await era.printAndWait([
+        '맛은 없었지만 그녀는 그대로 삼켜냈다. 그것은 온전히 ',
         you.get_colored_name(),
-        ' は油断せず、大タオルで愛馬を包み、抱いて浴室を出た。',
+        '의 것이었기에.',
+      ]);
+      await era.printAndWait([
+        '자신의 몸 안에 ',
+        you.get_colored_name(),
+        '의 액체가 채워졌다는 사실은, 단순한 키스보다 훨씬 더 깊은 의미를 지니고 있었다.',
+      ]);
+      await era.printAndWait('하지만 담당 우마무스메는 아직 절정에 도달하지 못했다.');
+      await era.printAndWait([
+        '그녀가 다리를 들어 올리자, ',
+        you.get_colored_name(),
+        '은(는) 짓궂은 마음으로 ',
+        ruby.get_colored_name(),
+        '의 봉긋하게 선 유두를 장난치듯 손가락 사이에 끼워 잡아당겼다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は少し眠げだった。二人は厚い布団に包まれ、大ベッドで抱き合った。',
+        '는 ',
+        you.get_colored_name(),
+        '의 가만히 있지 못하는 손을 잡아채어 자신의 하체 위로 옮겼다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が ',
+        '은(는) 뜨겁게 달아오른 은밀한 곳에 손이 닿았고, ',
         ruby.get_colored_name(),
-        ' の髪に触れると、まだ乾ききっていなかった。',
+        '에게 살짝 흘겨짐을 당했다.',
       ]);
       await era.printAndWait([
-        '何度も ',
+        '그녀의 발가락이 미세하게 오므라들었고, ',
+        you.get_colored_name(),
+        '의 손톱이 음핵을 스쳐 지나갈 때마다 몸을 잘게 떨었다.',
+      ]);
+      await era.printAndWait([
         ruby.get_colored_name(),
-        ' の髪を拭いているうち、どうせ眠れない彼女は ',
+        '가 고조되어 절정에 도달하기까지는 한참의 시간이 더 걸렸다.',
+      ]);
+      await era.printAndWait([
         you.get_colored_name(),
-        ' の懐で ',
+        '은(는) 방심하지 않고 커다란 수건을 가져와 담당 우마무스메를 감싸 안은 뒤, 그녀를 안고 욕실을 나왔다.',
+      ]);
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        '는 조금 졸린 듯했고, ',
+      ]);
+      await era.printAndWait([
         you.get_colored_name(),
-        ' を抱いた。',
+        '이(가) ',
+        ruby.get_colored_name(),
+        '의 머리카락을 쓸어 넘기다 보니, 아직 다 마르지 않은 백탁을 발견했다.',
+      ]);
+      await era.printAndWait([
+        '몇 번이고 반복해서 ',
+        ruby.get_colored_name(),
+        '의 머리를 닦아주는 동안, 어차피 잠이 오지 않던 그녀는 ',
+        you.get_colored_name(),
+        '의 품속에 파고들어 ',
+        you.get_colored_name(),
+        '을(를) 꼭 껴안았다.',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] dessert
+  // [번역 완료] dessert
   dessert: (() => {
-    const title = '食後のデザート';
+    const title = '디저트';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
       await era.printAndWait([
-        '食事のあと、',
+        '식사를 마친 후, ',
         you.get_colored_name(),
-        ' はふと思いつき、',
+        '은(는) 문득 장난기가 발동해 ',
         ruby.get_colored_name(),
-        ' を食卓へ抱き上げた。',
+        '를 안아 식탁 위로 올려두었다.',
       ]);
       await era.printAndWait(
-        '突然の仕草に彼女は「あっ！」と少し驚いたが、すぐ落ち着いた。',
+        '갑작스러운 행동에 그녀는 「앗!」 하고 조금 놀란 기색을 보였으나, 이내 곧 차분함을 되찾았다.',
       );
       await era.printAndWait(
-        '白いニーソックスの小さな足が、空中にぶら下がっていた。',
+        '하얀 니삭스를 신은 가녀린 발이 공중에 대롱거렸다.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' のスカートを捲り、高級な下着を慎重に脱がせた。',
+        '의 스커트를 걷어올리고, 그녀가 입고 있는 고급스러운 팬티를 조심스레 벗겨냈다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' の両脚を開き、蕾の赤い薔薇を仔細に眺めた。',
+        '의 두 다리를 벌려 그 벌어질 듯 말 듯 한 붉은 장미 봉오리를 자세히 관찰했다.',
       ]);
       await era.printAndWait(
-        '白に紅を透かす恥丘に、脈打つ血管が見えるようだった。桜の唇に劣らぬ小さな陰唇が開閉し、別の生き物が息をしているようだった。',
+        '뽀얗고 붉은 기가 도는 부끄러운 언덕 위로, 마치 고동치는 혈관이 보이는 듯했다. 앵두 같은 입술에 뒤지지 않는 조그만 소음순 두 조각이 열렸다 닫혔다 하는 모습은, 흡사 또 다른 생명체가 숨을 헐떡이는 것 같았다.',
       );
       await era.printAndWait([
-        '向かい合っていても、',
+        '이렇게 정면으로 마주하고 있음에도 불구하고, ',
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' に抗う様子がなかった。',
+        '에게 전혀 거부 반응을 보이지 않았다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は頭を ',
+        '은(는) 고개를 ',
         ruby.get_colored_name(),
-        ' の股へ埋め、舌を出して蕾の味を味わった。',
+        '의 가랑이 사이에 묻고는, 혀를 내밀어 꽃봉오리의 감미로움을 맛보았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は驚いて両脚を閉じ、',
+        '는 깜짝 놀라 두 다리를 맞부딪혔고, ',
         you.get_colored_name(),
-        ' は本気で、愛馬の力強い太ももに頭を潰されそうになった。',
+        '은(는) 진심으로 우마무스메의 힘찬 허벅지에 머리가 터질 것만 같다고 느꼈다.',
       ]);
-      era.printButton('息苦しそうに助けを求める。', 1);
-      era.printButton('その細い隙間へ入る。', 2);
+      era.printButton('숨이 막혀 구조 요청 소리를 낸다.', 1);
+      era.printButton('그 좁은 틈새 속으로 파고든다.', 2);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は顔を赤らめ、両脚を開いた。',
+        '는 얼굴을 붉히며 두 다리를 열어주었다.',
       ]);
       await era.printAndWait([
-        '体は本能で太ももを閉じたがる。だが ',
+        '그녀의 신체는 본능적으로 허벅지를 힘껏 조이려 했으나, 혹여나 ',
         you.get_colored_name(),
-        ' を傷つけるのが怖く、懸命に耐えていた。',
+        '에게 상처를 입힐까 두려워 무척이나 열심히 인내하고 있었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は頬で少女の下の弾力を感じ、舌先で勃起した陰核を愛撫し、さらに深い濡れへ入って柔い襞を弄った。',
-      ]);
-      await era.printAndWait([
-        ruby.get_colored_name(),
-        ' は我慢できず、小さな喘ぎを漏らした。',
-      ]);
-      await era.printAndWait([
-        '欲を刺激された ',
-        you.get_colored_name(),
-        ' は、その小さな陰核を吸い始めた。',
+        '은(는) 뺨으로 하체의 탄력을 느끼며, 혀끝으로 발기한 음핵을 애무하고, 더 깊고 촉촉한 음도 안으로 들어가 연약한 살결의 주름을 매만졌다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
-        you.get_colored_name(),
-        ' の頭を抱いて震え続け、',
-        you.get_colored_name(),
-        ' は首筋の息が次第に荒くなるのを感じた。',
+        '는 참지 못하고 작은 신음을 흘렸다.',
       ]);
       await era.printAndWait([
-        '最後に ',
+        '욕망이 자극된 ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) 그 자그만 음핵을 빨아들이기 시작했다.',
+      ]);
+      await era.printAndWait([
         ruby.get_colored_name(),
-        ' の潮を一口含み、',
+        '는 ',
+        you.get_colored_name(),
+        '의 머리를 감싸 안은 채 몸을 끊임없이 떨었고, ',
+        you.get_colored_name(),
+        '은(는) 자신의 목덜미 뒤로 닿는 호흡이 점차 가빠지는 것을 느꼈다.',
+      ]);
+      await era.printAndWait([
+        '마지막으로, ',
+        you.get_colored_name(),
+        '은(는) ',
         ruby.get_colored_name(),
-        ' と口づけし、口の中の彼女の味を分け合った。',
+        '의 애액을 한 모금 머금은 채 깊은 입맞춤을 나누며, 그녀에게 ',
+        ruby.get_colored_name(),
+        '의 입안에 맴도는 그녀 자신의 맛을 공유했다.',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] foot_job
+  // [번역 완료] foot_job
   foot_job: (() => {
-    const title = '足交';
+    const title = '풋잡';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      * @param {CharaTalk} callname ダイイチルビーがプレイヤーを呼ぶ呼称
      */
     const f = async (ruby, you, callname) => {
-      await ruby.say_and_wait([callname, '、そちらの……大きくなりましたの？']);
+      await ruby.say_and_wait([callname, ', 당신의 그거…… 커진 건가요?']);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は俯いて ',
+        '는 고개를 숙여 ',
         you.get_colored_name(),
-        ' の股を一度見てから顔を上げ、赤い明るい瞳を見開いて訊ねた。',
+        '의 가랑이를 슬쩍 보더니, 이내 붉게 빛나는 눈동자로 올려다보며 물었다.',
       ]);
-      await ruby.say_and_wait('どうして、大きくなるのですの？');
+      await ruby.say_and_wait('어째서 커지는 건가요?');
       await ruby.say_and_wait([
         callname,
-        '、わたくしの白いタイツの脚がお好きですの？',
+        ', 제가 흰색 스타킹을 신은 다리가 좋은 건가요?',
       ]);
-      era.printButton('「ああ。」', 1);
-      era.printButton('「綺麗だから……触り心地もいいから、それで……」', 2);
+      era.printButton('「으응.」', 1);
+      era.printButton('「너무 예뻐서…… 그리고 만지기 좋아서, 그러니까……」', 2);
       await era.input();
       await era.printAndWait([
-        '突然、',
+        '순간, ',
         ruby.get_colored_name(),
-        ' は柔らかな小さな手を伸ばし、',
+        '가 부드러운 작은 손을 뻗어 ',
         you.get_colored_name(),
-        ' の手を取って自分の太ももへ置いた。',
+        '의 손을 끌어당겨 자신의 허벅지 위에 올려놓았다.',
       ]);
       await ruby.say_and_wait([
         callname,
-        ' がお好きなら、ご自分で撫でなさい。わたくし……わたくし、',
+        '이 좋으시다면, 마음껏 만지셔도 돼요. 저…… 저는 ',
         callname,
-        ' がそうなさるのは、嫌ではありませんわ……',
+        '이 이러는 거 싫지 않으니까……',
       ]);
       await era.printAndWait([
-        'どうしたことか。',
+        '어떻게 된 일이지? ',
         you.get_colored_name(),
-        ' の頭は真っ白になった。だが手に伝わる絹のような感触は、嘘ではなかった。',
+        '의 머릿속이 하얘졌지만, 손끝으로 전해지는 실크 같은 감촉은 결코 거짓말을 하지 않았다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の手は無意識に、愛馬のストッキングの太ももを優しく撫で、ズボンの中の凶器はさらに膨らんだ。',
+        '의 손은 본능적으로 담당 우마무스메의 스타킹 신은 허벅지를 부드럽게 쓰다듬었고, 바지 속의 흉기는 더욱 팽팽하게 부풀어 올랐다.',
       ]);
-      await ruby.say_and_wait('我慢なさって、苦しいでしょう。');
+      await ruby.say_and_wait('참고 계시면, 무척 괴로우시겠죠.');
       await era.printAndWait([
-        'そう言い、',
+        '말을 마친 ',
         ruby.get_colored_name(),
-        ' は手を伸ばして ',
+        '는 손을 뻗어 ',
         you.get_colored_name(),
-        ' の股のチャックを下げた。獰猛な陽物が力強く跳ね出し、彼女の小さな手に優しく扱かれた。',
+        '의 바지 지퍼를 내렸다. 흉포한 음경이 힘차게 튀어나왔고, 그녀는 작은 손으로 그것을 부드럽게 훑기 시작했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は思い切って長ズボンを蹴り飛ばし、両手で愛馬の白いストッキングの美しい脚を撫で、掌の下の温潤を味わった。',
+        '은(는) 아예 바지를 걷어차 버리고, 양손을 모두 사용해 담당 우마무스메의 스타킹 신은 다리를 주무르며 손바닥 깊숙이 전해지는 온기를 만끽했다.',
       ]);
-      await ruby.say_and_wait([callname, '、気持ちよろしいですの？']);
+      await ruby.say_and_wait([callname, ', 기분 좋으신가요?']);
       await era.printAndWait([
-        'ほんの数度で、',
+        '몇 번 움직이지도 않았는데, ',
         you.get_colored_name(),
-        ' は下の酥痺に耐えきれず、精を噴き出しそうになった。',
+        '은(는) 하반신이 저릿하며 당장이라도 하얀 이물질을 뿜어낼 것만 같았다.',
       ]);
-      era.printButton('彼女の手をどける。', 1);
-      era.printButton('降伏する。', 2);
+      era.printButton('그녀의 손을 치운다.', 1);
+      era.printButton('항복하고 받아들인다.', 2);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は急いで ',
+        '은(는) 서둘러 ',
         ruby.get_colored_name(),
-        ' の手をどけ、致命的な快感を中断した。',
+        '의 손을 치우며 치명적인 쾌감을 중단시켰다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の惑う視線の下、',
+        '의 의아한 시선 속에서, ',
         you.get_colored_name(),
-        ' は椅子を離れ、床に座った。',
+        '은(는) 의자에서 내려와 바닥에 앉았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は察し、ストッキングに包まれた小さな足で左右から ',
+        '는 의도를 알아차리고, 스타킹에 감싸인 가냘픈 두 발로 ',
         you.get_colored_name(),
-        ' の天を向く男根を挟み、上下に扱き始めた。',
+        '의 분노로 가득 차 하늘을 찌를 듯한 남근을 좌우에서 가두어 쥐고 위아래로 비벼대기 시작했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' がこの動きに慣れたと分かると、',
+        '이(가) 자극에 어느 정도 익숙해진 것을 느끼자, ',
         ruby.get_colored_name(),
-        ' は少し力を入れて踏みつけた。',
+        '는 살짝 힘을 주어 밟아 내렸다. ',
         you.get_colored_name(),
-        ' は体を支えきれず踏み倒されぬよう、手を後ろへ突くしかなかった。',
+        '은(는) 몸이 중심을 잃고 바닥에 쓰러지지 않도록 두 손으로 뒤쪽 바닥을 지탱할 수밖에 없었다.',
       ]);
-      await ruby.say_and_wait('こちらは、気持ちよろしいですの？');
-      await ruby.say_and_wait('嫌らしい好色ですわ。');
+      await ruby.say_and_wait('이러면 기분 좋으신가요?');
+      await ruby.say_and_wait('얄미운 변태 씨.');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は羞じて罵った。だが白いストッキングの小さな両足の動きは、ますます速くなった。',
+        '는 부끄러워하며 매도하면서도, 스타킹을 신은 두 발의 움직임은 점점 빨라져만 갔다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の馬眼からすぐ、潤滑の前立腺液が次々と溢れ、白いタイツの小さな足を濡らした。',
+        '의 요도구에서는 이내 윤활유 같은 쿠퍼액이 연달아 흘러나와, 그녀의 하얀 스타킹 발을 적시기 시작했다.',
       ]);
       await ruby.say_and_wait(
-        'お気に召すなら、これから毎日、こうして差し上げますわ。',
+        '만약 마음에 드신다면, 앞으로 매일 이렇게 해드릴게요.',
       );
       await era.printAndWait([
-        '頭が欲に満ちた ',
+        '이미 뇌가 욕망으로 가득 찬 ',
         you.get_colored_name(),
-        ' は、濁った喘ぎで頷くしかなかった。',
+        '은(는) 거친 숨을 몰아쉬며 고개를 끄덕일 뿐이었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' はその致命的な快感に抗えず、顔を仰向けて声を上げた。',
+        '은(는) 치명적인 쾌감을 이기지 못하고 고개를 뒤로 젖히며 신음을 내뱉었다.',
       ]);
       await era.printAndWait(
-        '小さな足に挟まれた、少女との対比が鮮やかな太い男茎が震え、馬眼から噴水のように白い濃い精を迸らせ、愛らしい白いストッキングの足の上へ落ちた。',
+        '작은 발 사이에 끼인, 소녀와 극명한 대조를 이루는 굵직한 남근이 바르르 떨리더니 요도구로부터 분수처럼 하얀 농밀한 정액을 연달아 뿜어냈고, 이내 그녀의 귀여운 스타킹을 신은 발 위로 후두둑 떨어져 내렸다.',
       );
       await era.printAndWait([
-        '噴出は十数秒続き、',
+        '사정은 십여 초간 지속되었고, ',
         you.get_colored_name(),
-        ' は目の前が真っ白になり、強い快感が脳髄を吸い尽くすようだった。',
+        '은(는) 눈앞이 하얘지며 뇌수가 전부 뽑혀 나가는 듯한 강렬한 쾌감에 휩싸였다.',
       ]);
       await era.printAndWait([
-        'だが ',
+        '그러나 ',
         ruby.get_colored_name(),
-        ' の両足は止まらず上下に扱い、',
+        '의 두 발은 멈추지 않고 여전히 위아래로 움직이며 ',
         you.get_colored_name(),
-        ' の因子の汁を搾り続けた。',
+        '의 인자즙을 쥐어짜냈다.',
       ]);
       await era.printAndWait([
-        '射精が終わってもしばらくしてから、両足を ',
+        '사정이 완전히 끝나고 한참이 지나서야 그녀는 두 발을 ',
         you.get_colored_name(),
-        ' の太ももの上へ置いた。',
+        '의 허벅지 위에 올려놓았다.',
       ]);
       await era.printAndWait([
-        '精液に透けた白いストッキングの小さな足で、そっと ',
+        '정액으로 흠뻑 젖은 스타킹 발로 ',
         you.get_colored_name(),
-        ' の太ももを弄び、',
+        '의 허벅지를 툭툭 건드리며, ',
         you.get_colored_name(),
-        ' に爆発の余韻を十分に味わわせた。',
+        '이(가) 사정 후의 여운을 충분히 만끽하도록 만들었다.',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] jade
+  // [번역 완료] jade
   jade: (() => {
-    const title = '玉石店';
+    const title = '옥 상점';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
       await era.printAndWait(
-        '普通の飾りの店は、娘向けの装身具を多く扱っている。',
+        '일반적인 액세서리 상점은 대개 여성용 장식품 위주로 판매하기 마련이다.',
       );
       await era.printAndWait(
-        '二人が一軒に入ると、店内のしつらえに目が覚めた。',
+        '하지만 두 사람이 발을 들인 이 상점은 내부 인테리어부터 눈길을 사로잡았다.',
       );
       await era.printAndWait(
-        '玉、宝石。店には石の種類が豊富なだけでなく、完成品も少なくなかった。',
+        '비취, 보석 등 매장 안에는 원석의 종류도 풍부할 뿐만 아니라 완성된 가공품도 제법 많았다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' はそれらの宝に目を眩まされず、まっすぐ佩玉の方へ歩いた。',
+        '는 눈앞의 화려한 보물들에 전혀 한눈을 팔지 않고, 곧장 옥 패물이 진열된 방향으로 걸어갔다.',
       ]);
       await era.printAndWait(
-        '見目麗しい宝石など、もう見飽きていて、興味はとうに薄れていた。',
+        '그녀에게 있어서 아름다운 보석 따위는 이미 질리도록 봐온 것들이라, 진작에 흥미를 잃은 지 오래였다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は首を振り、気に入るものが見つからない様子だった。',
+        '는 고개를 요리조리 흔들었지만, 마음에 쏙 드는 것을 찾지 못한 모양이었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' はカウンターの者を呼び、紹介させた。',
+        '은(는) 카운터 근처에 있는 직원에게 안내를 요청했다.',
       ]);
       await era.printAndWait([
-        '案内がいくつか対を紹介しても、',
+        '가이드가 몇 쌍의 상품을 추천하며 설명해 주었지만, ',
         ruby.get_colored_name(),
-        ' はあまり満足しなかった。',
+        '는 그리 만족스러워하지 않았다.',
       ]);
-      await ruby.say_and_wait('ほかに、もっと良いものはありませんの？');
+      await ruby.say_and_wait('다른 더 좋은 것은 없나요?');
       await era.printAndWait([
-        'しばらくして、店主が現れた。階上で話すよう招かれた。',
+        '잠시 후, 가게의 주인이 직접 모습을 드러냈다. 그는 ',
       ]);
-      await era.printAndWait('箱が運ばれ、開くと一対の翡翠の飾りが出てきた。');
+      await era.printAndWait('정성스럽게 포장된 상자가 전해졌고, 뚜껑을 열자 눈앞에 나타난 것은 한 쌍의 비취 노리개였다.');
       await era.printAndWait(
-        '鴛鴦の戯水図だった。まったく同じ意匠で、周りに蓮の葉が絡み、円く豊かに見えた。',
+        '알고 보니 그것은 연못 위의 원앙을 형상화한 것으로, 완벽하게 대칭되는 형태에 주변을 연꽃잎들이 감싸 안아 풍요롭고 원만한 느낌을 자아내고 있었다.',
       );
       await era.printAndWait(
-        '分ければ一羽、合わせれば首を寄せ合う親密な夫婦になる。',
+        '떼어놓으면 그저 한 마리의 새에 불과하지만, 둘을 합쳐놓으면 서로 목을 교차한 채 친밀함을 과시하는 한 쌍의 연인이 되었다.',
       );
       await era.printAndWait(
-        '店主「これはもともと、妻へ贈るつもりでした。惜しいことに……」',
+        '가게 주인은 「본래 제 아내에게 선물하려 했던 물건입니다만, 안타깝게도……」 라며 말문을 흐렸다.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' も、いくらか心を動かされた。これは確かに逸品と呼べる。',
+        '은(는) 확실히 마음이 동했다. 최상품이라 불리기에 부족함이 없었다.',
       ]);
-      era.printButton('「お売りになるおつもりですか？」', 1);
-      era.printButton('「あまりに貴重です。ほかを見せていただけますか？」', 2);
+      era.printButton('「이 물건을 혹시 판매하실 생각이 있으십니까?」', 1);
+      era.printButton('「이건 너무 과하게 귀중하군요, 다른 걸 좀 둘러볼까요?」', 2);
       if ((await era.input()) === 1) {
         await era.printAndWait(
-          '店主は頷いた。惜しいことに、値段ですでに多くの者が退いていた。',
+          '점장은 고개를 끄덕였으나, 제시된 가격은 이미 수많은 사람을 지레 겁먹고 물러나게 만든 액수였다.',
         );
         await era.printAndWait(
-          '普通の者は気軽に買いとは言えない。もう、気ままに歓心を買う値段ではなかった。',
+          '일반적인 사람이라면 감히 엄두도 내지 못할 금액이었고, 그저 가벼운 마음으로 환심을 사기 위해 살 수 있는 수준의 물건이 아니었다.',
         );
         await ruby.say_and_wait(
-          'でしたら、あなたが一つ、わたくしが一つ。よろしいですわ。',
+          '그러면 당신이 하나 차고, 제가 하나 차면 딱 좋겠네요.',
         );
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' も気に入り、見るほどに気に入って、今すぐ着けたい様子だった。',
+          ' 역시 무척 마음에 들어 하는 눈치였다. 보면 볼수록 마음에 들어 당장이라도 몸에 지니고 싶어 안달이 난 듯했다.',
         ]);
         await era.printAndWait(
-          '店主は驚いた。小さな娘がこの翡翠の寓意を知らぬのではと、説明しようとした。',
+          '도리어 가게 주인이 깜짝 놀라, 이 어린 소녀가 이 장식에 담긴 속뜻을 모르고 하는 소리인가 싶어 서둘러 해명하려 했다.',
         );
-        era.printButton('「店主さん、次の一対を見せてください。」', 1);
+        era.printButton('「사장님, 다른 작품도 좀 보여주세요.」', 1);
         await era.input();
         era.drawLine();
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は愛用の対玉を手に入れ、とても喜んでいた。',
+          '는 마음에 쏙 드는 커플 옥장식을 손에 넣고 무척 기뻐했다.',
         ]);
         await era.printAndWait([
-          '出口際、店主はまだ ',
+          '가게 문을 나서기 직전까지도, 주인은 ',
           ruby.get_colored_name(),
-          ' に鴛鴦の戯水を説明しようとした。',
+          '에게 이 원앙들이 깊은 의미를 필사적으로 설명하려 애썼다.',
         ]);
         await ruby.say_and_wait(
-          'わたくしが鴦、あちらが鴛ですわ。分かっておりますわ。',
+          '제가 암컷 원앙이고, 이 사람이 수컷 원앙인 거 알고 있어요.',
         );
         await era.printAndWait([
-          '店主が呆けている隙に、',
+          '주인이 황당함에 말문이 막혀 멍하니 서 있는 사이, ',
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           ruby.get_colored_name(),
-          ' の手を引き、また別の店へ向かった。',
+          '의 손을 이끌고 서둘러 다른 곳으로 자리를 옮겼다.',
         ]);
       } else {
-        await era.printAndWait('しばらく、打ち解けた話が続いた……');
+        await era.printAndWait('이런저런 즐거운 대화가 오가고……');
         await era.printAndWait([
-          'この店主は気性のいい人で、飾りを取っておくと約束したあと、二人は玉石店を出た。',
+          '가게 주인은 참으로 소탈하고 참된 성품의 인물이었다. 그는 기꺼이 ',
         ]);
       }
     };
@@ -1774,9 +1774,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] kiss
+  // [번역 완료] kiss
   kiss: (() => {
-    const title = 'トレーナーの口づけ';
+    const title = '트레이닝실에서의 키스';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
@@ -1785,104 +1785,104 @@ module.exports = {
     const f = async (ruby, you, callname) => {
       await era.printAndWait([
         you.get_colored_name(),
-        ' の愛馬は、うつろな ',
+        '의 담당 우마무스메는 멍하니 서 있는 ',
         you.get_colored_name(),
-        ' をソファへ押し倒した。',
+        '을(를) 소파 위로 밀쳐 눕혔다.',
       ]);
       await era.printAndWait([
-        '広がった豪華な勝負服の下、白いストッキングの柔い尻が ',
+        '풀어헤쳐진 화려하고 사치스러운 승부복 아래로, 흰색 타이즈를 신은 가녀린 엉덩이가 ',
         you.get_colored_name(),
-        ' の股に乗った。',
+        '의 가랑이 위에 내려앉았다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は身を前へ傾け、茶黒の巻き毛が横顔を滑った。絵の人形のような小さな顔に、薄い紅が差していた。',
+        '는 상체를 앞으로 숙였고, 몇 가닥의 흑갈색 곱슬머리가 옆얼굴을 타고 흘러내렸다. 마치 그림 속 인형처럼 정교하고 아름다운 작은 얼굴이 옅은 홍조를 띠었다.',
       ]);
       await ruby.say_and_wait([
         callname,
-        '、余計なことは考えなくてよろしいですわ。',
+        ', 딴생각하지 마세요.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が肘で起き上がろうとした瞬間、温かく滑る少女の唇が ',
+        '이(가) 팔꿈치로 몸을 지탱하며 일어나려 하자, 부드럽고 매끄러운 소녀의 입술이 ',
         you.get_colored_name(),
-        ' の口を塞いだ。',
+        '의 입을 막아버렸다.',
       ]);
       await era.printAndWait([
-        '濡れた柔い舌が、一気に ',
+        '말랑하고 촉촉한 혀가 단숨에 ',
         you.get_colored_name(),
-        ' の唇と歯をこじ開け、口の中へ入った。',
+        '의 입술과 치열을 열고 안으로 파고들었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の粗く厚い舌は掴まれ、弄ばれ、それから愛馬の香る舌と絡み合った。',
-      ]);
-      await era.printAndWait([
-        ruby.get_colored_name(),
-        ' の津液は食後の果物のような甘さで、今も絶えず ',
-        you.get_colored_name(),
-        ' の口へ送られていた。',
-      ]);
-      await era.printAndWait([
-        '姿勢のせいで、',
-        you.get_colored_name(),
-        ' は愛馬の粘り、清い甘さの唾を飲み続けねばならなかった。',
+        '의 거칠고 두툼한 혀가 붙잡혀 농락당했고, 이내 담당 우마무스메의 향긋한 혀와 한데 얽혔다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の体香が周囲に満ち、',
+        '의 타액은 마치 식후 과일처럼 달콤한 맛을 품고 있었으며, 끊임없이 ',
         you.get_colored_name(),
-        ' の鼻腔を貫き、脳を麻痺させた。',
+        '의 입안으로 밀려 들어왔다.',
       ]);
       await era.printAndWait([
-        '中学生の少女が ',
+        '자세의 제약 탓에, ',
         you.get_colored_name(),
-        ' の口腔で、湿った薄紅の舌を掻き回し、',
-        you.get_colored_name(),
-        ' の太い舌と巻きついた。',
+        '은(는) 꼼짝없이 그녀의 끈적하고 청량한 타액을 계속해서 삼켜내야만 했다.',
       ]);
       await era.printAndWait([
-        you.get_colored_name(),
-        ' と ',
         ruby.get_colored_name(),
-        ' は互いの唾を交わし、飲み合い、濃く湿った音を立てた。',
+        '의 향긋한 체향이 점차 사방을 가득 채우며 ',
+        you.get_colored_name(),
+        '의 비강을 파고들어 뇌를 마비시켰다.',
       ]);
-      era.printButton('愛馬の細い腰を支える。', 1);
-      era.printButton('愛馬の上がった美尻を弄ぶ。', 2);
+      await era.printAndWait([
+        '이 어린 소녀는 ',
+        you.get_colored_name(),
+        '의 구강 안에서 자신의 젖고 뜨거운 핑크빛 혀를 굴리며, ',
+        you.get_colored_name(),
+        '의 거친 혀와 함께 맞붙어 감아올렸다.',
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        '과(와) ',
+        ruby.get_colored_name(),
+        '는 서로의 침을 나누어 가지고 게걸스럽게 삼켜대며, 질척하고 젖은 소리를 요란하게 내뿜었다.',
+      ]);
+      era.printButton('담당 우마무스메의 가는 허리를 붙잡는다.', 1);
+      era.printButton('그녀의 꼿꼿하고 아름다운 엉덩이를 만지작거린다.', 2);
       await era.input();
-      await ruby.say_and_wait('ちゅ……じゅ、く……んちゅ、ずる……');
+      await ruby.say_and_wait('쮸웁…… 츄르릅, 꿀꺽…… 하아…… 으음……');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は淫らな舌の口づけに溺れた。',
+        '은(는) 음란한 설원에 푹 빠져 정신을 차리지 못했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の、白いストッキングにきつく包まれた少女の陰阜は、幼い穴から溢れた淫液で濃い色に染まっていた。',
+        '의 하얀 타이즈에 단단히 조여진 은밀한 부위는, 연약한 틈새로부터 흘러나온 애액으로 인해 짙은 색으로 얼룩져 가고 있었다.',
       ]);
       await era.printAndWait([
-        '長いあと、結局は ',
+        '한참이 지나서야, ',
         you.get_colored_name(),
-        ' が肺活量で敗れ、目が回りながら喘いだ。',
+        '은(는) 폐활량 부족으로 패배하여 머리가 어지러운 채 거친 숨을 몰아쉬었다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は満足げに、',
+        '는 만족스러운 듯 ',
         you.get_colored_name(),
-        ' に含まれて少し腫れた柔い舌を引いた。だが息は、とても穏やかだった。',
+        '의 입안에 머무르느라 살짝 부어오른 혀를 거두어들였으나, 호흡만큼은 무척이나 평온했다.',
       ]);
       await era.printAndWait([
-        '坂道、水泳……体力がもともと人間を遠く超えるウマ娘は、意識を空にしても ',
+        '오르막길 달리기, 수영…… 신체 능력이 인간을 아득히 초월하는 우마무스메인 만큼, 의식을 완전히 비워낸 채 ',
         you.get_colored_name(),
-        ' と熱い口づけを交わせば、呼吸の換気の本能を見事に掴んでいる。',
+        '과(와) 격렬한 키스를 나누면서도 호흡을 조절하는 본능적인 감각은 지극히 훌륭했다.',
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] loli_wife
+  // [번역 완료] loli_wife
   loli_wife: (() => {
-    const title = 'ロリ幼妻';
+    const title = '로리 아내';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
@@ -1890,419 +1890,419 @@ module.exports = {
     const f = async (ruby, you) => {
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' が疲れているのを見て、気を利かせて湯を張った。',
+        '을(를) 위해 목욕물을 받아 두었다.',
       ]);
       await era.printAndWait([
-        '服を脱いだ ',
+        '옷을 벗던 도중, ',
         you.get_colored_name(),
-        ' は突然、一緒に入るよう彼女を呼んだ。',
-      ]);
-      await era.printAndWait([
-        ruby.get_colored_name(),
-        ' はもう洗っていた。それでも素直に服を脱ぎ、浴室へ入った。',
-      ]);
-      await era.printAndWait([
-        '浴室で、',
-        ruby.get_colored_name(),
-        ' は羞じて ',
-        you.get_colored_name(),
-        ' をまともに見られなかった。',
-      ]);
-      await era.printAndWait([
-        you.get_colored_name(),
-        ' は彼女の指を取り、男性の体を知らせた。',
+        '와 함께 목욕하자고 청했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' に手を出させず、',
-        you.get_colored_name(),
-        ' は自ら石鹸を少女の幼い肌に塗った。',
+        '는 이미 씻은 상태였지만, 군말 없이 옷을 벗고 욕실로 들어왔다.',
       ]);
       await era.printAndWait([
-        'それから ',
-        you.get_colored_name(),
-        ' は両手を乳房の前に留めた。彼女の胸は、丁寧に焼いた目玉焼きのようで、白身が黄身を包み、水気に揺れて、',
-        you.get_colored_name(),
-        ' は一口噛みつきたくなった。',
-      ]);
-      await era.printAndWait([
-        '小さな膨らみは、',
-        you.get_colored_name(),
-        ' の焦った揉みでたびたび手を滑り、そのたび ',
+        '욕실 안에서, ',
         ruby.get_colored_name(),
-        ' は我慢できず笑った。',
+        '는 부끄러운 마음에 차마 ',
+        you.get_colored_name(),
+        '을(를) 똑바로 쳐다보지 못했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が ',
+        '은(는) 그녀의 손가락을 쥐어 잡고, 남성의 신체 구조에 대해 가르쳐 주었다.',
+      ]);
+      await era.printAndWait([
         ruby.get_colored_name(),
-        ' を洗い流したあと、今度は ',
-        ruby.get_colored_name(),
-        ' に ',
+        '가 손을 대기도 전에, ',
         you.get_colored_name(),
-        ' の体を洗わせた。',
+        '이(가) 먼저 소녀의 부드러운 살결 위에 비누칠을 하기 시작했다.',
+      ]);
+      await era.printAndWait([
+        '그리고 ',
+        you.get_colored_name(),
+        '의 양손이 그녀의 가슴 앞에 머물렀다. 그녀의 가슴은 마치 정성스레 구워낸 달걀 프라이 같았다. 흰자가 노른자를 감싸 안은 듯 촉촉하게 흔들려 ',
+        you.get_colored_name(),
+        '이(가) 하여금 당장이라도 한 입 베어 물고 싶게 만들었다.',
+      ]);
+      await era.printAndWait([
+        '자그만 돌기는 ',
+        you.get_colored_name(),
+        '의 조급한 손길에 자꾸만 손아귀를 벗어나 미끄러졌고, 그럴 때마다 ',
+        ruby.get_colored_name(),
+        '는 참지 못하고 풋 웃음을 터뜨렸다.',
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        '은(는) ',
+        ruby.get_colored_name(),
+        '를 깨끗이 씻겨준 후, 이번에는 ',
+        ruby.get_colored_name(),
+        '에게 ',
+        you.get_colored_name(),
+        '의 몸을 닦아달라고 부탁했다.',
       ]);
       await era.printAndWait(
-        '彼女は一寸一寸、丁寧に体を整えた。ただ、いちばん大切なところだけが漏れていた。',
+        '그녀는 몸의 모든 부위를 세심하게 닦아내렸지만, 오직 가장 중요한 부위만큼은 쏙 빼놓았다.',
       );
-      era.printButton('声をかけて促す', 1);
-      era.printButton('手を掴んで強いる', 2);
+      era.printButton('아직 안 씻은 부위를 말해준다', 1);
+      era.printButton('그녀의 손을 잡고 강제로 시킨다', 2);
       await era.input();
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] non_penetration
+  // [번역 완료] non_penetration
   non_penetration: (() => {
-    const title = '一緒にお風呂';
+    const title = '함께 목욕하기';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (ruby, you) => {
       const ret = [];
-      era.printButton('「一緒にお風呂は、どうだ？」', 1);
+      era.printButton('「같이 목욕하는 건 어때?」', 1);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は顔を上げ、目を見開いた。',
+        '는 고개를 들어 눈을 동그랗게 떴다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' も、自分の言葉に少し驚いた。',
+        ' 역시 스스로가 뱉은 말에 깜짝 놀랐다.',
       ]);
       await era.printAndWait(
-        'この提案が極端すぎるわけではない。二人はすでに何度も、隠し立てなく向き合ってきた。',
+        '이 제안이 아주 터무니없는 것은 아니었다. 결국 두 사람은 이미 여러 번 서로에게 숨김없이 솔직해진 적이 있었으니까.',
       );
       await era.printAndWait([
-        'だが平日の今日、面と向かって ',
+        '하지만 오늘 같은 평범한 평일에 정면으로 ',
         ruby.get_colored_name(),
-        ' にこれを言うのは、いくらか大胆だった。',
+        '에게 이런 제안을 건네는 것은, 다소 대담한 구석이 있었다.',
       ]);
-      await ruby.say_and_wait('む……');
-      await ruby.say_and_wait('いけなくは、ありませんわ。');
-      era.printButton(`「ルビーは最高だ！」`, 1);
-      era.printButton(`「仕方ないだろ。ルビーが可愛すぎるんだ。」`, 2);
-      era.printButton(`ルビーを抱き上げる。`, 3);
+      await ruby.say_and_wait('으음……');
+      await ruby.say_and_wait('안 될 것도 없죠.');
+      era.printButton(`「루비, 역시 최고야!」`, 1);
+      era.printButton(`「나도 어쩔 수 없었다고, 루비가 너무 귀여운 탓이니까.」`, 2);
+      era.printButton(`루비를 안아 올린다.`, 3);
       ret.push(await era.input());
-      await era.printAndWait([ruby.get_colored_name(), ' は少し羞じた。']);
+      await era.printAndWait([ruby.get_colored_name(), '는 다소 부끄러워했다.']);
       await era.printAndWait([
-        '目の前の、凝脂のような、艶やかな体を見て、',
+        '눈앞에 펼쳐진 눈처럼 하얗고 고운 피부와 맵시 있고 요염한 나신을 바라보며, ',
         you.get_colored_name(),
-        ' は喉が渇いた。',
+        '은(는) 자신도 모르게 목이 타들어 갔다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' の熱い視線に、少し照れた。',
+        '의 뜨거운 시선에 다소 수줍은 기색을 내비쳤다.',
       ]);
-      await ruby.say_and_wait('入りましょう。');
+      await ruby.say_and_wait('씻죠.');
       era.drawLine();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は足早に浴槽へ向かい、手を伸ばして湯加減を見た。層の湯気が愛馬の青臭い体を隠し、見え隠れするほど、朦朧とした美しさがあった。',
+        '는 빠른 걸음으로 욕조를 향해 걸어가 손을 뻗어 물 온도를 확인했다. 겹겹이 피어오르는 물안개가 담당 우마무스메의 풋풋한 몸을 가려주어, 보일 듯 말 듯 한 실루엣 속에서 더욱 몽환적인 미감을 자아냈다.',
       ]);
       await era.printAndWait([
-        '裸の美しい背と、上がった尻を ',
+        '알몸인 아름다운 등과 매끄러운 엉덩이를 ',
         you.get_colored_name(),
-        ' に見せ、',
+        '에게 보여주며, ',
         ruby.get_colored_name(),
-        ' は玉のような足を上げ、水に漣を立てた。',
+        '는 고운 발을 들어 올려 물 위에 잔잔한 파문을 일으켰다.',
       ]);
       await era.printAndWait(
-        '入水は軽やかで、水しぶきはほとんど立たなかった。',
+        '물에 들어가는 모습이 가뿐하여 물보라가 그리 많이 튀지 않았다.',
       );
-      era.printButton(`「ルビー、綺麗だ。」`, 1);
-      era.printButton('ズボンを脱ぎ、亀頭を空気に晒す。', 2);
+      era.printButton(`「루비, 정말 아름다워.」`, 1);
+      era.printButton('바지를 벗고 귀두를 공기 중에 노출시킨다.', 2);
       ret.push(await era.input());
-      await ruby.say_and_wait('うっ……何日、お清めになっていないのですの……');
+      await ruby.say_and_wait('그러나 ');
       await era.printAndWait([
         you.get_colored_name(),
-        ' の肉棒が威風よく立つのを見て、',
+        '의 육봉이 위풍당당하게 솟구쳐 있는 것을 보자, ',
         ruby.get_colored_name(),
-        ' は思わず両脚を閉じた。',
+        '는 자신도 모르게 두 다리를 꼭 맞조였다.',
       ]);
       await era.printAndWait(
-        '蜜の穴は熱い湯に潤っているのに、少女の顔はどこか空虚で、物足りなそうだった。',
+        '몸은 분명 따스한 물에 부드럽게 적셔졌건만, 소녀의 표정에는 어딘가 허전하고 아쉬운 기색이 감돌았다.',
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は短い気まずいあと、風情を解さぬ笑みで湯へ落ちた。',
+        '은(는) 짧은 멋쩍음이 지난 후, 눈치 없이 싱글벙글 웃으며 물속으로 몸을 던졌다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の軽やかさとは違い、水しぶきが四方へ跳ねた。',
+        '와 달리 거칠게 입수하는 바람에 물보라가 사방으로 세차게 튀었다.',
       ]);
-      era.printButton('彼女の向かいに座る。', 1);
+      era.printButton('그녀의 맞은편에 앉는다.', 1);
       await era.input();
       await era.printAndWait([
-        '浴槽が狭いせいで、',
+        '욕조가 협소한 탓에, ',
         ruby.get_colored_name(),
-        ' の両足は ',
+        '의 두 발은 정확히 ',
         you.get_colored_name(),
-        ' の陰嚢の下にあった。',
+        '의 음낭 바로 아랫부분에 위치해 있었다.',
       ]);
       await era.printAndWait([
-        'わずかに上げれば、',
+        '그저 아주 미세하게 들어 올리기만 해도, ',
         you.get_colored_name(),
-        ' に狂おしい刺激を与えられる。',
+        '에게 미칠 것만 같은 자극을 안겨줄 수 있는 구도였다.',
       ]);
-      await ruby.say_and_wait('粗野ですわ……');
+      await ruby.say_and_wait('무례하시기는……');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' はそう言いながら、大きな瞳を ',
+        '는 말은 그렇게 하면서도, 커다란 눈동자를 ',
         you.get_colored_name(),
-        ' の肉棒から外せなかった。',
+        '의 육봉으로부터 떼지 못했다.',
       ]);
       await era.printAndWait(
-        '水の下に隠れていても、無視できない雄の姿で頭を上げていた。',
+        '그것은 비록 물 아래 감춰져 있었으나, 결코 무시할 수 없는 웅장하고 늠름한 자태로 고개를 치켜들고 있었다.',
       );
       await era.printAndWait([
-        'それでも、',
+        '그럼에도 불구하고, ',
         ruby.get_colored_name(),
-        ' が二人の匂いのついた清水を掬って体にかける仕草は、優雅で愛らしかった。',
+        '두 사람의 체취가 섞인 맑은 물을 움켜쥐어 자신의 몸에 끼얹는 동작은 여전히 우아하고 사랑스러웠다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' はぼんやりと、',
+        '은(는) 멍하니 ',
         ruby.get_colored_name(),
-        ' が体を洗うのを見た。',
+        '가 몸을 씻는 모습을 바라보았다.',
       ]);
       await era.printAndWait(
-        '動きを忘れ、白い柔い肌の一寸一寸を、小さな手が熱い湯で撫でるのを見つめていた。',
+        '자신이 움직여야 한다는 사실조차 잊은 채, 그저 하얗고 뽀얀 살결 하나하나를 조그만 손으로 따스한 물을 적셔 부드럽게 문지르는 광경만을 주시했다.',
       );
       await era.printAndWait([
-        '高価な石鹸の花の香りが甘い泡の一つ一つに宿り、',
+        '고급 비누가 만들어내는 화사한 꽃향기가 향긋하고 달콤한 비눗방울 하나하나에 깃들어, ',
         ruby.get_colored_name(),
-        ' を王女のように引き立てた。',
+        '를 마치 고귀한 공주님처럼 돋보이게 했다.',
       ]);
-      await ruby.say_and_wait('ぼうっとしていてはいけませんわ。');
+      await ruby.say_and_wait('넋 놓고 있지 마세요.');
       await era.printAndWait([
-        '愛馬の促しで ',
+        '담당 우마무스메의 재촉에 ',
         you.get_colored_name(),
-        ' は我に返った。だが両脚の間に、何か柔いものが張りついている。',
+        '은(는) 정신을 차렸으나, 이내 양다리 사이에 어떤 부드럽고 가녀린 감촉이 밀착하는 것을 강렬하게 느꼈다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' には、無意の交差なのか、意図した誘いなのか分からなかった。',
+        '은(는) 이것이 무의식적인 엇갈림인지, 아니면 의도된 유혹인지 분간하기 어려웠다.',
       ]);
-      era.printButton('花弁のような柔い足を掴む。', 1);
-      era.printButton('弄び始める。', 2);
+      era.printButton('꽃잎처럼 가녀린 발을 붙잡는다.', 1);
+      era.printButton('발을 조물거리며 만지작댄다.', 2);
       await era.input();
-      await ruby.say_and_wait('はっ……くすぐったい……何をなさいますの？');
+      await ruby.say_and_wait('하앗…… 간지러워요…… 당신 지금 뭘 하시는 건가요?');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は小さな足を上げられ、',
+        '는 조그만 발이 붙잡혀 올려진 채, ',
         you.get_colored_name(),
-        ' に強く弱く揉まれ、脚が弛んだ。',
+        '에 의해 때로는 가볍게, 때로는 묵직하게 주물러져 다리에 힘이 풀릴 지경이 되었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' に弄ばれるまま、洗う動きはますます遅くなった。',
+        '이(가) 마음대로 가지고 놀도록 내버려 두었으나, 몸을 씻는 손길은 갈수록 눈에 띄게 느려졌다.',
       ]);
       era.printButton(
-        `「きれいに洗ってやる。ルビーは足、洗いづらいだろう？」`,
+        `「내가 깨끗하게 씻겨줄게, 루비 스스로 발을 씻기는 조금 불편하잖아?」`,
         1,
       );
       await era.input();
       await era.printAndWait([
-        'もちろん、',
+        '당연하게도, ',
         you.get_colored_name(),
-        ' の鍛錬のおかげで、',
+        ' 밑에서 단련된 결과로 ',
         ruby.get_colored_name(),
-        ' の柔軟さなら足を洗うこともできる。だが、たしかに手間だ。',
+        '의 뛰어난 유연성을 이용하면 제 손으로 발을 깨끗이 씻는 것 따위는 일도 아니었지만, 확실히 다소 번거로운 일이기는 했다.',
       ]);
       await era.printAndWait([
-        '何より、こうして ',
+        '무엇보다도, ',
         you.get_colored_name(),
-        ' に掴まれている。',
+        '에게 이렇게 쪼물딱거려지다 보니.',
       ]);
       await ruby.say_and_wait(
-        'ん……あっ！ 力が入りすぎですわ……でも、気持ちいいですわ……',
+        '으응…… 앗! 힘이 너무 과해요…… 하지만, 기분 좋네요……',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は目を閉じ、',
+        '는 두 눈을 지그시 감은 채, ',
         you.get_colored_name(),
-        ' の揉みに誘う喘ぎを漏らした。',
+        '의 주무름 속에서 한 발짝씩 터져 나오는 고혹적인 신음을 흘렸다.',
       ]);
       await era.printAndWait(
-        '華麗一族の少女は、蕩けた目で浴槽の縁に寄り、茶黒の長い髪が水に柳のように浮かんだ。',
+        '화려한 일족의 소녀는 눈동자가 풀린 채 욕조 가장자리에 기대어 있었고, 그녀의 흑갈색 긴 머리칼은 물속에 흩어져 마치 버드나무 가지처럼 하늘거렸다.',
       );
       await era.printAndWait(
-        '人間の男をたやすく打ち伏せる白い手が、今は交差して両脚の間を守り、太ももに擦られていた。',
+        '인간 남성을 가볍게 때려눕힐 수도 있는 그 새하얀 손은, 지금 이 순간만큼은 두 다리 사이에 교차된 채 아슬아슬하게 방어벽을 치며 허벅지를 비벼대고 있을 뿐이었다.',
       );
       await era.printAndWait([
-        '美術品より完璧な一対の足が、少女の甘い喘ぎの中で ',
+        '예술품보다 더 완벽한 한 쌍의 발은 소녀의 가녀린 신음 소리와 함께 ',
         you.get_colored_name(),
-        ' にくまなく弄ばれた。',
+        '의 손안에서 구석구석 남김없이 농락당했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' はほとんど水面下へ沈みかけた。',
+        '는 거의 물 밑바닥으로 미끄러져 누울 지경이었다.',
       ]);
-      era.printButton('腰を抱いて懐へ入れる。', 1);
+      era.printButton('그녀의 허리를 감싸 품 안으로 끌어당긴다.', 1);
       await era.input();
       await era.printAndWait([
-        '少女の白い柔い肌と一対の胸が、',
+        '소녀의 부드럽고 뽀얀 살결과 한 쌍의 풍만한 가슴이 ',
         you.get_colored_name(),
-        ' の胸板に密着した。',
+        '의 가슴팍에 정면으로 밀착했다.',
       ]);
-      await ruby.say_and_wait('あなた……何を……？');
-      era.printButton(`「もちろん、ルビーを洗ってやる。」`, 1);
-      era.printButton(`「ルビーの背中も、わたしに任せろ。」`, 2);
+      await ruby.say_and_wait('당신…… 대체 뭘 하려는 건가요?');
+      era.printButton(`「당연히 루비의 목욕을 도와주려는 거지.」`, 1);
+      era.printButton(`「등 밀어줄게.」`, 2);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' が理解するより先に、',
+        '가 상황을 완전히 이해하기도 전에, ',
         you.get_colored_name(),
-        ' は彼女ごと向きを変えた。',
+        '은(는) 그녀의 몸을 통째로 붙잡아 방향을 횅하니 돌려버렸다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は自分の太ももで ',
+        '은(는) 자신의 단단한 허벅지로 ',
         ruby.get_colored_name(),
-        ' を挟んだ。',
+        '를 정중앙에 끼워 맞추듯 고정했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の美しい弧の背が ',
+        '의 부드러운 곡선을 그리는 등줄기가 ',
         you.get_colored_name(),
-        ' の胸に凭れ、下の、湯より彼女をざわつかせる陽物を感じさせられた。',
+        '의 가슴에 완전히 기댔고, 그녀는 등 뒤에서 전해지는, 목욕물보다 훨씬 더 자신을 조바심치게 만드는 뜨거운 양물을 고스란히 체감해야만 했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は手を伸ばし、',
+        '은(는) 손을 뻗어 ',
         ruby.get_colored_name(),
-        ' の胸をさまざまな形に揉んだ。誘う薄紅が白い肌へ広がった。',
+        '의 젖가슴을 온갖 기묘한 모양으로 주물렀고, 고혹적인 핑크빛 홍조가 하얀 피부 위로 번져나갔다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の胸は大きな手に揉まれ、尻は肉棒に擦られ、両脚まで ',
+        '의 가슴은 커다란 손에 짓눌려 뭉개졌고, 엉덩이는 굳센 육봉에 지속적으로 마찰당했으며, 심지어 두 다리마저 ',
         you.get_colored_name(),
-        ' の体毛に擦られた。',
+        '의 다리털에 사정없이 쓸려나갔다.',
       ]);
       await era.printAndWait(
-        '全身の快感が電流のように、何度も脊髄を通って脳を貫いた。',
+        '온몸을 휘감는 쾌감이 짜릿한 전류의 형태로 척수를 타고 올라가 뇌리를 사정없이 관통했다.',
       );
-      await era.printAndWait('淫液が蜜の入口から流れた。');
-      await ruby.say_and_wait('だ……だめですわ！');
+      await era.printAndWait('음란한 액체가 비처의 입구로부터 끊임없이 흘러내렸다.');
+      await ruby.say_and_wait('안…… 안 돼요……!');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の揺れる様子に ',
+        '의 흔들리는 눈빛은 ',
         you.get_colored_name(),
-        ' は大いに喜んだ。だが彼女は、まだ許さなかった。',
+        '에게 말할 수 없는 희열을 안겨주었으나, 그녀는 여전히 끝끝내 허락하지 않았다.',
       ]);
-      await ruby.say_and_wait('脚だけ、なら……');
-      era.printButton('体を後ろへ倒し、両手を浴槽に預ける。', 1);
-      era.printButton('顔を寄せ、熱い息で愛馬の耳に囁く。', 2);
+      await ruby.say_and_wait('다리 사이라면……');
+      era.printButton('몸을 뒤로 파묻으며, 두 손으로 욕조 가장자리를 지탱한다.', 1);
+      era.printButton('고개를 바짝 들이밀어, 뜨거운 숨결과 함께 담당 우마무스메의 귀와 뺨을 어루만진다.', 2);
       ret.push(await era.input());
       if (ret.at(-1) === 1) {
-        await you.say_and_wait('欲しいなら、自分で来い。');
+        await you.say_and_wait('원한다면, 네가 직접 움직여봐.');
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は小さな尻を少し上げ、腰を下ろすと細い肉縫が太い肉棒に密着した。',
+          '는 자그만 엉덩이를 조금 위로 달싹이더니, 그대로 주저앉으며 조그만 살 틈새를 거대한 육봉에 빈틈없이 밀착시켰다.',
         ]);
         await era.printAndWait([
-          '玉のような脚がすぐに締まり、',
+          '고운 다리가 그대로 단단히 조여들었고, 이에 ',
           you.get_colored_name(),
-          ' はすぐ ',
+          '은(는) 즉각적으로 ',
           ruby.get_colored_name(),
-          ' の肉縫の吸いを感じた。',
+          '의 허벅지 틈새가 자아내는 강렬한 흡인력을 맛보았다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が快感に声を上げるより先に、',
+          '이(가) 쾌감에 겨워 비명을 지르기도 전에, ',
           ruby.get_colored_name(),
-          ' は繊い指を伸ばし、水底の亀頭へ当てた。',
+          '는 고운 손가락을 뻗어 물속에 잠긴 귀두 끝을 지그시 눌렀다.',
         ]);
         await era.printAndWait([
-          '指先が何度も滑り、あるかないかの感触に ',
+          '손끝이 몇 번이고 미끄러지듯 스쳐 지나갔고, 그 닿을 듯 말 듯한 감각에 ',
           you.get_colored_name(),
-          ' は心を奪われた。',
+          '은(는) 정신이 아득해졌다.',
         ]);
         await era.printAndWait([
-          'この生々しい光景に ',
+          '이토록 농밀하고 생생한 자극에 ',
           you.get_colored_name(),
-          ' は堪えきれず、再び ',
+          '은(는) 더 이상 참지 못하고 다시금 ',
           ruby.get_colored_name(),
-          ' の腰へ手をかけた。',
+          '의 허리를 억세게 움켜잡았다.',
         ]);
         await era.printAndWait([
-          '弄ばれた ',
+          '붙잡힌 채 희롱당하는 ',
           ruby.get_colored_name(),
-          ' は無意識に両脚を閉じ、擦り、捩った。',
+          '는 자신도 모르게 두 다리를 더 꽉 집어삼키며 비비고, 몸을 비틀었다.',
         ]);
         await era.printAndWait([
-          'やがて ',
+          '마침내, 자신을 압박하는 ',
           you.get_colored_name(),
-          ' の肉棒の膨らみを感じ、',
+          '의 육봉이 한계까지 팽창하는 것을 느끼자, ',
           ruby.get_colored_name(),
-          ' は両脚を強く挟んだ。',
+          '는 두 다리에 온 힘을 주어 강하게 조였다.',
         ]);
         await era.printAndWait([
-          '火山が噴くように、大量の白い濁りが迸り、',
+          '마치 화산이 폭발하듯, 엄청난 양의 백탁액이 뿜어져 나와 ',
           ruby.get_colored_name(),
-          ' の脚と蕾にかかった。',
+          '의 고운 다리와 꽃봉오리를 하얗게 더럽혔다.',
         ]);
         await era.printAndWait(
-          '灼熱が広がるとともに、清水の中にも白いものが増えた。',
+          '뜨거운 열기가 확산됨에 따라, 맑았던 온수 속에도 하얀빛이 번져나갔다.',
         );
         await era.printAndWait([
-          '華麗一族の至宝は、またしても ',
+          '화려한 일족의 고귀한 보물이, 또 한 번 ',
           you.get_colored_name(),
-          ' に穢された。',
+          '에 의해 여지없이 더럽혀지고 말았다.',
         ]);
       } else {
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は察して振り返り、',
+          '는 마음을 알아채고는, 고개를 돌려 ',
           you.get_colored_name(),
-          ' の唇を迎えた。',
+          '의 입술을 마중 나왔다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' の厚い舌が堂々と ',
+          '의 두툼한 혀가 당당하게 ',
           ruby.get_colored_name(),
-          ' の小さな口へ入り、小さな舌と絡み、淫らな音を立てた。',
+          '의 조그만 입안으로 침입하여, 앵두 같은 작은 혀와 얽히며 외설스럽고 음미로운 마찰음을 내뿜었다.',
         ]);
         await era.printAndWait(
-          '一方は顔を紅潮させ、一方は星のような瞳を酔わせていた。',
+          '한쪽은 얼굴이 온통 붉게 상기되었고, 다른 한쪽은 황홀경에 취해 있었다.',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' は手に力を込め、小さな胸の桜を軽く摘んだ。',
+          '은(는) 손에 힘을 주어, 자그맣고 예쁜 가슴 위에 얹힌 앵두를 살짝 비틀어 쥐었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、ほかの者が想うことすら憚る美少女を、気ままに弄んだ。',
+          '은(는) 다른 남성들이라면 감히 상상조차 할 수 없을 고귀한 미소녀를 제멋대로 유린했다.',
         ]);
         await era.printAndWait([
-          '髪、香る肩、柔い胸、上がった尻、玉のような脚。ついには ',
+          '머리카락, 가녀린 어깨, 고운 가슴, 탄력 있는 엉덩이, 매끄러운 다리, 심지어 ',
           ruby.get_colored_name(),
-          ' に、自分の仕草へ合わせさせた。',
+          '가 자신의 추잡한 행위에 순순히 보조를 맞추도록 만들었다.',
         ]);
-        await era.printAndWait('唇が離れ、肉棒から濃い白濁が迸った。');
+        await era.printAndWait('입술이 떨어지자마자, 육봉이 짙고 걸쭉한 백탁을 격렬하게 분출했다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           ruby.get_colored_name(),
-          ' の滑らかな顎を上げ、目の前の、静かな赤い小さな顔を眺めた。',
+          '의 매끄러운 턱을 치켜세우며, 눈앞에 펼쳐진 수줍음으로 완전히 붉어진 조그만 얼굴을 감상했다.',
         ]);
         await era.printAndWait([
-          '正気を失った ',
+          '넋이 나간 듯 멍해져 있던 ',
           ruby.get_colored_name(),
-          ' は、そっと ',
+          '는 슬며시 ',
           you.get_colored_name(),
-          ' の抱擁から抜けた。',
+          '의 품을 삐져나왔다.',
         ]);
         await era.printAndWait([
-          'そのあと、想像を誘う跡を十分に清め、素早く互いを洗い終えた。',
+          '그 후, ',
         ]);
       }
       return ret;
@@ -2311,7 +2311,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] sex_mark
+  // [번역 완료] sex_mark
   sex_mark: (() => {
     const title = '';
     /**
@@ -2321,464 +2321,464 @@ module.exports = {
      */
     const f = async (ruby, you, callname) => {
       await ruby.say_and_wait([
-        'お腹はもう漲っているのに、わたくしはまだ ',
+        '배는 이미 가득 찼는데, 아직도 ',
         callname,
-        ' が精液を子宮へ注いでくださるのを欲しがっている……',
+        '이 내 자궁 속에 정액을 가득 채워주기를 바라고 있어……',
       ]);
       await ruby.say_and_wait([
         ruby.get_colored_name(),
-        '、あなたは……本当に恥じらいを知りませんわ。',
+        ', 너는 정말…… 부끄러운 줄도 모르는구나.',
       ]);
       era.println();
-      await ruby.say_and_wait('——これは、何の感じですの？');
+      await ruby.say_and_wait('——이건, 무슨 기분이지?');
       await ruby.print_and_wait([
-        '心臓がどきどきと激しく跳ね、',
+        '심장이 쿵쾅쿵쾅 격렬하게 뛰기 시작했다. ',
         ruby.get_colored_name(),
-        ' は自分の顔が真っ赤になっていることにも気づいていなかった。',
+        '는 자신의 얼굴이 얼마나 새빨갛게 물들었는지조차 인지하지 못했다.',
       ]);
       await ruby.print_and_wait(
-        '驚きと理解できない色に満ちた両目が下腹を見つめ、両手を重ねて微かに開いた唇を軽く押さえた。',
+        '충격과 혼란으로 가득 찬 눈동자로 자신의 아랫배를 뚫어지게 바라보며, 양손을 겹쳐 벌어진 입술을 살포시 가렸다.',
       );
-      await ruby.print_and_wait('体が格別に熱く、意識が間欠的に霞む。');
+      await ruby.print_and_wait('몸이 이상할 정도로 뜨거워졌고, 의식이 간헐적으로 흐려졌다.');
       await ruby.print_and_wait([
-        '体内で火が灼けているようで、',
+        '마치 체내에서 불꽃이 타오르는 듯한 감각이 밀려와, 하마터면 ',
         ruby.get_colored_name(),
-        ' は気を失いそうだった。',
+        '는 정신을 잃을 뻔했다.',
       ]);
       await ruby.print_and_wait(
-        '鍛えられた四肢が次第に礼を失い、絶頂したように微かに震えていた。',
+        '단련된 사지에서 힘이 쭉 빠져나갔고, 절정에 달한 것처럼 가볍게 바르르 떨렸다.',
       );
       await ruby.print_and_wait(
-        '外から見れば、震える馬耳、ピンと張った馬尾は、絶頂と区別がつかなかった。',
+        '제3자가 보기에는 잘게 떨리는 귀와 꼿꼿이 선 꼬리가 영락없는 절정의 그것과 다를 바 없었다.',
       );
-      await ruby.say_and_wait('ううう……いやですわ');
+      await ruby.say_and_wait('우우우…… 싫어……');
       await ruby.print_and_wait([
-        '体内の熾熱は、',
+        '몸속을 지지는 듯한 이 치명적인 뜨거움은 ',
         callname,
-        ' に抱かれて舌を交わしたときと、寸分違わなかった。',
+        '의 품에 안겨 격렬하게 혀를 섞을 때의 감각과 완전히 똑같았다.',
       ]);
       await ruby.print_and_wait([
         ruby.get_colored_name(),
-        ' は鏡を見た。両目に水気が溜まり、銀の歯で軽く噛み、苦しむ顔は普段の彼女らしくなかった。',
+        '가 거울을 바라보자, 눈가에는 눈물이 고여 있었고 입술을 지그시 깨문 채 고뇌하는 표정은 말할 수 없이 음란했다.',
       ]);
       await ruby.print_and_wait([
-        'ほとんど反射で、',
+        '그녀는 거의 반사적으로 ',
         callname,
-        ' との日々を想った。',
+        '와 보냈던 낮과 밤들을 떠올렸다.',
       ]);
       await ruby.print_and_wait([
-        'ついには、今この瞬間に ',
+        '심지어 지금 당장 ',
         callname,
-        ' に抱かれて口づけされたら、自分の顔はどうなるだろう、と想像し始めた。',
+        '에게 안겨 입맞춤을 받는다면 자신의 표정이 어떻게 변할지 상상하기 시작했다.',
       ]);
-      await ruby.say_and_wait('この渇望は、どうして？');
+      await ruby.say_and_wait('이런 갈망은, 대체 왜……?');
       await ruby.print_and_wait([
         ruby.get_colored_name(),
-        ' は耳がわずかに震えた気がして、手を伸ばして触れた。',
+        '는 자신의 귀가 쫑긋거리는 것을 느끼고 손을 뻗어 매만졌다.',
       ]);
       await ruby.print_and_wait([
-        '奇妙なことに、本来感じるはずの、',
+        '이상하게도, 원래 느껴져야 할 ',
         callname,
-        ' に愛撫されたときの快楽は、まったくなかった。その感覚に ',
+        '에게 애무받을 때의 쾌감은 전혀 없었다. 이 초조한 감각은 ',
         ruby.get_colored_name(),
-        ' はわずかに苛立った。',
+        '를 무척이나 답답하게 만들었다.',
       ]);
       await ruby.print_and_wait([
-        '行き場のない圧が ',
+        '분출구를 찾지 못한 압박감이 ',
         ruby.get_colored_name(),
-        ' の小柄な体の中で押し合い、幼い唇から熱い息が一口また一口漏れた。',
+        '의 자그마한 체내에 짓눌리듯 쌓여갔고, 앳된 입술 사이로 뜨거운 숨결이 연달아 새어 나왔다.',
       ]);
-      await ruby.say_and_wait(['はあっ、はあっ……', callname, '……どうして……']);
+      await ruby.say_and_wait(['하아, 하아…… ', callname, '…… 어째서……']);
       await ruby.say_and_wait([
         callname,
-        '、助けてくださいまし。わたくし、わたくし、あなたしか考えられない……',
+        ', 도와주세요, 저, 저 온통 당신 생각밖에 나질 않아서……',
       ]);
-      await ruby.say_and_wait('あの感じが、ますます強く……どうして……どうして？');
+      await ruby.say_and_wait('그 느낌이, 점점 더 강해져서…… 어째서…… 어째서인가요?');
       await ruby.print_and_wait([
         ruby.get_colored_name(),
-        ' は小さく息を入れ直し、目がいくらか澄んだ。',
+        '가 숨을 짧게 몰아쉬자, 눈빛이 조금은 또렷해졌다.',
       ]);
       await ruby.print_and_wait([
-        'だが体に残る熱と、',
+        '하지만 몸 안에 남아있는 열기와 ',
         callname,
-        ' の記憶が、まだ彼女を妄念へ誘っていた。',
+        '과(와)의 기억이 자꾸만 그녀를 불순한 망상 속으로 빠뜨렸다.',
       ]);
       era.drawLine();
-      await era.printAndWait('（トントントン）');
-      await ruby.say_and_wait([callname, '、わたくし……わたくしですわ……']);
-      await era.printAndWait('——声は少し弱く、喘いでいた。');
+      await era.printAndWait('（똑 똑 똑）');
+      await ruby.say_and_wait([callname, ', 저…… 저에요……']);
+      await era.printAndWait('——목소리가 가냘프게 떨리며 가쁜 숨이 섞여 있다.');
       await era.printAndWait([
-        '愛馬の声がおかしいと聞き、',
+        '담당 우마무스메의 목소리가 심상치 않음을 감지한 ',
         you.get_colored_name(),
-        ' は迷わず扉を開けた。',
+        '은(는) 주저 없이 방문을 열었다.',
       ]);
       await era.printAndWait([
-        '目の前の麗人を見定めるより先に、',
+        '눈앞에 선 미인의 모습을 미처 제대로 확인하기도 전에, ',
         ruby.get_colored_name(),
-        ' の体がそのまま ',
+        '의 몸이 그대로 ',
         you.get_colored_name(),
-        ' の懐へ飛び込んできた。',
+        '의 품 안으로 무너지듯 안겨 왔다.',
       ]);
-      await you.say_and_wait('熱い？', true);
+      await you.say_and_wait('몸이 왜 이렇게 뜨겁지?', true);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の両手はルビーの背へ回り、彼女の両脚は弛み、半跪きで全身が ',
+        '의 양손이 루비의 등을 감싸 안았다. 그녀는 다리에 힘이 풀려 반쯤 꿇어앉은 채 온몸의 무게를 ',
         you.get_colored_name(),
-        ' の懐に凭れていた。',
+        '의 품에 맡기고 있었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の視線は高級なワンピースの半透明な箇所を通り、',
+        '의 시선이 고급 원피스의 살짝 비치는 시스루 부위를 뚫고 들어가, ',
         ruby.get_colored_name(),
-        ' の下着へ落ちた。',
+        '의 속옷 위로 떨어졌다.',
       ]);
       await era.printAndWait([
-        '掌に感じる熱に、',
+        '손바닥으로 고스란히 전해지는 엄청난 열기에 ',
         you.get_colored_name(),
-        ' は一時、呆然とした。',
+        '은(는) 순간 당혹감을 감출 수 없었다.',
       ]);
-      await ruby.say_and_wait(['はあっ～はあっ～', callname, '……はあっ……']);
+      await ruby.say_and_wait(['하아~ 하아~ ', callname, '…… 하아……']);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の懐に伏せた ',
+        '의 가슴에 묻혀있던 ',
         ruby.get_colored_name(),
-        ' がゆっくり顔を上げ、小さな顔は微かに赤かった。',
+        '의 고개가 서서히 들려졌다. 얼굴은 발그레하게 상기되어 있었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は急いで扉を閉じ、',
+        '은(는) 서둘러 문을 닫고, ',
         ruby.get_colored_name(),
-        ' をソファへ抱き上げ、仰向けに寝かせた。',
+        '를 소파 위로 올려 눕혔다.',
       ]);
-      await ruby.say_and_wait([callname, '、わたくし、わたくし、熱くて……']);
+      await ruby.say_and_wait([callname, ', 저, 몸이 너무 뜨거워요……']);
       await ruby.say_and_wait([
-        'お会いしたくて、',
+        '당신이 보고 싶었어요, ',
         callname,
-        '……わたくし、どうしてだか分からなくて……',
+        '…… 저, 저도 왜 이러는지 모르겠어요……',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の声は普段の凛々しさではなく、弱く柔かかった。',
+        '의 목소리는 평소의 의연함을 잃고, 한없이 약하고 부드럽게 늘어졌다.',
       ]);
       await era.printAndWait([
-        '水を湛えた両目が ',
+        '물기 어린 눈망울이 ',
         you.get_colored_name(),
-        ' を見つめ、尻尾もそっと ',
+        '을(를) 애처롭게 바라보았고, 꼬리는 슬그머니 ',
         you.get_colored_name(),
-        ' の太ももに絡んだ。',
+        '의 허벅지를 감싸 안았다.',
       ]);
       await era.printAndWait(
-        '彼女は両脚を閉じ、左右に擦り、ソファの上で体を小さく捩った。',
+        '그녀는 허벅지를 꽉 조인 채 좌우로 비벼대며 소파 위에서 몸을 살랑살랑 뒤틀었다.',
       );
       await era.printAndWait(
-        'この言いたげで言い切れない羞じらいを、遊女なら拒みつつ誘う手段と見るだろう。',
+        '이러지도 저러지도 못하는 수줍은 몸짓은, 만약 유흥가의 여인이었다면 유혹하는 수작이라 여겼을 만큼 요염했다.',
       );
       await era.printAndWait([
-        'だが彼女は ',
+        '하지만 그녀는 다른 누구도 아닌 명문가의 ',
         ruby.get_colored_name(),
-        ' だ。生き写しのような発情した雌犬の姿に、',
+        '다. 완전히 발정 난 암컷이 따로 없는 모습에 ',
         you.get_colored_name(),
-        ' は少し茫然とした。',
+        '은(는) 순간 멍해질 수밖에 없었다.',
       ]);
-      await ruby.say_and_wait([callname, '……頭が、頭がぼんやりしていますわ。']);
-      era.printButton(`深く息をして、ルビー。`, 1);
+      await ruby.say_and_wait([callname, '…… 머리가, 머릿속이 어질어질해요.']);
+      era.printButton(`심호흡을 해봐, 루비.`, 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' の携帯にはすでに老執事の番号が出ていた。それでも ',
+        '의 스마트폰 화면에는 이미 늙은 집사의 번호가 띄워져 있었지만, 끝내 ',
         you.get_colored_name(),
-        ' はそれを茶卓へ置いたままにした。',
+        '은(는) 그것을 탁자 위에 엎어놓았다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         ruby.get_colored_name(),
-        ' の傍らに蹲り、そっと ',
+        '의 곁에 쪼그리고 앉아, 살며시 ',
         ruby.get_colored_name(),
-        ' の茶黒の髪へ顔を埋め、嗅いだ。',
+        '의 곁에 쪼그리고 앉아, 그녀의 흑갈색 머리카락 사이에 코를 묻고 숨을 들이쉬었다.',
       ]);
-      await era.printAndWait('——雌が発情した気配。');
+      await era.printAndWait('——암컷의 달콤한 페로몬.');
       await era.printAndWait([
-        'ウマ娘が発情するとき特有の、濃くて、恬淡とした清い香りに、',
+        '우마무스메가 발정했을 때 뿜어져 나오는, 특유의 농후하면서도 맑은 향기가 ',
         you.get_colored_name(),
-        ' は一時、酔った。',
+        '을(를) 순간 깊은 도취감에 빠뜨렸다.',
       ]);
       await era.printAndWait(
-        '水のように清いのに、長く嗅げば墨のように濃いこの匂いは、色恋に長けた者ですら魅了されると聞く。',
+        '마치 맑은 물처럼 순수하면서도 오래 맡으면 묵직한 먹물처럼 깊어지는 이 향은, 수많은 풍파를 겪은 난봉꾼들조차 포로로 만든다고 알려져 있었다.',
       );
       await era.printAndWait([
-        '念のため、',
+        '확인을 위해, ',
         you.get_colored_name(),
-        ' はまず手を ',
+        '은(는) 우선 손을 ',
         ruby.get_colored_name(),
-        ' の額へ当て、体温を測った。',
+        '의 이마에 얹어 체온을 측정했다.',
       ]);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の細めた両目が突然見開き、わずかに色っぽい吐息を漏らした。',
+        '의 풀려있던 눈동자가 순간 번쩍 뜨이더니, 가볍고 색기 어린 숨소리가 흘러나왔다.',
       ]);
-      await ruby.say_and_wait('はあっ～んっ～はあっ～');
-      await era.printAndWait('——やはり、淫紋か。');
+      await ruby.say_and_wait('하아~ 읏~ 하아~');
+      await era.printAndWait('——역시, 음문 때문인가.');
       await ruby.say_and_wait([
         callname,
-        '、わたくしはどうしましたの？ 熱くて……',
+        ', 제게 무슨 일이 일어난 건가요? 너무 더워요……',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は掌で優しく撫で、',
+        '의 손길이 부드러운 궤적을 그리며 ',
         ruby.get_colored_name(),
-        ' の額にかかった髪を梳いた。指も優しく ',
+        '의 이마에 흘러내린 머리카락을 정돈해 주었다. 손가락은 부드럽게 ',
         ruby.get_colored_name(),
-        ' の愛らしい耳を揉んだ。',
+        '의 이마에 흘러내린 머리카락을 정돈해 주었다. 손가락은 이내 그녀의 귀여운 귀를 살포시 매만졌다.',
       ]);
       await era.printAndWait([
-        '心地よさと、',
+        '기분 좋은 감각과 ',
         you.get_colored_name(),
-        ' に触れられている事実が、',
+        '에게 닿아있다는 사실 덕분인지, ',
         ruby.get_colored_name(),
-        ' の心身をいくらか弛めた。',
+        '는 그제야 긴장이 조금 풀린 듯했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' にとって ',
+        '에게 있어 ',
         ruby.get_colored_name(),
-        ' は、味わうのが惜しいほど清い水だ。淫紋は、まさにその一滴の濃い墨だった。',
+        '는 차마 더럽히기 아까울 정도로 맑고 깨끗한 물과 같았고, 음문은 그 투명한 물에 떨어뜨린 단 한 방울의 짙은 먹물과도 같았다.',
       ]);
       await era.printAndWait(
-        '小さく見える欲が、杯の水をたやすく濁し、沸騰させる。',
+        '겉보기엔 미미한 욕망일지라도, 순식간에 잔 전체를 탁하게 만들고 끓어오르게 만들기엔 충분했다.',
       );
       await ruby.say_and_wait([
-        'はあっ～はあっ～気持ちいいですわ、',
+        '하아~ 하아~ 너무 기분 좋아요, ',
         callname,
-        ' の手……',
+        '의 손……',
       ]);
-      await era.printAndWait(['苦笑し、', you.get_colored_name(), '……']);
-      era.printButton('蕩けた両目を、優しく閉じる。', 1);
-      era.printButton(`「大丈夫だ。怖がるな、ルビー。」`, 2);
+      await era.printAndWait(['쓴웃음을 지으며, ', you.get_colored_name(), '……']);
+      era.printButton('그녀의 초점 흐린 두 눈을 부드럽게 감겨주었다.', 1);
+      era.printButton(`「괜찮아, 무서워할 것 없단다, 루비.」`, 2);
       const ret = await era.input();
       if (ret === 1) {
         await era.printAndWait([
-          'この無垢で色気のある視線を失ってこそ、',
+          '이 순수하면서도 요염함이 가득한 시선을 차단하고 나서야, 비로소 ',
           you.get_colored_name(),
-          ' の心は安らぐらしい。',
+          '의 이성이 간신히 중심을 잡을 수 있었다.',
         ]);
         await era.printAndWait([
-          '柔らかな小さな口はまだ荒く息をし、',
+          '비록 그 보드라운 작은 입술이 여전히 가쁜 숨을 몰아쉬며 ',
           you.get_colored_name(),
-          ' を誘っている。だが ',
+          '을(를) 유혹하고 있었지만, ',
           you.get_colored_name(),
-          ' はとりあえず耐えられた——少なくとも今は。',
+          '은(는) 용케 참아낼 수 있었다——적어도 지금은.',
         ]);
         await era.printAndWait([
-          '翌朝早く、',
+          '다음 날 아침, ',
           you.get_colored_name(),
-          ' は執事に連絡し、',
+          '은(는) 집사에게 연락해 ',
           ruby.get_colored_name(),
-          ' を邸へ送り届けさせた。',
+          '를 가문 저택으로 돌려보냈다.',
         ]);
       } else {
         await ruby.say_and_wait([
           callname,
-          ' のお顔、苦しそうですわ？ わたくし、ご迷惑をおかけしていますの……',
+          '의 표정, 무척 괴로워 보여요…… 제가 당신에게 짐이 된 건가요……',
         ]);
         await era.printAndWait([
-          'スカートの裾を摘んでいた小さな手が上がり、',
+          '치맛자락을 꽉 쥐고 있던 작은 손이 슬그머니 올라와 ',
           you.get_colored_name(),
-          ' の顔へ伸び、',
+          '의 얼굴에 닿았고, 굳어 있는 ',
           you.get_colored_name(),
-          ' の張りつめた横顔を撫で支えた。',
+          '의 뺨을 부드럽게 감싸 쥐었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' の表情は、ますます重くなった……',
+          '의 표정이 점점 더 무거워졌다……',
         ]);
-        era.printButton('「耐えろ。」', 1);
-        era.printButton('「耐えねばならない。」', 2);
-        era.printButton('「体は正直だ。」', 3);
+        era.printButton('「참아야 해.」', 1);
+        era.printButton('「반드시 억눌러야 한다.」', 2);
+        era.printButton('「몸은 정직하네.」', 3);
         await era.input();
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の柔らかな小さな手が ',
+          '의 부드러운 손길이 ',
           you.get_colored_name(),
-          ' の顔を撫で、一方で ',
+          '의 뺨을 어루만지는 사이, ',
           you.get_colored_name(),
-          ' の弟分はすでにズボンを突き上げていた。',
+          '의 하반신 텐트는 이미 바지를 팽팽하게 밀어 올리고 있었다.',
         ]);
         await era.printAndWait([
-          '彼女は今、',
+          '그녀는 온통 ',
           you.get_colored_name(),
-          ' の表情と気持ちだけを気にかけていて、まだ気づいていなかった。',
+          '의 표정과 기색을 살피느라, 정작 그 변화에 대해서는 눈치채지 못한 듯했다.',
         ]);
         await era.printAndWait([
-          '歯を食いしばった ',
+          '이를 악문 ',
           you.get_colored_name(),
-          ' が淫紋のことを ',
+          '이(가) 마침내 음문에 대한 사실을 ',
           ruby.get_colored_name(),
-          ' にきちんと話そうとしたとき、息が止まった。',
+          '에게 솔직하게 털어놓으려던 찰나, 그녀의 호흡이 턱 하고 멎었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' と ',
+          '과(와) ',
           ruby.get_colored_name(),
-          ' は同時に目を見開き、互いを見た。',
+          '는 동시에 커진 눈으로 서로를 바라보았다.',
         ]);
-        await ruby.say_and_wait(['あっ～！ ふん～あっ！ ', callname, '……！']);
+        await ruby.say_and_wait(['아~! 흣~ 아! ', callname, '……！']);
         await ruby.say_and_wait([
-          '意識がおかしいですわ、',
+          '이상해요, ',
           callname,
-          '、うああ！——',
+          ', 으아아앗! ——',
         ]);
         await era.printAndWait([
-          '下腹の強い刺激に、',
+          '아랫배에 전해지는 격렬한 자극 때문에, ',
           ruby.get_colored_name(),
-          ' は体を反らせてほとんど起き上がり、両手も無意識に体の両側へ突いて体を支えた。',
+          '는 허리를 바짝 튕기며 거의 상체를 일으켜 세웠고, 양손은 본능적으로 바닥을 짚어 몸을 지탱했다.',
         ]);
         await era.printAndWait(
-          '瞳が揺れ、柔く愛らしい唇が大きく開き、薄紅の香る舌が出た。',
+          '눈동자가 사정없이 흔들렸고, 조그맣고 귀여운 입술이 활짝 벌어지며 그 안의 분홍빛 혀가 밖으로 길게 새어 나왔다.',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' の思考は狂ったように警鐘を鳴らし、面目を失っても医者を呼ぶと決めた。',
+          '의 이성이 격렬하게 경고음을 울려댔고, 아무리 꼴사나운 모양새가 될지언정 의사를 부르기로 결심했다.',
         ]);
         await era.printAndWait([
-          '手が携帯を掴んだ瞬間、',
+          '손이 막 스마트폰을 움켜쥐려던 순간, ',
           ruby.get_colored_name(),
-          ' の起き上がった体が突然傾き、ソファから落ちた。',
+          '의 버티던 몸이 돌연 균형을 잃고 소파 아래로 미끄러져 내렸다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は無意識に体で受け止め、携帯は体に当たって傍らへ落ち、壊れた。',
+          '은(는) 반사적으로 몸을 날려 그녀를 받아냈으나, 그 충격으로 스마트폰이 바닥에 나뒹굴며 처참하게 박살 나 버렸다.',
         ]);
         await era.printAndWait([
-          '全身に力のない ',
+          '온몸의 맥이 풀려버린 ',
           ruby.get_colored_name(),
-          ' は ',
+          '는 ',
           you.get_colored_name(),
-          ' の胸の前に跪き伏せ、体の中央はちょうど ',
+          '의 가슴팍 위에 엎어졌고, 그녀의 아랫배 한가운데는 하필 ',
           you.get_colored_name(),
-          ' の張り出したテントに支えられていた。',
+          '이(가) 바짝 세워 올린 우뚝 솟은 장막에 정확히 받쳐지게 되었다.',
         ]);
         await era.printAndWait([
-          '身長の関係で、彼女の顔はかろうじて ',
+          '키 차이 때문에 그녀의 얼굴은 겨우 ',
           you.get_colored_name(),
-          ' の胸の位置に埋もれた。',
+          '의 가슴 근처에 묻혀 있는 형태가 되었다.',
         ]);
         await era.printAndWait([
-          '茶黒の長い髪が背から滑り落ち、綿のような腕が ',
+          '흑갈색의 긴 머리카락이 등 뒤로 스르륵 흘러내렸고, 힘이 빠진 가녀린 팔은 ',
           you.get_colored_name(),
-          ' の胸板を支えていた。',
-        ]);
-        await era.printAndWait([
-          ruby.get_colored_name(),
-          ' はふらふらと ',
-          you.get_colored_name(),
-          ' を見た。この仔馬は縮まると、',
-          you.get_colored_name(),
-          ' の体の半分にも満たない。',
+          '의 가슴을 겨우 짚고 있었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は体を伸ばし、顔は微かに赤い。涙を含んだ両目が、どこか哀れだった。',
+          '는 비틀거리며 ',
+          you.get_colored_name(),
+          '을(를) 올려다보았다. 이 자그마한 우마무스메는 웅크리고 있으니 ',
+          you.get_colored_name(),
+          '의 몸뚱이 절반 크기밖에 되지 않았다.',
         ]);
         await era.printAndWait([
-          '淫紋の影響で、彼女は今ほとんど体の本能に従い、',
+          ruby.get_colored_name(),
+          '는 상체를 바짝 세우며 얼굴을 붉혔다. 이슬이 맺힌 두 눈동자가 한없이 애처로워 보였다.',
+        ]);
+        await era.printAndWait([
+          '음문의 영향 때문에, 그녀는 지금 그저 육체의 본능이 이끄는 대로 ',
           you.get_colored_name(),
-          ' に凭れていた。',
+          '의 몸에 매달려 있을 뿐이었다.',
         ]);
         await ruby.say_and_wait(
-          'お願いですわ、わたくしを、治していただけますか？',
+          '부디 저를…… 치료해 주실 수 있나요?',
         );
         await era.printAndWait([
-          '小さな舌がわずかに出た ',
+          '작은 혀를 살짝 내민 채, ',
           ruby.get_colored_name(),
-          ' は、今の自分の顔がどれほど熱く誘うか、まったく知らなかった。',
+          '는 자신이 지금 얼마나 화끈하고 야한 표정을 짓고 있는지 전혀 자각하지 못하고 있었다.',
         ]);
         era.println();
-        await era.printAndWait('唇が、死ぬほど密着した。');
+        await era.printAndWait('두 입술이 틈새도 없이 거칠게 맞물렸다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           ruby.get_colored_name(),
-          ' の両手を片手で掴み、頭の上へ上げ、抗えないようにした。',
+          '의 양손을 한데 모아 머리 위로 붙잡아 고정해, 그녀가 반항할 엄두도 내지 못하게 만들었다.',
         ]);
         await era.printAndWait([
-          'もう一方の手は空いて、',
+          '남은 한 손으로는 자유롭게 ',
           ruby.get_colored_name(),
-          ' の背を優しく撫でられた。',
+          '의 매끄러운 등줄기를 부드럽게 쓸어내렸고, ',
           ruby.get_colored_name(),
-          ' の両脚は力なく床を蹴り、快感を紛らわすしかなかった。',
+          '의 두 다리는 몰려오는 쾌감을 견디지 못하고 허공에서 무력하게 허우적거릴 뿐이었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の体が甘い喘ぎとともに微かに挺り、無意識に身を預け、',
+          '의 육체가 달콤한 신음과 함께 잘게 요동치며 위쪽으로 밀어 올려졌다. 마치 ',
           you.get_colored_name(),
-          ' とより密着したがっているようだった。',
+          '과(와) 조금이라도 더 빈틈없이 밀착하고 싶어 하는 듯한 몸짓이었다.',
         ]);
         await ruby.say_and_wait(
-          [callname, ' の匂い……おかしいですわ、どうしてさらに熱く……'],
+          [callname, '의 냄새…… 이상해요, 어째서 몸이 더 뜨거워지는지……'],
           true,
         );
-        await ruby.say_and_wait('乱暴ですわ……', true);
+        await ruby.say_and_wait('너무 난폭해……', true);
         await ruby.say_and_wait(
-          'なのに、どうして下腹の煩悶が和らいでいるのです？',
+          '하지만 어째서인지, 아랫배의 그 답답함이 가라앉는 듯한……?',
           true,
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' がたまに ',
+          '이(가) 간혹 ',
           ruby.get_colored_name(),
-          ' の小さな口を離すたび、彼女ははしたなく大きく息を吸った。',
+          '의 작은 입술을 놓아줄 때마다, 그녀는 음란하게도 신선한 공기를 허겁지겁 들이마셨다.',
         ]);
         await era.printAndWait(
-          '閉じた両目もゆっくり開き、酸欠と快感でわずかに白んだ明るい紫の瞳を見せた。',
+          '감긴 두 눈이 서서히 뜨여질 때면, 산소 부족과 쾌감으로 인해 살짝 흰자위를 드러낸 눈부신 보랏빛 눈동자가 고스란히 노출되었다.',
         );
         await era.printAndWait([
-          '体が崩れそうに震えるとき、涎が ',
+          '몸이 위태롭게 허물어지며 떨릴 때마다, 타액이 ',
           ruby.get_colored_name(),
-          ' の口角を伝い落ちた。',
+          '의 입꼬리를 타고 가느다랗게 흘러내렸다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の両手を掴んでいた手も少女の背へ回り、片手で背を抱き、片手で尻を抱え上げた。',
+          '의 양손을 결박하고 있던 손이 이내 소녀의 등 뒤로 돌아가, 한 손으로는 등을 굳게 끌어안고 다른 한 손으로는 그녀의 풍만한 둔부를 번쩍 받쳐 올렸다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の体が完全に ',
+          '의 신체가 완전히 ',
           you.get_colored_name(),
-          ' と密着し、今度は ',
+          '과(와) 하나로 밀착되었고, 이번에는 ',
           ruby.get_colored_name(),
-          ' から進んで ',
+          '쪽에서 먼저 ',
           you.get_colored_name(),
-          ' の唇に口づけした。',
+          '의 입술을 격렬하게 탐닉해 왔다.',
         ]);
         era.println();
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' の何度もの力ない喘ぎの中、交わりの音は急な肉体の打ちつけとともに、ぴたりと止まった。',
+          '의 수없이 이어지던 가냘픈 신음 소리는, 격렬하게 살덩이가 부딪히는 파음과 함께 어느 순간 뚝 끊겼다.',
         ]);
         await era.printAndWait([
-          '無論、',
+          '물론, ',
           ruby.get_colored_name(),
-          ' の子宮にはまだ ',
+          '의 자궁은 여전히 ',
           you.get_colored_name(),
-          ' が精を注いでいた。',
+          '이(가) 뿜어내는 뜨거운 정액으로 가득 채워지는 중이었다.',
         ]);
         await era.printAndWait([
-          '肉棒を抜いた ',
+          '마침내 육봉을 뽑아낸 ',
           you.get_colored_name(),
-          ' はベッドの頭に横になり、片手で頭を支えた。',
+          '은(는) 침대 머리에 기댄 채, 한 손으로 머리를 지탱했다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が下の愛馬を見下ろす目には、これまでなかった傲りがあった。',
+          '이(가) 제 아래에 누워있는 담당 우마무스메를 내려다보는 눈빛에는 이전에는 없었던 오만한 지배욕이 가득 차 있었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
-          ' は目の前の肉棒にこれほど夢中だった。この頼もしい一幕を眺め、',
+          '는 제 눈앞에 당당히 솟아있는 육봉에 완전히 매료되어 있었고, 그 기특한 광경을 만족스럽게 바라보던 ',
           you.get_colored_name(),
-          ' は手を伸ばして ',
+          '은(는) 손을 뻗어 ',
           ruby.get_colored_name(),
-          ' の頭を撫でた。',
+          '의 머리를 부드럽게 쓰다듬어 주었다.',
         ]);
       }
       return [ret];
@@ -2787,9 +2787,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] shame
+  // [번역 완료] shame
   shame: (() => {
-    const title = '恥じらう少女';
+    const title = '수줍은 소녀';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
@@ -2797,80 +2797,80 @@ module.exports = {
     const f = async (ruby, you) => {
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は震える両手で、服の釦を外した。',
+        '는 떨리는 손으로 옷의 단추를 풀기 시작했다.',
       ]);
       await era.printAndWait(
-        '彼女が脱いだのは服だけではない。最後の尊厳でもあった。',
+        '그녀가 벗어던진 것은 옷뿐만이 아니라, 마지막 남은 존엄성이었다.',
       );
       await era.printAndWait(
-        '華美な洋装が、小さな手の巧みな解きで床へ滑り落ちた。',
+        '그 화려한 드레스가 그녀의 작은 손짓에 풀려 바닥으로 흘러내렸다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の下半身の曲線が余すところなく現れ、綺麗なふくらはぎは長く細い。脱ぎかけの姿がいっそう想像を誘った。',
+        '의 하반신 곡선이 고스란히 드러났다. 매끄럽고 가느다란 예쁜 다리는 벗을 듯 말 듯한 모습으로 더욱 상상을 자극했다.',
       ]);
-      era.printButton('声をかけて促す', 1);
+      era.printButton('말로 재촉한다', 1);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の迷う小さな手が、残った武装を解き始めた。',
+        '의 망설이던 작은 손이 몸에 남은 마지막 무장을 해제하기 시작했다.',
       ]);
       await era.printAndWait(
-        '最後には、頭の赤い蝶結びと、脚の白いストッキング以外、覆い隠すものは何も残らなかった。',
+        '마침내 머리에 장식된 붉은 리본과 다리에 신은 흰색 오버니삭스를 제외하고는 아무런 가림막도 남지 않게 되었다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の手は防御の本能で、なお必死に三点を守っていた。',
+        '의 손은 방어 본능 때문에, 여전히 필사적으로 중요 부위를 가리고 있었다.',
       ]);
-      era.printButton('手をどけるよう命じる', 1);
+      era.printButton('손을 치우라고 명령한다', 1);
       await era.input();
-      await era.printAndWait('少し躊躇したあと、彼女は仕方なく両手を開いた。');
+      await era.printAndWait('잠시 주저하던 그녀는 어쩔 수 없다는 듯 양손을 벌렸다.');
       await era.printAndWait([
-        '小さな顔は羞恥で真っ赤になり、顔を背けて ',
+        '작은 얼굴은 수치심으로 가득 차서 새빨갛게 달아올랐고, 고개를 돌려 더 이상 ',
         you.get_colored_name(),
-        ' と目を合わせなくなった。',
+        '과(와) 시선을 마주치지 않으려 했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は愛馬の、ほとんど絶妙な美しい体を眺め始めた。',
+        '은(는) 담당 우마무스메의 눈부시도록 아름다운 나신을 감상하기 시작했다.',
       ]);
-      await era.printAndWait('肌は白く、高級な絹のように滑らかだった。');
+      await era.printAndWait('피부는 백옥처럼 하얗고, 고급 실크처럼 매끄러웠다.');
       await era.printAndWait(
-        '胸の一対の白い兎は今にも跳ね出しそうで、大きくはないが扁平でもなく、半開きの青臭い花弁のようだった。',
+        '가슴팍의 하얀 두 토끼는 금방이라도 튀어나올 듯 존재감을 드러내고 있었다. 크지는 않지만 결코 빈약하지 않은, 마치 반쯤 피어난 청초한 꽃잎 같았다.',
       );
       await era.printAndWait(
-        '下腹は潤んで白く、まだ野草に侵されていなかった。',
+        '아랫배는 매끄럽고 깨끗했으며, 아직 잡초에 물들지 않은 상태였다.',
       );
       await era.printAndWait(
-        'わずかに隆起した恥丘は完璧な形を見せ、淡い桃色の細い縫で二つに分かれていた。',
+        '살짝 부푼 부끄러운 언덕은 완벽한 형태를 그리며, 연분홍빛의 가느다란 틈새에 의해 둘로 나뉘어 있었다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は ',
+        '는 ',
         you.get_colored_name(),
-        ' の懐に座り、球のように縮んだ。',
+        '의 품에 안기며 공처럼 몸을 웅크렸다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が目の前の小柄な体に触れると、愛馬が緊張で震え、肌に鳥肌が立つのが分かった。',
+        '이(가) 눈앞의 가녀린 몸을 살짝 건드리자, 담당 우마무스메가 긴장으로 몸을 떨며 소름이 돋아나고 있는 것이 느껴졌다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は分かっていた。今の ',
+        '은(는) 지금의 ',
         ruby.get_colored_name(),
-        ' は、捕まったばかりでまだ馴れていない野猫だ。急げば驚かせてしまう。',
+        '가 막 붙잡혀 길들여지는 중인 들고양이 같은 상태라 너무 서두르면 겁을 먹고 도망칠 것이라는 걸 잘 알고 있었다.',
       ]);
-      era.printButton('抱きしめる', 1);
-      era.printButton('寝室へ連れて寝かせる', 2);
+      era.printButton('그녀를 꼭 껴안아 준다', 1);
+      era.printButton('방으로 데려가 재운다', 2);
       await era.input();
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] take_shower
+  // [번역 완료] take_shower
   take_shower: (() => {
-    const title = '湯上がりの美人';
+    const title = '목욕';
     /**
      * @param {CharaTalk} ruby ダイイチルビー
      * @param {CharaTalk} you プレイヤー
@@ -2878,93 +2878,93 @@ module.exports = {
      */
     const f = async (ruby, you, callname) => {
       await era.printAndWait([
-        '深夜に帰宅すると、',
+        '깊은 밤 귀가하자, ',
         you.get_colored_name(),
-        ' はちょうど ',
+        '은(는) 때마침 ',
         ruby.get_colored_name(),
-        ' が風呂を終えて出てくるところに出くわした。',
+        '가 목욕을 마치고 욕실에서 막 나오는 모습을 마주했다.',
       ]);
-      await era.printAndWait('全身から香る熱気が立ち、長い髪が絡まっていた。');
-      era.printButton('抱きしめて愛撫する。', 1);
-      era.printButton('居間へ連れて調教する。', 2);
+      await era.printAndWait('그녀의 온몸에서는 향긋한 열기가 피어오르고 있었고, 긴 머리카락은 촉촉하게 젖어 얽혀 있었다.');
+      era.printButton('그녀를 끌어안고 애무한다.', 1);
+      era.printButton('거실로 데려가 조교한다.', 2);
       await era.input();
-      await ruby.say_and_wait([callname, '、いけませんわ……']);
-      await era.printAndWait([you.get_colored_name(), ' は怒ったふりをした。']);
+      await ruby.say_and_wait([callname, ', 안 돼요……']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 일부러 화가 난 듯한 표정을 지었다.']);
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は様子が違うと察し、すぐ言い直した。',
+        '는 분위기가 이상함을 눈치채고 즉각 말을 바꾸었다.',
       ]);
       await ruby.say_and_wait(
-        'あなた、そんなことなさらないで。今、洗い上がったばかりですわ。',
+        '제 사랑, 이러지 마세요, 저 방금 막 씻고 나왔단 말이에요.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は問答無用で、唇を重ねた。',
+        '은(는) 들은 체도 하지 않고 그대로 입술을 찍어 눌렀다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は発情した犬のように、',
+        '은(는) 마치 발정 난 수컷처럼, ',
         ruby.get_colored_name(),
-        ' の体の香りを嗅ぎ回った。',
+        '의 몸에서 풍기는 살결의 향기를 거칠게 탐닉했다.',
       ]);
-      era.printButton('首を軽く噛む。', 1);
-      era.printButton('太ももの内側を撫でる。', 2);
+      era.printButton('목덜미를 가볍게 깨문다.', 1);
+      era.printButton('허벅지 안쪽을 애무한다.', 2);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は驚き、両脚が本能で閉じた。',
+        '는 깜짝 놀라며, 본능적으로 두 다리를 단단히 맞조였다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が ',
+        '이(가) ',
         ruby.get_colored_name(),
-        ' の震える耳を軽く噛むと、効いたらしく、',
+        '의 잘게 떨리는 부드러운 귀를 살짝 깨물자, 효과가 있었는지 ',
         ruby.get_colored_name(),
-        ' の太ももの筋がかなり弛んだ。',
+        '의 허벅지 근육이 제법 느슨하게 풀려났다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は飾らず、まっすぐ進んだ。',
+        '은(는) 지체없이 단숨에 속옷으로 향했다.',
       ]);
       await era.printAndWait([
-        '指が ',
+        '손가락이 ',
         ruby.get_colored_name(),
-        ' の白い下着の外を遊弋し、すぐ陰阜の完璧な形を撫で取った。',
+        '의 순백색 팬티 겉면을 더듬으며 유영하더니, 이내 그녀의 은밀한 언덕의 완벽한 형태를 고스란히 그려냈다.',
       ]);
       await era.printAndWait(
-        '隙間から入ったあと、その薄紅の一帯の外を往復して撫でた。',
+        '속옷의 틈새를 비집고 들어간 뒤, 그 핑크빛 연약한 부위 주위를 앞뒤로 끊임없이 문질렀다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は愛らしい顔を真っ赤にし、歯を強く噛んだ。',
+        '의 예쁜 얼굴이 새빨갛게 상기되었고, 어금니를 꽉 깨물었다.',
       ]);
-      await you.say_and_wait('感じるか？');
+      await you.say_and_wait('느낌이 와?');
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は我慢できず小さく声を上げ、喘ぎが強くなり始めた。',
+        '는 참지 못하고 가녀린 외마디 비명을 질렀고, 호흡이 점차 격렬해지기 시작했다.',
       ]);
-      await you.say_and_wait('おや？ 自分でも、こんなことをしたのか？');
-      await ruby.say_and_wait('根拠のないことを仰らないでくださいまし。');
-      await era.printAndWait('その口調は、少し怒っているように聞こえた。');
+      await you.say_and_wait('어라? 설마 전에도 이런 짓을 당해본 적이 있는 거야?');
+      await ruby.say_and_wait('제발 터무니없는 소리 좀 하지 말아 주세요.');
+      await era.printAndWait('그녀의 어조에는 다소 화가 난 기색이 서려 있었다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は口づけしながら愛撫し、両手で攻めた。',
+        '은(는) 입을 맞추는 동시에 애무를 가하며, 양쪽으로 공세를 몰아쳤다.',
       ]);
       await era.printAndWait(
-        '体は正直だ。やがて、閉じていた入口から細い流れが溢れた。',
+        '몸은 거짓말을 하지 않는 법, 이윽고 굳게 닫혀 있던 연약한 구멍으로부터 맑은 샘물이 졸졸 흘러나왔다.',
       );
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' の愛らしく清楚な顔は潮紅で微かな熱を帯び、着替えた寝巻きも大半が濡れた。',
+        '의 사랑스럽고 청초한 얼굴은 붉은 조밀함으로 인해 뜨거운 열기를 품었고, 갈아입은 지 얼마 안 된 잠옷도 이미 반쯤 젖어 들었다.',
       ]);
-      era.printButton('彼女と二度目の風呂へ行く。', 1);
-      era.printButton('掌を高く上げ、上の粘い体液を見せる。', 2);
+      era.printButton('그녀와 함께 두 번째 목욕을 하러 간다.', 1);
+      era.printButton('손바닥을 높이 들어 올려, 묻어 나온 끈적한 체액을 보여준다.', 2);
       await era.input();
       await era.printAndWait([
         ruby.get_colored_name(),
-        ' は我慢できず、',
+        '는 부끄러움을 참지 못하고 ',
         you.get_colored_name(),
-        ' の肩に伏せて、すすり泣き始めた。',
+        '의 어깨에 기대어 눈물짓기 시작했다.',
       ]);
     };
     f.title = title;
