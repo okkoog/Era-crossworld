@@ -6,7 +6,7 @@ module.exports = {
 
   // [번역 대상] ask_release_agree
   async ask_release_agree(coffee, you, callname) {
-    await coffee.say_and_wait(['出たい、ですか……']);
+    await coffee.say_and_wait(['나가고 싶은, 건가요……']);
     era.println();
 
     await era.printAndWait([
@@ -22,13 +22,13 @@ module.exports = {
       callname,
       ' がここに来たこと自体が偶然ですし、私も、もう十分です……',
     ]);
-    await coffee.say_and_wait(['扉は、あちらです……ご自由に……']);
+    await coffee.say_and_wait(['문은 저쪽에 있어요…… 마음대로 하세요……']);
     await coffee.say_and_wait([
-      '開ける、ですか……？ 鍵なんて、最初からかかっていません……',
+      '문을 열어달라고요……? 문은 처음부터 잠겨 있지 않았답니다……',
     ]);
     era.println();
 
-    await era.printAndWait(['本当かよ……']);
+    await era.printAndWait(['설마 그럴 리가……']);
     await era.printAndWait([
       you.get_colored_name(),
       ' がドアノブを回すと、カチャリと音を立てて、扉はあっさり開いた。',
@@ -47,7 +47,7 @@ module.exports = {
     ]);
     era.println();
 
-    await coffee.say_and_wait(['どうか……私たちの約束を、忘れないでください……']);
+    await coffee.say_and_wait(['부디…… 부디 우리의 약속을 기억해 주세요……']);
     await coffee.say_and_wait([
       '次は、もしかしたら……私が自分の手で、',
       callname,
@@ -66,22 +66,22 @@ module.exports = {
       era.println();
 
       await era.printAndWait([
-        'ギィ、と音を立てて、待ちわびた扉がひとりでに開いた。',
+        '끼익 소리를 내며, 그토록 염원하던 문이 저절로 열렸다.',
       ]);
       await era.printAndWait([
         '外へ続く階段を見て、',
         you.get_colored_name(),
         ' は泣きそうなほどに興奮し、すぐさま扉の向こうへ踏み出した。',
       ]);
-      await era.printAndWait(['二段飛ばしで駆け、曲がり角をいくつも曲がる……']);
-      await you.say_and_wait(['あれ……'], true);
-      await you.say_and_wait(['階段、長くないか？'], true);
+      await era.printAndWait(['두 계단씩 뛰어오르며, 모퉁이를 몇 번이나 돌았다……']);
+      await you.say_and_wait(['어라……'], true);
+      await you.say_and_wait(['계단이, 너무 긴 거 아냐?'], true);
       era.println();
 
       await era.printAndWait([
-        '地下室から逃れた興奮が冷めると、頭が少しずつ落ち着いてきた。',
+        '지하실을 탈출했다는 흥분이 가라앉자, 머리가 차갑게 식기 시작했다.',
       ]);
-      await you.say_and_wait(['俺は……階段に、どれだけいたんだ？'], true);
+      await you.say_and_wait(['나…… 도대체 계단에서 얼마나 있었던 거지?'], true);
       await era.printAndWait([
         'その考えと同時に、',
         you.get_colored_name(),
@@ -99,13 +99,13 @@ module.exports = {
       era.println();
 
       await era.printAndWait([
-        'おかしい……階段から落ちたのに、痛みがまったくない……',
+        '이상하다…… 분명 계단에서 굴렀는데, 전혀 아프지 않아……',
       ]);
       await era.printAndWait([
-        '顔を上げ、階段の下を見ると、地下室の扉は大きく開いたまま、自分が離れたときと何ひとつ変わっていない。',
+        '고개를 들어 계단 아래쪽을 바라보자, 지하실 문이 활짝 열린 채 자신이 떠날 때와 조금도 변함없는 모습으로 서 있었다.',
       ]);
       await era.printAndWait([
-        '長いこと歩いたはずなのに、一瞬で地下室の前に戻っている……',
+        '분명 한참을 걸어 올라갔는데, 순식간에 지하실 문 앞으로 돌아와 버린 것이다……',
       ]);
       await era.printAndWait([
         '戻りなさい、戻りなさい——耳元で、そんな囁きがした気がした。',
@@ -127,7 +127,7 @@ module.exports = {
         you.get_colored_name(),
         ' を見ている。',
       ]);
-      await era.printAndWait(['背後の扉が、ゆっくりと閉じた。']);
+      await era.printAndWait(['등 뒤의 문이 서서히 닫혔다.']);
     } else {
       await coffee.say_and_wait([callname, '……もう一度、試してみますか？']);
       era.println();
@@ -244,25 +244,25 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] battle_prison
+  // [번역 완료] battle_prison
   async battle_prison(coffee, you, callname) {
     await era.printAndWait([
-      'こんな錠、',
+      "이런 자물쇠는 ",
       you.get_colored_name(),
-      ' は見たことがない……',
+      "도 본 적이 없었다……",
     ]);
     await era.printAndWait([
-      '解ける位置まで来ているはずなのに、ドアノブは溶接されたように微動だにしない。',
+      "분명 열릴 만한 위치에 도달했음에도, 문 손잡이는 용접된 것처럼 꿈쩍도 하지 않았다.",
     ]);
     await era.printAndWait([
       '……',
       you.get_colored_name(),
-      ' は、いったん諦めるしかなかった。',
+      "은(는) 잠시 포기하기로 했다.",
     ]);
     era.println();
     await coffee.say_and_wait([
       callname,
-      '、発散し終わったなら……次は、私の番です……',
+      ", 발산이 다 끝났다면…… 이제 제 차례에요……",
     ]);
   },
 

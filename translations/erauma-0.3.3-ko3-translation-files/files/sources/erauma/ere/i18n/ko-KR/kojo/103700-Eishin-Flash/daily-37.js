@@ -540,23 +540,23 @@ module.exports = {
       `${you.name} とエイシンフラッシュは、トレーナールームで一緒にゲームをした。`,
     );
     flash.say(
-      'え、私と一緒にゲームを？ もちろんです。お誘いいただけて嬉しいです。では、どの種類をご予定ですか？',
+      "어머, 저와 게임을 하고 싶으신가요? 당연히 좋죠, 초대해 주셔서 기뻐요. 그럼 어떤 장르의 게임을 하실지 생각하신 게 있나요?",
     );
-    era.printButton('「もちろん協力プレイだ」', 1);
-    era.printButton('「対戦はどうだ？」', 2);
+    era.printButton("「당연히 2인 협동 게임이지」", 1);
+    era.printButton("「2인 대전 게임은 어때?」", 2);
     if ((await era.input()) === 1) {
-      await flash.say_and_wait('協力プレイ、ですか。よい選択ですね');
+      await flash.say_and_wait("협동 게임이라니, 좋은 선택이네요.");
       await flash.say_and_wait(
         `では早速、始めましょう。${callname} と手を取り合って難所を越えるのが、楽しみです。ふふっ`,
       );
     } else {
-      await flash.say_and_wait('対戦、ですか。よい選択ですね。');
-      await flash.say_and_wait('ええ……始める前に、一つ条件を足しませんか？');
+      await flash.say_and_wait("대전 게임이라니, 좋은 선택이네요.");
+      await flash.say_and_wait("음…… 하지만 플레이하기 전에 조건 하나를 거는 건 어떨까요?");
       await flash.say_and_wait(
-        'たとえば、負けたほうが勝ったほうの願いを一つ聞く、など。',
+        "예를 들면 진 사람이 이긴 사람의 소원을 하나 들어준다든가 하는 식으로요.",
       );
       await flash.say_and_wait(
-        'ふふっ。賭けを決めてからのほうが、遊びは一段と精彩を帯びます。ナカヤマさんに教えていただいた道理です。',
+        "후훗~ 내기를 걸고 게임을 해야 훨씬 박진감이 넘치니까요. 이건 나카야마 양에게 배운 원칙이랍니다.",
       );
     }
   },

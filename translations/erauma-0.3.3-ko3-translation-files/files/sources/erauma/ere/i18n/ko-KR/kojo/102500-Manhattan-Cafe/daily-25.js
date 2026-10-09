@@ -796,12 +796,12 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(coffee, callname) {
-    await coffee.say_and_wait([callname, '、私は負けません……！']);
+    await coffee.say_and_wait([callname, ", 지지 않겠어요……!"]);
     await era.printAndWait([
       coffee.get_colored_name(),
-      ' は、わけもなく勝負心に火がついた。',
+      "가 묘한 승부욕을 불태우고 있다.",
     ]);
   },
 

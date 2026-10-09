@@ -37,7 +37,7 @@ train:
 # 主線
 # --------------------------------
 # 募集後
-# [번역 대상] at_my_side
+# [번역 완료] at_my_side
 at_my_side:
   title: 당신이 제 곁에 있기에
   lines:
@@ -90,7 +90,7 @@ at_my_side:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%THEY%がここで泣いていらっしゃる姿が、いつも見えるのです。」
+        - 「%THEY%이 이곳에서 울고 있는 모습이, 자꾸만 눈에 밟히네요.」
     - 나무 구멍에서 %YOU%에게로 시선을 옮긴 그녀가 가볍게 눈을 깜빡였다.
     - 짧은 침묵 속에서 눈을 맞춘 후, %CHARA%의 표정은 한결 홀가분해진 듯했다.
     - 마치 어떤 망상으로부터 해방된 것처럼, 다시금 말랑말랑한 미소를 머금었다.
@@ -142,7 +142,7 @@ mejiro_tea:
           content: %CHARA%
         - 「좋아요~」
     - 그리 오래 기다리지 않아 문밖에서 고급 승용차의 엔진 소리가 들려왔다.
-    - もともと仕事の少ない日、時間を空けて %CHARA% と後部座席に乗った。
+    - 마침 별다른 일정이 없던 터라, 시간을 내어 %CHARA%와 함께 뒷좌석에 몸을 실었다.
     - 메지로 저택의 정원에 도착해 이미 테이블에 앉아 기다리고 있는 %UMA%들을 본 순간, %YOU%의 가슴이 덜컥 내려앉았다.
     - color: %M_COLOR%
       content:
@@ -245,7 +245,7 @@ mejiro_tea:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「私、%CALL_13%の走りがとても好きなのです。」
+        - 「저 말이죠, %CALL_13%의 달리기를 무척 좋아한답니다아.」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -271,7 +271,7 @@ mejiro_tea:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ふふ、%CALL_27%の走り方も、とても好きですわよ？」
+        - 「후훗, %CALL_27%의 달리기 방식도 무척 좋아한답니다아?」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -478,14 +478,14 @@ inherit:
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「ごめんねブライト。トレーナー%SIR%と、少しだけ二人で話してもいい？」
+        - 「미안해 브라이트, 네 트레이너 %SIR%랑 잠깐 단둘이 이야기 좀 나눠도 될까?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
         - 「에에? %CALLNAME%만 괜찮으시다면야……」
     - %CHARA%의 약간 머뭇거리는 허락이 떨어지자마자, %R_NAME%는 서둘러 %YOU%을(를) 이끌고 몇 걸음 물러섰다.
-    - その場で首を傾げる %CHARA% を一目見て、%YOU% のそばへ寄り、小さな声で話し始める。
+    - 제자리에 서서 고개를 갸우뚱하고 있는 %CHARA%를 힐끗 바라본 뒤, %YOU%의 곁으로 다가와 조심스레 목소리를 낮추었다.
     - color: %R_COLOR%
       content:
         - fontWeight: bold
@@ -515,12 +515,12 @@ inherit:
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「でもブライトがいつも%SEX%の気持ちを教えてくれて、支えてくれたから、自信が持てたんだ。」
+        - 「하지만 브라이트는 늘 제게 %SEX% 생각을 말해주면서 한결같이 지지해 줬어요. 덕분에 저도 저 자신을 믿을 수 있게 된 거죠.」
     - color: %R_COLOR%
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「%SEX%があんたを選んだなら、ちゃんとした理由があるんでしょ。」
+        - 「그런 %SEX% 선택한 트레이너시니까, 분명 그럴 만한 확실한 이유가 있어서겠죠?」
     - acc: 1
       content: 「확실한 이유라니……」
     - color: %R_COLOR%
@@ -543,7 +543,7 @@ inherit:
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「あのとき私はできなかったけど…… %SEX%には、やってほしいんだ。」
+        - 「비록 그때의 저는 해내지 못했지만…… %SEX%만큼은 꼭 해내기를 바라고 있어요.」
     - color: %R_COLOR%
       content:
         - fontWeight: bold
@@ -582,19 +582,19 @@ inherit:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALL_27%でしたら…… 私に、どこかのレースへ出てほしい、というようなことでしょう？」
+        - 「%CALL_27%라면 분명…… 제게 어떤 특정 레이스에 나가달라는 식의 부탁을 하셨겠지요.」
     - acc: 1
       content: 「라이언에 대해 참 잘 아네.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALL_27%のレースは、どれも覚えていますわよ～」
+        - 「%CALL_27%가 뛰었던 레이스는 단 하나도 빠짐없이 전부 기억하고 있답니다~」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「だって%CALL_27%は…… いちばん好きな家族ですもの。」
+        - 「그도 그럴 게, %CALL_27%는…… 제가 세상에서 가장 사랑하는 가족이니까요.」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -616,7 +616,7 @@ inherit:
     # 好感+20
 
 # ジュニア級11月1週
-# [번역 대상] my_way
+# [번역 완료] my_way
 my_way:
   title: 스스로 선택한 길
   lines:
@@ -629,7 +629,7 @@ my_way:
     - 눈앞에서 매일같이 땀 흘리는 %UMA%들을 바라보며, %CHARA%의 꼬리가 살랑살랑 가볍게 흔들렸다.
     - acc: 1
       content: 「왜 그래? 기분이 별로야?」
-    - %CHARA% の前に立つ %YOU% は、直接%SEX%に触れず、目の前で手を振るだけだった。
+    - %CHARA%의 앞에 선 %YOU%은(는) 굳이 신체적 접촉을 하지 않은 채, %SEX%의 눈앞에서 손을 가볍게 흔들어 보였다.
     - 귀를 쫑긋 움직인 %SEX%는 그제야 천천히 고개를 돌려 %YOU%의 얼굴을 바라보았고, 이내 평소와 다름없는 표정을 지어 보였다.
     - color: %COLOR%
       content:
@@ -878,7 +878,7 @@ hope_sta_lose:
       - 「……평정심을 유지할 수 있도록 더 노력해야겠어요.」
 
 # クラシック級3月3週
-# [번역 대상] light
+# [번역 완료] light
 light:
   title: 마음속에 밝혀진 자신감
   lines:
@@ -897,7 +897,7 @@ light:
       content: 「신사인가…… 과연 그렇군.」
     - acc: 2
       content: 「너도 이런 걸 신경 쓸 줄은 몰랐네.」
-    - %UMA%たちが心の慰めにする神社を前に、%YOU% もだいたいこの旅の理由がわかる。
+    - %UMA%들이 마음의 위안을 얻기 위해 자주 찾는 신사를 보며, %YOU%도 이번 걸음의 이유를 대강 짐작한다.
     - 토리이를 통과하고 나서야 %CHARA%가 조심스럽게 입을 연다.
     - color: %COLOR%
       content:
@@ -966,7 +966,7 @@ light:
     # 好感+20
 
 # 皐月賞
-# [번역 대상] sats_sho
+# [번역 완료] sats_sho
 sats_sho:
   - 삼관의 첫 레이스, 사츠키상.
   - 평소에는 멍하니 있던 %CHARA%가 눈앞의 경기장을 바라보며 평소와는 사뭇 다른 분위기를 풍긴다.
@@ -979,7 +979,7 @@ sats_sho:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%ELDER_SISTER%たちが目指された目標を、いま、私が……」
+      - 「%ELDER_SISTER%분들께서 노력해 오신 목표를, 이제, 제가……」
   - acc: 1
     content: 「준비는 됐어?」
   - color: %COLOR%
@@ -1032,7 +1032,7 @@ sats_sho_win:
       - 「에헤헤…… 역시 %CALLNAME% 덕분이에요.」
 
 # 皐月賞敗北
-# [번역 대상] sats_sho_lose
+# [번역 완료] sats_sho_lose
 sats_sho_lose:
   - color: %COLOR%
     content:
@@ -1054,7 +1054,7 @@ sats_sho_lose:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%ELDER_SISTER%方からも、たくさん学んだのに。」
+      - 「%ELDER_SISTER%분께도 그렇게 많은 것을 배웠는데.」
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1110,7 +1110,7 @@ toky_yus_win:
       - 「제가 이겼어요.」
 
 # 日本ダービー敗北
-# [번역 대상] toky_yus_lose
+# [번역 완료] toky_yus_lose
 toky_yus_lose:
   - color: %COLOR%
     content:
@@ -1133,10 +1133,10 @@ toky_yus_lose:
       - fontWeight: bold
         content: %CHARA%
       - 「저, 이 정도면 열심히 노력한 걸까요?」
-  - 落ち込みつつも、%SEX%らしい落ち着いた微笑みは残している。
+  - 낙담했을지언정, 얼굴에는 여전히 %SEX%다운 여유로운 미소가 감돌고 있다.
 
 # 菊花賞
-# [번역 대상] kiku_sho
+# [번역 완료] kiku_sho
 kiku_sho:
   - color: %COLOR%
     content:
@@ -1159,7 +1159,7 @@ kiku_sho:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALL_13%も、あのときはこんな空気のなかで出走されたのですわね。」
+      - 「%CALL_13%께서도 그 시절에 이런 환경 속에서 출주하셨던 거군요.」
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1197,7 +1197,7 @@ kiku_sho:
   - %YOU%의 말에 가볍게 웃으며 답한 뒤, %CHARA%는 확고한 눈빛을 띤 채 삼관의 마지막 전투를 시작한다.
 
 # 菊花賞勝利
-# [번역 대상] kiku_sho_win
+# [번역 완료] kiku_sho_win
 kiku_sho_win:
   - color: %COLOR%
     content:
@@ -1215,9 +1215,9 @@ kiku_sho_win:
         content: %CHARA%
       - 「%CALL_13%님처럼 멋지게 승리했답니다.」
   - color: %COLOR%
-    content: ゴールに立ち、置き場のない手が胸に当てられ、息とともに上下する。
+    content: 결승점에 멈춰 선 채, 둘 곳을 잃은 손을 가슴에 얹고 가쁜 숨을 몰아쉬며 가슴을 들썩인다.
   - color: %COLOR%
-    content: 少し疲れた目が観客席へ流れ、%CALLNAME% の姿を探す。
+    content: 다소 피로해진 눈빛으로 관람석을 훑으며 %CALLNAME%의 모습을 찾는다.
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1229,7 +1229,7 @@ kiku_sho_win:
         content: %CHARA%
       - 「전부 %CALLNAME% 덕분이에요……」
   - color: %COLOR%
-    content: 胸の鼓動が止まらず、押し続けている。
+    content: 세차게 뛰는 심장이 진정되지 않고 가슴을 계속해서 두드려댄다.
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1239,9 +1239,9 @@ kiku_sho_win:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「帰りましたら、%CALLNAME%と、%ELDER_SISTER%たちと、お茶会にいたしましょう～」
+      - 「그럼 돌아가서 %CALLNAME%, 그리고 %ELDER_SISTER%분들과 함께 다회를 열면 좋겠어요.」
   - color: %COLOR%
-    content: 顔に薄い紅を浮かべ、遠く観客席の %CALLNAME% を見る。
+    content: 얼굴에 붉은 홍조를 띤 채, 멀리 관람석에 있는 %CALLNAME%를 가만히 바라본다.
   - if: era.get('love:74') >= 50
     lines:
       - color: %COLOR%
@@ -1271,7 +1271,7 @@ kiku_sho_win:
         content: 당연히, 그저 바라보는 것만으로는 아무것도 알아낼 수 없다.
 
 # 菊花賞敗北
-# [번역 대상] kiku_sho_lose
+# [번역 완료] kiku_sho_lose
 kiku_sho_lose:
   - color: %COLOR%
     content:
@@ -1279,9 +1279,9 @@ kiku_sho_lose:
         content: %CHARA%
       - 「……지고 말았네요.」
   - color: %COLOR%
-    content: ゴールに立ち、自分の着順を見る。
+    content: 결승점에 서서 자신의 순위를 바라본다.
   - color: %COLOR%
-    content: あまり気にしないはずの %CHARA% でも、堪えきれず悲しい。
+    content: 사소한 일에는 연연하지 않는 %CHARA%라 할지라도, 밀려드는 아쉬움은 감출 수가 없다.
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1340,7 +1340,7 @@ stay_sta:
       - 「%CALLNAME%, 똑똑히 지켜봐 주세요.」
 
 # シニア級4月2週
-# [번역 대상] for_tenn_spr
+# [번역 완료] for_tenn_spr
 for_tenn_spr:
   title: 텐노상에 대한 집착
   lines:
@@ -1368,7 +1368,7 @@ for_tenn_spr:
         - fontWeight: bold
           content: %CHARA%
         - 「저, %CALLNAME%와 이야기를 나누고 싶습니다.」
-    - %CHARA%の伏せた瞳を見て、%YOU% は異議なく%SEX%のそばへ行く。
+    - %CHARA%의 내리뜬 눈망울을 바라보며 %YOU%는 흔쾌히 %SEX%의 곁으로 다가간다.
     - 두 사람은 보폭을 맞춰 트레이닝장을 벗어나 나란히 길을 걷기 시작한다.
     - acc: 1
       content: 「몸 상태는 어때, 괜찮아?」
@@ -1447,7 +1447,7 @@ for_tenn_spr:
             - 「네, %CALLNAME%의 기대에 부응하도록 할게요.」
 
 # 天皇賞（春）
-# [번역 대상] tenn_spr
+# [번역 완료] tenn_spr
 tenn_spr:
   - color: %COLOR%
     content:
@@ -1487,7 +1487,7 @@ tenn_spr:
       - fontWeight: bold
         content: %R_NAME%
       - 「그렇게 안절부절못하는 모습은 너답지 않다고!」
-  - ふたりの%ELDER_SISTER%が控え室へ入り、優しく %CHARA% の肩を何度か叩く。
+  - 두 명의 %ELDER_SISTER%이 대기실 안으로 걸어 들어와 %CHARA%의 어깨를 다정하게 두드려준다.
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1507,7 +1507,7 @@ tenn_spr:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALL_64%…… ええ、わかりました！」
+      - 「%CALL_64%…… 네, 잘 알겠습니다!」
   - 세 사람의 따뜻한 시선 속에서 %CHARA%는 다시금 양손을 움켜쥔다.
   - 레이스를 향한 투지를 불태우며, 이 모든 과정을 지켜보던 %YOU%을(를) 향해 고개를 가볍게 끄덕인다.
   - color: %COLOR%
@@ -1536,7 +1536,7 @@ tenn_spr:
       - 「네!」
 
 # 天皇賞（春）勝利
-# [번역 대상] tenn_spr_win
+# [번역 완료] tenn_spr_win
 tenn_spr_win:
   - 승리의 순간, %CHARA%를 향한 뜨거운 환호성이 관람석을 뒤흔들며 경기장 전체를 가득 메운다.
   - 천천히 속도를 줄이던 %CHARA%는 전광판을 바라보고, 주변의 함성을 다시금 확인하고 나서야 비로소 기쁨의 환호를 내지른다.
@@ -1547,7 +1547,7 @@ tenn_spr_win:
   - if: era.get('love:74') >= 50
     lines:
       - 환한 미소를 띤 채 %YOU%이(가) 있는 곳을 향해 다다다 달려온다.
-      - 少しわざと %YOU% のそばの%SIBLINGS%を無視し、小さな声で呼ぶ。
+      - %YOU%의 곁에 선 다른 %SIBLINGS%들을 다소 의도적으로 본체만체하며, 나지막한 목소리로 말을 건넨다.
       - color: %COLOR%
         content:
           - fontWeight: bold
@@ -1567,7 +1567,7 @@ tenn_spr_win:
       - 결국 그녀도 은근히 장난기가 넘치는 %CHARA%이기 때문이다.
 
 # シニア級5月1週、天皇賞（春）一着
-# [번역 대상] mejiro_name
+# [번역 완료] mejiro_name
 mejiro_name:
   title: 메지로의 이름
   lines:
@@ -1652,7 +1652,7 @@ mejiro_name:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「だって、%ELDER_SISTER%たちと約束しましたもの。」
+        - 「결국 %ELDER_SISTER%들과도 그렇게 약속했으니까요.」
     - 의자 등받이에 보드랍게 기대어 있던 %CHARA%가 천천히 고개를 든다. 허공을 바라보는 그녀의 눈빛은 마치 머나먼 미래를 꿰뚫어 보는 듯하다.
     - color: %COLOR%
       content:
@@ -1690,7 +1690,7 @@ mejiro_name:
 
 # 宝塚記念
 # ドーベル出走あり
-# [번역 대상] takz_kin
+# [번역 완료] takz_kin
 takz_kin:
   - 타카라즈카 기념을 논함에 있어서 메지로의 이름은 결코 빼놓을 수 없다.
   - 그런 자부심을 품은 채, 현재 %CHARA%는 경기장에 서서 아지랑이가 피어오르는 코스를 바라보고 있다.
@@ -1709,7 +1709,7 @@ takz_kin:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ドーベルはどうですの？ 宝塚記念の出走者は、みな強い%UMA%ですわよ。」
+      - 「도베르야말로 어떤가요? 타카라즈카 기념에 출주하는 사람들은 모두 쟁쟁한 %UMA%들이니까요.」
   - color: %D_COLOR%
     content:
       - fontWeight: bold
@@ -1738,7 +1738,7 @@ takz_kin:
         content: %CHARA%
       - 「어라, 제가 그랬나요?」
   - 잡념에서 깨어난 %CHARA%는 옆 칸에서 고개를 내민 %D_NAME%를 향해 멍하니 고개를 갸웃거린다.
-  - %CHARA% が気づかないうちに付けた小さな凹みは、誰も気づかなかった。
+  - 정작 %CHARA%가 무의식중에 게이트에 남겨버린 자그마한 찌그러짐을 알아챈 이는 아무도 없었다.
 
 # 天皇賞（秋）
 tenn_sho:
@@ -1811,7 +1811,7 @@ tenn_sho:
       - 「가을 텐노상!」
 
 # 天皇賞（秋）勝利
-# [번역 대상] tenn_sho_win
+# [번역 완료] tenn_sho_win
 tenn_sho_win:
   - color: %COLOR%
     content:
@@ -1829,7 +1829,7 @@ tenn_sho_win:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「これなら…… %ELDER_SISTER%たちも、お祖母さまも、喜んでくださるでしょうね。」
+      - 「이 정도라면…… %ELDER_SISTER%들과 할머님께서도 무척 기뻐해 주시겠지요.」
   - 맑은 미소를 지어 보인 %CHARA%는 환호하는 관중들을 향해 특유의 부드러운 몸짓으로 손을 흔들며 화답한다.
 
 # 有馬記念
@@ -2003,7 +2003,7 @@ arim_kin_win:
             content: %CHARA%
           - 「그렇다면…… %CALLNAME%께서는 이후에 저와 함께 돌아가 주실 건가요?」
       - 「저…… 대단히 드문 일입니다만, 지금은 조금 서두르고 싶어졌답니다~」
-      - 勝った %CHARA% の晩餐の準備へ会場へ向かった姉妹たちは、いまは現れない——
+      - 승리를 거둔 %CHARA%를 위한 축하 파티를 준비하러 이미 연회장으로 떠난 자매들은 지금 이 순간 결코 돌아오지 않을 터였다——
       - color: %COLOR%
         content:
           - fontWeight: bold
@@ -2011,30 +2011,30 @@ arim_kin_win:
           - 「저답지 않나요……」
       - acc: 1
         key: sex
-        content: 「らしくないな。帰ってからにしよう？」（恋慕+5）
+        content: 「너답지 않네, 돌아가서 마저 얘기할까?」（애정도+5）
         lines:
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「らしくない、ですの……」
+              - 「저답지 않나요……」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「ふふ～ %CALLNAME%、あなたものんびりがお好きですわね～」
+              - 「후훗~ %CALLNAME%께서도 이렇게 느긋하게 흘러가는 편을 무척 좋아하시는군요~」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「……では、私は%CALLNAME%を待ち続けますわ。」
-          - いつものと変わらない笑顔のまま、端正に立ち上がり、ゆっくり %YOU% の前まで来る。
-          - そっと %YOU% の顔に、清らかな香りの印を残す——
+              - 「……그렇다면 저는 언제까지고 %CALLNAME%을 기다리겠어요.」
+          - 평소와 다름없는 온화한 미소를 띤 채 기품 있게 자리에서 일어나 %YOU%의 눈앞까지 조용히 걸어온다.
+          - 그리고 %YOU%의 뺨 위에 향긋한 온기가 감도는 흔적을 부드럽게 남긴다——
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「どうか、これを予定に入れてくださいまし～」
+              - 「부디 이 일을 서둘러 일정에 올려주시길 바랄게요~」
       - acc: 2
         content: 「珍しいなら、付き合うよ……」
         lines:
@@ -2180,7 +2180,7 @@ accel_era:
 # --------------------------------
 # out_shopping
 # 熱恋以上、シニア級新年
-# [번역 대상] hot_spring_ticket
+# [번역 완료] hot_spring_ticket
 hot_spring_ticket:
   title: 온천 여행권……?
   lines:
@@ -2249,7 +2249,7 @@ hot_spring_ticket:
         - fontWeight: bold
           content: %CHARA%
         - 「……그래도 훗날, %CALLNAME%께서 꼭 저와 함께 가주실 거죠?」
-    - 拒否させる気などまったくなく、その旅行券を %YOU% の前へ押しつける。
+    - 애초에 거절할 권리 따위는 주지 않겠다는 듯, 당첨된 여행권을 %YOU%의 가슴팍으로 슬며시 밀어 넣는다.
     - 이 상황에서는 얌전히 받아들이는 수밖에 없다.
 
 # out_start

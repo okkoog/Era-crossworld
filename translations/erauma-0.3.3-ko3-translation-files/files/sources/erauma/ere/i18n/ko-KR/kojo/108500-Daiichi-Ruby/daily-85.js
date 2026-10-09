@@ -612,12 +612,12 @@ module.exports = {
 
   // [번역 대상] load_talk
   async load_talk(ruby) {
-    await ruby.say_and_wait('……それが、あなたのご意志ですの？');
+    await ruby.say_and_wait("……이것이, 당신의 의지이신가요?");
     await ruby.say_and_wait('……');
-    await ruby.say_and_wait('……分かりましたわ');
+    await ruby.say_and_wait("……알겠습니다");
     await ruby.say_and_wait([
       ruby.get_colored_name(),
-      '、は、トレーナーを、替え——',
+      "는, 다른, 트레이너를——",
     ]);
     await ruby.print_and_wait(
       `${ruby.sex}は言い終えないまま走り去り、点々と涙の跡を残した……`,

@@ -924,13 +924,13 @@ module.exports = {
    * @param {CharaTalk} chara
    * @param {CharaTalk} you
    */
-  // [번역 대상] s_r_lunch
+  // [번역 완료] s_r_lunch
   async s_r_lunch(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      "은(는) ",
       chara.get_colored_name(),
-      ' と屋上で弁当を食べ、弁当箱の中身を交換した。',
+      "과(와) 함께 옥상에 올라가 도시락을 먹으며, 서로의 도시락 통에 있는 맛있는 반찬을 교환했다.",
     ]);
   },
   /**

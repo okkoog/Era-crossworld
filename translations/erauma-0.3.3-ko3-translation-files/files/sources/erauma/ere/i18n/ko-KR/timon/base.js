@@ -71,63 +71,63 @@ module.exports = {
    * @param {number} love_level
    * @param {boolean} is_fix
    */
-  // [번역 대상] get_info_awake
+  // [번역 완료] get_info_awake
   get_info_awake(chara, you, security_level, love_level, is_fix) {
-    const ret = [chara.get_colored_name(), ' は'];
+    const ret = [chara.get_colored_name(), "은(는) 현재 "];
     switch (security_level) {
       case 1:
-        ret.push('一時の衝動をすでに後悔している');
+        ret.push("일시적인 충동으로 인한 후회에 젖어 있다");
         break;
       case 2:
-        ret.push('ひどく緊張し、落ち着きを失っている');
+        ret.push("매우 긴장한 기색이며, 좀처럼 진정하지 못하고 있다");
         break;
       case 3:
-        ret.push('執念が根を張り始めている');
+        ret.push("안의 집착이 이미 깊게 뿌리를 내렸다");
         break;
       case 4:
-        ret.push('決意を、到底甘く見られない');
+        ret.push("의 결심은 결코 과소평가할 수 없어 보인다");
         break;
       case 5:
-        ret.push('心の守りがすでに万全だ');
+        ret.push("의 마음의 장벽은 그야말로 철통같다");
         break;
     }
     ret.push('……');
     switch (love_level) {
       case 0:
-        ret.push(chara.sex, 'にはほかの用事もあり、すぐに立ち去るだろう');
+        ret.push(chara.sex, "에게는 따로 할 일이 있으며, 곧 떠날 듯하다");
         break;
       case 1:
         ret.push(
           chara.sex,
-          'は ',
+          "가 ",
           you.get_colored_name(),
-          ' をじっと見つめ、そう簡単には離れないつもりらしい',
+          "을(를) 뚫어지게 응시하고 있다. 아무래도 쉽게 떠나지 않을 모양이다",
         );
         break;
       case 2:
         ret.push(
           chara.sex,
-          'は ',
+          "가 ",
           you.get_colored_name(),
-          ' を食い入るように見つめ、そう簡単には離れないつもりらしい',
+          "을(를) 집요하게 노려보고 있다. 아무래도 쉽게 떠나지 않을 모양이다",
         );
         break;
       case 3:
         ret.push(
           chara.sex,
-          'は ',
+          "가 ",
           you.get_colored_name(),
-          ' に微笑み、',
+          "을(를) 향해 미소 짓고 있다. ",
           you.get_colored_name(),
-          ' のもとから去る気はなさそうだ',
+          "의 곁을 떠날 생각이 전혀 없어 보인다",
         );
         break;
       case 4:
         ret.push(
           chara.sex,
-          'の顔は心碎で歪み、',
+          "의 안색이 슬픔으로 일그러져 있다. ",
           you.get_colored_name(),
-          ' のもとから離れる気配はない',
+          "의 곁을 떠날 생각은 티끌만큼도 없어 보인다",
         );
     }
     ret.push('……');

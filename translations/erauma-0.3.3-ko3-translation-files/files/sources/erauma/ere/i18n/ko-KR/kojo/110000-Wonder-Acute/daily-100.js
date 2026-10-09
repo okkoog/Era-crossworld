@@ -1026,24 +1026,24 @@ module.exports = {
     }
   },
 
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(acute) {
     if (Math.random() > 0.5) {
       await acute.say_and_wait(
-        'ゲーム、ですか……機械の操作が、あまり分からなくて——',
+        "게임 말이니…… 사실 난 기계를 어떻게 다루는지 잘 모르겠구나——",
       );
       await era.printAndWait([
-        'ディスプレイとリモコンのあいだで視線を行き来させる ',
+        "화면과 컨트롤러를 끊임없이 번갈아 쳐다보던 ",
         acute.get_colored_name(),
-        ' が、床に置いたコントローラーを、立てた人差し指二本でつついている。',
+        "가, 검지손가락 두 개를 꼿꼿이 세워 바닥에 놓인 패드를 콕콕 건드리고 있다.",
       ]);
-      await era.printAndWait('……正直、かなりかわいい。');
+      await era.printAndWait("……솔직히 말해서, 정말이지 무지하게 귀엽다.");
     } else {
       await acute.say_and_wait(
-        'ゲーム機——ああ、昔、故郷の隣の子供が言っていました。戦車で戦う、あれですよね？',
+        "게임기—— 아, 예전에 고향 이웃집 아이한테 들은 적이 있단다. 그 배틀 시티 같은 걸 할 수 있는 그거구먼?",
       );
-      await era.printAndWait('ぷっ——笑いそうになった。');
-      await era.printAndWait('戦車戦……何年前の子供だよ、それは。');
+      await era.printAndWait("풉—— 하마터면 웃음이 터질 뻔했다.");
+      await era.printAndWait("배틀 시티라니…… 대체 몇 년 전 이야기를 하는 걸까?");
     }
   },
 

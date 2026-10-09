@@ -6,24 +6,24 @@ module.exports = {
 
   // [번역 대상] 24
   async 24(maya, callname) {
-    await maya.say_and_wait('マヤはね、小さいころから空に憧れてた。');
+    await maya.say_and_wait("마야는 어릴 때부터 하늘을 동경했어.");
     await maya.say_and_wait(
-      'マヤが小さかったとき、パパが空に連れてってくれたの。',
+      "마야가 어렸을 때, 아빠가 마야를 비행기에 태워 하늘을 날게 해줬거든.",
     );
-    await maya.say_and_wait('あのときの景色、マヤ、一生忘れないと思う。');
+    await maya.say_and_wait("그때의 풍경은 마야 평생 잊지 못할 거야.");
     await maya.say_and_wait(
-      '『大きくなったら、もっときれいな景色が見えるよ』って、パパが言ってた。',
+      "『네가 어른이 되면 이것보다 더 아름다운 풍경을 볼 수 있단다』라고 아빠가 말해줬어.",
     );
-    await maya.say_and_wait('それでマヤ、トレセンに来た。');
+    await maya.say_and_wait("그리고 마야는 트레센에 오게 됐지.");
     await maya.say_and_wait(
-      'レース場なら、あのときの気持ち、もう一回感じられるかな？',
+      "경기장이라면, 다시 한번 그때의 기분을 느낄 수 있지 않을까 해서.",
     );
     await maya.say_and_wait(`そうして、マヤは ${callname} と出会った。`);
     await maya.say_and_wait(
-      '新しいこと、いっぱい体験した。新しい気持ち、いっぱい感じた。',
+      "새로운 것들도 많이 경험하고, 새로운 기분들도 많이 느꼈어.",
     );
-    await maya.say_and_wait('だから……');
-    await maya.say_and_wait('マヤが大きくなるまで、ずっとそばにいてね？');
+    await maya.say_and_wait("그러니까……");
+    await maya.say_and_wait("마야가 어른이 될 때까지, 계속 곁에 있어 줘야 해?");
   },
 
   // [번역 대상] 49
