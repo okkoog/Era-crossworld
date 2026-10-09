@@ -4,9 +4,9 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/103000-Rice-Shower/love-30"),
 
-  // [번역 대상] 49
+  // [번역 완료] 49
   49: (() => {
-    const title = '愛欲';
+    const title = "애욕";
     /**
      * @param {CharaTalk} rice ライスシャワー
      * @param {CharaTalk} you プレイヤー
@@ -15,44 +15,44 @@ module.exports = {
      */
     const f = async (rice, you, callname, self_call) => {
       await rice.print_and_wait([
-        'まず、',
+        "우선, ",
         callname,
-        ' はかっこよくて、優しくて、頼りになる。',
+        "는 정말 멋지고 상냥하고 믿음직스러워. 설령 ",
         self_call,
-        ' が ',
+        "가 ",
         callname,
-        ' にたくさん迷惑をかけても、笑って ',
+        "에게 많은 폐를 끼치더라도, 언제나 웃으며 ",
         self_call,
-        ' を励ましてくれる。',
+        "를 응원해 줘.",
       ]);
       await rice.print_and_wait([
-        '……ときどき、すごく可愛い！とにかく ',
+        "……가끔은 귀엽기도 하고! 아무튼 ",
         self_call,
-        ' は ',
+        "는 ",
         callname,
-        ' が好きです。',
+        "를 좋아해.",
       ]);
       await rice.print_and_wait([
-        '何度も何度も何度も、',
+        "몇 번이고, 몇 번이고, 몇 번이나, ",
         self_call,
-        ' は ',
+        "는 ",
         callname,
-        ' を押し倒したくなりました。',
+        "를 덮치고 싶다고 생각했어.",
       ]);
       await rice.print_and_wait([
-        'でも ',
+        "하지만 그러면 ",
         callname,
-        ' を悲しませたくなくて、',
+        "가 슬퍼할지도 모른다는 생각에, ",
         self_call,
-        ' はずっと我慢してきました。',
+        "는 꾹 참아왔어.",
       ]);
       era.printButton(
-        `${callname} の気持ちがいちばん大切だから（まだ進めない）`,
+        `당연하지, ${callname}의 마음이 가장 소중하니까. (관계 진전 보류)`,
         1,
         { buttonType: '', color: rice.color },
       );
       era.printButton(
-        `${callname} の答えがどちらでも、${self_call} はもう我慢しない（関係を進める）`,
+        `${callname}의 대답이 무엇이든, ${self_call}는 더 이상 참지 않을 거야! (관계 진전)`,
         2,
         { buttonType: '', color: rice.color },
       );
@@ -60,11 +60,11 @@ module.exports = {
       if (ret === 2) {
         await rice.print_and_wait([
           self_call,
-          ' に自分を信じろと教えてくれたのは ',
+          "에게 스스로를 믿으라고 가르쳐 준 사람은 바로 ",
           callname,
-          ' です。',
+          "야. ",
           self_call,
-          ' は今度こそ、諦めずにがんばります。',
+          "는 이번에야말로 끝까지 노력할거야. 절대 포기하지 않아.",
         ]);
       }
       return [ret];
@@ -75,7 +75,7 @@ module.exports = {
 
   // [번역 대상] 74
   74: (() => {
-    const title = '告白';
+    const title = "고백";
     /**
      * @param {CharaTalk} rice ライスシャワー
      * @param {CharaTalk} you プレイヤー
@@ -84,54 +84,54 @@ module.exports = {
      * @param {PrintedSpan} y_call_r プレイヤーのライスへの呼び方
      */
     const f = async (rice, you, callname, self_call, y_call_r) => {
-      await rice.print_and_wait([self_call, '、', callname, ' が大好きです']);
+      await rice.print_and_wait([self_call, '、', callname, "를 가장 좋아해."]);
       await rice.print_and_wait(
-        '大好きだから、この愛は、実を結ばなくてもいいんです。',
+        "가장 좋아하기 때문에, 이 사랑은 설령 결실을 보지 못하더라도 괜찮아.",
       );
-      await rice.print_and_wait('だから、これでいい。');
-      await rice.print_and_wait([self_call, '、ここまで来られればいい。']);
-      await rice.print_and_wait([self_call, '、そう願っていました。']);
+      await rice.print_and_wait("그러니까, 이걸로 됐어.");
+      await rice.print_and_wait([self_call, "는, 여기까지만 오면 돼."]);
+      await rice.print_and_wait([self_call, "는, 본래 그렇게 기도했으니까."]);
       era.drawLine();
       await era.printAndWait([
         rice.get_colored_name(),
-        ' は ',
+        "는 ",
         you.get_colored_name(),
-        ' に、どうしても見たい店があると言った。',
+        "에게, 무슨 일이 있어도 가보고 싶은 가게가 있다고 말했다.",
       ]);
       await era.printAndWait([
-        'そこで ',
+        "그래서 ",
         you.get_colored_name(),
-        ' は ',
+        "은(는) ",
         rice.get_colored_name(),
-        ' を連れてきた。学園から少し離れた街だ。',
+        "를 데리고 이곳에 왔다. 학원에서 조금 떨어진 거리다.",
       ]);
-      await era.printAndWait('大きな本屋と、きれいな雑貨屋。');
+      await era.printAndWait("한 곳은 커다란 서점, 다른 한 곳은 예쁜 잡화점이다.");
       await era.printAndWait(
-        'ここはまだイルミネーションが輝き、恋人たちがクリスマスを過ごす通りだ。',
+        "화려한 조명이 빛나는 이곳은 연인들이 크리스마스를 즐기는 거리다.",
       );
       await era.printAndWait(
-        '少し先には、ネオンの色に揺れる大人の場所がある。',
+        "조금 떨어진 곳에는 네온사인이 반짝이는 어른들의 장소도 보인다.",
       );
       await rice.say_and_wait([
         self_call,
         '、',
         callname,
-        ' に贈りたいものがあります。',
+        "에게 주고 싶은 선물이 있어.",
       ]);
       await rice.say_and_wait([
         self_call,
-        ' のすべては、',
+        "의 모든 것은, ",
         callname,
-        ' がくれたものです。',
+        "가 준 것이나 다름없어.",
       ]);
       await rice.say_and_wait([
-        'だから ',
+        "그래서 ",
         self_call,
-        ' は ',
+        "는 ",
         callname,
-        ' に言いたいんです。今まで ',
+        "에게, 지금까지 ",
         self_call,
-        ' を見てくださって、本当にありがとうございました。',
+        "를 돌봐 줘서 정말 고맙다는 말을 하고 싶었어.",
       ]);
       await rice.say_and_wait([
         callname,
@@ -139,80 +139,80 @@ module.exports = {
       ]);
       await era.printAndWait([
         rice.get_colored_name(),
-        ' は顔を上げ、突然 ',
+        "가 고개를 들고, 갑자기 ",
         you.get_colored_name(),
-        ' にそう言った。',
+        "에게 이렇게 말했다.",
       ]);
       await rice.say_and_wait([
         callname,
-        ' がトレーナーになってくれるって聞いたとき、本当に嬉しかったんです。',
+        "가 나의 트레이너가 되어 주겠다고 했을 때, 정말로 기뻤어.",
       ]);
       await rice.say_and_wait(
-        '小さい頃から、人を幸せにできる人になりたかった。',
+        "난 어릴 때부터 누군가에게 행복을 주는 사람이 되고 싶어 노력했거든.",
       );
       await rice.say_and_wait([
-        'でもお父さんとお母さんには、きっと ',
+        "하지만, 부모님께는 분명 ",
         self_call,
-        ' のことが心配だったと思います。',
+        "가 걱정스러운 아이였을 거야.",
       ]);
       await era.printAndWait([
         rice.get_colored_name(),
-        ' は、一語一語を喉から絞り出すように話す。',
+        "는 한 자 한 자 목소리를 쥐어짜듯 내뱉었다.",
       ]);
       await rice.say_and_wait([
-        '小さい頃から ',
+        "어릴 적부터 ",
         self_call,
-        ' は',
+        "는 줄곧 ",
         you.elder_sibling_sex_title,
-        'が欲しいと思っていました。本当に',
+        "가 있었으면 좋겠다고 생각했어. 만약 정말로 ",
         you.elder_sibling_sex_title,
-        'がいたら、',
+        "가 있다면, ",
         self_call,
-        ' は',
+        "는 ",
         you.sex,
-        'に甘えられたのに……',
+        "에게 어리광도 피우고……",
       ]);
-      await era.printAndWait('真摯で、澄んだ眼差し。');
+      await era.printAndWait("진실하고 순수한 눈망울.");
       await era.printAndWait([
         rice.get_colored_name(),
-        ' の美しい双眸が、いま静かに ',
+        "의 아름다운 두 눈이, 지금은 가만히 ",
         you.get_colored_name(),
-        ' を見つめている。',
+        "을(를) 응시하고 있다.",
       ]);
       await rice.say_and_wait([
         callname,
-        '、こんな ',
+        ", 혹시 이런 ",
         self_call,
-        '、迷惑だと思いますか？',
+        ".. 번거로워?",
       ]);
-      era.printButton('「少しも思わない。」', 1);
+      era.printButton("「전혀 번거롭지 않아.」", 1);
       await era.input();
-      await you.say_and_wait([y_call_r, ' は、いつでも俺に甘えていいんだぞ。']);
+      await you.say_and_wait([y_call_r, "는 언제든 나한테 어리광 부려도 괜찮아."]);
       await rice.say_and_wait([
-        '本当ですか？ずっと ',
+        "정말이야? 계속 ",
         self_call,
-        ' のそばにいてくれますか？',
+        "의 곁에 있어 줄 거야?",
       ]);
-      await era.printAndWait('二人の距離が一気に縮まる。');
-      era.printButton('「ああ、ずっとそばにいる。」', 1);
+      await era.printAndWait("두 사람 사이의 거리가 순식간에 좁혀졌다.");
+      era.printButton("「응, 내가 계속 곁에 있어 줄게.」", 1);
       await era.input();
       await rice.say_and_wait([
-        '絶対ですよ？',
+        "약속이야? ",
         callname,
-        ' は、ずっと ',
+        "는 계속 ",
         self_call,
-        ' のそばにいてください。',
+        "의 곁에 있어야 해.",
       ]);
       await rice.say_and_wait(
         '黙っていなくなったり、突然いなくなったりしちゃだめです。',
       );
-      await you.say_and_wait(['俺は、ずっと ', y_call_r, ' のそばにいる。']);
-      await rice.say_and_wait(['ありがとう。', callname, '、大好きです。']);
+      await you.say_and_wait(["나는 영원히 ", y_call_r, "의 곁에 있을 거야."]);
+      await rice.say_and_wait(["고마워, ", callname, ". 정말 좋아해."]);
       await era.printAndWait([
         rice.get_colored_name(),
-        ' は両手で ',
+        "가 두 팔로 ",
         you.get_colored_name(),
-        ' を抱きしめた。',
+        "을(를) 꽉 껴안았다.",
       ]);
     };
     f.title = title;
@@ -221,7 +221,7 @@ module.exports = {
 
   // [번역 대상] 89
   89: (() => {
-    const title = '良縁';
+    const title = "행복";
     /**
      * @param {CharaTalk} rice ライスシャワー
      * @param {CharaTalk} you プレイヤー
@@ -229,106 +229,106 @@ module.exports = {
      * @param {string} self_call ライスの自称
      */
     const f = async (rice, you, callname, self_call) => {
-      await rice.print_and_wait('ある休日の朝');
+      await rice.print_and_wait("어느 휴일 아침");
       await rice.print_and_wait([
         rice.get_colored_name(),
-        ' は、灼けつくような熱と、少しの痛みと、言葉にできない不安に包まれて目を覚ました。',
+        "는 타오르는 듯한 열기, 약간의 통증, 그리고 말로 표현할 수 없는 불안감에 잠에서 깼다.",
       ]);
       await rice.print_and_wait([
-        'この感覚は、',
+        "이런 감각을 ",
         rice.get_colored_name(),
-        ' にとって初めてではない。',
+        "가 겪은 것이 처음은 아니었다.",
       ]);
       await rice.print_and_wait(
-        'いつもなら、もう少し眠って、あとで体を動かせば治る。',
+        "평소라면 조금 더 자거나, 몸을 움직이다 보면 금방 나아지곤 했다.",
       );
       await rice.print_and_wait([
-        'だから ',
+        "그래서 ",
         rice.get_colored_name(),
-        ' はいつものように体を動かし、着替えて外へ出た。',
+        "는 평소처럼 몸을 움직이고 옷을 갈아입은 뒤 밖으로 나갔다.",
       ]);
       era.drawLine();
-      await rice.print_and_wait('でも、どうしても治らない。');
-      await rice.print_and_wait('歩き、走り、座って休む。');
-      await rice.print_and_wait('不安で、辛くて、それでもどうにもならない。');
+      await rice.print_and_wait("하지만, 도무지 낫질 않았다.");
+      await rice.print_and_wait("걷고, 뛰고, 앉아서 쉬어 보아도.");
+      await rice.print_and_wait("불안하고 슬픈 마음은 걷잡을 수 없었다.");
       await rice.print_and_wait([
         rice.get_colored_name(),
-        ' は落ち着かない気持ちのまま、道端に腰を下ろした。',
+        "는 초조한 마음으로 길가에 주저앉았다.",
       ]);
-      await rice.print_and_wait(['偶然、', callname, ' が通りかかった。']);
+      await rice.print_and_wait(["우연히, ", callname, "가 길을 지나가고 있었다."]);
       await rice.print_and_wait([
         callname,
-        ' は困った顔で、',
+        "는 곤란한 표정으로 ",
         rice.get_colored_name(),
-        ' の手を取った。',
+        "의 손을 잡아주었다.",
       ]);
       era.drawLine();
       await rice.print_and_wait([
         callname,
-        ' の部屋に着いたとき、',
+        "의 방에 도착했을 때, ",
         rice.get_colored_name(),
-        ' はもう限界だった。',
+        "는 이미 한계였다.",
       ]);
-      await rice.print_and_wait('熱、悲しみ、不安。');
+      await rice.print_and_wait("열기, 슬픔, 불안.");
       await rice.print_and_wait([
-        'でも心のどこかが、',
+        "하지만 마음 한구석은 ",
         callname,
-        ' に手を握られたときから、甘酸っぱい。',
+        "에게 손을 잡힌 순간부터 새콤달콤하게 물들어 있었다.",
       ]);
       await rice.print_and_wait([
         rice.get_colored_name(),
-        ' は自分を、',
+        "는 ",
         callname,
-        ' の腕の中に預けた。',
+        "의 품에 자신의 몸을 맡겼다.",
       ]);
-      await rice.print_and_wait('自然と、さっきまでの不安が消えていく。');
-      await rice.say_and_wait('すぅ……');
-      await rice.print_and_wait('深く息をするたび、温かいものが溜まっていく。');
-      await rice.say_and_wait('ふう……');
+      await rice.print_and_wait("거짓말처럼 조금 전의 불안이 사라졌다.");
+      await rice.say_and_wait("후우…");
+      await rice.print_and_wait("깊게 숨을 들이쉴 때마다, 따스한 무언가가 차곡차곡 쌓여갔다.");
+      await rice.say_and_wait("하아……");
       await rice.print_and_wait(
-        'ゆっくり吐くと、溜まったものは甘い幸せになって、全身を巡る。',
+        "천천히 숨을 내뱉으면, 쌓인 것들이 달콤한 행복으로 변해 온몸으로 퍼져나갔다.",
       );
-      await rice.print_and_wait('呼吸するだけで、どんどん幸せになる。');
-      await rice.say_and_wait('ん……あっ！');
+      await rice.print_and_wait("그저 숨을 쉬는 것만으로도 점점 더 행복해졌다.");
+      await rice.say_and_wait("응…… 아앗!");
       await rice.print_and_wait([
         rice.get_colored_name(),
-        ' は、その快感に溶けそうになる。',
+        "는 이 쾌감에 몸이 녹아내릴 것만 같았다.",
       ]);
       await rice.print_and_wait([
         callname,
-        ' の手が、',
+        "의 손이 ",
         rice.get_colored_name(),
-        ' の背中に触れた。',
+        "의 등을 어루만졌다.",
       ]);
-      await rice.print_and_wait('悪戯っ子のように、触れ、撫でる。');
-      await rice.say_and_wait('あっ……んっ……');
+      await rice.print_and_wait("마치 장난꾸러기처럼, 만지고, 부드럽게 쓰다듬는다.");
+      await rice.say_and_wait("아…… 응……");
       await rice.print_and_wait([
-        'とろける ',
+        "황홀함 속에 녹아내린 ",
         rice.get_colored_name(),
-        ' を、',
+        "는, ",
         callname,
-        ' の手が混ぜ、快楽の波を立てる。',
+        "의 손길에 휘저어지며 즐거운 파도에 휩쓸렸다.",
       ]);
       await rice.print_and_wait([
-        'それから ',
+        "그러자 ",
         callname,
-        ' は、手を ',
+        "는 손을 ",
         rice.get_colored_name(),
-        ' の尻尾の根元に置いた。',
+        "의 꼬리 뿌리 쪽에 가져다 댔다.",
       ]);
-      await rice.print_and_wait('それらしい手つきで、ぐるぐると撫で続ける。');
-      await rice.say_and_wait('あっ……んあっ！');
+      await rice.print_and_wait("능숙하게, 계속해서 원을 그리며 만지작거렸다.");
+      await rice.say_and_wait("아…… 응아앗!");
       await rice.print_and_wait([
         rice.get_colored_name(),
-        ' の体は震え、ぐちゃぐちゃの泥のように柔らかくなる。',
+        "의 몸이 떨리며, 형체를 알아볼 수 없을 정도로 흐물흐물해졌다.",
       ]);
-      await rice.say_and_wait(['ああ、', callname, '……もっと、もっと！']);
+      await rice.say_and_wait(["아아, ", callname, "…… 조금 더, 조금만 더 해줘!"]);
       await rice.print_and_wait([
-        'そのとき、',
+        "그때, ",
         callname,
-        ' の手が急に止まった。',
+        "의 손이 갑자기 멈췄다.",
       ]);
-      await rice.print_and_wait('荒れ狂っていた何かも、一瞬で凪になる。');
+      await rice.print_and_wait("용솟음치던 무언가도 한순간에 잠잠해졌다.");
       await rice.say_and_wait(callname);
       await rice.print_and_wait([
         'それから ',
@@ -339,37 +339,37 @@ module.exports = {
       ]);
       await rice.print_and_wait([
         rice.get_colored_name(),
-        ' の全身を、幸せの波が襲う。',
+        "의 전신에 행복의 물결이 밀어닥쳤다.",
       ]);
-      await rice.say_and_wait(['ああ……あっ、', callname, '……']);
-      await rice.say_and_wait([self_call, '……幸せ……！']);
+      await rice.say_and_wait(["아아…… 아, ", callname, '……']);
+      await rice.say_and_wait([self_call, "…… 너무 행복해!"]);
       await rice.print_and_wait([
-        'しばらくして、',
+        "잠시 후, ",
         rice.get_colored_name(),
-        ' は幸せの泥沼に浸ったまま、眠ってしまった。',
+        "는 행복의 수렁에 푹 빠진 채 그대로 잠이 들었다.",
       ]);
       era.drawLine();
       await rice.print_and_wait([
-        '起きたとき、すっきりした ',
+        "잠에서 깨어나 개운해진 ",
         rice.get_colored_name(),
-        ' は、',
+        "는 ",
         callname,
-        ' の悪戯っぽい笑顔と目が合った。',
+        "의 장난스러운 웃는 얼굴과 마주쳤다.",
       ]);
       await rice.print_and_wait([
-        '恥ずかしい顔が火照って、',
+        "부끄러움에 얼굴이 타버릴 것만 같았던 ",
         rice.get_colored_name(),
-        ' は布団の中に潜り込むしかなかった。',
+        "는 서둘러 이불 속으로 몸을 숨겼다.",
       ]);
-      await rice.say_and_wait('でも、本当に幸せ……', true);
+      await rice.say_and_wait("하지만, 정말 행복해……", true);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] 99
+  // [번역 완료] 99
   99: (() => {
-    const title = '依存';
+    const title = "의존";
     /**
      * @param {CharaTalk} rice ライスシャワー
      * @param {CharaTalk} you プレイヤー
@@ -378,67 +378,67 @@ module.exports = {
      */
     const f = async (rice, you, callname, self_call) => {
       await rice.say_and_wait([
-        'どうして ',
+        "왜 ",
         self_call,
-        ' を見てくれないの？',
+        "를 봐주지 않아? ",
         self_call,
-        ' が悪い子だから、嫌いになったの？',
+        "가 나쁜 아이라서 싫어진 거야?",
       ]);
       await rice.say_and_wait([
-        'そう……じゃあ、',
+        "그렇구나…… 그럼 ",
         self_call,
-        ' が悪い子だって印を、刻まないといけませんね。',
+        "가 나쁜 아이라는 증거를 새겨야겠네.",
       ]);
       await rice.say_and_wait([
-        'だから ',
+        "그러니까 ",
         callname,
-        ' は ',
+        "는 ",
         self_call,
-        ' を罰してください。',
+        "에게 벌을 줘야 해. ",
         self_call,
-        ' が悪い子だから、',
+        "가 나쁜 아이니까, 그래서 ",
         callname,
-        ' は ',
+        "가 ",
         self_call,
-        ' に愛をくれないんです。',
+        "에게 사랑을 주지 않는 거니까.",
       ]);
       await rice.say_and_wait([
-        'どうして？',
+        "왜? ",
         callname,
-        ' のためなら ',
+        "를 위해서라면 ",
         self_call,
-        ' は毎日トレーニングして、毎週レースに出て、休みなんていりません。',
+        "는 매일 트레이닝하고, 매주 레이스에 나갈 수도 있어. 휴식 같은 건 필요 없어.",
       ]);
       await rice.say_and_wait([
         callname,
-        ' が ',
+        "가 ",
         self_call,
-        ' を愛してくれるなら、',
+        "를 사랑해 주기만 한다면, 설령 ",
         self_call,
-        ' は走れなくなっても走り続けます。',
+        "가 더 이상 뛸 수 없게 되어도 계속 달릴게.",
       ]);
       await rice.say_and_wait([
-        'お願いです。',
+        "부탁이야, ",
         self_call,
-        ' には ',
+        "에겐 이제 ",
         callname,
-        ' しかいないんです……',
+        "뿐이야……",
       ]);
       await rice.say_and_wait([
-        'だから、',
+        "그러니까, 제발 ",
         self_call,
-        ' を愛してください。',
+        "를 사랑해 줘. ",
         self_call,
-        ' を見てください。',
+        "만 바라봐 줘.",
       ]);
       await rice.say_and_wait([
         callname,
         '、',
         self_call,
-        ' を撫でてくれますか？',
+        "..쓰다듬어 줄래?",
       ]);
-      await rice.say_and_wait(['ええ？ありがとう、', callname, '。']);
-      await rice.say_and_wait('大好きです！');
+      await rice.say_and_wait(["에헤헤? 고마워, ", callname, '。']);
+      await rice.say_and_wait("정말 좋아해!");
     };
     f.title = title;
     return f;

@@ -245,7 +245,8 @@
   - 번역 대상: 없음 — 연결/보조 파일
 
 - [kojo/103000-Rice-Shower/love-30.js](files/sources/erauma/ere/i18n/ko-KR/kojo/103000-Rice-Shower/love-30.js)
-  - 번역 대상: 49, 74, 89, 99
+  - 번역 대상: 74, 89
+  - 복구 완료: 49, 99
 
 - [kojo/103200-Agnes-Tachyon/base-32.js](files/sources/erauma/ere/i18n/ko-KR/kojo/103200-Agnes-Tachyon/base-32.js)
   - 번역 대상: ask_release_agree, ask_release_reject, battle_prison, find_escape, strike_fail, strike_success, welcome
