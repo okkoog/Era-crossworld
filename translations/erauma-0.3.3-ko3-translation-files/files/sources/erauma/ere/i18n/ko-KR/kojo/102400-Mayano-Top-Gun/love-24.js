@@ -4,7 +4,7 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/102400-Mayano-Top-Gun/love-24"),
 
-  // [번역 대상] 24
+  // [번역 완료] 24
   async 24(maya, callname) {
     await maya.say_and_wait("마야는 어릴 때부터 하늘을 동경했어.");
     await maya.say_and_wait(
@@ -18,7 +18,7 @@ module.exports = {
     await maya.say_and_wait(
       "경기장이라면, 다시 한번 그때의 기분을 느낄 수 있지 않을까 해서.",
     );
-    await maya.say_and_wait(`そうして、マヤは ${callname} と出会った。`);
+    await maya.say_and_wait(`그렇게 마야는 ${callname}과 만나게 됐어.`);
     await maya.say_and_wait(
       "새로운 것들도 많이 경험하고, 새로운 기분들도 많이 느꼈어.",
     );
@@ -46,181 +46,181 @@ module.exports = {
     );
   },
 
-  // [번역 대상] 74
+  // [번역 완료] 74
   async 74(maya, luna, ag, you, callname, callname_18, m_call_k, m_call_a) {
     await era.printAndWait([
-      'ある日。',
+      "어느 날. ",
       you.get_colored_name(),
-      ' は ',
+      "은(는) ",
       maya.get_colored_name(),
-      ' と一緒に生徒会室へ呼ばれ、それから……',
+      "과 함께 학생회실로 호출되었고, 그곳에서……",
     ]);
     await maya.say_and_wait(
-      'わあっ！ マヤがファッションショーのゲストに選ばれたの！？',
+      "와아! 마야가 패션쇼 게스트로 뽑혔다고!?",
     );
     await luna.say_and_wait(
-      `ええ。学園の宣伝活動の一つでもあります。一般の方々に、見てみたい勝負服を尋ねたところ──`,
+      `그래, 이것도 학원 홍보 활동 중 하나지. 일반 대중에게 보고 싶은 승부복이 무엇인지 물었더니──`,
     );
     await ag.say_and_wait(
-      `『ビューティフルドリームカップ』に登場したウェディング勝負服が一位……君がそのウェディング勝負服の持ち主だから、頼むことにした。`,
+      `『뷰티 드림 컵』에 등장했던 웨딩드레스 승부복이 1위를 차지했단다…… 네가 그 의상의 주인이니, 수고를 좀 해줘야겠어.`,
     );
     await maya.say_and_wait(
-      'わっ！ マヤもあのときの服、大好き～！ え？ そうだ？ そうしたら──',
+      "와! 마야도 그때 그 옷 정말 좋아해~! 어라? 근데 잠깐만? 그럼──",
     );
     await ag.say_and_wait(
-      `……もちろん、私も出る。私もウェディング衣装を持つ${ag.uma_sex_title}だからな。`,
+      `……당연히 나도 참가한다. 나 또한 웨딩 의상을 가진 ${ag.uma_sex_title}이니까.`,
     );
     await ag.say_and_wait(
-      `それに……この企画にはもう一つ要点がある。ランウェイを歩くとき、エスコート役に先導してもらう。`,
+      `그리고…… 이번 기획의 핵심 중 하나는, 런웨이를 걸을 때 에스코트해 줄 파트너와 함께 걷는 것이다.`,
     );
     await luna.say_and_wait(
-      `公募でも、指名でも構いません。期限までに、ゲストご本人が自由に決めてください。`,
+      `공개 모집을 해도 좋고, 지명해도 좋다. 기한 전까지 게스트 본인이 자유롭게 결정하도록 해.`,
     );
-    await maya.say_and_wait('エスコート……公募か指名か、だよね？ でもマヤは……');
-    era.printButton('「どう選ぶ？」', 1);
+    await maya.say_and_wait("에스코트 파트너…… 공모나 지명이 가능하단 말이지? 하지만 마야는……");
+    era.printButton("「어떻게 정하고 싶어?」", 1);
     await era.input();
-    await maya.say_and_wait(`……${callname} はどう思う？`);
+    await maya.say_and_wait(`……${callname}은 어떻게 생각해?`);
     await maya.say_and_wait([
-      'こ、公募なら、ファンの人も喜ぶよね！ でも案内が上手な ',
+      "고, 공모를 하면 팬들이 정말 좋아하겠지! 하지만 리드를 잘하는 ",
       m_call_k,
-      ' にお願いするのもいいかも？',
+      "한테 부탁하는 것도 좋을 것 같고?",
     ]);
     await maya.say_and_wait(
-      'でも……誰かに『指名して！』って言われたら……マヤは……',
+      "그치만…… 만약 누가 나한테 『나를 지명해줘!』라고 말해준다면…… 나는……",
     );
-    era.printButton('「ん？」', 1);
+    era.printButton("「응?」", 1);
     await era.input();
-    await maya.say_and_wait('……もう～！！ なんでわからないの～！？');
-    await maya.say_and_wait('いいよいいよ……！ じゃあ、作戦立てる！');
+    await maya.say_and_wait("……정말~!! 왜 이렇게 눈치가 없는 거야~!?");
+    await maya.say_and_wait("됐어, 됐어……! 그~렇다면, 마야가 직접 계획을 세우겠어!");
     await era.printAndWait([
       maya.get_colored_name(),
-      ' は何かの作戦を練り始めたようだ。',
+      "은 무언가 작전을 짜기 시작한 모양이다. ",
       you.get_colored_name(),
-      ' は、しばらく様子を見ることにした……',
+      "은(는) 일단 상황을 지켜보기로 했다……",
     ]);
     await era.printAndWait(
-      `後輩の${maya.uma_sex_title}「マヤノ先輩！ エスコート、誰にするんですか？ みんな気になってます！」`,
+      `후배 ${maya.uma_sex_title} 「탑건 선배! 파트너는 누구로 정하셨어요? 다들 엄청 궁금해하고 있다구요!」`,
     );
     await maya.say_and_wait(
-      'ありがとう～！ 早く手を挙げてくれる人、見つけなきゃね～～！ ……（チラッ）。',
+      "고마워~! 얼른 자원하는 사람을 찾아야겠어~~! ……(힐끗).",
     );
     await era.printAndWait(
-      'ファン「イベント、楽しみにしてます！ エスコート公募したら、絶対応募します！」',
+      "팬 「이번 이벤트 정말 기대하고 있어요! 파트너 공모를 하신다면 저 꼭 신청할게요!」",
     );
     await maya.say_and_wait(
-      'マヤってモテる☆ 誰も手挙げてくれなかったら、公募にしよっかな～？ ……（チラッ）。',
+      "마야는 정말 인기쟁이라니까☆ 만약 아무도 자원 안 하면 그냥 공모로 해버릴까~? ……(힐끗).",
     );
     era.drawLine();
     await era.printAndWait(
-      `だが何日経っても${maya.sex}はエスコートを決めない。${you.name} がどうしたのかと思っていると……`,
+      `하지만 며칠이 지나도록 ${maya.sex}는 파트너를 정하지 못했다. ${you.name}이(가) 도대체 어떻게 된 일인지 생각하던 그때……`,
     );
     await ag.say_and_wait(
-      `失礼する。意見を聞きに来た……何を聞くかは、わかっているだろう？`,
+      `실례하마. 네 의견을 물으러 왔다…… 내가 뭘 묻고 싶은지 이미 알고 있겠지?`,
     );
-    era.printButton('「エスコートのことだろ？」', 1);
+    era.printButton("「에스코트 파트너 이야기지?」", 1);
     await era.input();
     await ag.say_and_wait(
-      `悩みはわかるが、いつまでも待ってはおれない。早く返事を──`,
+      `네 고민은 이해하지만, 더 이상 기다릴 수는 없군. 빨리 답변을──`,
     );
     await maya.say_as_unknown_and_wait([
-      'ちょっと待って～～！',
+      "기다려~~! ",
       callname,
-      '、これどういうこと！？',
+      ", 이게 대체 어떻게 된 거야!?",
     ]);
     era.printButton('「！？」', 1);
     await era.input();
     await maya.say_and_wait([
-      '『早く返事』って『エスコートのこと』……！？ ',
+      "『빨리 답변해달라』는 게 『파트너 이야기』였어……!? 당신, ",
       m_call_a,
-      ' のエスコートになるの！？',
+      "씨의 파트너가 되는 거야!?",
     ]);
-    era.printButton('「え？」', 1);
+    era.printButton("「에?」", 1);
     await era.input();
     await maya.say_and_wait(
-      'マヤ……マヤも、ずっと手挙げてくれるの待ってたのに～！！',
+      "마야는…… 마야도, 계속 트레이너 쌤이 자원해주기만을 기다렸단 말이야~!!",
     );
-    era.printButton('「は！？」', 1);
+    era.printButton("「뭐라고!?」", 1);
     await era.input();
     await maya.say_and_wait(
-      `だってマヤの相棒は ${callname} だもん！ 指名するより、自分からやってくれるほうが嬉しい……`,
+      `그치만 마야의 파트너는 ${callname}인걸! 하지만 지명하는 것보다, 쌤이 직접 하겠다고 해주는 게 더 기쁠 것 같아서……`,
     );
     await maya.say_and_wait([
-      'だからずっと口を開くの待ってたのに、',
+      "그래서 계속 쌤이 입을 열기만을 기다렸는데, 설마 ",
       m_call_a,
-      ' が指名しちゃった！',
+      "씨가 쌤을 지명했을 줄이야!",
     ]);
     await ag.say_and_wait(
-      `待ちなさい！ 何を言っている。私のエスコートは、もう決まっている。`,
+      `잠깐! 무슨 소리를 하는 거야? 내 파트너는 이미 정해진 사람이 있다.`,
     );
     await maya.say_and_wait(
-      'えっ！？ ……じゃ、じゃあ『エスコート』の『返事』って……？',
+      "에!? ……그, 그럼 방금 말한 『파트너』에 대한 『답변』이라는 건……?",
     );
-    era.printButton('「こっちのエスコート申請を急かしてたんだ」', 1);
+    era.printButton("「우리 쪽 파트너 신청서를 빨리 제출하라고 재촉하는 거야」", 1);
     await era.input();
-    await maya.say_and_wait('……あー～～！ マヤの勘違い！？ よかった～～！');
+    await maya.say_and_wait("……아~~! 마야가 오해한 거였어!? 다행이다~~!");
     await maya.say_and_wait(
-      'え……えへへ……間違えた、ごめん。『じらし作戦』失敗したと思った──',
+      "헤…… 헤헤…… 착각해서 미안해. 마야는 『밀당 작전』이 실패한 줄 알았거든──",
     );
-    era.printButton('「『じらし作戦』？」', 1);
+    era.printButton("「『밀당 작전』?」", 1);
     await era.input();
-    await maya.say_and_wait('……やばっ！');
+    await maya.say_and_wait("……아차!");
     await maya.say_and_wait(
-      'うぅ～～そうだよ！ マヤがモテモテなとこ見せて焦らして、自分から一緒に行きたいって言わせたかったの！',
+      "으으~~ 그래! 마야가 이렇게 인기가 많다는 걸 보여줘서 쌤을 안달 나게 만들고, 쌤 입에서 같이 가고 싶다는 말이 나오게 하려고 했어!",
     );
     await maya.say_and_wait(
-      'マヤは、トレーナーさんに一番特別でいてほしい。あなたにとってマヤが一番大事……そう思ってほしいの……',
+      "마야는 트레이너 쌤이 마야를 제일 특별한 존재로 봐주길 원했고, 쌤에게 내가 가장 소중한 사람이길 바랐단 말이야……",
     );
-    era.printButton('「もう一度、チャンスをもらえるか？」', 1);
+    era.printButton("「한 번 더 기회를 줄 수 있을까?」", 1);
     await era.input();
-    await maya.say_and_wait('……し……仕方ない……一回だけなら、……いいよ。');
+    await maya.say_and_wait("……정…… 정말 어쩔 수 없네…… 이번 딱 한 번뿐이야, ……알았어.");
     era.println();
 
     era.printButton(
-      `「君はもちろん、俺にとって一番大事な人だ」（関係を進める）`,
+      `「당연히 네가 나에게 가장 소중한 사람이야」 (관계 진전)`,
       1,
     );
-    era.printButton(`「エスコートさせてくれ」（まだ進めない）`, 2);
+    era.printButton(`「나를 네 파트너로 삼아줘」 (진전 보류)`, 2);
     const ret = await era.input();
     if (ret === 1) {
       await maya.say_and_wait(
-        '……ほ、ほんと？ マヤが一番特別？ マヤが一番大事で、一番キラキラ？',
+        "……저, 정말? 마야가 제일 특별해? 마야가 제일 소중하고, 가장 반짝반짝 빛나?",
       );
-      era.printButton('「ああ！」', 1);
+      era.printButton("「그래!」", 1);
       await era.input();
       await maya.say_and_wait(
-        'えへへ……！ 作戦は失敗したけど、気持ちはわかったから、結果はまあまあ！',
+        "에헤헤……! 작전은 실패했지만, 트레이너 쌤의 진심을 알게 됐으니까 결과적으론 만족이야!",
       );
       await maya.say_and_wait(
-        'でも～～覚悟しといてよ？ 当日は、もっと～すごいこと言わせるから☆',
+        "하지만~~ 각오하는 게 좋을걸? 행사 당일엔 쌤 입에서 더~ 엄청난 말이 나오게 만들 거니까☆",
       );
-      era.printButton('「もっとすごいこと……！？」', 1);
+      era.printButton("「더 엄청난 말……!?」", 1);
       await era.input();
       await ag.say_and_wait([
-        'はあ……では ',
+        "하아…… 그럼 일단 ",
         callname_18,
-        ' の名前で申請しておく。その『すごいこと』で騒ぎを起こすなよ。',
+        "의 이름으로 신청서를 넣어두지. 그 『엄청난 말』 때문에 소동이나 일으키지 마라.",
       ]);
     } else {
-      await maya.say_and_wait('……うん！ えへへ、嬉しい。');
+      await maya.say_and_wait("……응! 에헤헤, 마야 너무 기뻐.");
       await ag.say_and_wait([
-        'では ',
+        "그럼 ",
         callname_18,
-        ' の名前で申請しておく。はあ……当日は騒ぎを起こすなよ。',
+        "의 이름으로 신청서를 제출하지. 휴…… 행사 당일에 사고만 치지 마라.",
       ]);
       era.drawLine();
       await maya.say_and_wait(
-        'うん～～！ やっと本番だ～服も準備できた！ あとは……',
+        "으음~~! 드디어 본 무대구나~ 의상 준비도 끝났고! 남은 건……",
       );
-      era.printButton('「あとは心の準備だな」', 1);
+      era.printButton("「남은 건 마음가짐뿐이네」", 1);
       await era.input();
       await maya.say_and_wait(
-        'そうなんだけど、胸がバクバク止まらない！ 万全の準備、いつまで経ってもできそうにない～～でも……',
+        "그렇긴 한데, 가슴이 너무 두근거려서 도저히 진정이 안 돼! 완벽하게 준비를 마칠 수 있을 것 같지가 않아~~ 그래도……",
       );
       await maya.say_and_wait(
-        'それってマヤが、それだけ幸せってこと！ ……ランウェイ、いちばんいいとこ見せるよ。',
+        "이건 마야가 그만큼 행복하다는 뜻이겠지! ……런웨이에선 최고의 모습을 보여줄게.",
       );
       await era.printAndWait(
-        `${you.name} と ${maya.name} は気合を入れ、ランウェイへ踏み出した。`,
+        `${you.name}과(와) ${maya.name}은 기합을 넣고 런웨이를 향해 발을 내디뎠다.`,
       );
     }
     return ret;
@@ -229,151 +229,151 @@ module.exports = {
   // [번역 대상] 89
   async 89(maya, rice, you, callname, call_30, self_call_30, r_call_m) {
     await era.printAndWait(
-      `${you.name} と ${maya.name} は招待され、あるイベントに参加した。そうは言っても、そのイベントは……`,
+      `${you.name}과(와) ${maya.name}은 초대를 받아 어떤 이벤트에 참가하게 되었다. 말이 초대지, 사실 그 이벤트는……`,
     );
     await maya.say_and_wait(
-      '日差し超まぶしい！ ウェディングイベント日和☆ 絶対大成功させるよ～！',
+      "햇살이 엄청 눈부셔! 웨딩 이벤트를 하기에 딱 좋은 날씨네☆ 마야가 꼭 이번 이벤트를 성공시키고 말겠어~!",
     );
-    era.printButton('「気合十分だな」', 1);
+    era.printButton("「의욕이 넘치는데」", 1);
     await era.input();
     await maya.say_and_wait(
-      'だってマヤ、モデルに選ばれたんだもん！ 早くウェディングドレス着て、みんなの視線集めたい──',
+      "그야 마야가 모델로 뽑혔는걸! 얼른 웨딩드레스를 입고 모두의 시선을 사로잡고 싶어──",
     );
-    await maya.say_and_wait('──え？ へん？ あっちでキョロキョロしてるの……');
+    await maya.say_and_wait("──어라? 이상하네? 저기서 기웃거리고 있는 건……");
     await maya.say_and_wait([
-      'やっぱり ',
+      "역시 ",
       call_30,
-      '！ よかった～！ このイベント見に来たの？',
+      "잖아! 잘됐다~! 혹시 이 이벤트를 보러 온 거야?",
     ]);
     await rice.say_and_wait(
-      `ひゃ……は、はい……結婚式って、幸せな気持ちになれるから……${self_call_30}、ずっと楽しみにしてたの。`,
+      `앗…… 네, 네에…… 결혼식은 사람을 행복하게 만들어주니까…… ${self_call_30}는 정말 기대하고 있었어요.`,
     );
-    await rice.say_and_wait(`だからトレーニング早めに切り上げて──`);
-    await rice.say_and_wait(`ひゃあっ！ い、今ごろごろって……あ、雨！？`);
+    await rice.say_and_wait(`그래서 트레이닝을 일찍 마치고──`);
+    await rice.say_and_wait(`꺄앗! 방, 방금 우르릉 소리가 났는데, ……비, 비가 와요!?`);
     await era.printAndWait(
-      `そのとき突然雨が降り出した。${you.name} は通り雨だと思ったが……`,
+      `이때 갑자기 비가 쏟아지기 시작했다. ${you.name}은(는) 그저 소나기일 뿐이라고 생각했지만……`,
     );
     await era.printAndWait(
       '撮影スタッフ「まずい──晴れないか？ 開催はできるけど、お客さんがほとんどいなくなって……いったん中止に……」',
     );
-    await maya.say_and_wait('む～～～～～');
+    await maya.say_and_wait("으으음~~~~~");
     await rice.say_and_wait(
-      `ご……ごめんなさい……ごめんなさい！ 雨、きっと ${self_call_30} のせい、ごめんなさい！`,
+      `죄…… 죄송해요…… 죄송해요! 비가 오는 건 분명 ${self_call_30} 때문일 거예요, 죄송해요!`,
     );
-    await rice.say_and_wait(`${self_call_30} が来たから……！`);
-    era.printButton('「君のせいじゃないよ」', 1);
+    await rice.say_and_wait(`${self_call_30}가 여기 와버리는 바람에……!`);
+    era.printButton("「네 잘못이 아니야」", 1);
     await era.input();
     await maya.say_and_wait(
-      'そうだよ！ それにイベント、中止になってない。雨じゃマヤの輝きは隠せない！',
+      "맞아! 그리고 이벤트가 중지된 것도 아닌걸. 빗물 따위가 마야의 눈부신 광채를 가릴 수는 없지!",
     );
     await maya.say_and_wait(
-      '違う！ 雨で、もっと輝くんだから！ 二人はそこで見てて☆',
+      "아니지! 오히려 빗물이 나를 더 빛나게 해줄 거야! 둘 다 거기서 딱 지켜봐 봐☆",
     );
     await maya.say_and_wait(
-      'チーン♪ おまたせ☆ マヤのパレードで、イベント開幕だよ～！',
+      "딩동──♪ 다들 오래 기다렸지☆ 마야의 퍼레이드로 이벤트의 막을 열어볼게~! ",
     );
     await era.printAndWait(
-      '女性ファン「トップガンちゃんかわいい～！ うぅ……天気よければなあ……！」',
+      "여성 팬 「마야 정말 귀여워~! 으으…… 날씨만 더 좋았어도 좋았을 텐데……!」",
     );
-    await maya.say_and_wait('雨もマヤのアクセサリーだよ♪ 見て！ キラキラ～☆');
+    await maya.say_and_wait("빗방울도 마야한테는 장식품일 뿐이야♪ 이것 봐! 반짝반짝하지~☆");
     await era.printAndWait(
-      '男性ファン「……！！ 本当だ！ カメラのフラッシュで、雨粒がスパンコールみたいに……！」',
+      "남성 팬 「……!! 진짜네! 카메라 플래시를 받으니까 빗방울이 마치 스팽글처럼 보여……!」",
     );
-    await maya.say_and_wait('でしょ♪ でも、これからが本番！ ……3……2……1──');
-    await maya.say_and_wait('お日さま、登場──☆');
-    await era.printAndWait('ファンたち「わああああ～～～！！」');
+    await maya.say_and_wait("그치♪ 하지만 이제부터가 진짜라구! ……3……2……1──");
+    await maya.say_and_wait("햇님 등장──☆");
+    await era.printAndWait("팬들 「와아아아아아아아!!」");
     await rice.say_and_wait([
       r_call_m,
-      `、すごい……！ みんな笑ってる……魔法をかけられたみたい……！`,
+      `, 대단해요……! 모두가 웃고 있어요…… 마치 마법을 부린 것 같아요……!`,
     ]);
     await maya.say_and_wait(
-      'えへへ、ありがとう☆ 前にパパが、雲の種類と晴れるタイミングの見分け方教えてくれたの～',
+      "헤헤, 고마워☆ 옛날에 아빠가 구름의 종류랑 날씨가 맑아지는 타이밍을 보는 법을 가르쳐줬거든~",
     );
     await maya.say_and_wait(
-      'だってマヤのパパ、空を飛ぶパイロットだもん！ ふんふん！',
+      "우리 아빠는 하늘을 누비는 파일럿이니까! 에헴!",
     );
-    era.printButton('「だから雨を使って見せられたのか？」', 1);
+    era.printButton("「그래서 비를 이용한 연출을 할 수 있었던 거구나?」", 1);
     await era.input();
     await maya.say_and_wait(
-      'そ～う！ でもね、天気もイベントの中身も、いちばん大事なのは──',
+      "정~답! 하지만 사실 날씨나 이벤트 내용은 상관없어. 제일 중요한 건──",
     );
-    await maya.say_and_wait('マヤが、みんなの太陽になること！');
+    await maya.say_and_wait("마야가 모두의 태양이 되는 거야!");
     await maya.say_and_wait(
-      'この服着たとき、心の中で誓った。マヤの輝きで、みんなをキラキラさせるって。',
+      "이 옷을 입었을 때 마음속으로 맹세했어. 나의 눈부신 빛으로 모두를 환하게 비춰주겠다고.",
     );
     await maya.say_and_wait(
-      `それがマヤのいちばんなりたい──大人の${maya.phy_sex_title}だもん！`,
+      `그게 바로 마야가 가장 동경하는── 성숙한 ${maya.phy_sex_title}의 모습이니까!`,
     );
     await rice.say_and_wait([
-      '……！ ……あ、あの、',
+      "……! ……저, 저기, ",
       r_call_m,
-      ' もみんなも、キラキラしてるよ。',
+      "랑 모두가 정말 반짝반짝 빛나고 있어요.",
     ]);
     await rice.say_and_wait(
-      `それを見て、${self_call_30} の中も輝いて、もっと頑張ろうって思えた。だから……ありがとう！`,
+      `그 모습을 보니까 ${self_call_30}의 마음도 환해졌어요. 저도 더 힘내야겠다고 생각했구요. 그러니까…… 고마워요!`,
     );
     await maya.say_and_wait(
-      'イベント、楽しかった～！ でもね、これからが──マヤの本番！ 花火！',
+      "이벤트 정말 즐거웠어~! 하지만 이제부터가── 마야의 하이라이트! 불꽃놀이 쇼야!",
     );
     await maya.say_and_wait(
-      '……本当は、いちばんキラキラする服着て、一緒に花火見たかったのに。雨で汚れちゃった。',
+      "……원래는 제일 반짝이는 옷을 입고 같이 불꽃놀이를 보고 싶었는데. 비 때문에 다 버려버렸네.",
     );
-    await maya.say_and_wait(`${callname} 攻略計画は、次の機会に取っとくね☆`);
+    await maya.say_and_wait(`${callname} 함락 작전은 다음 기회로 미뤄야겠다☆`);
     era.println();
 
     era.printButton(
-      '「何を着ても、トップガンがいちばん輝いてる」（関係を進める）',
+      "「어떤 옷을 입어도 마야는 가장 눈부셔」 (관계 진전)",
       1,
     );
     era.printButton(
-      '「次もモデルになれるよう、頑張ろう！」（まだ進めない）',
+      "「다음에 또 모델을 할 수 있도록 계속 노력하자!」 (진전 보류)",
       2,
     );
     const ret = await era.input();
     if (ret === 1) {
       await maya.say_and_wait('……！！');
       await maya.say_and_wait(
-        'マ、マヤ……落とされた……マヤ、プロポーズされた～～！',
+        "마, 마야가…… 함락당했어…… 마야 방금 프러포즈 받았어~~~!",
       );
-      era.printButton('「まだプロポーズしてないぞ！？」', 1);
+      era.printButton("「아직 프러포즈까진 안 했거든!?」", 1);
       await era.input();
       await maya.say_and_wait(
-        '照れないでよ～！ ずっと一緒に並んで走るってことでしょ？',
+        "부끄러워할 필요 없어~! 영원히 곁에서 함께 달리겠다는 뜻이지, 그치?",
       );
       await maya.say_and_wait(
-        'これでトレーナーさんの太陽は、ずっとマヤだよ☆ 負けないから～！',
+        "이제 트레이너의 태양은 영원히 마야인 거야☆ 난 절대 안 질 거니까~!",
       );
       await era.printAndWait([
         maya.get_colored_name(),
-        ' はそう言って、はしゃいだ笑顔を見せた。',
+        "은 그렇게 말하며 기쁨에 겨운 미소를 지었다.",
       ]);
-      await maya.say_and_wait('イェイ～☆ 応援ありがとう！ マヤ、幸せ～！');
+      await maya.say_and_wait("예이예이~☆ 다들 응원해줘서 고마워! 마야는 정말 행복해~!");
       await maya.say_and_wait(
-        `これからも ${callname} と一緒に、みんなに輝きを届けるって誓う！`,
+        `앞으로도 ${callname}과 함께 모두에게 이 눈부신 빛을 전해주겠다고 맹세할게!`,
       );
-      await maya.say_and_wait(`ね！ ${callname}♪`);
-      era.printButton('「！ ……もちろん、俺も誓う！」', 1);
+      await maya.say_and_wait(`그치! ${callname}♪`);
+      era.printButton("「!…… 물론이지, 나도 맹세할게!」", 1);
       await era.input();
-      await era.printAndWait('二人の宣言に、会場が湧いた。');
+      await era.printAndWait("두 사람의 선언에 회장 안은 열광의 도가니가 되었다.");
     } else {
       await maya.say_and_wait(
-        'うん！ 次も、その次もモデルになる。この服にどんどん似合うようになって、それから──',
+        "좋아! 다음은 물론이고, 다다음번에도 꼭 모델을 맡겠어. 이 옷이 점점 더 잘 어울리는 사람이 돼서, 그러고 나서──",
       );
-      era.printButton('「それから？」', 1);
+      era.printButton("「그러고 나서?」", 1);
       await era.input();
       await maya.say_and_wait(
-        'そ──それから……マヤがこの服に似合ったとき、……その……ずっと……マヤと……つまり──',
+        "그── 그러고 나서…… 마야한테 이 옷이 정말 잘 어울리게 되면, ……그때…… 영원히…… 나랑…… 그러니까──",
       );
       await maya.say_and_wait(
-        'ひゃっ！？ ──わ、わあっ！ 花火！ み、見て見て、トレーナーさん！',
+        "꺄!? ──와, 와아! 불꽃놀이다! 저, 저것 좀 봐, 트레이너 쌤!",
       );
       await maya.say_and_wait(
-        '……じゃあ──は、花火見終わったし、帰ろ！ お腹も空いたし……あの……',
+        "……이제── 불꽃놀이도 다 봤으니까 집에 가자! 배도 고파졌고…… 그러니까……",
       );
       await maya.say_and_wait(
-        '……聞いて！ いつか絶対、今の続き、勇気出して言い切るから。',
+        "……꼭 들어줘! 언젠가 반드시 용기를 내서 방금 하려던 말을 끝까지 다 할 거야.",
       );
-      await maya.say_and_wait('……待っててね！');
+      await maya.say_and_wait("……기다려줘야 해!");
     }
     return ret;
   },

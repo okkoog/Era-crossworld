@@ -4,36 +4,36 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/102500-Manhattan-Cafe/love-25"),
 
-  // [번역 대상] 49
+  // [번역 완료] 49
   async 49(coffee, you) {
     await coffee.print_and_wait([
-      'ある夜、',
+      "어느 날 밤, ",
       coffee.get_colored_name(),
-      ' は、いつもの夢とは違う夢を見た。',
+      "는 평소와 다른 꿈을 꾸었다.",
     ]);
     await coffee.print_and_wait([
-      '夢の中の自分は……',
+      "꿈속의 자신은…… 아무래도 ",
       you.get_colored_actual_name(),
-      ' と、口に出せないことをしていた……',
+      "과(와) 말로 표현하기 힘든 부끄러운 일을 하고 있었던 모양이다……",
     ]);
     await coffee.print_and_wait([
-      '勝手に思い出さないで、と ',
+      "멋대로 떠올리고 말다니, ",
       coffee.get_colored_name(),
-      ' の顔は熱く染まり、両手は少し疼く下腹を撫でて、パジャマの中へ潜った。',
+      "의 얼굴에 수줍은 홍조가 번졌다. 그녀는 약간의 통증이 느껴지는 아랫배를 양손으로 훑으며 잠옷 안으로 손을 집어넣었다.",
     ]);
     if (you.sex_code === 1) {
-      await coffee.say_and_wait('トレーナー、さん……');
+      await coffee.say_and_wait("트레이너  선생님……");
     } else {
-      await coffee.say_and_wait('トレーナー、さん……');
+      await coffee.say_and_wait("트레이너  씨……");
     }
     if (coffee.sex_code === 0) {
       await coffee.print_and_wait(
-        '口の中で夢の相手の名を呼びながら、中指と人差し指はクリトリスの上で円を描き続ける。すでに昂った乳首は、幻想の大きな手に優しく揉まれ、赤く腫れていく。',
+        "입으로는 꿈속의 사람을 중얼거리며, 중지와 검지는 쉴 새 없이 음핵 위에 원을 그렸다. 환상 속의 커다란 손에 부드럽게 문질러져 이미 흥분한 젖꼭지는 붉게 부어올랐다.",
       );
       await coffee.print_and_wait([
-        '重い吐息とともに、',
+        "거친 숨소리와 함께, ",
         coffee.get_colored_name(),
-        ' は絶頂に達した。',
+        "는 절정에 도달했다.",
       ]);
     }
   },
@@ -41,34 +41,34 @@ module.exports = {
   // [번역 대상] 74-1
   async '74-1'(coffee, you, callname) {
     await coffee.print_and_wait([
-      'ある日の午後、',
+      "어느 날 오후, ",
       coffee.get_colored_name(),
-      ' はトレーニングの疲れで倒れ、寮へ運ばれて休んでいた。',
+      "는 트레이닝 피로로 인해 쓰러졌고, 기숙사로 옮겨져 휴식을 취하게 되었다.",
     ]);
     await coffee.print_and_wait([
-      '誰もいない寮にいて、',
+      "텅 빈 기숙사 방에서, ",
       coffee.get_colored_name(),
-      ' は突然、孤独を感じた。',
+      "는 문득 고독함을 느꼈다.",
     ]);
-    await coffee.say_and_wait(['いま、', callname, ' が傍にいてくれたら……']);
+    await coffee.say_and_wait(["만약 ", callname, "이 지금 내 곁에 있어 준다면……"]);
     await coffee.print_and_wait([
-      '倒れたあとの弱さか、ひとりきりだからか。いつもより素直な想いが ',
+      "쓰러진 뒤 허약해진 탓인지, 아니면 지금 홀로 있는 상황 때문인지, 평소보다 솔직한 마음이 ",
       coffee.get_colored_name(),
-      ' の口からこぼれ、誰もいない寮に漂った。',
+      "의 입술 사이로 흘러나와 텅 빈 기숙사 안에 감돌았다.",
     ]);
     await coffee.print_and_wait(
-      'いつから、ひとりでいることが、こんなに怖くなったのだろう……',
+      "언제부터 이렇게 혼자 있는 것을 두려워하게 된 걸까……",
     );
     await coffee.print_and_wait([
-      '言葉にしにくい感覚。だが ',
+      "말로 설명하기 힘든 감정이지만, ",
       coffee.get_colored_name(),
-      ' は、自分と ',
+      "는 자신과 ",
       you.get_colored_actual_name(),
-      ' の関係が、少し普通ではないことに薄々気づいていた。',
+      "의 관계가 조금은 특별해졌음을 어렴풋이 깨달았다.",
     ]);
     era.println();
-    era.printButton(`「会いたい、${callname}……」（関係を進める）`, 1);
-    era.printButton('「気のせいだ……」（まだ進めない）', 2);
+    era.printButton(`「보고 싶어요, ${callname}……」（관계 진전）`, 1);
+    era.printButton("「그저 착각일 뿐이야……」（진전 보류）", 2);
     const ret = await era.input();
     if (ret === 1) {
       await coffee.print_and_wait([
@@ -77,43 +77,43 @@ module.exports = {
         ' の顔が、幽霊のように目の前の闇へ這い上がってくる。',
       ]);
       await coffee.print_and_wait([
-        '眠れない。落ち着かない。よく考えれば、',
+        "잠들 수 없었고, 평온해질 수도 없었다. 다시 생각해보면, ",
         you.get_colored_actual_name(),
-        ' と出会ってから、心はいつもその人で埋まっていた。',
+        "과(와) 만난 이후로 자신의 마음은 매 순간 그에게 사로잡혀 있었다.",
       ]);
       await coffee.say_and_wait([
-        '私は、',
+        "나, ",
         callname,
-        ' を、好きになってしまったのでしょうか……',
+        "을 좋아하게 된 걸까……",
       ]);
       await coffee.print_and_wait([
-        '言葉が落ちたとたん、筋が通ったように、胸の奥からの温もりが ',
+        "말이 떨어지기 무섭게, 마치 막혔던 생각이 뚫린 듯 마음속에서부터 따뜻한 기운이 솟구쳐 ",
         coffee.get_colored_name(),
-        ' の全身を満たした。',
+        "의 온몸을 가득 채웠다.",
       ]);
       await coffee.print_and_wait([
         you.sex,
-        'と出会ってからの一言一句、傍にいた一瞬一瞬が、いま新しい意味を持った。',
+        "와 만난 이후, 했던 말 한마디 한마디, 함께 했던 모든 시간이 이제 새로운 의미를 갖게 되었다.",
       ]);
       if (era.get('cflag:25:育成回合计时') < 96) {
         await coffee.print_and_wait(
           'まだひとりで呟いているだけでも、このはっきりした恋心は、いつか花開くだろう。',
         );
-        await coffee.print_and_wait('いつか……');
+        await coffee.print_and_wait("언젠가는……");
         await era.printAndWait([
           '（',
           coffee.get_colored_name(),
-          ' がこの想いを考えるのは、シニア級に入ってからになりそうだ……）',
+          "는 아마 시니어 시즌에 진입한 후에 이 감정을 다시 고려해 볼 것이다……）",
         ]);
       } else {
-        await coffee.print_and_wait('花が、開いた……');
+        await coffee.print_and_wait("꽃이 피었다……");
       }
     } else {
-      await coffee.print_and_wait('弱いときの、取り留めのない妄想だ……');
+      await coffee.print_and_wait("그저 몸이 약해졌을 때 해본 헛된 생각일 뿐이야……");
       await coffee.print_and_wait([
-        '考えるのを無理に止め、',
+        "억지로 생각을 멈추고, ",
         coffee.get_colored_name(),
-        ' はゆっくり夢の世界へ沈んでいった。',
+        "는 천천히 꿈의 세계로 빠져들었다.",
       ]);
     }
     return ret;
@@ -121,47 +121,47 @@ module.exports = {
 
   // [번역 대상] 74-2
   async '74-2'(coffee, you, callname) {
-    await coffee.say_and_wait([callname, '、今夜は空いていますか……？']);
+    await coffee.say_and_wait([callname, ", 오늘 밤 시간 있으신가요……?"]);
     await era.printAndWait([
-      'ある日、',
+      "어느 날, ",
       coffee.get_colored_name(),
-      ' はめずらしく自分から ',
+      "가 드물게 먼저 ",
       you.get_colored_name(),
-      ' を誘った。',
+      "에게 제안을 건넸다.",
     ]);
     era.println();
-    era.printButton('「ああ、空いてる。何がしたい？」（関係を進める）', 1);
-    era.printButton('「悪い、今夜は少し……」（まだ進めない）', 2);
+    era.printButton("「응, 시간 있어. 하고 싶은 거라도 있어?」（관계 진전）", 1);
+    era.printButton("「미안, 오늘 밤은 좀 바빠서……」（진전 보류）", 2);
     const ret = await era.input();
     if (ret === 1) {
       await era.printAndWait([
-        '肯定の返事をもらって、',
+        "긍정적인 대답을 듣고, ",
         coffee.get_colored_name(),
-        ' は少し迷った。',
+        "는 잠시 머뭇거렸다.",
       ]);
       await coffee.say_and_wait([
-        '行きたい場所が……',
+        "어떤 곳에…… ",
         callname,
-        ' と一緒に見たいんです……',
+        "과 함께 가보고 싶어서요……",
       ]);
       era.drawLine();
       await era.printAndWait([
-        '迷子の子供みたいに、なぜか上機嫌な ',
+        "길 잃은 아이처럼 왠지 모르게 들뜬 기색인 ",
         coffee.get_colored_name(),
-        ' に手を引かれ、いくつもの路地と通りを抜けた先に、目立たない小さな店が現れた。',
+        "의 손에 이끌려 몇 개의 골목과 거리를 지난 뒤, 눈에 들어온 것은 어느 눈에 띄지 않는 작은 가게였다.",
       ]);
       await era.printAndWait(
-        '黄ばんだガラス越しに、レトロな食器やさまざまな道具が並んでいるのが見える。',
+        "빛바랜 유리창 너머로 복고풍 식기들과 다양한 도구들이 진열되어 있는 것이 보였다.",
       );
-      era.printButton('「コーヒーを注ぐ道具もある……古道具屋か。」', 1);
+      era.printButton("「커피 내리는 도구들도 있네…… 여기 골동품점이야?」", 1);
       await era.input();
-      await coffee.say_and_wait('ええ……偶然見つけたんです。面白い場所で……');
+      await coffee.say_and_wait("네…… 제가 우연히 발견한, 아주 흥미로운 곳이에요……");
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' について店内へ入る。誰も見ていないセルフ販売の小さな店らしい。中はわりと片付いていて、定期的に掃除している跡がある。',
+        "를 따라 들어간 가게 안은 주인 없이 무인으로 운영되는 듯했고, 꽤 깔끔하게 정돈되어 있어 누군가 주기적으로 청소하는 흔적이 느껴졌다.",
       ]);
       await coffee.say_and_wait(
-        'ここは、あまり人が来ません……私は、たまに見に来ます。',
+        "여기는 평소에 사람들의 발길이 닿지 않는 곳이라…… 가끔 들르곤 해요.",
       );
       await era.printAndWait([
         '確かに ',
@@ -171,60 +171,60 @@ module.exports = {
         ' がひとり棚の間を歩き、時にはそっと手に取って眺め、時には腰を屈めて足を止める。陽がガラスを通して店いっぱいに降り、すべてを夢のような金色に塗る——そんな光景が目に浮かぶ。',
       ]);
       await coffee.say_and_wait([
-        '……でも、',
+        "……하지만 ",
         callname,
-        ' とふたりで来るのは、初めてです……',
+        "과 이렇게 둘이서 온 건 처음이에요……",
       ]);
       await era.printAndWait([
-        'いつの間にか、',
+        "어느새 ",
         coffee.get_colored_name(),
-        ' は ',
+        "는 ",
         you.get_colored_name(),
-        ' のすぐ前に来ていた。赤みを帯びた整った顔が、視界の大半を占めている。',
+        "의 코앞까지 다가와 있었고, 홍조 띤 섬세한 얼굴이 시야의 절반 이상을 차지했다.",
       ]);
-      await coffee.say_and_wait(['……', callname, '、私——']);
-      await you.say_as_passer_by_and_wait('ファンA', [
-        'あっ、本当に ',
+      await coffee.say_and_wait(['……', callname, ", 저는——"]);
+      await you.say_as_passer_by_and_wait("팬 A", [
+        "아, 정말로 ",
         coffee.get_colored_name(),
-        ' だ！ 入ろう！',
+        "잖아! 빨리 들어와 봐!",
       ]);
-      await you.say_as_passer_by_and_wait('ファンB', 'わぁ、近い！ デート？');
+      await you.say_as_passer_by_and_wait("팬 B", "와, 진짜 가깝다! 데이트 중인 건가?");
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' の言葉は唐突な声に遮られた。振り返ると、',
+        "의 말을 가로막은 것은 갑작스러운 목소리였다. 돌아보니 ",
         coffee.get_colored_name(),
-        ' を認めたファンがふたり店に入っている。その声が通りの人を呼び、この調子なら、さらに人が入ってきそうだ……',
+        "를 알아본 팬 두 명이 가게로 들어오고 있었고, 그들의 목소리에 거리의 행인들도 관심을 보이기 시작했다. 이대로라면 더 많은 사람이 몰려올 것 같았다.",
       ]);
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' も固まって、店の入口のほうを向いたまま立ち尽くしている。',
+        "도 당황했는지, 가게 문을 향해 멍하니 선 채 굳어버렸다.",
       ]);
-      await you.say_as_passer_by_and_wait('ファンA', '顔、赤い！');
-      await you.say_as_passer_by_and_wait('ファンB', [
-        '恋する',
+      await you.say_as_passer_by_and_wait("팬 A", "얼굴 진짜 빨갛다!");
+      await you.say_as_passer_by_and_wait("팬 B", [
+        "연애 중인 ",
         coffee.teen_sex_title,
-        'の顔だ！',
+        "의 얼굴인 건가!",
       ]);
-      era.printButton('「おふたり！ いまはプライベートなので、どうか——」', 1);
+      era.printButton("「여러분! 지금은 사적인 시간이라, 제발——」", 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' が言い終わる前に、',
+        "의 말이 끝나기도 전에, ",
         coffee.get_colored_name(),
-        ' が突然、',
+        "가 갑자기 ",
         you.get_colored_name(),
-        ' の手を強く引いた。',
+        "의 손을 꽉 잡았다.",
       ]);
-      era.printButton('「えっ！？ ど、どうした、カフェ？」', 1);
+      era.printButton("「앗?! 어, 왜 그래 카페?」", 1);
       await era.input();
       await coffee.say_and_wait('……');
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' は ',
+        "는 ",
         you.get_colored_name(),
-        ' の問いに答えず、店の内外で声をかけようとするファンを無視して、強引に ',
+        "의 질문에 대답하지 않은 채, 가게 안팎에서 말을 걸려던 팬들을 무시하고 억지로 ",
         you.get_colored_name(),
-        ' を連れて押し出した。',
+        "을(를) 끌고 밖으로 비집고 나갔다.",
       ]);
       await era.printAndWait([
         'それからまた、迷子の子供みたいに ',
@@ -232,69 +232,69 @@ module.exports = {
         ' に手を引かれて走らされた。',
       ]);
       era.drawLine();
-      await era.printAndWait('たどり着いたのは、商店街の片隅の路地だった。');
+      await era.printAndWait("마지막으로 도착한 곳은 상점가 한구석의 으슥한 골목이었다.");
       await era.printAndWait(
-        '商店街の店のほとんどは昼しか開いていない。遠くの居酒屋を除けば、ここにはほとんど人がいない。',
+        "상점가의 대부분 가게는 낮에만 영업하기 때문에, 멀리 보이는 이자카야 몇 곳을 제외하면 이곳엔 사람의 흔적이 거의 없었다.",
       );
-      era.printButton('「どうしたんだ、カフェ……」', 1);
+      era.printButton("「무슨 일이야, 카페……」", 1);
       await era.input();
       await era.printAndWait([
-        '手を引かれて小走りした息が整うころ、傍の ',
+        "이끌려 달려오느라 거칠어진 숨을 고르는 동안, 옆에 있던 ",
         coffee.get_colored_name(),
-        ' はもうしばらく俯いたままだった。',
+        "는 한동안 고개를 떨군 채 침묵을 지켰다.",
       ]);
-      await coffee.say_and_wait('……全部、あなたのせいです……');
-      await era.printAndWait('しばらくして、少し震えた声が届いた。');
+      await coffee.say_and_wait("……다 당신 때문이에요……");
+      await era.printAndWait("잠시 후, 약간 떨리는 목소리가 들려왔다.");
       await coffee.say_and_wait(
-        '私は目立たない……誰も、私の存在なんて気にしない……',
+        "전 분명 눈에 띄지 않는 사람이었는데…… 누구도 저라는 존재를 신경 쓰지 않았는데……",
       );
-      await coffee.say_and_wait('なのに、あなたと出会ってしまった。');
-      await coffee.say_and_wait('いつのまにか、心はあなたに引かれていました。');
+      await coffee.say_and_wait("하지만 당신과 만났어요.");
+      await coffee.say_and_wait("언제부터인가, 제 마음은 당신에게 사로잡히고 말았죠.");
       await coffee.say_and_wait(
-        '私という存在が、あなたの存在で埋まって、膨らんでしまった。',
-      );
-      era.println();
-      await coffee.say_and_wait(
-        '私は、もともとひとりでうまくやっていけました。',
-      );
-      await coffee.say_and_wait('友達がいましたから。');
-      era.println();
-      await coffee.say_and_wait('それから、あなたが傍に来た。');
-      await coffee.say_and_wait(
-        '我慢できていた孤独が、だんだん、心を抉る毒になりました。',
+        "저라는 존재가 이렇게 당신이라는 존재로 가득 채워져서, 견딜 수 없을 만큼 부풀어 올랐어요.",
       );
       era.println();
       await coffee.say_and_wait(
-        'やっと勇気を出して、あなたとふたりきりでいられる場所を……それまで奪われて……',
+        "전, 원래 혼자서도 잘 지낼 수 있었어요.",
       );
-      await coffee.say_and_wait('私は……どうすればいいのでしょう……');
+      await coffee.say_and_wait("친구들이 곁에 있었으니까요.");
+      era.println();
+      await coffee.say_and_wait("그런데 당신이 제 곁으로 찾아왔어요.");
+      await coffee.say_and_wait(
+        "원래라면 견딜 수 있었던 고독이, 어느덧 심장을 찌르는 독약으로 변해버렸어요.",
+      );
+      era.println();
+      await coffee.say_and_wait(
+        "마지막에는…… 겨우 용기를 내서, 당신과 둘만 있고 싶었던 공간마저…… 빼앗겨 버리고……",
+      );
+      await coffee.say_and_wait("저…… 도대체 어떻게 해야 하나요……");
       await era.printAndWait(
-        '恋心に気づいた日から胸の奥に埋めていた想いが、いま溢れ出した。',
+        "사랑을 깨달은 그날부터 마음속 깊이 묻어두었던 생각들이 한꺼번에 쏟아져 나왔다.",
       );
       await era.printAndWait([
         you.get_colored_actual_name(),
         ' への恋慕だけではない。自分が一度も感じたことのない、周囲に侵食されることへの苛立ちと迷いだ。',
       ]);
-      await era.printAndWait('頼りない涙が、目尻から一滴ずつ落ちる。');
+      await era.printAndWait("눈가에서 속수무책으로 눈물이 한 방울씩 흘러내렸다.");
       await era.printAndWait([
-        'そんな ',
+        "이런 ",
         coffee.get_colored_name(),
-        ' を見て、',
+        "를 바라보며, ",
         you.get_colored_name(),
-        ' は前へ出た。',
+        "은(는) 한 걸음 다가갔다.",
       ]);
-      era.printButton('「カフェ。」', 1);
+      era.printButton("「카페.」", 1);
       await era.input();
-      await coffee.say_and_wait('……はい？');
+      await coffee.say_and_wait("……네?");
       await era.printAndWait([
-        '赤い目尻のまま、',
+        "붉어진 눈가로 ",
         coffee.get_colored_name(),
-        ' は顔を上げて ',
+        "가 고개를 들어 ",
         you.get_colored_name(),
-        ' を見た。',
+        "을(를) 올려다보았다.",
       ]);
       era.printButton(
-        '「いまここには、俺とカフェのふたりだけだ……もう逃げないよな？」',
+        "「지금 여기는 나랑 카페 둘뿐이야…… 이제 도망가지 않을 거지?」",
         1,
       );
       await era.input();
@@ -306,123 +306,123 @@ module.exports = {
         ' に頷いた。',
       ]);
       era.printButton(
-        '「カフェは、ずっとそう思っていたのか……気づけなかったのは、俺のせいだ。」',
+        "「카페, 계속 그렇게 생각하고 있었구나…… 네 마음을 눈치채지 못한 건 확실히 내 잘못이야.」",
         1,
       );
       await era.input();
-      await coffee.say_and_wait('あ……あっ……！？');
+      await coffee.say_and_wait("아…… 엣……!?");
       await era.printAndWait([
-        'いまになって、自分が勢いで何を言ったのかようやく気づいたらしい。胸の秘密を自分で暴いたあと、',
+        "그제야 자신이 기세에 눌려 무슨 말을 내뱉었는지 깨달은 모양이었다. 마음속 작은 비밀을 스스로 밝혀버린 ",
         coffee.get_colored_name(),
-        ' は「恋する',
+        "는 「연애 중인 ",
         coffee.teen_sex_title,
-        'の顔」のまま、',
+        "의 얼굴」을 한 채, ",
         you.get_colored_name(),
-        ' を見上げるしかなかった。',
+        "을(를) 멍하니 바라볼 뿐이었다.",
       ]);
       era.printButton(
-        `「${coffee.actual_name_with_title}、いくつか聞いてもいいか。」`,
+        `「${coffee.actual_name_with_title}, 몇 가지 물어봐도 될까.」`,
         1,
       );
       await era.input();
-      await coffee.say_and_wait('……はい。');
-      era.printButton('「俺と一緒にいて、楽しいか？」', 1);
+      await coffee.say_and_wait("……좋아요.");
+      era.printButton("「나와 함께 있으면 즐거워?」", 1);
       await era.input();
-      await coffee.say_and_wait('……ええ。');
-      era.printButton('「じゃあ、俺と一緒にいて、幸せか？」', 1);
+      await coffee.say_and_wait("……네.");
+      era.printButton("「그럼, 나와 함께 있으면 행복해?」", 1);
       await era.input();
-      await coffee.say_and_wait('……幸せです。');
+      await coffee.say_and_wait("……행복해요.");
       await era.printAndWait([
-        '最後に、覚悟を決めたように、',
+        "마지막으로 각오를 다진 듯, ",
         you.get_colored_name(),
-        ' は深く息を吸った。',
+        "은(는) 깊게 숨을 들이켰다.",
       ]);
       era.println();
       era.printButton(
-        '「……少し、自惚れかもしれない。最初から君の助けに頼ってばかりで」',
+        "「……나, 조금 자만하고 있었을지도 몰라. 처음부터 네 도움에만 의지하고.」",
         1,
       );
-      era.printButton('「そのあとも、いろいろな出来事の中で、それでも……」', 2);
-      era.printButton('「こんな俺と、付き合ってくれないか？」', 3);
+      era.printButton("「그 이후로도 여러 가지 사건 속에서 계속……」", 2);
+      era.printButton("「하지만, 이런 나와 사귀어 주지 않을래?」", 3);
       await era.input();
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' の表情は、まだ夢から醒めていないようだった。だがわずかに滲む色で、答えはもうわかっている——',
+        "의 표정은 아직 꿈에서 깨어나지 못한 듯했지만, 그 너머로 번져 나오는 감정이 이미 답을 말해주고 있었다——",
       ]);
-      await era.printAndWait('突然。');
-      era.printButton('「うわっ！？」', 1);
+      await era.printAndWait("갑자기.");
+      era.printButton("「우왁?!」", 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' の膝に何かが当たり、膝をついた。',
+        "의 무릎에 어떤 충격이 가해지며 바닥에 꿇어앉게 되었다.",
       ]);
-      await coffee.say_and_wait('きゃっ！？');
+      await coffee.say_and_wait("꺄앗?!");
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' の背中にも何かが当たり、前へ傾いた。',
+        "의 등에도 어떤 충격이 가해지며 앞으로 쓰러지듯 쏠렸다.",
       ]);
-      await era.printAndWait('こうして、ふたりの影が重なった。');
+      await era.printAndWait("그렇게 두 사람의 그림자가 하나로 겹쳐졌다.");
       await era.printAndWait([
         you.get_colored_name(),
         '＆',
         coffee.get_colored_name(),
-        '「……ん……！？」',
+        "「……으음……!?」",
       ]);
-      await era.printAndWait('互いの唇が、重なる。');
+      await era.printAndWait("서로의 입술이 맞닿았다.");
       await era.printAndWait([
-        '十数秒して、',
+        "십여 초가 지난 뒤에야 ",
         coffee.get_colored_name(),
-        ' の顔が、驚いて固まっていた ',
+        "의 얼굴이 놀라 굳어있던 ",
         you.get_colored_name(),
-        ' から離れた。',
+        "에게서 떨어졌다.",
       ]);
       await coffee.say_and_wait([
-        '……友達の悪戯、まったく……でも、これが私の返事です、',
+        "……친구의 장난이 정말…… 하지만 이것도 제 대답이에요. ",
         callname,
         '……',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の唇から垂れた糸を、熱い指先で拭った。',
+        "의 입술에 실처럼 늘어진 타액을 뜨거운 손가락 끝으로 닦아내었다.",
       ]);
-      await coffee.say_and_wait('少し自惚れ……そんなことまで言えるんですね……');
+      await coffee.say_and_wait("조금 자만하고 있다니…… 그런 말을 잘도 하시네요……");
       await era.printAndWait([
-        '小さく呟きながら、',
+        "작게 투덜거리며, ",
         coffee.get_colored_name(),
-        ' はあなたの胸に体を預けた。',
+        "는 몸을 당신의 가슴에 기대어 왔다.",
       ]);
-      await coffee.say_and_wait('そうです、あなたです。');
-      await coffee.say_and_wait('ひとりで足りていた私を。');
-      await coffee.say_and_wait('こんなに狂わせた。');
+      await coffee.say_and_wait("맞아요, 당신 말이에요.");
+      await coffee.say_and_wait("저를, 혼자서도 충분했던 저를.");
+      await coffee.say_and_wait("이렇게나 미치게 만들어놓고.");
       era.println();
-      await coffee.say_and_wait('いま……逃げると言っても……私は許しません……');
+      await coffee.say_and_wait("이제 와서…… 도망가겠다고 해도…… 절대 허락하지 않을 거예요……");
       await era.printAndWait([
-        'そう言って、',
+        "그렇게 말하며 ",
         coffee.get_colored_name(),
-        ' は ',
+        "는 ",
         you.get_colored_name(),
-        ' の服を強く握った。',
+        "의 옷깃을 힘주어 움켜쥐었다.",
       ]);
-      era.printButton('「……逃げない。」', 1);
+      era.printButton("「……도망치지 않아.」", 1);
       await era.input();
       await era.printAndWait([
         coffee.sex,
-        'と出会ったあとには、もう退路などなかった。',
+        "와 만난 이후로, 이제 퇴로 따위는 존재하지 않았다.",
       ]);
-      await coffee.say_and_wait('それでは……これから、よろしくお願いします。');
-      await era.printAndWait('誰もいない路地。');
-      await era.printAndWait('いまは誰も入れない、ふたりだけの空間。');
+      await coffee.say_and_wait("그럼…… 앞으로 잘 부탁드려요.");
+      await era.printAndWait("아무도 없는 골목길.");
+      await era.printAndWait("지금은 누구도 들어올 수 없는, 오직 두 사람만의 공간이다.");
       await coffee.say_and_wait(
-        '……誰にも取られないように……印を、つけますか……？',
+        "……누구에게도 빼앗기지 않도록…… 표식이라도 남겨둘까요……?",
       );
-      era.printButton('「どんな印だ？」', 1);
+      era.printButton("「어떤 표식을 하고 싶은데?」", 1);
       await era.input();
-      await coffee.say_and_wait('……こう、です……');
+      await coffee.say_and_wait("……이렇게요……");
       await era.printAndWait(
-        '今度は誰の悪戯でもなく、ふたり自身の意志だった。',
+        "이번에는 누군가의 장난이 아닌, 두 사람 자신의 의지였다.",
       );
-      await era.printAndWait('両手を首の後ろに回し、顔をゆっくり近づける。');
-      await coffee.say_and_wait('……もう、誰にも奪わせません……');
+      await era.printAndWait("양손을 목 뒤로 돌려 감싸며, 얼굴을 서서히 가까이 가져갔다.");
+      await coffee.say_and_wait("……더는 누구에게도 빼앗기지 않을 거예요……");
       await era.printAndWait('噛むように、甘く口づけた。');
       await era.printAndWait('また十数秒、その快い時間に沈んだ。');
     } else {
@@ -439,150 +439,150 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] 89
+  // [번역 완료] 89
   async 89(coffee, you, callname) {
     await era.printAndWait([
-      'ある日、',
+      "어느 날, ",
       you.get_colored_name(),
-      ' と ',
+      "과(와) ",
       coffee.get_colored_name(),
-      ' はいつものようにトレーナー室で日課をこなしていた。',
+      "는 평소처럼 트레이닝실에서 일상적인 업무를 보고 있었다.",
     ]);
     await era.printAndWait([
-      '突然、鼻先にコーヒーの香りがした。いつの間にか ',
+      "갑자기 코끝을 스치는 커피 향기와 함께, ",
       coffee.get_colored_name(),
-      ' が傍に来て、膝の上に座っている。',
+      "가 어느샌가 다가와 무릎 위에 올라앉았다.",
     ]);
-    era.printButton('「どうした？」', 1);
+    era.printButton("「무슨 일이야?」", 1);
     await era.input();
     await era.printAndWait([
       coffee.get_colored_name(),
-      ' は何かを醸しているように黙ったまま、顔を ',
+      "는 무언가 고심하는 듯 대답 없이 ",
       you.get_colored_name(),
-      ' の胸に埋めてすり寄った。白いアホ毛が首をくすぐる。',
+      "의 가슴팍에 머리를 묻고 비벼댔다. 하얀 바보털이 목 언저리를 간지럽혔다.",
     ]);
     await era.printAndWait([
-      'しばらくして、何かにつつかれたように ',
+      "그렇게 한참의 시간이 흐르고, ",
       coffee.get_colored_name(),
-      ' が ',
+      "는 무언가에 찔린 듯 ",
       you.get_colored_name(),
-      ' の腕の中で跳ねそうになったあと、顔を上げ、まっすぐ ',
+      "의 품에서 움찔하며 튀어 오르더니 고개를 들어 ",
       you.get_colored_name(),
-      ' を見た。',
+      "을(를) 빤히 바라보았다.",
     ]);
     await coffee.say_and_wait([
       callname,
-      '、いいえ、',
+      ", 아니, ",
       you.get_colored_actual_name(),
-      '……私と、結婚してくれますか？',
+      "…… 저와 결혼해 주시겠어요?",
     ]);
-    era.printButton('「だめだ。」（関係を進める）', 1);
-    era.printButton('「俺たちには……まだ早い。」（まだ進めない）', 2);
+    era.printButton("「안 돼.」（관계 진전）", 1);
+    era.printButton("「우리에게는…… 아직 좀 이른 것 같아.」（진전 보류）", 2);
     const ret = await era.input();
     if (ret === 1) {
       await era.printAndWait([
         you.get_colored_name(),
-        ' のきっぱりした拒否に、腕の中の ',
+        "의 단호한 거절에 품 안의 ",
         coffee.get_colored_name(),
-        ' は一瞬固まった。',
+        "는 멍해졌다.",
       ]);
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' の反応を気にせず、',
+        "의 반응에 아랑곳하지 않고, ",
         you.get_colored_name(),
-        ' は素早く傍の引き出しを開け、とっくに用意してあったものを取り出した。',
+        "은(는) 재빨리 서랍을 열어 오랫동안 준비해온 것을 꺼냈다.",
       ]);
-      era.printButton('「求婚するのは、俺のほうだ。」', 1);
+      era.printButton("「청혼은 내가 먼저 해야지.」", 1);
       await era.input();
       await era.printAndWait([
-        '手の小さな箱を開け、',
+        "손안의 작은 상자를 열어 ",
         coffee.get_colored_name(),
-        ' に見せた。',
+        "에게 보여주었다.",
       ]);
       era.printButton(
-        `「${coffee.actual_name_with_title}、俺と結婚してくれるか？」`,
+        `「${coffee.actual_name_with_title}, 나와 결혼해 줄래?」`,
         1,
       );
       await era.input();
       await era.printAndWait([
-        '指輪が明かりの下できらめき、',
+        "반지가 조명 아래서 반짝였고, ",
         you.get_colored_name(),
-        ' は ',
+        "은(는) ",
         coffee.get_colored_name(),
-        ' の返事を待った。',
+        "의 대답을 기다렸다.",
       ]);
-      await coffee.say_and_wait('……意地悪ですね。');
+      await coffee.say_and_wait("……정말 심술궂은 사람이네요.");
       await era.printAndWait([
-        '「ドン」という音とともに、',
+        "「쿵」 소리와 함께 ",
         coffee.get_colored_name(),
-        ' は ',
+        "가 ",
         you.get_colored_name(),
-        ' を椅子ごと床へ押し倒した。',
+        "을(를) 의자째로 바닥에 밀어 넘어뜨렸다.",
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が反応する前に、',
+        "이(가) 정신을 차리기도 전에 ",
         coffee.get_colored_name(),
-        ' は体を寄せ、少し強く ',
+        "가 다가와 조금은 강하게 ",
         you.get_colored_name(),
-        ' の唇を噛んだ。',
+        "의 입술을 깨물었다.",
       ]);
       await era.printAndWait(
-        '滲んだ血とふたりの唾液が混ざり、口の中に甘い鉄の味が広がった。',
+        "배어 나온 피가 두 사람의 타액과 섞여 입안에서 달콤 쌉싸름한 쇠맛이 감돌았다.",
       );
       await coffee.say_and_wait(
-        '……『求婚するのは俺のほう』、ですか……自分がかっこいいと、思っていますか？',
+        "……무슨 『청혼은 내가 먼저 해야지』 인가요…… 자신이 아주 멋있다고 생각하나 보죠?",
       );
       await era.printAndWait([
-        '血の甘い口づけのあと、',
+        "피맛 섞인 키스가 끝난 후에도 ",
         coffee.get_colored_name(),
-        ' は休まず ',
+        "는 멈추지 않고 ",
         you.get_colored_name(),
-        ' の袖をまくり、腕に自分の噛み跡を残した。',
+        "의 소매를 걷어올려 팔뚝에 자신의 잇자국을 남겼다.",
       ]);
       await era.printAndWait([
-        'それから首も、鎖骨も、',
+        "그 후에도 목과 쇄골 주위를 ",
         coffee.get_colored_name(),
-        ' に吸い続けられ、赤い痕がいくつも残った。',
+        "가 끊임없이 빨아들이며 수많은 붉은 반점을 남겼다.",
       ]);
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' に押し伏せられた ',
+        "에게 눌려있는 ",
         you.get_colored_name(),
-        ' は黙ったまま、目を閉じて ',
+        "은(는) 아무 말 없이 눈을 감고 ",
         coffee.get_colored_name(),
-        ' の発散を受け入れた。',
+        "가 하고 싶은 대로 내버려 두었다.",
       ]);
       await coffee.say_and_wait(
-        'あなたは私のものです……その立場は……これから、しっかり教えてあげます……',
+        "당신은 제 것이에요…… 당신의 입장…… 앞으로의 시간 동안 제가 잘 교육해 드릴게요……",
       );
-      era.printButton('「……楽しみだ。」', 1);
+      era.printButton("「……기대하고 있을게.」", 1);
       await era.input();
       await era.printAndWait(
-        '傍で役に立てなかった指輪が、ふたりの姿を映し、この特別な誓いを記録している。',
+        "한쪽 구석에서 제 역할을 다하지 못한 반지가 두 사람의 모습을 비추며 이 특별한 서약을 기록하고 있었다.",
       );
     } else {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        "은(는) ",
         coffee.get_colored_name(),
-        ' を断り、すぐさま慎重に',
+        "를 거절하자마자 ",
         coffee.sex,
-        'の顔色を窺った。拒否で',
+        "의 안색을 살폈다. 혹시라도 ",
         coffee.sex,
-        'の顔が曇らないか、恐れるように。',
+        "의 표정이 자신의 거절로 인해 어둡게 가라앉지는 않았을지 걱정했기 때문이다.",
       ]);
       await era.printAndWait([
-        'だが ',
+        "하지만 ",
         you.get_colored_name(),
-        ' の予想に反し、',
+        "의 예상과 달리, ",
         coffee.get_colored_name(),
-        ' の顔に失望も落ち込みも浮かばなかった。',
+        "의 얼굴에는 실망이나 슬픔이 보이지 않았다.",
       ]);
       await coffee.say_and_wait([
-        '私は、',
+        "전 ",
         you.get_colored_actual_name(),
-        ' を信じています……準備ができる日まで、待ちます。',
+        "을(를) 믿으니까요…… 준비가 될 그날까지 기다릴게요.",
       ]);
     }
     return ret;
@@ -590,11 +590,11 @@ module.exports = {
 
   // [번역 대상] 99
   async 99(coffee, callname) {
-    await coffee.say_and_wait('あの人は……');
+    await coffee.say_and_wait("저 사람은……");
     await coffee.print_and_wait([
-      'ある日、トレーニングのあと、',
+      "어느 날 훈련이 끝난 후, ",
       coffee.get_colored_name(),
-      ' は置き忘れたものを取りにトレーナー室へ戻った。',
+      "는 깜빡한 물건을 찾으러 트레이닝실로 돌아왔다.",
     ]);
     await coffee.print_and_wait([
       'ドアを叩こうとしたとき、見知らぬ',
@@ -602,9 +602,9 @@ module.exports = {
       'の声が聞こえた。',
     ]);
     await coffee.print_and_wait([
-      '耳をそっと扉に当てると、',
+      "귀를 조심스럽게 문에 가져다 대었다. ",
       coffee.uma_sex_title,
-      'の優れた聴覚には、この普通の扉などないも同然だった。',
+      "의 강력한 청력에 비하면 이런 평범한 문 따위는 없는 것이나 마찬가지였다.",
     ]);
     await coffee.say_and_wait([
       '知らない',
@@ -613,30 +613,30 @@ module.exports = {
       callname,
       ' の傍に座って、くつろいで話している……',
     ]);
-    await coffee.print_and_wait('——自分のものが、奪われようとしている。');
+    await coffee.print_and_wait("——내 소중한 것이 빼앗길지도 몰라.");
     await coffee.print_and_wait(
-      '中へ入って問い詰めたくなる衝動をこらえ、深呼吸して、さらに耳を澄ませる。通りがかった人にこの奇妙な姿をどう見られるかなど、構っていられない。',
+      "당장 들어가서 따지고 싶은 충동을 억누르며 심호흡을 했다. 그리고 누가 지나가다 이런 이상한 모습을 보면 어쩌나 하는 걱정은 접어둔 채 계속해서 엿들었다.",
     );
     era.drawLine();
     await coffee.say_and_wait([
-      '結局、',
+      "결국 ",
       callname,
-      ' の後輩でした……しかも私のファンで……',
+      "의 후배였구나…… 게다가 내 팬이라니……",
     ]);
     await coffee.print_and_wait([
-      'ストーカーのように十五分も盗み聞きしたあと、',
+      "스토커처럼 문밖에서 15분 동안 엿들은 뒤에야 ",
       coffee.get_colored_name(),
-      ' はほっと息をつき、すぐ自分の過剰反応に少し気恥ずかしさを覚えた。',
+      "는 겨우 안도의 한숨을 내쉬었다. 동시에 자신의 과잉 반응에 대해 약간의 민망함을 느꼈다.",
     ]);
-    await coffee.print_and_wait('踵を返そうとしたとき、突然頭を叩かれた。');
-    await coffee.say_and_wait('……想いが重すぎる、ですか。突然叩かないで……');
+    await coffee.print_and_wait("떠나려던 순간, 갑자기 머리를 콩 하고 맞았다.");
+    await coffee.say_and_wait("……감정이 너무 무겁다니 무슨 소리야, 매번 갑자기 때리지 마……");
     await coffee.print_and_wait([
-      '——でも、',
+      "——하지만 ",
       callname,
-      ' がいつか私から離れていくことだけは考えたくなくて……',
+      "이 언젠가 나를 떠나갈지도 모른다고 생각하면……",
     ]);
-    await coffee.print_and_wait('心臓を強く握られたように、胸が隠かに痛む。');
-    await coffee.print_and_wait('考えただけで、こうなる……');
+    await coffee.print_and_wait("심장이 꽉 조여오는 것 같고 가슴 한구석이 아릿해.");
+    await coffee.print_and_wait("그저 생각만 해도 이렇게 되다니……");
     await coffee.say_and_wait([
       '本当に',
       coffee.sex_code === 1 ? '重い男' : '重い女',

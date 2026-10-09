@@ -207,7 +207,8 @@
   - 번역 대상: 없음 — 연결/보조 파일
 
 - [kojo/102400-Mayano-Top-Gun/love-24.js](files/sources/erauma/ere/i18n/ko-KR/kojo/102400-Mayano-Top-Gun/love-24.js)
-  - 번역 대상: 24, 49, 74, 89
+  - 번역 대상: 49, 89
+  - 복구 완료: 24, 74
 
 - [kojo/102400-Mayano-Top-Gun/rec-24.js](files/sources/erauma/ere/i18n/ko-KR/kojo/102400-Mayano-Top-Gun/rec-24.js)
   - 번역 대상: rec_3, rec_after, rec_start, rec_station, rec_try_skip_station
@@ -228,7 +229,8 @@
   - 번역 대상: ero_start
 
 - [kojo/102500-Manhattan-Cafe/love-25.js](files/sources/erauma/ere/i18n/ko-KR/kojo/102500-Manhattan-Cafe/love-25.js)
-  - 번역 대상: 49, 74-1, 74-2, 89, 99
+  - 번역 대상: 74-1, 74-2, 99
+  - 복구 완료: 49, 89
 
 - [kojo/102500-Manhattan-Cafe/rec-25.js](files/sources/erauma/ere/i18n/ko-KR/kojo/102500-Manhattan-Cafe/rec-25.js)
   - 번역 대상: goto_playground, rec_again, rec_final, rec_start
