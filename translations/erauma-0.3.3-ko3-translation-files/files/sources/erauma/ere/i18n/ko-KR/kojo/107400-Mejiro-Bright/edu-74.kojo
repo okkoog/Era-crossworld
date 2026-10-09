@@ -107,7 +107,7 @@ at_my_side:
     - %YOU%의 조금 벙찐 얼굴을 바라보며, 그녀는 한없이 순수한 미소를 지어 보였다.
 
 # ジュニア級6月3週、ときめき以上、同チームにメジロなし
-# [번역 대상] mejiro_tea
+# [번역 완료] mejiro_tea
 mejiro_tea:
   title: 메지로 가문의 티타임
   lines:
@@ -234,7 +234,7 @@ mejiro_tea:
           content: %R_NAME%
         - 「브라이트 너도 너무 트레이너 선생님만 귀찮게 굴지 말고~」
     - 그 말을 듣고 나서야 %YOU%은(는) 데뷔전이 코앞으로 다가왔다는 사실을 실감했다.
-    - %CHARA% の実力を %YOU% はあまり心配していないが、それでも少し揺れる。
+    - %CHARA%의 실력에 대해 %YOU%은(는) 크게 걱정하진 않았지만, 가슴 한구석이 미묘하게 동요하는 것은 어쩔 수 없었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -332,7 +332,7 @@ mejiro_tea:
         - fontWeight: bold
           content: %R_NAME%
         - 「맥퀸?」
-    - %CHARA% を突然遮ったあと、%M_NAME%は手の紅茶を置く。
+    - %CHARA%의 말을 툭 자르며 나선 %M_NAME%이 들고 있던 찻잔을 내려놓았다.
     - color: %M_COLOR%
       content:
         - fontWeight: bold
@@ -435,7 +435,7 @@ begin_race_end:
       - 「저, 앞으로도 정말 열심히 할게요!」
 
 # ジュニア級8月1週、ライアンが育成中でない
-# [번역 대상] inherit
+# [번역 완료] inherit
 inherit:
   title: 그 의지를 이어받아
   lines:
@@ -451,7 +451,7 @@ inherit:
           content: %CHARA%
         - 「아, 혹시 같이 돌아가실 건가요?」
     - 트레이닝 시간이 끝나고 %YOU%이(가) 훈련장을 나서려던 찰나, 누군가가 뒤에서 말을 걸어왔다.
-    - %YOU% が振り返ると、%R_NAME% がゆっくり前まで来る。
+    - %YOU%은(는) 고개를 돌리자, %R_NAME%가 천천히 걸어와 눈앞에 멈춰 섰다.
     - color: %R_COLOR%
       content:
         - fontWeight: bold
@@ -527,7 +527,7 @@ inherit:
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「だから、ブライト%SEX%をよろしくね！」
+        - 「그러니까 저희 브라이트, %SEX%를 앞으로도 잘 부탁합니다!」
     - color: %R_COLOR%
       content:
         - fontWeight: bold
@@ -538,7 +538,7 @@ inherit:
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「ブライト%SEX%に、勝たせてあげてくれない？」
+        - 「부디 브라이트, %SEX%를 이기게 해 주세요. 부탁드립니다.」
     - color: %R_COLOR%
       content:
         - fontWeight: bold
@@ -548,7 +548,7 @@ inherit:
       content:
         - fontWeight: bold
           content: %R_NAME%
-        - 「だって%SEX%は、私の自慢の%YOUNGER_SISTER%だもん。えへへ～」
+        - 「어찌 됐든, %SEX%는 제가 세상에서 가장 자랑스러워하는 %YOUNGER_SISTER%이니까요, 에헤헤~」
     - acc: 1
       content: 「……조금 어려울지도 모르겠는데?」
     - acc: 2
@@ -717,7 +717,7 @@ my_way:
     # 好感+15
 
 # ホープフルステークス前
-# [번역 대상] hope_sta
+# [번역 완료] hope_sta
 hope_sta:
   - color: %COLOR%
     content:
@@ -784,7 +784,7 @@ hope_sta:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「レースのあと、ドーベル%THEY%と一緒に……」
+      - 「레이스가 끝난 뒤에 도베르 일행(%THEY%)과 함께……」
   - acc: 1
     content: 「그럼 지금 기분은 어때?」
   - color: %COLOR%
@@ -1299,7 +1299,7 @@ kiku_sho_lose:
       - 「죄송해요…… %CALLNAME%.」
 
 # ステイヤーズステークス
-# [번역 대상] stay_sta
+# [번역 완료] stay_sta
 stay_sta:
   - color: %COLOR%
     content:
@@ -1316,7 +1316,7 @@ stay_sta:
   - acc: 1
     content: 「이거야말로 네가 잘하는 거리잖아.」
   - 비록 G2 레이스에 불과하지만, G1 못지않게 정직한 체력을 요구하는 곳이다.
-  - 長距離が得意な %CHARA% にとって、ここが%SEX%の舞台だ。
+  - 장거리 레이스에 특화된 %CHARA%에게 있어서, 이곳이야말로 %SEX%을(를) 위한 무대이다.
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1977,7 +1977,7 @@ arim_kin_win:
           - fontWeight: bold
             content: %CHARA%
           - 「후~ 아~」
-      - 椅子がもう少し低くなければ、いまごろ %CHARA% の小さな脚は揺れていただろう。
+      - 의자가 조금만 더 높았더라면, 분명 지금쯤 기분 좋게 %CHARA%의 다리를 허공에 대고 흔들었을 것이다.
       - 의자가 조금만 더 높았더라면, 분명 지금쯤 기분 좋게 다리를 허공에 대고 흔들었을 것이다.
       - color: %COLOR%
         content:
@@ -2036,23 +2036,23 @@ arim_kin_win:
                 content: %CHARA%
               - 「부디 이 일을 서둘러 일정에 올려주시길 바랄게요~」
       - acc: 2
-        content: 「珍しいなら、付き合うよ……」
+        content: 「그렇게까지 말한다면 곁에 있어 줄게……」
         lines:
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「ええ～」
+              - 「기쁩니다~」
           - 「부디 이 일을 서둘러 일정에 올려주시길 바랄게요~」
-          - 肉付きのいい頬が %YOU% の胸に埋まり、%YOU% の感触を味わっている。
+          - 이윽고 말랑한 뺨을 %YOU%의 품에 파고들며 온전히 전해지는 %YOU%의 온기를 탐닉한다.
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「急がば回れ、ではなく……」
+              - 「지체할 것 없이 곧바로……」
           - 「기쁩니다~」
-          - 空いたもう一方の手が、%YOU% の掌をゆっくり自分の胸へ置く。
-          - 温かく柔らかい肉体を、%YOU% の手がしっかりと掴む。
+          - 이내 자유로워진 다른 한 손으로 %YOU%의 손을 다정하게 이끌어 자신의 가슴팍 위에 부드럽게 올려놓는다.
+          - 따스하면서도 말랑한 속살이 %YOU%의 손바닥 안에 가득히 거머쥐어진다.
           - color: %COLOR%
             content:
               - fontWeight: bold
@@ -2062,7 +2062,7 @@ arim_kin_win:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「どうか…… 急いで～ してくださいまし～」
+              - 「부디…… 조금만 서둘러서 해 주세요~」
           # 馬跳び
 
 arim_kin_sex:
@@ -2254,6 +2254,7 @@ hot_spring_ticket:
 
 # out_start
 # 四年目2月2週、温泉券あり
+# [번역 완료] hot_spring
 hot_spring:
   title: 온천~ 나른하고 포근하게~
   lines:
@@ -2310,7 +2311,7 @@ hot_spring:
         - %CHARA%가 특유의 귀여운 억양으로 어미를 길게 빼며 탄식하지만, 주의 깊게 들으면 일부러 서운한 척 연기하고 있음을 눈치챌 수 있다.
         - 의도가 빤히 보이는 장난인 만큼, 당연히 뒤이어 꿍꿍이가 있을 터였다.
         - 가볍게 두세 걸음 다가온 %CHARA%가 %YOU%의 옷소매를 잡고 살며시 잡아당기며, 마치 어린아이처럼 응석 부리는 눈빛을 보내온다.
-        - 作り物だとわかっていても、普段見ない潤んだ大きな目は、%YOU% が%SEX%をからかうつもりだった心に罪悪感を起こす。
+        - 뻔히 연기라는 것을 알면서도, 평소에는 좀처럼 보기 힘든 촉촉하게 젖은 큰 눈망울을 마주하자 %YOU%은(는) 본래 %SEX%를 장난스레 놀려주려던 마음에 묘한 죄책감이 든다.
         - 결국 짓궂은 생각을 접고 지갑을 열어 다시 확인하는 시늉을 하며 조용히 온천권을 꺼내 든다.
         - acc: 1
           content: 「아, 여기 찾았네. (국어책 읽기)」
@@ -2362,7 +2363,7 @@ hot_spring:
     - 덜렁거리는 담당 우마무스메가 혹시 물속에서 쓰러지기라도 했을까 염려되어, %YOU%은(는) 급히 수건을 챙겨 다른 탕을 살피려다 바로 곁에서 익숙한 긴 머리칼을 발견한다.
     - 이 정도로 가까운 거리라면, 사실상 서로의 실루엣이 전부 노출된 것이나 다름없다.
     - acc: 1
-      content: %SEX%は天然だと思おう。うん。
+      content: 그냥 %SEX%가 워낙 천연 마이페이스라 그런 것이라 믿자, 음.
     - acc: 1
       content: 이건 분명 의도적인 연출이 틀림없어……
     - 쓸데없는 잡념을 지워버리고, 서둘러 자세를 낮춰 %CHARA%의 상태를 살핀다.
@@ -2378,7 +2379,7 @@ hot_spring:
       content: 「정말이지, 한시도 마음을 놓을 수가 없네.」
     - 입으로는 나지막이 불평을 늘어놓으면서도 %YOU%은(는) 얌전히 %CHARA%를 부축해 탕 밖으로 나왔고, 두 사람은 온천 바닥 가에 나란히 걸터앉는다.
     - %YOU%이(가) 조심스러운 손길로 그녀의 피부에 맺힌 물방울을 닦아주자, %CHARA% 역시 서서히 두 눈을 깜빡이며 의식을 되찾는다.
-    - そばの人を確かめた瞬間、迷わずそばへ擦り寄る。
+    - 곁에 서 있는 이가 누구인지 확인한 순간, 한 치의 망설임도 없이 품을 향해 몸을 가만히 부벼온다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2485,11 +2486,11 @@ hot_spring_sex:
 
 # week_end
 # hot_spring後、良縁以上
-# [번역 대상] wish
+# [번역 완료] wish
 wish:
   title: 소원
   lines:
-    - 自分の席に座り直したとき、%YOU% は長く息を吐く。
+    - 자신의 집무실 의자에 깊숙이 몸을 묻으며, %YOU%는 길게 안도의 한숨을 내쉰다.
     - 자신의 집무실 의자에 깊숙이 몸을 묻으며, %YOU는 길게 안도의 한숨을 내쉰다.
     - color: %COLOR%
       content:
@@ -2580,7 +2581,7 @@ wish:
 
 # week_start
 # 愛欲以上、トレーニング不足
-# [번역 대상] where_is_time
+# [번역 완료] where_is_time
 where_is_time:
   title: 시간은…… 어디로 사라진 걸까요?
   lines:
@@ -2636,7 +2637,7 @@ where_is_time:
         - fontWeight: bold
           content: %CHARA%
         - 「네, 알겠습니다!」
-    - 柔らかい耳が軽く跳ね、%YOU% が%CHARA%の頭に置いた手を挟む。
+    - 부드러운 귀가 기분 좋게 쫑긋 튕겨 오르더니, %YOU%의 손, %CHARA%의 머리 위에 얹혀 있던 손을 포근하게 감싸 안는다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2646,11 +2647,11 @@ where_is_time:
 
 # week_start
 # 愛欲以上、徹夜
-# [번역 대상] sleep
+# [번역 완료] sleep
 sleep:
   title: 자, 편안하게 숙면을 취하도록 해요
   lines:
-    - 眠気の強い平日のあと、%YOU% はやっと退勤の時間を迎える。
+    - %YOU%에게 유독 피로감이 엄습하던 어느 근무일의 일과가 마침내 종료되는 시간이 찾아온다.
     - 유독 피로감이 엄습하던 어느 근무일의 일과가 마침내 종료되는 시간이 찾아온다.
     - color: %COLOR%
       content:
@@ -2689,7 +2690,7 @@ sleep:
     - 깃털처럼 부드러운 뒷머리가 자신의 흉가에 와닿는 감촉을 만끽하며 %CHARA%는 나지막이 미소 지었고, %YOU%의 정수리에 대고 얼굴을 살며시 비벼온다.
     - acc: 1
       content: 「브라이트……」
-    - ぼんやりした %YOU% は後ろの柔らかさを味わい、強い眠気が眼前へ押し寄せる。
+    - %YOU%은(는) 가물거리는 의식 속에서 등 뒤로부터 전해지는 안락하고 포근한 부드러움에 몸을 맡기자, 억누를 수 없을 정도로 강력한 수마가 눈앞을 뒤덮는다.
     - 가물거리는 의식 속에서 등 뒤로부터 전해지는 안락하고 포근한 부드러움에 몸을 맡기자, 억누를 수 없을 정도로 강력한 수마가 눈앞을 뒤덮는다.
     - color: %COLOR%
       content:
@@ -2697,7 +2698,7 @@ sleep:
           content: %CHARA%
         - 「부디 편안히 잠들도록 하세요, %CALLNAME%~」
     - 다시금 서서히 눈을 떴을 때, %YOU%의 눈앞에 펼쳐진 것은 서류로 가득했던 지저분한 책상이 아닌, 짙은 남빛의 트레센 학원 교복이었다.
-    - なぜこんな絵が現れたのか、%YOU% がまだ理解しないうちに、眼前の深い青が先に動き、ゆらゆら揺れる。
+    - %YOU%은(는) 상황을 채 파악하기도 전에, 시야를 가득 채우고 있던 남빛의 교복이 먼저 기분 좋은 듯 좌우로 살랑살랑 흔들린다.
     - color: %COLOR%
       content:
         - fontWeight: bold
