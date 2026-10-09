@@ -453,7 +453,8 @@
   - 번역 대상: ask_blow_job, ask_cowgirl, ask_deep_blow_job, ask_foot_job, cannot_look_back, cunnilingus, doggy_style, ero_start, get_semen_blow_job, get_semen_deep_blow_job, get_semen_doggy_style, get_semen_foot_job, get_semen_missionary, get_semen_sitting, get_semen_sixty_nine, hit_anal, hug_standing, join_3p, join_3p_accept, join_3p_force, join_3p_reject, kiss, lure, mark_meek, mark_pleasure, missionary, pet_breast, prepare_anal, raping_start, report_preg_after_raped_in_sleep, report_preg_with_inmon, report_preg_with_love, sitting, sixty_nine
 
 - [kojo/106400-Mejiro-Palmer/love-64.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/106400-Mejiro-Palmer/love-64.kojo)
-  - 번역 대상: 49, 74, 89, 99, cinema, come_for_you, come_fy_end, concern, concern_end, delicious, dessert, dessert_end, distance, end_joke, endless_escape, escape, here, is_you, joke, leisure, movie_end, nap, nap_end, nega_dis, not_joke, not_joke_end, party, party_end, pre-cinema, pre-happy, pre-joke, pre-leisure, pre-nap, pre-rooftop, pre-travel, rest, rooftop, rooftop_3, rooftop_event, s_feeling, s_feeling_end, travel, trust, valentine_out_after_sex
+  - 번역 대상: 99, come_fy_end, concern, concern_end, dessert, dessert_end, distance, endless_escape, escape, happy, is_you, leisure, movie_end, nap_end, nega_dis, not_joke_end, party, party_end, pre-nap, rest, rooftop_event, s_feeling, s_feeling_end, valentine_out_after_sex
+  - 2026-10-09 재사용 복구: 42항목 1,416문구. 잔여 일본어 31문구, 기존 한국어 검토 63문구. 마커 없는 valentine_office_after_sex의 기존 한국어도 검토 기록에 포함.
 
 - [kojo/106500-Daitaku-Helios/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/106500-Daitaku-Helios/entry.js)
   - 번역 대상: achieve_track_aim_template
@@ -496,6 +497,7 @@
 
 - [kojo/107100-Mejiro-Ardan/love-71.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/107100-Mejiro-Ardan/love-71.kojo)
   - 번역 대상: 49, 74, 89, 99, bearing, theater, travel
+  - 2026-10-09 재사용 복구: 7항목 196문구. 잔여 일본어 25문구.
 
 - [kojo/107100-Mejiro-Ardan/rec-71.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/107100-Mejiro-Ardan/rec-71.kojo)
   - 번역 대상: recruit_1, recruit_2, recruit_3
