@@ -121,8 +121,8 @@ module.exports = {
   89: (() => {
     const title = '천생연분';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       const ret = [];
@@ -321,8 +321,8 @@ module.exports = {
   99: (() => {
     const title = '의존';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await ruby.say_and_wait('외로워요.');
@@ -601,9 +601,9 @@ module.exports = {
   clinic: (() => {
     const title = '보건실';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
-     * @param {CharaTalk} callname ダイイチルビーがプレイヤーを呼ぶ呼称
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
+     * @param {CharaTalk} callname 다이이치 루비가 플레이어를 부르는 호칭
      */
     const f = async (ruby, you, callname) => {
       await ruby.say_and_wait([
@@ -766,8 +766,8 @@ module.exports = {
   dance: (() => {
     const title = '무용실';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await era.printAndWait(
@@ -922,8 +922,8 @@ module.exports = {
   date: (() => {
     const title = '데이트';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await you.say_as_passer_by_and_wait(
@@ -1161,8 +1161,8 @@ module.exports = {
   delicious: (() => {
     const title = '미식';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await era.printAndWait(['어느 날, ']);
@@ -1422,8 +1422,8 @@ module.exports = {
   dessert: (() => {
     const title = '디저트';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await era.printAndWait([
@@ -1524,9 +1524,9 @@ module.exports = {
   foot_job: (() => {
     const title = '풋잡';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
-     * @param {CharaTalk} callname ダイイチルビーがプレイヤーを呼ぶ呼称
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
+     * @param {CharaTalk} callname 다이이치 루비가 플레이어를 부르는 호칭
      */
     const f = async (ruby, you, callname) => {
       await ruby.say_and_wait([callname, ', 당신의 그거…… 커진 건가요?']);
@@ -1671,8 +1671,8 @@ module.exports = {
   jade: (() => {
     const title = '옥 상점';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await era.printAndWait(
@@ -1778,9 +1778,9 @@ module.exports = {
   kiss: (() => {
     const title = '트레이닝실에서의 키스';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
-     * @param {CharaTalk} callname ダイイチルビーがプレイヤーを呼ぶ呼称
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
+     * @param {CharaTalk} callname 다이이치 루비가 플레이어를 부르는 호칭
      */
     const f = async (ruby, you, callname) => {
       await era.printAndWait([
@@ -1884,8 +1884,8 @@ module.exports = {
   loli_wife: (() => {
     const title = '로리 아내';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await era.printAndWait([
@@ -1959,8 +1959,8 @@ module.exports = {
   non_penetration: (() => {
     const title = '함께 목욕하기';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       const ret = [];
@@ -2315,9 +2315,9 @@ module.exports = {
   sex_mark: (() => {
     const title = '';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
-     * @param {CharaTalk} callname ダイイチルビーがプレイヤーを呼ぶ呼称
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
+     * @param {CharaTalk} callname 다이이치 루비가 플레이어를 부르는 호칭
      */
     const f = async (ruby, you, callname) => {
       await ruby.say_and_wait([
@@ -2791,8 +2791,8 @@ module.exports = {
   shame: (() => {
     const title = '수줍은 소녀';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
      */
     const f = async (ruby, you) => {
       await era.printAndWait([
@@ -2872,9 +2872,9 @@ module.exports = {
   take_shower: (() => {
     const title = '목욕';
     /**
-     * @param {CharaTalk} ruby ダイイチルビー
-     * @param {CharaTalk} you プレイヤー
-     * @param {CharaTalk} callname ダイイチルビーがプレイヤーを呼ぶ呼称
+     * @param {CharaTalk} ruby 다이이치 루비
+     * @param {CharaTalk} you 플레이어
+     * @param {CharaTalk} callname 다이이치 루비가 플레이어를 부르는 호칭
      */
     const f = async (ruby, you, callname) => {
       await era.printAndWait([
