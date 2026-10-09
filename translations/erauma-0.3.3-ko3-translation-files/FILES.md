@@ -481,7 +481,8 @@
   - 번역 대상: report_arim_kin
 
 - [kojo/106800-Kitasan-Black/love-68.js](files/sources/erauma/ere/i18n/ko-KR/kojo/106800-Kitasan-Black/love-68.js)
-  - 번역 대상: 49, 74, 89, m_kita, m_kita_end, m_kita_notify, nyotaimori, nyotaimori_notify
+  - 번역 대상: m_kita, m_kita_notify, nyotaimori
+  - 복구 완료: 49, 74, 89, m_kita_end, nyotaimori_notify
 
 - [kojo/107000-Sirius-Symboli/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/107000-Sirius-Symboli/entry.js)
   - 번역 대상: achieve_track_aim_template
@@ -572,7 +573,8 @@
   - 번역 대상: ask_armpit_intercourse, ask_blow_job, ask_cowgirl, ask_deep_blow_job, ask_double_blow_job, ask_foot_job, ask_hair_fuck, ask_hand_and_blow_job, ask_hand_job, ask_milk_and_hand_job, ask_non_penetrative, ask_tail_job, ask_tit_and_blow_job, ask_tit_job, bite_nipple, cunnilingus, doggy_style, doggy_style_anal_sex, double_suck_nipple, finger_fuck, force_armpit_intercourse, force_blow_job, force_deep_blow_job, force_foot_job, force_hair_fuck, force_hand_and_blow_job, force_hand_job, force_tail_job, french_kiss, fuck_tit, fuck_tit_and_mouth, fucked_suspended_congress, gargle, hit_anal, hit_anal_hard, hit_face_by_penis, hug_sitting, hug_standing, hug_suspended_congress, insult, kiss, lure, milk, missionary, missionary_anal_sex, pet_anal, pet_breast, pet_clitoris, pet_ear, pet_leg, pet_nipple, pet_tail, prepare_anal, prepare_virgin, pull_ear, pull_tail, relax, resist, sitting, sixty_nine, sleep_french_kiss, sleep_kiss, standing, stimulate_g_spot, stimulate_g_spot_by_finger, stimulate_large_intestine, stimulate_womb, suck_anal, suck_nipple, suck_virgin, suspended_congress, switch, talk, wipe_body
 
 - [kojo/110000-Wonder-Acute/love-100.js](files/sources/erauma/ere/i18n/ko-KR/kojo/110000-Wonder-Acute/love-100.js)
-  - 번역 대상: 49, 49-before, 74, 74-before, 89, 89-before, 99, 99-before, 99-end, 99-notify
+  - 번역 대상: 49, 74, 89, 99, 99-before, 99-end
+  - 복구 완료: 49-before, 74-before, 89-before, 99-notify
 
 - [kojo/110000-Wonder-Acute/rec-100.js](files/sources/erauma/ere/i18n/ko-KR/kojo/110000-Wonder-Acute/rec-100.js)
   - 번역 대상: rec_rooftop, rec_start
@@ -665,7 +667,8 @@
   - 번역 대상: win, win_desc
 
 - [kojo/400000-Sunday-Silence/love-400.js](files/sources/erauma/ere/i18n/ko-KR/kojo/400000-Sunday-Silence/love-400.js)
-  - 번역 대상: 49, 74, 74-3crown-a, 74-title
+  - 번역 대상: 74, 74-3crown-a
+  - 복구 완료: 49, 74-title
 
 - [kojo/400000-Sunday-Silence/rec-400.js](files/sources/erauma/ere/i18n/ko-KR/kojo/400000-Sunday-Silence/rec-400.js)
   - 번역 대상: rec
