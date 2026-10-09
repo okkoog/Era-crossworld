@@ -496,8 +496,8 @@
   - 번역 대상: achieve_track_aim_template_1, achieve_track_aim_template_2, sick, sick_desc
 
 - [kojo/107100-Mejiro-Ardan/love-71.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/107100-Mejiro-Ardan/love-71.kojo)
-  - 번역 대상: 49, 74, 89, 99, bearing, theater, travel
-  - 2026-10-09 재사용 복구: 7항목 196문구. 잔여 일본어 25문구.
+  - 번역 대상: 49, 74, 89, 99, theater
+  - 2026-10-10 재사용 복구: 7항목 213문구. 완전 복구 2항목, 잔여 일본어 8문구.
 
 - [kojo/107100-Mejiro-Ardan/rec-71.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/107100-Mejiro-Ardan/rec-71.kojo)
   - 번역 대상: recruit_1, recruit_2, recruit_3
