@@ -4,114 +4,114 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/108500-Daiichi-Ruby/love-85"),
 
-  // [번역 대상] 74-after
+  // [번역 완료] 74-after
   async '74-after'(ruby, mother, you, callname) {
     era.drawLine();
     await era.printAndWait([
-      '雲が収まり、雨が歇んだあと、',
+      '구름이 걷히고 비가 멎자, ',
       ruby.get_colored_name(),
-      ' は ',
+      '는 ',
       you.get_colored_name(),
-      'の懐に寄り、繊い指で ',
+      '의 품에 깊숙이 안긴 채, 가느다란 손가락으로 ',
       you.get_colored_name(),
-      'の胸をそっと撫で、突いた。',
+      '의 가슴팍을 부드럽게 문지르고 쿡쿡 찌르며 장난을 쳤다.',
     ]);
     await era.printAndWait([
       ruby.get_colored_name(),
-      ' は愛らしい顔を上げ、目に含みのある色を浮かべた。',
+      '는 고개를 살짝 들어, 눈동자 속에 장난스러우면서도 묘한 색기가 서린 표정을 지었다.',
     ]);
-    await ruby.say_and_wait('わたくし、あなたのお子を産めますわ……');
+    await ruby.say_and_wait('저, 당신의 아이를 낳아드릴 수도 있어요……');
     await era.printAndWait([
       you.get_colored_name(),
-      'は、手に入れた仔馬を逃すつもりはなかった。',
+      '은(는) 손에 넣은 망아지를 놓아줄 생각이 없었기에, ',
       ruby.get_colored_name(),
-      ' の勃起した嬌紅の蕾を、軽く摘んだ。',
+      '의 붉게 도드라진 가슴의 젖꼭지를 부드럽게 꼬집었다.',
     ]);
     era.printButton(
-      '「余計なことを考えるな。お前をほかの男に嫁がせはしない。」',
+      '「쓸데없는 생각 하지 마. 널 절대 다른 남자에게 시집보내지 않아.」',
       1,
     );
     await era.input();
-    await you.say_and_wait('誰であろうと……');
+    await you.say_and_wait('그게 그 누구가 되었든 간에……');
     await era.printAndWait([
       ruby.get_colored_name(),
-      ' は胸が震えた。明らかに ',
+      '의 가슴이 크게 떨렸다. 방금 ',
       you.get_colored_name(),
-      'の言葉には裏がある。',
+      '의 말에는 분명 다른 뜻이 담겨 있었고, ',
       you.get_colored_name(),
-      '自身も、それが何を意味するか分かっていた。',
+      ' 자신도 그 말이 무엇을 의미하는지 알고 있었다.',
     ]);
     era.printButton(
-      '「そんなに怯えるな。ルビーと、ルビーのお母様の立場は分かっている。」',
+      '「그렇게 겁먹을 필요 없어. 루비와 루비 어머님의 입장이 어떤지 나도 알고 있으니까.」',
       1,
     );
     await era.input();
     era.printButton(
-      '「結婚のことはハギノトップレディと相談する。ルビーは、自分のなすべきことをすればいい。」',
+      '「결혼 문제는 하기도노 톱 레이디와 내가 직접 상의할게. 루비는 네가 해야 할 일에만 집중하면 돼.」',
       1,
     );
     await era.input();
     await ruby.say_and_wait([
       callname,
-      '……ありがとうございますわ。そう仰っていただき、少し心が軽くなりましたわ……',
+      '……고마워요. 당신에게 그런 말을 들으니, 마음이 한결 가벼워졌어요……',
     ]);
     era.drawLine();
     await era.printAndWait([
-      '数日後の週末、婚約の相手に会うため、',
+      '며칠 뒤 주말이 찾아왔고, 약혼 상대와 대면하기 위해 ',
       ruby.get_colored_name(),
-      ' はあるホテルへ向かった。',
+      '는 어느 호텔로 향했다.',
     ]);
     await era.printAndWait(
-      '近頃、泣いて寝ていたせいか、顔色がどこか沈んでいた。',
+      '최근 며칠 동안 울며 잠든 탓인지, 그녀의 안색은 다소 가라앉아 있었다.',
     );
     await era.printAndWait([
       you.get_colored_name(),
-      'は、指定の部屋へ来た ',
+      '은(는) 약속된 방으로 들어서는 ',
       ruby.get_colored_name(),
-      ' を見た。',
+      '를 바라보았다.',
     ]);
-    era.printButton('「初めまして、ルビーさん。」', 1);
+    era.printButton('「처음 뵙겠습니다, 루비 씨.」', 1);
     await era.input();
-    await ruby.say_and_wait(['どうして、', callname, ' がここに……？']);
+    await ruby.say_and_wait(['어째서, ', callname, '이 이곳에 있는 건가요……?']);
     await mother.say_and_wait(
-      '感慨深いですわ、ルビー。この光景、どこかで見た気がいたしますわ。',
+      '실로 감회가 새롭구나, 루비. 이 광경은 어딘가 낯익게 느껴지는구나.',
     );
     await era.printAndWait([
-      'お母様は、',
+      '어머님은 이미 ',
       ruby.get_colored_name(),
-      ' が専属トレーナーへ抱く想いを、見抜いていたらしい。',
+      '가 전속 트레이너에게 품고 있는 마음을 알아차리고 있었던 모양이다.',
     ]);
     await era.printAndWait([
-      '祖母と母のトレーナーを務めた男性が退いた今、',
+      '할머니와 어머니의 트레이너를 맡았던 남성이 은퇴한 지금, 일족으로서는 ',
       you.get_colored_name(),
-      'のような優れた人材を逃すわけにはいかない。',
+      '과(와) 같은 우수한 인재를 순순히 놓아줄 수 없었다.',
     ]);
     await mother.say_and_wait(
-      '先にお話ししなかったこと、本当にごめんなさいね。',
+      '미리 자세히 이야기하지 않아서 정말 미안하구나.',
     );
     await era.printAndWait([
-      'お母様の謝罪に、',
+      '어머님의 다정한 사과에, ',
       ruby.get_colored_name(),
-      ' は怒る気になれなかった。',
+      '는 도저히 화를 낼 수가 없었다.',
     ]);
     await era.printAndWait(
-      '一族が向き合う財界の圧力の下で、娘の幸福を優先するというのは、相当な覚悟だろう。',
+      '일족이 직면한 재계의 압박 속에서도 딸의 행복을 우선한다는 것은 상당한 각오 없이는 불가능한 일이었다.',
     );
     await ruby.say_and_wait(
-      'これほど慕っているのに、何ひとつ仰ってくれませんでしたの。',
+      '제가 이토록 당신을 경외하고 따르는데, 제게 아무 말씀도 해주시지 않으셨군요.',
     );
     await era.printAndWait([
-      '甘い息を吐き、',
+      '달콤한 숨결을 내쉬며, ',
       ruby.get_colored_name(),
-      ' が抱きついてきた。',
+      '가 와락 안겨들었다.',
     ]);
     await era.printAndWait([
-      'ウマ娘の力を考えれば、将来の義母が傍らで含みのある目で見ていても、',
+      '우마무스메의 힘을 생각하면, 미래의 장모가 곁에서 의미심장한 눈빛으로 바라보고 있어도, ',
       you.get_colored_name(),
-      'は抗うのを諦めた。',
+      '은(는) 저항을 포기할 수밖에 없었다.',
     ]);
     era.printButton(
-      '「華麗一族の跡取りの夫になる。お前の人生は、わたしが保証する。」',
+      '「제가 화려한 일족의 후계자의 남편이 되겠습니다. 당신의 일생은 제가 책임지겠습니다.」',
       1,
     );
     await era.input();
