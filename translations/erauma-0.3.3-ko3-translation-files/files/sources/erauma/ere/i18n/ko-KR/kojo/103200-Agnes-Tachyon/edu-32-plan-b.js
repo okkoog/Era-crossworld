@@ -464,7 +464,7 @@ module.exports = {
         await tachyon.say_and_wait('くっ、私も座りますわ！');
         era.println();
         await era.printAndWait([
-          '子供のように言い争う二人を見て、',
+          '아이들처럼 말다툼하는 두 사람을 보고,',
           you.get_colored_name(),
           ' は苦笑する',
         ]);
@@ -1827,7 +1827,7 @@ module.exports = {
       await era.printAndWait(['影のように漆黒の', coffee.get_colored_sex()]);
       await era.printAndWait(['最初から、こんなに単純なことだった']);
       era.println();
-      await era.printAndWait('子どものような、稚気のある願い');
+      await era.printAndWait('아이처럼 천진한 소망');
       await era.printAndWait(
         '強弱を分けたい……いいえ、同じ場での競いを見たいだけだ',
       );
@@ -2518,7 +2518,7 @@ module.exports = {
       era.printButton('「タキオン……今のは、冗談だよな？」', 2);
       await era.input();
       await tachyon.say_and_wait(
-        'もちろんですわ。勝ち負けにこだわるのは子どもの権利……私たちに必要なのは実験のデータだけ。それだけです',
+        '물론이죠. 승패에 집착하는 건 아이들의 특권…… 우리에게 필요한 건 실험 데이터뿐이에요. 그게 전부죠',
       );
       await era.printAndWait('言葉は嘘をつく');
       await era.printAndWait('声は嘘をつく');
@@ -2762,7 +2762,7 @@ module.exports = {
         await era.printAndWait([
           'こう見ると結婚後の ',
           tachyon.get_colored_name(),
-          ' は、意外と子どもを溺愛する性分かもしれない',
+          '는 의외로 아이들을 무척 아끼는 성격일지도 모른다',
         ]);
       }
       era.println();
