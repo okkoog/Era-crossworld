@@ -6535,7 +6535,7 @@ hot_spring_notify:
 
 # 抽選した年の12月
 # 券あり or 恋慕90
-# [번역 대상] hot_spring
+# [번역 완료] hot_spring
 hot_spring:
   title: 온천 여행
   lines:
@@ -6561,7 +6561,7 @@ hot_spring:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - （よし……とにかく勢いが大事！ 一気に誘ってみる！）
+        - (좋아…… 어쨌든 기세가 중요해! 단숨에 제안해 보자!)
     - 어디선가 솟아난 기세와 함께, 파머는 단숨에 집무실 문을 열어젖혔다.
     - color: %COLOR%
       content:
@@ -6643,7 +6643,7 @@ hot_spring:
             - fontWeight: bold
               content: %CHARA%
             - 「오늘 우리 둘은 다른 생각 하지 말고, 느긋하게 쉬자고~」
-        - ヘリオス%THEY%といっしょのギャル風パーマーもいい。でも元の%SEX%も、すごくいい話し相手だ
+        - 헬리오스 %THEY%와 함께 있을 때의 갸루 같은 파머도 좋다. 하지만 본래의 %SEX% 역시 이야기를 나누기 정말 좋은 상대다.
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -6839,7 +6839,7 @@ hot_spring:
               content: %CHARA%
             - 「안 돼 헬리오스! 가라앉겠어!」
         - 옆 칸의 소란에 대해 %YOU%은(는) 그저 못 들은 척 넘길 수밖에 없었다.
-        - いつものように先に牛乳を取る。%THEY%もそのうち上がるだろう
+        - 평소처럼 먼저 우유를 집어 들었다. %THEY%도 머지않아 나올 것이다.
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -6882,7 +6882,7 @@ hot_spring:
         - 파머는 이를 의식하지 못한 채 %YOU%을(를) 옆의 벤치로 끌어다 앉히려 했다.
         - 상황이 이상하게 돌아가는 것을 느낀 %YOU%의 머릿속이 빠르게 회전하기 시작했다.
         - acc: 1
-          content: 「そういえばヘリオスは、%SEX%見えないな」
+          content: 「그러고 보니 헬리오스는 %SEX%가 안 보이네.」
         - color: %COLOR%
           content:
             - fontWeight: bold
