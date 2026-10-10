@@ -585,3 +585,241 @@ we_find_taishin_4:
 
 # 49->50 または 50 報酬イベント
 # 外出
+# [번역 완료] os_aquarium
+os_aquarium:
+  title: 반짝이는 물밑
+  lines:
+    - 한가로운 주말. 추가 업무도 없고, 밀린 잡무도 없다.
+    - 이 세 가지가 한꺼번에 겹치는 날은 1년에 손에 꼽을 정도밖에 없다. %YOU%은(는) 크게 기지개를 켜고, 이 온전한 휴일을 제대로 써보기로 했다. 느긋하게 외출 준비를 하던 중 휴대폰이 절묘하게 분위기를 깨는 소리를 냈다.
+    - 「잔업 아니야…… 잔업 아니야……」
+    - 두 번 중얼거린 뒤 알림을 열었다. 「나리타 타이신」 옆에 빨간 점이 떠 있는 것을 보고 한숨을 놓은 뒤, 타이신의 메시지를 읽었다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「오늘 시간 돼?」
+    - if: era.get('love:50') < 50
+      color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「오늘 수족관에 가고 싶은데. 같이 갈래?」
+    - if: era.get('love:50') >= 50
+      color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「같이 가줄래? 수족관에 가고 싶어.」
+    - acc: 1
+      content: 「문제없어.」
+    - 「그럼 9시에 트레센 정문에서 만나자.」
+    - 휴대폰을 덮고, %YOU%은(는) 거울 속 자신을 빤히 바라봤다.
+    - 「……」
+    - 「데이트에 어울리는 옷을 찾아보자.」
+    - divider: true
+    - 교문에서, %YOU%은(는) 멀리서 타이신을 발견했다.
+    - 평소와 달리 머리 위의 흰색 소프트햇이 눈에 띄었다. 붉은 겉옷을 걸쳤고, 여유로운 밑단과 딱 붙는 청바지가 다리를 가늘어 보이게 했다. 제법 멋진 차림이다.
+    - %SEX%은(는) %YOU%이(가) 다가오는 것도 모른 채 휴대폰에 푹 빠져 있었다.
+    - acc: 1
+      content: 「타이신, 왔어.」
+    - if: era.get('love:50') >= 50
+      acc: 2
+      content: 천재일우의 장난 기회!
+      lines:
+        - 천재일우의 장난 기회다.
+        - 숨을 죽이고, 조용히, 천천히 다가간다.
+        - 가상 세계에 빠진 타이신은 앞으로 무슨 일이 일어날지 전혀 모른다.
+        - 탁, 하고 %YOU%의 손이 타이신의 어깨에 떨어졌다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「으악!?!?」
+        - 귀와 꼬리가 번개라도 맞은 듯 곤두섰다. 어깨를 두드린 순간, 타이신은 %YOU%의 곁에서 펄쩍 뛰어 물러나더니 놀란 새끼고양이처럼 등을 웅크리고 %YOU%을(를) 노려봤다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「진짜, 깜짝 놀랐잖아!」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「왜 인사를 그런 식으로 해.」
+        - 「타이신 반응이 재미있으니까.」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「초등학생이야? 너.」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「더 놀리면 걷어차 버린다!」
+        - 장난의 여파가 가라앉고 나서야, 타이신은 이제 막 처음 %YOU%을(를) 본 사람처럼 입을 열었다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「옷, 갈아입었네.」
+    - 「타이신이랑 나가는 거니까, 어울리는 옷을 입어야 할 것 같아서……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「난 또 평소 트레이너 차림 그대로 올 줄 알았어.」
+    - 「그럴 리가. 타이신이랑 놀러 가는 건데 제대로 준비해야지.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「아…… 그래.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「……그럼 가자. 늦으면 붐빌 테니까.」
+    - 덥지도 않은데 타이신의 얼굴은 조금 붉었다.
+    - divider: true
+    - 몇 개의 거리를 지나도 타이신은 걸음을 멈추지 않았다. 수족관까지 가는 길을 잘 알고 있는 모양이다.
+    - %YOU%은(는) 멋진 푸른 건물을 힐끗 바라봤다. 물고기 떼가 투영 스크린 속을 자유롭게 헤엄치는 모습이 보기 좋았다.
+    - 「저 수족관인가?」
+    - %YOU%이(가) 가리킨 방향을 타이신이 발끝을 세워 바라본 뒤 고개를 저었다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「저쪽 아니야. 이쪽.」
+    - 화려한 수족관을 지나쳤다. 안에서 들려오는 소리가 밖까지 닿을 정도로 사람으로 가득했다.
+    - 타이신의 뒤를 따라 모퉁이를 돌자 조금 작은 수족관 하나가 조용한 구석에 자리 잡고 있었다. 누군가 문을 두드려 주기만을 기다리는 듯했다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「도착했어. 여기.」
+    - %SEX%은(는) 익숙한 손놀림으로 표 두 장을 사더니, %YOU%을(를) 깊은 푸른빛 속으로 이끌었다.
+    - 「조용하네. 절로 목소리가 작아진다.」
+    - 저 문을 넘는 순간 소란스러운 거리와 완전히 단절된 듯했다. 짙은 푸른빛과 끊임없이 변하는 물결무늬. 넋을 놓고 바라보고 있자 정말 바닷속에 들어온 기분이 든다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「응. 저쪽의 큰 수족관 덕분에 대부분은 거기로 가거든.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「여긴 단골이 많아. 물고기를 좋아하는 사람도, 분위기를 좋아하는 사람도.」
+    - %YOU%이(가) 주위를 둘러보니 드문드문 사람 그림자만 보였다. 물고기의 세계에 빠진 사람, 자기만의 세계에 빠진 사람.
+    - 「타이신도 자주 와?」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「뭐, 그렇지. 혼자 오는 사람도 많고.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「다른 사람이랑 같이 온 건…… 처음이야.」
+    - 주위가 너무 조용해서 말속에 묻은 부끄러움까지 또렷하게 들리는 듯했다.
+    - 「그럼 가볼까.」
+    - 「여러 번 와봤다며. 안내는 부탁할게.」
+    - if: era.get('love:50') >= 50
+      lines:
+        - %YOU%은(는) 평소처럼 타이신의 뒤를 따라 걷는 대신 곁에 서서 조심스럽게 손끝을 붙잡았다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「……」
+        - 말없이 %SEX%의 손이 다가와 화답하듯 %YOU%의 손가락을 얽었다.
+        - %SEX%은(는) 눈썹을 살짝 들어 올렸다. 감추지 못한 부끄러움과 행복이 그 눈 깊숙한 곳에 담겨 %YOU%의 눈에 비쳤다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「응, 가자.」
+    - 밖에서 보면 작아도 안은 의외로 복잡했다. 물속을 헤엄치는 물고기를 바라보며 타이신의 걸음을 따라간다.
+    - 유리 터널에 들어서자 정말 바닷속에 있는 듯한 실감이 났다. 수면에서 떨어지는 어두운 빛, 귓가에 얽히는 묵직한 물소리. 눈앞을 떠다니는 물고기는 손만 뻗으면 닿을 것 같았다.
+    - 「타이신이 여길 좋아하는 이유, 알 것 같아.」
+    - 「나도 좀 빠져드는 것 같고.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「그래? 하하, 다행이네.」
+    - 입을 가리고 작게 웃는 모습이 정말 귀엽다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「나, 여기 좋아해. 조용해서만은 아니고.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「사람도 물고기도 날 너무 빤히 보지 않아. 쓸데없는 시선이 없으니까 조금은 편해질 수 있어……」
+    - 「그래도 나는 여기 있잖아.」
+    - 「내가 있으면 타이신은 불편해?」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「너는, 물고기랑 비슷한 정도려나.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「방해되지도 않고, 싫지도 않아. 곁에 있는 것도 조금은 익숙해졌고.」
+    - 「그렇구나.」
+    - 「내가 보기엔 타이신은 작은 고슴도치 같아.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「뭐? 그게 무슨 뜻이야.」
+    - 「언제나 몸을 웅크리고, 다가오는 사람한테 가시를 세우잖아.」
+    - 「믿을 수 있는 사람 곁에서만 경계를 풀고 부드러운 쪽을 보여주고.」
+    - if: era.get('love:50') >= 50
+      lines:
+        - 「그리고.」
+        - %YOU%은(는) 타이신의 뒤로 돌아가 목에 팔을 두르고 귓가에 작게 말했다.
+        - 「그만큼 귀엽기도 하고.」
+        - 말을 마친 뒤 턱을 타이신의 머리 위에 올리고 감촉과 체온을 충분히 느끼고 나서야 아쉬운 듯 팔을 풀었다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「진짜, 멋대로 달라붙어서는 그런 낯간지러운 말이나 하고.」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「아아, 너란 녀석은 정말 답이 없다니까.」
+        - 말로는 %YOU%을(를) 타박하면서도 %SEX%은(는) 오히려 한 걸음 더 가까이 다가왔다.
+        - 폭.
+        - %YOU%이(가) 반응하기도 전에 %SEX%은(는) 품속으로 파고들어 두 팔로 허리를 감쌌다.
+        - 화답하듯 %YOU%은(는) 몸을 숙여 타이신의 이마에 가볍게 입을 맞추고 %SEX%을(를) 힘껏 끌어안았다. 꿈처럼 깊고 푸른 물빛 아래에서, 진짜라고 느껴지는 것은 %SEX%뿐이었다.
+    - if: era.get('love:50') < 50
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「뭐야, 그 이상한 비유는!」
+        - %SEX%은(는) 볼을 부풀리고 팔짱을 낀 채 불만스러운 눈으로 %YOU%을(를) 두 번 노려봤다.
+        - 본인은 강하게 부정했지만, 그 모습을 보고 %YOU%은(는) 오히려 타이신이 작은 고슴도치 같다는 확신이 더 강해졌다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「됐어, 장난은 그만. 수족관이나 계속 보자.」
+        - 하지만 %SEX%은(는) 평소처럼 앞장서서 안내하지 않고, %YOU%에게 한 손을 내밀었다.
+        - acc: 1
+          content: 타이신의 손을 잡는다
+        - 손끝에서 전해지는 따뜻하고 부드러운 감촉이 짙푸른 물결 아래에서 아름답고도 비현실적으로 느껴졌다. 고집 세고 상냥한 %UMA%은(는) 마침내 %YOU% 앞에서 경계를 풀었다.
+        - 그렇게 말없는 고요 속에서, 깊고 푸른 물빛 속에서, %YOU%과(와) 타이신은 어깨를 나란히 하고 수조 속을 헤엄치는 물고기 떼와 둘이 함께 보내는 시간을 천천히 따라 걸었다.
+        - 두 사람의 이야기는 아직 계속된다.
+
