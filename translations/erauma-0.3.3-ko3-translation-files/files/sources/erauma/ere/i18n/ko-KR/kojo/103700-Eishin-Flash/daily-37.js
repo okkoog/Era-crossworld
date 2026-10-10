@@ -12,10 +12,10 @@ const __JaOriginal = require('#/i18n/ja-JP/kojo/103700-Eishin-Flash/daily-37.js'
 
 module.exports = {
   ...__JaOriginal,
-  // [번역 대상] office_prepare
+  // [번역 완료] office_prepare
   async office_prepare(flash, you, callname) {
     era.print(
-      `${you.name} とエイシンフラッシュは、トレーナールームでレース前の準備をした。`,
+      `${you.name}과(와) 에이신 플래시는 트레이닝실에서 레이스 준비를 했다.`,
     );
     const buffer = [
       async () => {
@@ -23,17 +23,17 @@ module.exports = {
           "현재 기상 상태, 예보와 일치. 경기장 상황, 예상 범위 내. 본인 컨디션…… 완벽.",
         );
         await flash.say_and_wait(
-          `ふ……すべて、計画どおりのようです。それでは、行ってまいります、${callname}。`,
+          `후우…… 모든 것이 계획대로군요. 그럼 다녀오겠습니다, ${callname}.`,
         );
       },
       () =>
         flash.say_and_wait(
-          `toi、toi、toi……ふ……よし！ ${callname}、行ってまいります。`,
+          `toi, toi, toi…… 후우…… 좋아! ${callname}, 다녀올게요.`,
         ),
     ];
     await get_random_entry(buffer)();
   },
-  // [번역 대상] office_gift
+  // [번역 완료] office_gift
   async office_gift(flash, callname) {
     const buffer = [
       () =>
@@ -42,53 +42,53 @@ module.exports = {
         ),
       () =>
         flash.say_and_wait(
-          `besten Dank！ ${callname}、お気持ちに、背きません。`,
+          `『besten Dank!』, ${callname}. 당신의 마음을 저버리지 않겠어요.`,
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] good_morning
+  // [번역 완료] good_morning
   good_morning(flash, callname) {
     const buffer = [
       () =>
         flash.say(
-          `おはようございます、${callname}。新しい一日、新しい道のり、新しい希望。前向きに参りましょう。`,
+          `좋은 아침입니다, ${callname}. 새로운 하루, 새로운 여정, 새로운 희망을 향해 긍정적인 태도로 마주해 봐요.`,
         ),
       () =>
         flash.say(
-          `Guten Tag、${callname}。どうか、よい一日をお過ごしください。`,
+          `Guten Tag, ${callname}. 멋진 하루를 보내시길 바랍니다.`,
         ),
       () =>
         flash.say(
-          `Guten Morgen、${callname}。また新しい一日です。本日の計画、準備はよろしいですか？`,
+          `Guten Morgen, ${callname}. 다시 새로운 하루가 시작되었네요. 오늘 계획에 대한 준비는 되셨나요?`,
         ),
       () =>
         flash.say(
-          `おはようございます、${callname}。忙しくても、そばの美しさに目を向ける余裕を、どうかお忘れなく。`,
+          `즐거운 오전입니다, ${callname}. 바쁜 와중에도 곁에 있는 아름다움을 감상할 여유를 가지시길 빌게요.`,
         ),
     ];
     get_random_entry(buffer)();
   },
 
-  // [번역 대상] good_night_normal
+  // [번역 완료] good_night_normal
   good_night_normal(flash, callname) {
     const buffer = [
       () =>
         flash.say(
-          `今日はお疲れさまでした、${callname}。一日働いたあとは、どうか身体をほぐしてください。`,
+          `오늘 하루 고생하셨습니다, ${callname}. 일과를 마친 뒤에는 몸의 긴장을 풀어주는 걸 잊지 마세요.`,
         ),
       () =>
         flash.say(
-          `今日はありがとうございました、${callname}。夜は、甘い夢を。`,
+          `오늘은 정말 감사했습니다, ${callname}. 밤새 달콤한 꿈을 꾸시길 바랍니다.`,
         ),
     ];
     if (era.get('base:37:体力') < era.get('maxbase:37:体力') * 0.5) {
       buffer.push(
-        () => flash.say('ふ……『Aus nichts wird nichts』。'),
+        () => flash.say("후우…… 『Aus nichts wird nichts』."),
         () =>
           flash.say(
-            '身体が……少し重いです。ですが、ここで緩めてしまっては、理想の結果は得られないのでしょうか。',
+            "몸이…… 조금 무겁게 느껴지네요. 하지만 이 정도로 게을러진다면 이상적인 결과를 얻을 수 없겠죠?",
           ),
       );
     }
@@ -96,11 +96,11 @@ module.exports = {
       buffer.push(
         () =>
           flash.say(
-            'ふ……身体に力が入りません。この先の計画は、少し改めたほうがよいでしょうか。',
+            "후우…… 몸에 힘이 빠지기 시작했어요. 역시 이후의 계획을 조금 수정하는 편이 좋을까요?",
           ),
         () =>
           flash.say(
-            '労逸を合わせるのは、深い学問です。この言葉を理解するまで、私にはまだ長い道があります。',
+            "일과 휴식의 조화는 참 심오한 학문이네요. 제가 이것을 온전히 이해하기까지는 아직 갈 길이 먼 것 같습니다.",
           ),
       );
     }
@@ -110,47 +110,47 @@ module.exports = {
   // [번역 대상] load_talk_pregnant
   async load_talk_pregnant(flash) {
     await flash.say_and_wait(
-      'そう、ですか……あなたは、結局そういう選択をなさったのですね。',
+      "그런가요…… 당신은 결국 이런 선택을 내렸군요.",
     );
     await era.printAndWait([
       flash.get_colored_name(),
-      ' は小さく息を吐き、言葉の端に落胆が滲んだ。',
+      "가 나지막이 한숨을 내쉬었다. 그 목소리엔 실망감이 가득했다.",
     ]);
     await flash.say_and_wait(
-      '……ふ。以前の偽りの美しさに、目が眩んでいたようです。',
+      "……훗, 아무래도 이전에 느꼈던 그 가짜 아름다움에 제 눈이 멀었었나 봐요.",
     );
     await era.printAndWait(
-      `次の瞬間、もう覆せないと悟った${flash.sex}は、軽く笑って首を振った。`,
+      `다음 순간, 모든 것이 되돌릴 수 없음을 깨달은 ${flash.sex}は、軽く笑って首を振った。`,
     );
-    await flash.say_and_wait('では、最後に一つだけ、伺わせてください。');
+    await flash.say_and_wait("그럼, 마지막으로 한 가지만 물어볼게요.");
     await era.printAndWait(
       `${flash.teen_sex_title}は目の涙を拭い、悲しみは澄んだ問いへと変わっていった。`,
     );
     await flash.say_and_wait(
-      '妻を捨て、子を捨て、信を破る。あなたにとって誓いとは、一文の値もないものなのですか？',
+      "처자식을 버리고, 믿음을 저버리다니. 당신에게 맹세란 건, 그렇게 아무런 가치도 없는 것이었나요?",
     );
   },
 
-  // [번역 대상] o_c_pray
+  // [번역 완료] o_c_pray
   async o_c_pray(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、神社へ祈願に行った。`,
+      `${you.name}과(와) 에이신 플래시는 함께 신사로 기도를 하러 왔다.`,
     );
     const buffer = [
       async () => {
         await flash.say_and_wait(
-          `二礼、二拍、一礼……ふ。細かいところはまだ掴みきれませんが、流れとしては誤りはなかったでしょうか？ ${callname}`,
+          `두 번 절하고, 두 번 박수 치고, 다시 한 번 절…… 후우, 세세한 디테일은 아직 좀 헷갈리지만, 전체적인 절차에서 실수는 없었겠죠? ${callname}`,
         );
         await era.printAndWait(
-          `帰路、エイシンフラッシュは ${you.name} に茶目っ気のある笑みを向けた。この参拝を楽しんでいるらしい。`,
+          `돌아오는 길에, 에이신 플래시는 ${you.name}에게 장난스럽게 웃어 보였다. 이번 참배 여행이 꽤 즐거웠던 모양이다.`,
         );
       },
       async () => {
         await flash.say_and_wait(
-          '澄んだ空気と、神聖な気配。神社の環境が好きです。あそこにいると、ざわつく心まで静まります。',
+          "맑은 공기에 신성한 분위기까지. 저는 신사의 환경이 정말 마음에 들어요. 그곳에 있으면 들뜬 마음까지 차분해지거든요.",
         );
         await era.printAndWait(
-          `帰路、エイシンフラッシュは微笑みながら ${you.name} に感想を話した。この旅に満足しているらしい。`,
+          `돌아오는 길에, 에이신 플래시는 미소를 지으며 ${you.name}에게 자신의 소감을 들려주었다. 이번 여정에 아주 만족한 것 같다.`,
         );
       },
     ];
@@ -161,23 +161,23 @@ module.exports = {
   async o_r_fishing(flash, you, callname) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' と ',
+      "과(와) ",
       flash.get_colored_name(),
-      ' は川へ釣りに行った。',
+      "는 함께 강가로 낚시를 하러 왔다.",
     ]);
     const buffer = [
       async () => {
-        await flash.say_and_wait('気ままに釣れるのは、とてもよい体験です。');
-        await flash.say_and_wait('え、なぜ急にそんなことを？');
+        await flash.say_and_wait("마음 내키는 대로 낚시를 즐길 수 있다는 건 참 멋진 경험이네요.");
+        await flash.say_and_wait("어라, 왜 갑자기 그런 말을 하느냐고요?");
         await flash.say_and_wait(
-          'ドイツでは、釣りに専用の免許が必要だからです。',
+          "독일에서는 낚시를 하려면 전용 면허증이 있어야 하거든요.",
         );
         await flash.say_and_wait(
-          '免許の試験は理論が主ですが、先に日本で実地の技術を鍛えておくのも悪くありません。',
+          "비록 면허 시험에서는 이론 지식이 더 중요하지만, 미리 일본에서 실전 기술을 단련해 두는 것도 나쁘지 않은 선택이겠죠.",
         );
-        await flash.say_and_wait('ですので……');
+        await flash.say_and_wait("그러니까……");
         await flash.say_and_wait(
-          `その折には、お力をお借りすることになるかもしれません、${callname}。`,
+          `그때가 되면 당신의 도움이 필요할지도 모르겠네요, ${callname}.`,
         );
       },
       async () => {
@@ -185,81 +185,81 @@ module.exports = {
           '釣り、ですか。子供のころ、避暑の季節になると、両親が名もない湖畔の小屋へ連れていってくれました。',
         );
         await flash.say_and_wait(
-          'そこで、父が湖のほとりで一心に竿を振る姿を見ていました。',
+          "그곳에서 호숫가에 앉아 낚싯대를 휘두르던 아버지의 뒷모습을 보곤 했죠.",
         );
         await flash.say_and_wait(
-          '父から多くの技術は教わっていません。ですが、あなたとこの楽しみを分かち合う分には、足りるはずです。',
+          "비록 아버지께 많은 기술을 배우지는 못했지만, 당신과 함께 이 즐거움을 나누는 정도라면 충분히 해낼 수 있을 거예요.",
         );
       },
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(flash, you, callname) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' と ',
+      "과(와) ",
       flash.get_colored_name(),
-      ' は川沿いを散歩した。',
+      "는 함께 강변 산책을 하러 왔다.",
     ]);
     const buffer = [
       async () => {
-        await flash.say_and_wait('bildschön！ 印象に残る景色です。');
+        await flash.say_and_wait("bildschön! 아주 인상적인 경치예요.");
         await flash.say_and_wait(
-          `ええ……記念写真も悪くない案です。いかがでしょう、${callname}。`,
+          `음…… 기념사진을 찍어두는 게 좋을 것 같네요. 당신은 어떻게 생각하시나요? ${callname}.`,
         );
       },
       async () => {
-        await flash.say_and_wait('本日の外出、ご満足いただけましたか？');
+        await flash.say_and_wait("오늘 나들이는 만족스러우신가요?");
         await flash.say_and_wait(
-          'ふふっ。よく考えて組んだ、あなたに楽しんでいただけるはずの計画です。喜んでいただけて、本当によかった。',
+          "당신이 즐거워할 수 있도록 신중하게 고민해서 짠 계획이거든요. 기뻐하시는 모습을 보니 저도 보람차네요.",
         );
       },
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(flash, you) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、商店街のゲームセンターへ行った。`,
+      `${you.name}과(와) 에이신 플래시는 상점가의 오락실로 갔다.`,
     );
     const buffer = [
       () =>
         flash.say_and_wait(
-          'む。理屈では、アームとぬいぐるみの距離と角度を計算すれば、たやすく投入口へ入れられるはずです。なぜ途中で落ちるのでしょう……',
+          "으음, 이론상으로는 기계 팔과 인형 사이의 거리와 각도만 계산하면 쉽게 출구로 떨어뜨릴 수 있어야 하는데, 왜 자꾸 도중에 놓치는 걸까요……",
         ),
       () =>
         flash.say_and_wait(
-          'え、なぜゲームの中に急にゾンビが！？ む、こうなっては勇気を出して対処するしかありませんね。',
+          "어머, 게임 속에 왜 갑자기 좀비가 나타나는 거죠?! 으으, 이왕 이렇게 된 거 용기를 내서 맞서 싸울 수밖에 없겠네요.",
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、駅近くでデートをした。`,
+      `${you.name}과(와) 에이신 플래시는 역 근처로 데이트를 하러 갔다.`,
     );
     if (Math.random() < 0.5) {
-      await flash.say_and_wait(`手を、しっかり握ってください、${callname}。`);
+      await flash.say_and_wait(`제 손을 꼭 잡으세요, ${callname}.`);
       await flash.say_and_wait(
-        'できれば、こちらへあと5センチ寄っていただけますか？ ええ、そのくらいです。',
+        "그리고 실례가 안 된다면 저에게 5센티미터만 더 가까이 붙어주시겠어요? 네, 좋아요.",
       );
       await flash.say_and_wait(
-        'え、い……いえ、他意はありません。ここの人通りが多すぎて、あなたのお体が心配で……ええ、それだけです。',
+        "어머, 아뇨…… 딴마음이 있는 건 아니에요. 그저 유동 인구가 너무 많아서 당신의 안전이 걱정되어…… 네, 정말 그뿐이랍니다.",
       );
     } else {
       await flash.say_and_wait(
-        '今日の服がきれい、ですか？ ふふっ。ありがとうございます。',
+        "오늘 입은 옷이 예쁘다고요? 후후. 칭찬 감사합니다.",
       );
       await flash.say_and_wait(
-        'あなたとの約束ですから、こうして大切にしなければいけません。',
+        "당신과의 약속이니까, 당연히 이렇게 정성을 들여야죠.",
       );
       await flash.say_and_wait(
-        `とはいえ、デートは双方の身なりだけを見るものではありませんよね？ ご一緒に何をするか、計画はお済みですか、${callname}。`,
+        `하지만 데이트란 게 단순히 차림새만 보는 건 아니잖아요? 그러니 저와 함께 무엇을 할지 계획은 세워두셨나요, ${callname}.`,
       );
     }
   },
@@ -267,87 +267,87 @@ module.exports = {
   // [번역 대상] o_s_drawing
   async o_s_drawing(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、商店街で抽選をした`,
+      `${you.name}과(와) 에이신 플래시는 상점가로 경품 추첨을 하러 왔다.`,
     );
     await flash.say_and_wait(
-      '抽選、ですか……む。こうした偶然に頼るものは、私にはあまり魅力がありません。',
+      "경품 추첨인가요…… 음, 사실 저는 이런 무작위적인 것들에 대해서는 별다른 매력을 느끼지 못해요.",
     );
-    await flash.say_and_wait('え、具体的な理由、ですか？');
+    await flash.say_and_wait("어라, 구체적인 이유가 뭐냐고요?");
     await flash.say_and_wait(
-      '複雑な理由はありません。制御できない確率より、払った分だけ返ってくる公平な規則のほうが好きなだけです。',
+      "복잡한 이유는 아니에요. 그저 통제 불가능한 확률보다는, 노력한 만큼 보답을 받는 공평한 규칙을 더 선호할 뿐이죠.",
     );
     await flash.say_and_wait(
-      '……まあ、そうは言っても、ここまで来て何もせずに帰るのは、多少興醒めです。',
+      "……뭐, 하지만 여기까지 왔는데 아무것도 안 하고 그냥 가면 조금 흥이 깨지긴 하겠죠.",
     );
-    await flash.say_and_wait('ですので、今日の運勢を試してみましょうか。');
+    await flash.say_and_wait("그럼 오늘의 운세를 한 번 시험해 볼까요?");
     await era.printAndWait(
-      'エイシンフラッシュはルーレットを回した。これから何が起きるか期待させる演奏の中、上の画面に今回の結果がゆっくり浮かんだ。',
+      "에이신 플래시가 회전판을 돌렸다. 다음 상황을 기대하게 만드는 음악이 흐르는 가운데, 화면 위로 천천히 결과가 나타나기 시작했다.",
     );
     const buffer = [
       async () => {
-        await flash.say_and_wait('特等？');
-        await era.printAndWait('胸を揺さぶる旋律がスピーカーから流れた。');
+        await flash.say_and_wait("특별상?!");
+        await era.printAndWait("스피커에서 심장을 울리는 웅장한 선율이 흘러나왔다.");
         await era.printAndWait(
-          '同時に、画面の鮮やかな大文字に、エイシンフラッシュは数秒固まった。',
+          "그와 동시에 디스플레이에 뜬 선명하고 커다란 글자를 본 에이신 플래시는 몇 초간 멍하니 서 있었다.",
         );
-        await flash.say_and_wait('……まったく……予想外です。');
+        await flash.say_and_wait("……정말…… 예상 밖이네요.");
         await era.printAndWait(
-          `それから、鮮やかな笑みが${flash.sex}の顔に浮かんだ。`,
+          `곧이어, ${flash.sex}의 얼굴에 찬란한 미소가 피어올랐다.`,
         );
         await flash.say_and_wait(
-          '結果には期待していなかったのに……これが運の魅力、ということでしょうか。',
+          "결과에 대해 전혀 기대하지 않았는데…… 이런 게 바로 운의 묘미라는 걸까요.",
         );
         await flash.say_and_wait(
           `ふふっ。今日の運勢はよいようですね。お祝いにお菓子でもいかがでしょう、${callname}`,
         );
       },
       async () => {
-        await flash.say_and_wait('一等？');
-        await era.printAndWait('耳に心地よい旋律がスピーカーから流れた。');
+        await flash.say_and_wait("1등상?!");
+        await era.printAndWait("스피커에서 경쾌하고 즐거운 음악이 흘러나왔다.");
         await era.printAndWait(
           '同時に、画面の鮮やかな大文字に、エイシンフラッシュは数秒固まった。',
         );
         await flash.say_and_wait('……まったく……驚きです。');
         await era.printAndWait(
-          `それから、愉快な笑みが${flash.sex}の顔に浮かんだ。`,
+          `곧이어, ${flash.sex}의 얼굴에 즐거운 미소가 가득해졌다.`,
         );
         await flash.say_and_wait(
-          '結果には期待していなかったのに……これが運の魅力、ということでしょうか。',
+          "결과에 대해 전혀 기대하지 않았는데…… 이런 게 바로 운의 묘미라는 걸까요.",
         );
         await flash.say_and_wait(
           `ふふっ。今日の運勢は悪くないようです。お祝いにお菓子でもいかがでしょう、${callname}。`,
         );
       },
       async () => {
-        await flash.say_and_wait('二等？');
-        await era.printAndWait('起伏のある旋律がスピーカーから流れた。');
+        await flash.say_and_wait("2등상?!");
+        await era.printAndWait("스피커에서 리드미컬한 음악이 흘러나왔다.");
         await era.printAndWait(
-          '同時に、画面の鮮やかな大文字に、エイシンフラッシュは一瞬迷った。',
+          "그와 동시에 화면에 뜬 글자를 보고 에이신 플래시는 잠시 고민하는 듯한 표정을 지었다.",
         );
-        await flash.say_and_wait('……まったく……想定を超えています。');
+        await flash.say_and_wait("……음…… 기대를 뛰어넘었네요.");
         await era.printAndWait(
-          `それから、嬉しそうな微笑みが${flash.sex}の顔に浮かんだ。`,
+          `곧이어, ${flash.sex}의 얼굴에 기분 좋은 미소가 번졌다.`,
         );
         await flash.say_and_wait(
-          '結果には期待していなかったのに……これが運の魅力、ということでしょうか。',
+          "결과에 대해 전혀 기대하지 않았는데…… 이런 게 바로 운의 묘미라는 걸까요.",
         );
         await flash.say_and_wait(
           `ふふっ。今日の運勢は、わりあいよいようですね。お祝いにお菓子でもいかがでしょう、${callname}`,
         );
       },
       async () => {
-        await flash.say_and_wait('三等？');
+        await flash.say_and_wait("3등상?");
         await era.printAndWait(
-          '画面の鮮やかな大文字を見て、エイシンフラッシュは瞬きした。',
+          "화면에 뜬 선명한 글자를 보며 에이신 플래시는 눈을 깜빡였다.",
         );
         await flash.say_and_wait(
-          'まあ、想定どおりの結果、といったところです。',
+          "뭐, 예상했던 결과네요.",
         );
         await era.printAndWait(
-          `次の瞬間、穏やかな微笑みが${flash.sex}の顔に浮かんだ。`,
+          `다음 순간, ${flash.sex}의 얼굴에 온화한 미소가 감돌았다.`,
         );
         await flash.say_and_wait(
-          '払いと返りが釣り合う。やはりこうした公平な結果のほうがよいです。双方が釣り合わなければ、私はかえって落ち着かないでしょうから。',
+          "지불한 만큼 돌아오는 법이죠. 역시 이런 공평한 결과가 마음 편해요. 어느 한쪽이 과했다면 오히려 불안했을지도 모르거든요.",
         );
         await flash.say_and_wait(
           `ふふっ。円満に終われたお祝いにお菓子でもいかがでしょう、${callname}`,
@@ -355,16 +355,16 @@ module.exports = {
       },
       async () => {
         await flash.say_and_wait('もう一度、ですか？');
-        await era.printAndWait('低い旋律がスピーカーから流れた。');
+        await era.printAndWait("스피커에서 나지막하고 차분한 곡조가 흘러나왔다.");
         await era.printAndWait(
-          '同時に、画面の鮮やかな大文字に、エイシンフラッシュは数秒黙った。',
+          "그와 동시에 화면에 뜬 글자를 보고 에이신 플래시는 잠시 침묵했다.",
         );
-        await flash.say_and_wait('……まあ、受け入れられる結果です。');
+        await flash.say_and_wait("……뭐, 받아들일 수 있는 결과네요.");
         await era.printAndWait(
-          `それから、豁達な微笑みが${flash.sex}の顔に浮かんだ。`,
+          `곧이어, ${flash.sex}의 얼굴에 시원스러운 미소가 떠올랐다.`,
         );
         await flash.say_and_wait(
-          '確率のことは、こういうものです。想定どおりより、期待を外す可能性のほうが高い。',
+          "확률적인 일이란 게 다 그렇죠. 기대에 부응하기보다는 어긋날 가능성이 더 높은 법이니까요.",
         );
         await flash.say_and_wait(
           `抽選の埋め合わせに、お菓子でもいかがでしょう、${callname}`,
@@ -373,68 +373,68 @@ module.exports = {
     ];
     await get_random_entry(buffer)();
     await era.printAndWait(
-      `口では魅力がないと言っていたが、やはり、こうした不確かさが生む未知に対して、${flash.sex}も多少は結果を気にしていた。`,
+      `매력 없다고 말은 했지만 역시 이런 불확실성이 주는 미지수 앞에서, ${flash.sex}도 결국은 최종 결과가 꽤나 신경 쓰였던 모양이다.`,
     );
   },
 
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(flash, you) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、商店街のカラオケへ行った。`,
+      `${you.name}과(와) 에이신 플래시는 상점가의 노래방으로 왔다.`,
     );
     if (Math.random() < 0.5) {
       await flash.say_and_wait(
-        'そういえば、先週の日曜日、ジョーダンさんに今月新しく出たJ-POP三曲の歌い方を教わりました。お聞きになりますか？',
+        "그러고 보니 지난 일요일에 조던 양이 이번 달에 새로 나온 J-POP 노래 세 곡의 가창 기교를 가르쳐 줬는데, 한 번 들어보실래요?",
       );
     } else {
       await flash.say_and_wait(
-        'え？ 得意な曲を、ですか……む。ですが、いちばんよく歌うのはドイツの童謡ですよ？ お気になさらないでしょうか。',
+        "네? 제가 자신 있는 노래요……? 음, 하지만 제가 가장 자주 부르는 건 독일 전래 동요인걸요? 괜찮으시겠어요?",
       );
-      await flash.say_and_wait('……わかりました。では、お耳汚しを。');
+      await flash.say_and_wait("……알겠습니다. 그럼, 부족하지만 불러보도록 할게요.");
     }
   },
 
   // [번역 대상] o_s_movie
   async o_s_movie(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、商店街で映画を見た`,
+      `${you.name}과(와) 에이신 플래시는 상점가로 영화를 보러 갔다.`,
     );
     if (era.get('love:37') >= 75 && Math.random() < 0.34) {
       await flash.say_and_wait(
-        '『初恋ニンジンケーキ 恋はニンジンより甘い2』？',
+        "《첫사랑 당근 케이크: 사랑은 당근보다 달콤해 2》?",
       );
       await era.printAndWait(
-        '館内に並ぶ近作のポスターを見回して、エイシンフラッシュの視線がある掲示で止まった。',
+        "영화관 안에 즐비한 최근 개봉작 포스터들을 둘러보던 중, 에이신 플래시의 시선이 한 게시판 앞에서 멈췄다.",
       );
       await flash.say_and_wait(
         'ふふっ。聞き及んでいます。ルドルフ会長が見て高評価をつけた青春恋愛映画の続編、ですね。',
       );
       await flash.say_and_wait(
-        `${callname}、ご一緒しませんか。次のデートの着想にもなりそうです。`,
+        `${callname}, 저와 함께 보러 가시겠어요? 마침 다음 데이트 계획을 위한 영감을 얻기에도 딱 좋을 것 같아서요.`,
       );
     } else if (Math.random() < 0.5) {
       await flash.say_and_wait(
-        `『${flash.uma_sex_title}の夜明け 頂点に立つとき』？`,
+        `《${flash.uma_sex_title}의 여명: 정점에 선 순간》?`,
       );
       await era.printAndWait(
-        '館内に並ぶ近作のポスターを見回して、エイシンフラッシュの視線がある掲示で止まった。',
+        "영화관 안에 즐비한 최근 개봉작 포스터들을 둘러보던 중, 에이신 플래시의 시선이 한 게시판 앞에서 멈췄다.",
       );
       await flash.say_and_wait(
-        'ふふっ。聞き及んでいます。ルドルフ会長が推していた伝記シリーズの新作、ですね。',
+        "소문은 들었답니다. 루돌프 회장님이 추천하신 전기 영화 시리즈의 신작이죠?",
       );
       await flash.say_and_wait(
-        `${callname}、ご一緒しませんか。出走時の心境の描き方が、気になります。`,
+        `${callname}, 같이 보러 가지 않을래요? 작중에서 묘사되는 레이스 중 우마무스메의 심경 변화에 대해 무척 흥미가 있거든요.`,
       );
     } else {
-      await flash.say_and_wait('『五時間地獄』？');
+      await flash.say_and_wait("《5시간의 지옥》?");
       await era.printAndWait(
-        '館内に並ぶ近作のポスターを見回して、エイシンフラッシュの視線がある掲示で止まった。',
+        "영화관 안에 즐비한 최근 개봉작 포스터들을 둘러보던 중, 에이신 플래시의 시선이 한 게시판 앞에서 멈췄다.",
       );
       await flash.say_and_wait(
-        'ふふっ。聞き及んでいます。マックイーンさんが話していた、長さで知られる、観客の辛抱を試す映画ですね？',
+        "기억나요. 메지로 맥퀸 양이 언급했던, 관객의 인내심을 시험하기로 유명한 그 엄청난 길이의 영화죠?",
       );
       await flash.say_and_wait(
-        `${callname}、ご一緒しませんか。あなたがいらしてくだされば、三百分でも問題にならない気がします。`,
+        `${callname}, 저와 함께 도전해 보시겠어요? 당신과 함께라면 300분이라는 시간도 전혀 문제없을 것 같거든요.`,
       );
     }
   },
@@ -442,33 +442,33 @@ module.exports = {
   // [번역 대상] o_s_restaurant
   async o_s_restaurant(flash, you) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、駅近くで食事をした。`,
+      `${you.name}과(와) 에이신 플래시는 역 근처로 식사를 하러 왔다.`,
     );
     if (Math.random() < 0.5) {
-      await flash.say_and_wait('え、今回の食事の手配を、私に？');
+      await flash.say_and_wait("어머, 이번 식사 메뉴를 제가 결정해도 될까요?");
       await flash.say_and_wait(
-        'む……それでしたら、日ごろ好んでいるものだけで組んだ献立でもよろしいでしょうか？',
+        "음…… 그렇다면 평소 제가 즐겨 먹는 음식들로 구성된 식단을 골라도 괜찮을까요?",
       );
       await flash.say_and_wait(
-        'そうは申しましても、栄養と美味しさの両立を軸に合わせています。失望はさせません。',
+        "말은 그렇게 했지만 영양과 맛, 두 마리 토끼를 다 잡을 수 있도록 구성했으니 실망하게 해드리지 않을 자신 있어요.",
       );
-      await flash.say_and_wait('ええ、わかりました。では、ご期待ください。');
+      await flash.say_and_wait("네, 알겠습니다. 그럼 기대해 주세요.");
       await flash.say_and_wait(
-        'ふふっ。自分の好みを分かち合えるのが、嬉しいです。',
+        "후훗~ 제 취향을 당신과 함께 공유할 수 있게 되어 무척 기쁘네요.",
       );
     } else {
-      await flash.say_and_wait('納豆は、お好きですか？');
+      await flash.say_and_wait("당신은 낫토를 좋아하시나요?");
       await flash.say_and_wait(
-        'ああ、他意はありません。メニューに納豆があって、つい口に出ただけです。',
+        "아, 다른 뜻은 아니고 메뉴에 낫토가 있길래 문득 궁금해져서요.",
       );
       await flash.say_and_wait(
-        '実は私、納豆が好きです。身体にいい健康食ですから。',
+        "사실 저는 낫토를 아주 좋아해요. 몸에 좋은 건강식품이니까요.",
       );
       await flash.say_and_wait(
         '初めての味は戸惑うかもしれませんが、慣れると、かえって独特の引力があります。',
       );
       await flash.say_and_wait(
-        'ですので、よければあなたにも試していただきたい……たとえば、今、などは？ ふふふっ',
+        "그러니 괜찮다면 당신께도 권해드리고 싶네요. 이를테면…… 지금 당장이라던가? 후후훗~",
       );
     }
   },
@@ -480,34 +480,34 @@ module.exports = {
     );
     if (Math.random() < 0.5) {
       await flash.say_and_wait(
-        `買うものは、あらかじめ決めてありますか？ ${callname}。`,
+        `구매할 품목은 미리 정해두셨나요? ${callname}.`,
       );
-      await flash.say_and_wait('え、なぜあらかじめ決めるのか、ですか？');
+      await flash.say_and_wait("에, 왜 미리 계획해야 하느냐고요?");
       await flash.say_and_wait(
-        '買い物も計画の遂行と同じで、正確に向き合うべき行為だと、私は考えます。',
-      );
-      await flash.say_and_wait(
-        'よく考えて決めたものだけを買う。余分な出費を最大限に避ける。長く続ければ、かなりの節約になります。あなたも試してみてはいかがでしょう。',
+        "저에게 쇼핑이란 계획을 실행하는 것과 같아서, 정밀하게 대처해야 하는 행위거든요.",
       );
       await flash.say_and_wait(
-        'ええ……ご興味があれば、今日から始めませんか。今回の買い物リスト、一緒に組みましょうか。',
+        "당신께도 이 방법을 추천해 드리고 싶어요. 심사숙고 끝에 결정한 물건만 단호하게 구매함으로써 불필요한 지출을 최대한 억제하는 거죠. 장기적으로 보면 엄청난 비용을 절약할 수 있답니다.",
+      );
+      await flash.say_and_wait(
+        "음…… 관심이 있으시다면 아예 오늘부터 시작해 보는 건 어떨까요? 이번 쇼핑 리스트를 같이 작성해 봐요.",
       );
     } else {
-      await flash.say_and_wait('テディベア、ですか。');
+      await flash.say_and_wait("테디 베어 인형이네요.");
       await era.printAndWait(
         `途中、${you.name} は${flash.sex}が玩具店のショーケースの前で考え込んでいるのに気づいた。`,
       );
-      era.printButton('「どうした？」', 1);
+      era.printButton("「왜 그래?」", 1);
       await era.input();
       await flash.say_and_wait(
         '……いいえ、なんでもありません。子供のころ両親がくれたテディベアを、ふと思い出しただけです。姿が似ていたので、少し物が言いたくなりました。',
       );
       await flash.say_and_wait(
-        `え？ 待ってください！ ${callname}、これは興味が……`,
+        `어? 잠깐만요! ${callname}, 딱히 관심이 있다는 뜻은 아………`,
       );
       await flash.say_and_wait('…………');
       await flash.say_and_wait(
-        '……はあ。あなたという方は。このぬいぐるみ、今回の買い物リストには入っていません。',
+        "……하아, 참 당신도. 이 인형은 이번 쇼핑 리스트에 없었는데 말이죠.",
       );
       await flash.say_and_wait(
         'ですが……ふふっ。お気持ち、ありがとうございます。胸に刻んでおきます。',
@@ -520,24 +520,24 @@ module.exports = {
     const buffer = [
       () =>
         flash.say_and_wait(
-          `卵白100グラム、卵黄60グラム、それから……あっ！ ${callname}、グラニュー糖を2グラム多く入れていらっしゃいます。`,
+          `흰자 100그램, 노른자 60그램, 그리고…… 아! ${callname}、グラニュー糖を2グラム多く入れていらっしゃいます。`,
         ),
       async () => {
         await flash.say_and_wait(
-          '少々……適量……だいたい……む。どこでお探しになったレシピか存じませんが、作る側としては少し困りますね……',
+          "조금…… 적당히…… 대충…… 으음, 대체 어디서 보신 레시피인지는 모르겠지만, 만드는 사람을 꽤 곤란하게 만드는 설명이네요……",
         );
         await flash.say_and_wait(
-          `とはいえ、困難は諦める理由ではありません。では今から、完璧な出来に必要な各材料の正確な分量を、一緒に見つけましょう、${callname}。`,
+          `하지만 그렇다고 포기할 수는 없죠. 자, 지금부터 완벽한 결과물을 만들기 위해 필요한 각 재료의 정확한 함량을 함께 찾아보도록 해요, ${callname}.`,
         );
       },
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、トレーナールームで一緒にゲームをした。`,
+      `${you.name}과(와) 에이신 플래시는 트레이닝실에서 함께 게임을 했다.`,
     );
     flash.say(
       "어머, 저와 게임을 하고 싶으신가요? 당연히 좋죠, 초대해 주셔서 기뻐요. 그럼 어떤 장르의 게임을 하실지 생각하신 게 있나요?",
@@ -547,7 +547,7 @@ module.exports = {
     if ((await era.input()) === 1) {
       await flash.say_and_wait("협동 게임이라니, 좋은 선택이네요.");
       await flash.say_and_wait(
-        `では早速、始めましょう。${callname} と手を取り合って難所を越えるのが、楽しみです。ふふっ`,
+        `그럼 지체할 것 없이 시작하죠. ${callname}과 함께 손을 잡고 난관을 헤쳐 나갈 생각을 하니 무척 기대되네요, 후훗~`,
       );
     } else {
       await flash.say_and_wait("대전 게임이라니, 좋은 선택이네요.");
@@ -561,16 +561,16 @@ module.exports = {
     }
   },
 
-  // [번역 대상] office_rest
+  // [번역 완료] office_rest
   async office_rest(flash, callname) {
     const buffer = [
       () =>
         flash.say_and_wait(
-          `お疲れさまでした、${callname}。短い休みをうまく使えば、この先の用事も、十分な気力でこなせます。`,
+          `고생하셨습니다, ${callname}. 짧은 휴식 시간을 잘 활용해야 다음 업무를 활기차게 처리할 수 있어요.`,
         ),
       () =>
         flash.say_and_wait(
-          `お疲れさまでした、${callname}。お疲れなら、どうかきちんと休んでください。『All work and no play makes Jack a dull boy』——そうでしょう？`,
+          `고생하셨습니다, ${callname}. 너무 피곤하다면 푹 쉬어 두세요. 『All work and no play makes Jack a dull boy』라는 말도 있잖아요?`,
         ),
     ];
     await get_random_entry(buffer)();
@@ -585,32 +585,32 @@ module.exports = {
         ),
       () =>
         flash.say_and_wait(
-          'ご存じですか？ ドイツでは豚が縁起物で、幸運と富をもたらすと考えます。新年には、大切な方へ子豚の形をした贈り物をすることが多いのです。',
+          "알고 계시나요? 독일 문화에서 돼지는 행운의 상징으로 여겨진답니다. 행운과 재물을 가져다준다고 믿거든요. 그래서 새해에는 소중한 사람들에게 돼지 모양의 선물을 주며 축복을 전하기도 하죠.",
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_dating
+  // [번역 완료] s_a_dating
   async s_a_dating(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、中庭でデートをした。`,
+      `${you.name}과(와) 에이신 플래시는 안뜰에 데이트를 하러 왔다.`,
     );
     const buffer = [
       async () => {
         await flash.say_and_wait(
-          `ベンチに並んで温かい陽を浴びるのは、とてもよい……あっ！ ${callname}、背中にテントウムシがいます。`,
+          `벤치에 앉아 따스한 햇볕을 쬐는 건 정말 기분 좋은…… 아! ${callname}, 등 뒤에 무당벌레가 붙어 있어요.`,
         );
         await flash.say_and_wait(
-          'しーっ、乱暴に払わないでください……テントウムシは、かわいい生き物です。そうでしょう？',
+          "쉿, 너무 거칠게 쫓아버리지는 마세요…… 무당벌레는 아주 귀여운 생물이니까요, 안 그래요?",
         );
       },
       async () => {
         await flash.say_and_wait(
-          `本日分のお弁当です。どうぞごゆっくり……あら、${callname}、頭に落ち葉が乗っています。`,
+          `오늘의 도시락입니다, 마음껏 즐기…… 어머나, ${callname}, 머리 위에 낙엽이 떨어졌네요.`,
         );
         await flash.say_and_wait(
-          'ふふっ。『大樹の下は涼しい』とは言いますが、ときどきこんな可愛い事故も起きますね。',
+          "『큰 나무 아래가 시원하다』라는 말이 있지만, 가끔은 이런 귀여운 해프닝도 생기네요.",
         );
       },
     ];
@@ -628,10 +628,10 @@ module.exports = {
           '枯れ木の洞、ですか……挫折した人には、適度な発散の手段が必要です。',
         );
         await flash.say_and_wait(
-          'ただ私個人としては、大切な方と話すほうに傾きます。',
+          "하지만 저 개인적으로는, 역시 소중한 사람과 대화를 나누는 쪽을 더 선호해요.",
         );
         await flash.say_and_wait(
-          '吐露は手段にすぎません。挫折から抜け出す方法を見つけるのが目的、ではないでしょうか。',
+          "한풀이는 수단일 뿐이고, 좌절을 딛고 일어날 방법을 찾는 것이 진정한 목적이니까요, 그렇죠?",
         );
       },
       async () => {
@@ -642,10 +642,10 @@ module.exports = {
           '悲しいときは吐露し、嬉しいときは分かち合う。そうする人にとって、この洞はかけがえのない相棒です。',
         );
         await flash.say_and_wait(
-          '……ええ。その中には、もちろん私も含まれます。ただ、今は少し違います。',
+          "……네, 저 또한 그중 한 명이었죠. 하지만 지금은 달라요.",
         );
         await flash.say_and_wait(
-          '今の私は、もっと託するに足る方に出会いましたから。ふふっ',
+          "이제 저에게는 마음을 맡길 수 있는 더 소중한 분이 생겼으니까요, 후후.",
         );
       },
     ];
@@ -655,15 +655,15 @@ module.exports = {
   // [번역 대상] s_r_lunch
   async s_r_lunch(flash, you, callname) {
     await era.printAndWait(
-      `${you.name} とエイシンフラッシュは、屋上でお弁当を食べた。`,
+      `${you.name}과(와) 에이신 플래시는 옥상에서 도시락을 먹었다.`,
     );
     const buffer = [
       async () => {
         await flash.say_and_wait(
-          'ミントケーキ、ですか……これが、あなたのお菓子。',
+          "민트 케이크인가요…… 이게 당신이 준비한 디저트군요.",
         );
         await flash.say_and_wait(
-          '……いいえ、なんでもありません。ミントは嫌いではありません。ただ、この香りに少し慣れていないだけです。',
+          "……아뇨, 아무것도 아니에요. 민트를 싫어하는 건 아니니까요. 굳이 말하자면 이 강한 향에 조금 익숙하지 않을 뿐이에요.",
         );
         await flash.say_and_wait(
           'ですが、これはあなたのお気持ちです。ですので、すべていただきます。それに客観的に見ても、クリームケーキは美味しいものです。そうでしょう？',
@@ -671,55 +671,55 @@ module.exports = {
       },
       async () => {
         await flash.say_and_wait(
-          '盛り付けが美しい、ですか？ ふふっ。ありがとうございます。',
+          "플레이팅이 아주 근사하다고요? 후후. 칭찬 감사합니다.",
         );
         await flash.say_and_wait(
-          'ただ、食べ物の評価は見た目だけではいけません。私は中身の味のほうを重く見ます。',
+          "하지만 음식에 대한 평가는 겉모습만 보고 내려서는 안 돼요. 저는 내면의 맛이 더 중요하다고 생각하거든요.",
         );
         await flash.say_and_wait(
-          `どうぞ召し上がってください、${callname}。食後のご感想が、楽しみです。`,
+          `그러니 어서 드셔보세요, ${callname}. 식사 후에 들려주실 평가가 무척 기대되네요.`,
         );
       },
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] select
+  // [번역 완료] select
   select(flash, callname) {
     const buffer = [];
     const relation = era.get(`relation:37:0`);
     if (relation < 0) {
       buffer.push(() =>
-        flash.say(`……はあ。ご用件は何でしょうか、${callname}？`),
+        flash.say(`……하아. 무슨 일이신가요, ${callname}?`),
       );
     } else {
       buffer.push(() =>
-        flash.say(`こちらです、${callname}。ご用件は何でしょうか？`),
+        flash.say(`여기 있습니다. ${callname}. 무슨 일이신가요?`),
       );
       if (relation > 75)
         buffer.push(() =>
           flash.say(
-            `ふ……少し待ちきれなくなってきました。始めましょう、${callname}。`,
+            `후우…… 조금 기다려지기 시작했네요. 자, 시작하죠, ${callname}.`,
           ),
         );
       if (relation > 225)
         buffer.push(() =>
           flash.say(
-            '時刻、相違なし。場所、正確。それから……ふふっ。計画、照合完了。エイシンフラッシュ、いつでもご指示を。',
+            "시간, 이상 없음. 장소, 정확함. 그리고…… 후훗. 계획 확인 완료. 에이신 플래시, 언제든 당신의 명령을 기다리고 있습니다.",
           ),
         );
       if (era.get('love:37') > 76) {
         buffer.push(
           () =>
             flash.say(
-              `ええ、多くは言いません。とっくに準備は整っています、${callname}。`,
+              `음, 긴말할 필요 없겠죠. 이미 준비는 끝났으니까요, ${callname}.`,
             ),
           () =>
             flash.say(
-              `ふふっ。こちらです、${callname}。ご用件は何でしょうか？`,
+              `후훗~ 여기 있습니다. ${callname}. 무슨 일이신가요?`,
             ),
           () =>
-            flash.say(`ふ……待ちきれません。今から始めましょう、${callname}。`),
+            flash.say(`후우…… 몹시 기다려지네요. 지금 바로 시작하죠, ${callname}.`),
         );
       }
     }
@@ -740,7 +740,7 @@ module.exports = {
               ),
             () =>
               flash.say_and_wait(
-                '認めたくはありませんが、私の状態は計画の遂行に影響するほどです……本当に、変えなければいけないのかもしれません。',
+                "인정하고 싶지는 않지만, 계획의 정상적인 수행에 지장을 줄 정도의 상태군요…… 정말 변화를 시도해야 할지도 모르겠어요.",
               ),
           );
           break;
@@ -748,20 +748,20 @@ module.exports = {
           buffer.push(
             () =>
               flash.say_and_wait(
-                '状態……少し優れません。ですが、決めた計画をこれで乱してはいけません。そうですよね？',
+                "상태가…… 조금 좋지 않네요. 하지만 이미 예정된 계획이 이런 일로 방해받아서는 안 되겠죠?",
               ),
-            () => flash.say_and_wait('ふ……持ちこたえます！'),
+            () => flash.say_and_wait("후우…… 끝까지 해내겠어요!"),
           );
           break;
         case 0:
           buffer.push(
             () =>
               flash.say_and_wait(
-                'ええ、今の状態なら、現行の計画を進めて問題ありません。',
+                "음, 지금 컨디션이라면 현재 계획을 수행하는 데 아무런 문제가 없습니다.",
               ),
             () =>
               flash.say_and_wait(
-                '平凡な一日にも、その日の計画はあります。成功とは、そうした積み重ねで届くものではないでしょうか。',
+                "아무리 평범한 하루라도 실행해야 할 계획이 있는 법이죠. 성공이란 이런 매일의 성실함이 쌓여서 이루어지는 것 아닐까요?",
               ),
           );
           break;
@@ -769,11 +769,11 @@ module.exports = {
           buffer.push(
             () =>
               flash.say_and_wait(
-                '気分がよいです。この状態で計画を進めれば、想定どおりの結果はたやすく得られるでしょう。',
+                "기분이 아주 좋네요. 이런 상태라면 계획한 일들을 수월하게 예상대로 마칠 수 있을 거예요.",
               ),
             () =>
               flash.say_and_wait(
-                `充実した一日が来る前に、身体が昂ぶっています。今日の計画を始めましょう、${callname}！`,
+                `충만한 하루를 맞이할 생각에 몸이 흥분하고 있어요. 어서 오늘의 계획을 시작하죠, ${callname}!`,
               ),
           );
           break;
@@ -781,11 +781,11 @@ module.exports = {
           buffer.push(
             () =>
               flash.say_and_wait(
-                '今の身体がとても軽いです。珍しい感触ですね。この先の計画を始めましょう！',
+                "지금 몸이 굉장히 가볍게 느껴져요. 정말 드문 경험이네요. 자, 다음 계획을 실행하러 가요!",
               ),
             () =>
               flash.say_and_wait(
-                `この状態なら、何をしても事半ばで倍の成果が出るはずです。目標へ向けて励みましょう、${callname}！`,
+                `이런 컨디션이라면 어떤 일을 해도 평소보다 배의 효율을 낼 수 있겠죠. 목표를 향해 노력해 봐요, ${callname}!`,
               ),
           );
       }
@@ -793,18 +793,18 @@ module.exports = {
     if (relation > 525)
       buffer.push(() =>
         flash.say_and_wait(
-          '私は永遠を信じていませんでした。末永さを象徴するダイヤモンドでさえ、いつかは酸化します。ですが、あなたとの出会いが、その考えを変えました。',
+          "사실 저는 영원이라는 것을 믿지 않았어요. 영원함을 상징하는 다이아몬드조차 언젠가는 산화하기 마련이니까요. 하지만 당신과의 만남이 제 생각을 바꾸어 놓았답니다.",
         ),
       );
     if (era.get('love:37') >= 75) {
       buffer.push(
         () =>
           flash.say_and_wait(
-            '『To love and to be loved is the greatest happiness of existence.』この言葉の意味、おわかりになりますか。今の私は、その中身を、深く味わっています。',
+            "To love and to be loved is the greatest happiness of existence. 이 말의 뜻을 아시나요? 저는 지금 그 의미를 뼈저리게 느끼고 있답니다.",
           ),
         () =>
           flash.say_and_wait(
-            'ふふっ。あなたにお会いするたび、胸の奥に甘い感情が生まれます。これが『心』の味、なのでしょうか。',
+            "후훗~ 당신을 볼 때마다 내면에서 달콤한 감정이 솟아나요. 이것이 어쩌면 『마음』의 맛일까요?",
           ),
       );
     }
@@ -817,25 +817,25 @@ module.exports = {
     if (relation > 375)
       buffer.push(() =>
         flash.say_and_wait(
-          'レシピは律法です。ですが、スイーツ作りそのものが硬い営みだとは限りません。たとえば、誰かへの濃い想いを一匙足してみる。出来が一段とうまくなることがあります。ふふっ。奇妙ですが、確かな方法です。',
+          "레시피가 곧 법이라고는 하지만, 그것이 디저트 제작 자체가 딱딱한 행위여야 함을 뜻하지는 않아요. 예를 들어, 누군가를 향한 강렬한 애정을 가미함으로써 완성품을 훨씬 맛있게 만들 수도 있죠. 후훗~ 묘하지만 확실히 효과가 있는 방법이랍니다.",
         ),
       );
     buffer.push(() =>
       flash.say_and_wait(
-        '抽選について、どのようにお考えですか？ いえ、他意はありません。先日、休憩中に買い物リストどおり品を揃え終えたあと、無料の抽選券が付いていたので、ついでに試したのです。そうしたら一等が当たって……ですが当時の私は、喜びより戸惑いのほうが大きかった。客観的に見れば、ただの紙一枚で高価な品を得たのです。私には、まったく公平でない対価に思えました。',
+        "당신은 경품 추첨에 대해 어떻게 생각하시나요? 아, 다른 뜻은 아니고요. 이전에 휴식 시간에 쇼핑 리스트에 있던 물건을 산 뒤, 무료 추첨권을 받아서 한 번 시도해 봤거든요. 그런데 세상에, 1등에 당첨됐지 뭐예요…… 하지만 당시의 저는 기쁨보다는 불안한 마음이 더 컸어요. 객관적으로 볼 때, 아무런 비용도 들지 않은 종이 한 장을 내고 고가의 선물을 받았으니까요. 제 관점에서는 이건 전혀 공평하지 않은 보답이라고 느껴졌거든요.",
       ),
     );
     if (relation > 375)
       buffer.push(() =>
         flash.say_and_wait(
-          'レシピは律法です。ですが、スイーツ作りそのものが硬い営みだとは限りません。たとえば、誰かへの濃い想いを一匙足してみる。出来が一段とうまくなることがあります。ふふっ。奇妙ですが、確かな方法です。',
+          "레시피가 곧 법이라고는 하지만, 그것이 디저트 제작 자체가 딱딱한 행위여야 함을 뜻하지는 않아요. 예를 들어, 누군가를 향한 강렬한 애정을 가미함으로써 완성품을 훨씬 맛있게 만들 수도 있죠. 후훗~ 묘하지만 확실히 효과가 있는 방법이랍니다.",
         ),
       );
     if (era.get('flag:当前月') >= 3 && era.get('flag:当前月') <= 5)
       buffer.push(
         () =>
           flash.say_and_wait(
-            '『Der Frühling ist die Zeit der Pläne, der Vorsätze.』春は、私にとって大切な季節です。このあいだに、一年の計画を丁寧に考え、立てるのですから。',
+            "『Der Frühling ist die Zeit der Pläne, der Vorsätze』. 봄은 제게 매우 중요한 계절이에요. 이 기간에 일 년의 계획을 세심하게 고민하고 세워야 하니까요.",
           ),
         () =>
           flash.say_and_wait(
@@ -846,11 +846,11 @@ module.exports = {
       buffer.push(
         () =>
           flash.say_and_wait(
-            '夏はいつ熱中症の危険があります。水分の補給を忘れないでください。身体のためにも、それは大切です。',
+            "여름은 언제든 열사병의 위험이 있으니 제때 수분을 보충하는 것을 잊지 마세요. 건강을 위해서 아주 중요한 일이랍니다.",
           ),
         () =>
           flash.say_and_wait(
-            '夏になりました……子供のころ、こうした避暑の季節になると、両親が湖畔の小屋へ連れていってくれました。ふふっ。忘れがたい、楽しい思い出です。',
+            "여름이 왔네요…… 어릴 적 휴가 시즌마다 부모님이 저를 호숫가의 작은 오두막으로 데려가 피서를 즐겼던 기억이 나요. 후훗~ 정말 잊지 못할 즐거운 추억이죠.",
           ),
       );
     if (era.get('flag:当前月') >= 9 && era.get('flag:当前月') <= 11)
@@ -861,70 +861,70 @@ module.exports = {
           ),
         () =>
           flash.say_and_wait(
-            `秋は、運動に向いた季節ですね。${callname}、ご一緒にサッカーをしませんか？`,
+            `역시 가을은 운동하기 딱 좋은 계절이에요. ${callname}, 저랑 같이 축구 한 판 어떠신가요?`,
           ),
       );
     if (era.get('flag:当前月') === 12 || era.get('flag:当前月') <= 2)
       buffer.push(
         () =>
           flash.say_and_wait(
-            '冬は、室内にいる時間が目に見えて長くなります。悪いことばかりではありません。新しいレシピを研究するには、よい機会です。',
+            "평소보다 겨울에는 실내에 머무는 시간이 눈에 띄게 늘어나네요. 하지만 그게 나쁜 일만은 아니에요. 새로운 레시피를 연구하기에는 아주 좋은 기회니까요.",
           ),
         () =>
           flash.say_and_wait(
-            '雪の季節になると、故郷のシュトーレンを思い出します。生地にドライフルーツとナッツをたっぷり練り込んだ、クリスマスのスイーツです。あの味が大好きで、毎年クリスマスには家族と一緒に作ります。ご興味があれば、よい機会に、ご賞味いただけるかもしれません。ふふっ',
+            "눈이 내리는 계절이 되면 고향의 독일식 크리스마스 케이크인 슈톨렌이 생각나요. 반죽에 말린 과일과 견과류를 듬뿍 넣은 크리스마스 디저트인데, 전 그 맛을 정말 좋아하거든요. 매년 크리스마스마다 가족들과 함께 만들곤 했죠. 그러니 당신도 관심이 있다면, 적당한 기회가 왔을 때 대접해 드릴 수도 있답니다. 후훗.",
           ),
       );
     if (era.get('cflag:49:招募状态') === 1)
       buffer.push(() =>
         flash.say_and_wait(
-          `ナカヤマさんの勝負への向き合い方は、私とはまったく違います。だからこそ、${flash.sex}から新しい考えを学べます……それは、とてもよいことです。`,
+          `나카야마 양은 승패를 대하는 태도가 저와는 전혀 다르지만, 그렇기에 오히려 ${flash.sex}에게서 새로운 관점을 배울 수 있어요…… 이건 정말 좋은 일이죠.`,
         ),
       );
     if (era.get('cflag:7:招募状态') === 1)
       buffer.push(() =>
         flash.say_and_wait(
-          `そういえば、先週の日曜日はゴールドシップさんとケーキ店の新作を試食する約束だったのに、気づいたら昔ながらの駄菓子の品評会になっていました……客観的に申しますと、${flash.sex}のおすすめは、どれも味がよかったです。ふふっ`,
+          `그러고 보니 지난 일요일에 골드 쉽 양과 케이크 가게에서 신제품을 시식하기로 약속했었는데, 어느샌가 옛날 불량식품 시식회로 바뀌어 버렸지 뭐예요…… 하지만 객관적으로 볼 때, ${flash.sex}가 추천한 간식들도 맛은 꽤 훌륭했답니다, 후후~`,
         ),
       );
     if (era.get('cflag:48:招募状态') === 1)
       buffer.push(() =>
         flash.say_and_wait(
-          '自分のやり方で、多くの人との友情を軽やかに保てる。ジョーダンさんのその手腕は、本当に敬服します。',
+          "자신만의 방식으로 수많은 사람과 가볍게 우정을 유지하는 조던 양의 능력은 정말 감탄스러워요.",
         ),
       );
     if (era.get('cflag:38:招募状态') === 1)
       buffer.push(() =>
         flash.say_and_wait(
-          `ぬいぐるみ、ですか？ ああ、これはカレンさんからいただいた贈り物です。ふふっ。とても精巧でしょう？ ${flash.sex}のセンスは、${flash.sex}ご本人と同じく、かわいらしいです。`,
+          `인형요? 아, 이건 카렌짱 양이 선물해 준 거예요. 후훗~ 정말 정교하지 않나요? ${flash.sex}의 취향은 ${flash.sex} 본인만큼이나 귀엽네요.`,
         ),
       );
     if (era.get('cflag:105:招募状态') === 1)
       buffer.push(() =>
         flash.say_and_wait(
-          'ネオユニヴァースさんは、私の作るチョコクッキーがとてもお好きなようです。ふふっ。パティシエとしては、大きな励みです。ですので、もっと美味しいスイーツを開発しなくては！',
+          "네오 유니버스 양이 제가 만든 초코 쿠키를 아주 좋아하는 것 같아요. 후훗~ 제과를 하는 사람에게 이보다 더 큰 격려는 없겠죠. 그러니 더 힘내서 맛있는 디저트를 개발해야겠어요!",
         ),
       );
     if (era.get('cflag:46:招募状态') === 1)
       buffer.push(() =>
         flash.say_and_wait(
-          'ファルコさんは、私の匂いだけで、今日どのスイーツを作ったか当てられます。正直に申しますと、すごい能力ですが……少し恥ずかしいですね。',
+          "팔콘 양은 제 몸에 밴 냄새만으로 오늘 제가 어떤 종류의 디저트를 만들었는지 맞힐 수 있어요. 솔직히 대단한 능력이긴 하지만, 조금 부끄러운 기분이 드는 건 어쩔 수 없네요……",
         ),
       );
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] talk_about_falcon_and_gacha
+  // [번역 완료] talk_about_falcon_and_gacha
   async talk_about_falcon_and_gacha(flash) {
     await flash.say_and_wait(
-      `ファルコさんには、抽選への向き合い方が奇異すぎると言われました。${flash.sex}は、不労所得ではなく、私にふさわしい褒美なのだから、安心して受け取ればいい、と……はあ。${flash.sex}の言うことが正しいのかもしれません。私は、考え方を変えてみるべきなのでしょう。`,
+      `팔콘 양이 제가 추첨을 대하는 태도가 너무 특이하다고 하더라고요. ${flash.sex}는 이게 불로소득이 아니라 제가 받아 마땅한 보상이라며, 마음 편히 즐기라고 하더군요…… 하아, 어쩌면 ${flash.sex}의 말이 맞을지도 몰라요. 제 관점을 바꾸려고 노력해 봐야겠네요.`,
     );
   },
 
-  // [번역 대상] talk_about_gacha
+  // [번역 완료] talk_about_gacha
   async talk_about_gacha(flash) {
     await flash.say_and_wait(
-      '抽選について、どのようにお考えですか？ いえ、他意はありません。先日、休憩中に買い物リストどおり品を揃え終えたあと、無料の抽選券が付いていたので、ついでに試したのです。そうしたら一等が当たって……ですが当時の私は、喜びより戸惑いのほうが大きかった。客観的に見れば、ただの紙一枚で高価な品を得たのです。私には、まったく公平でない対価に思えました。',
+      "당신은 경품 추첨에 대해 어떻게 생각하시나요? 아, 다른 뜻은 아니고요. 이전에 휴식 시간에 쇼핑 리스트에 있던 물건을 산 뒤, 무료 추첨권을 받아서 한 번 시도해 봤거든요. 그런데 세상에, 1등에 당첨됐지 뭐예요…… 하지만 당시의 저는 기쁨보다는 불안한 마음이 더 컸어요. 객관적으로 볼 때, 아무런 비용도 들지 않은 종이 한 장을 내고 고가의 선물을 받았으니까요. 제 관점에서는 이건 전혀 공평하지 않은 보답이라고 느껴졌거든요.",
     );
   },
 };

@@ -7,7 +7,7 @@ module.exports = {
 
   // [번역 대상] before_begin_race
   before_begin_race: (() => {
-    const title = 'メイクデビュー開始！';
+    const title = "데뷔전 시작!";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} you プレイヤー
@@ -15,60 +15,60 @@ module.exports = {
      */
     const f = async (digital, you, callname) => {
       await digital.say_and_wait([
-        'んふん、聞こえる？ 私は ',
+        "음흥, 들리시나요? 저는 ",
         digital.get_colored_name(),
-        '。新葉が芽吹くころ、皆さまいかがですか。今、メイクデビューのパドックに立っています。周りは……',
+        "입니다. 새 잎이 돋아나는 이 계절, 여러분 모두 잘 지내고 계신가요? 저는 지금 데뷔전의 예시장에 서 있습니다. 주변에 있는 분들은……",
       ]);
       await digital.say_and_wait([
-        'デジ……デジ……',
+        "디지땅…… 디지땅…… ",
         digital.uma_sex_title,
         'ちゃんの周り……というか',
         digital.uma_sex_title,
-        'ちゃんの中にいる！',
+        "짱 안에 있어요!",
       ]);
       await digital.say_and_wait([
-        'もう……萌え死ぬ……',
+        "이미…… 모에사할 것 같아…… ",
         callname,
-        '！ 見える?! 周りの',
+        "! 보이시나요! 이 주변의 ",
         digital.uma_sex_title,
-        'ちゃんたち！',
+        "짱들이!",
       ]);
       await era.printAndWait([
-        '見える。周りの',
+        "보인다. 주변의 ",
         digital.uma_sex_title,
-        'には緊張で震えている子も、目を輝かせている子もいる。だがいちばん特別なのは……',
+        " 중 일부는 긴장해서 떨고 있고, 어떤 아이는 눈을 빛내고 있지만, 그중에서도 가장 특별한 건……",
       ]);
       await era.printAndWait([
-        '頬を手で支えて、危うい目でこのすべてを味わっている——',
+        "뺨을 감싸 쥐고 거의 위험해 보일 정도의 눈빛으로 이 모든 것을 감상하고 있는——",
         digital.get_colored_name(),
         '。',
       ]);
       await digital.say_and_wait([
-        'ずるる、言いたいのは',
+        "씁하씁하, 제가 말하고 싶은 건 ",
         digital.couple_title,
         'はまだどこまで行けるのか！ 尊力測定器はもう振り切れて、私、その中に混ざれている！',
       ]);
-      await digital.say_and_wait('はぁ～、尊死する……デジ……灰になる……');
-      await you.say_and_wait('今からレースだぞ！');
-      await digital.say_and_wait('わっ！ そうだ！ 昇天してる場合じゃない！');
+      await digital.say_and_wait("하~ 너무 존귀해서 죽을 것 같아…… 디지땅…… 곧 재가 되어버려……");
+      await you.say_and_wait("이제 곧 레이스 시작이야!");
+      await digital.say_and_wait("와아! 맞아요! 지금은 승천할 때가 아니죠!");
       await digital.say_and_wait([
-        '今の私は',
+        "지금의 저도 ",
         digital.uma_sex_title,
-        'ちゃんと肩を並べる存在。私の存在が',
+        "짱들과 어깨를 나란히 하는 존재. 제 존재가 ",
         digital.couple_title,
         'に影を落としてはいけない！',
       ]);
       await digital.say_and_wait(
-        '頑張る！ エネルギー充足、チェック完了！ 尊力機能100%稼働！',
+        "열심히 할게요! 에너지 충전, 점검 완료! 존귀력 기능 100% 가동!",
       );
       await digital.say_and_wait([
-        'デジの目はフィルム。',
+        "디지땅의 눈은 필름이에요. ",
         digital.uma_sex_title,
-        'ちゃんたちの笑みと涙を全部焼き付ける！',
+        "짱들의 모든 미소와 눈물을 전부 그 안에 새겨넣을 거예요!",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' は覚悟を抱いて、レース場へ向かった。',
+        "은 각오를 품고 경기장으로 향했다.",
       ]);
     };
     f.title = title;
@@ -77,7 +77,7 @@ module.exports = {
 
   // [번역 대상] before_hyac_sta
   before_hyac_sta: (() => {
-    const title = 'ヒヤシンスS開始！';
+    const title = "히아신스 스테이크스 시작!";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} doto メイショウドトウ
@@ -87,51 +87,51 @@ module.exports = {
      */
     const f = async (digital, doto, you, callname, nikk_hai) => {
       await era.printAndWait([
-        '少し前、',
+        "얼마 전 ",
         nikk_hai,
-        ' で ',
+        "에서 ",
         doto.get_colored_name(),
-        ' が2着を取った。',
+        "가 2위를 차지했다.",
       ]);
       await era.printAndWait([
-        '地下通路で ',
+        "원래는 지하 통로에서 ",
         doto.get_colored_name(),
-        ' を祝おうとしていた ',
+        "를 축하해주려 했던 ",
         digital.get_colored_name(),
-        '。出過ぎたことをまだ気にしていたのに、思いがけず ',
+        "은 이전의 무례함 때문에 머리를 싸매고 있었지만, 뜻밖에도 ",
         doto.get_colored_name(),
-        ' から感謝された。',
+        "에게 감사의 인사를 받았다.",
       ]);
       await era.printAndWait([
-        '普通のファンならしない決断だったのに、それが実を結び始めている。',
+        "일반적인 팬의 행동과는 상반되는 행동이었음에도 점차 결실을 보고 있는 상황에 ",
         digital.get_colored_name(),
-        ' には、だんだん理解できなくなってきた。',
+        "은 점점 이해하기 어려워하는 것 같았다.",
       ]);
       await era.printAndWait(
-        '問題を解く手段はレースだ。今日の一戦は、前から決まっていたレース。',
+        "그 문제를 해결하는 방식은 바로 레이스. 오늘의 이 레이스는 이전부터 이미 예정되어 있던 레이스였다.",
       );
-      await era.printAndWait('OP戦で、G3ですらない小さなレース。');
+      await era.printAndWait("OP 레이스로서, G3조차 되지 않는 작은 레이스였다.");
       await era.printAndWait([
-        'パドックで、',
+        "예시장 안에서 ",
         digital.get_colored_name(),
-        ' は他の',
+        "은 다른 ",
         digital.uma_sex_title,
-        'をじっと見つめている。',
+        "를 뚫어지게 쳐다보았다.",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' の両手は爪のように空を舞い、瞳は「おいしい」で満ちている……',
+        "의 양손이 갈퀴가 되어 허공을 휘저었고, 눈동자에는 「맛있어 보인다」는 생각이 가득 담겨 있었다……",
       ]);
-      era.printButton('「デジ、飛びかかっちゃだめだぞ。」', 1);
+      era.printButton("「디지털, 덮치면 안 된다.」", 1);
       await era.input();
-      await digital.say_and_wait('いや、そもそも前も飛びかかってないでしょ。');
+      await digital.say_and_wait("아뇨, 애초에 전에도 덮친 적은 없거든요.");
       await digital.say_and_wait([
-        'そういえば、',
+        "그건 그렇고, ",
         callname,
-        '、なんだか変だね。',
+        ", 왠지 기분이 묘해요.",
       ]);
       await digital.say_and_wait(
-        '雰囲気はすごく険しいのに、中にある尊味は変わってない……',
+        "분위기가 무척 엄격한 것 같으면서도, 그 안에 담긴 존귀함의 농도는 변함이 없어서……",
       );
       await era.printAndWait([
         digital.get_colored_name(),
@@ -142,20 +142,20 @@ module.exports = {
         ' は抗えない。だが空気が、いつものように口に出すことを許さない。',
       ]);
       await digital.say_and_wait([
-        'この中には、もっと純粋なものがある。',
+        "이 안에는 분명 더욱 순수한 무언가가 있고, 그것이 ",
         digital.uma_sex_title,
-        'がなぜ尊いのか……',
+        "짱을 존귀하게 만드는 이유일 거예요……",
       ]);
-      await you.say_and_wait('それに、触れたいのか？');
-      await digital.say_and_wait('え！ それは失礼すぎる！');
+      await you.say_and_wait("그걸 만져보고 싶어?");
+      await digital.say_and_wait("엑! 그건 너무 실례잖아요!");
       await digital.say_and_wait(
-        'でも、前より近い位置で、できるだけ観察したい……',
+        "하지만, 뭐랄까, 예전보다 조금 더 가까운 위치에서 관찰하고 싶어요……",
       );
       await era.printAndWait([
         digital.get_colored_name(),
-        ' は相変わらず自分を観客だと思っている。だが',
+        "은 여전히 스스로를 관객이라 여기고 있었지만, ",
         digital.sex,
-        'の目は、以前とは少し違っていた。',
+        "의 눈빛에는 이전과는 다른 변화가 생겨나고 있었다.",
       ]);
     };
     f.title = title;
@@ -173,41 +173,41 @@ module.exports = {
     const f = async (digital, you, japa_dir) => {
       await digital.say_and_wait(
         [
-          'まだ気づいてない。',
+          "나는 아직 눈치채지 못했어. ",
           digital.uma_sex_title,
-          'ちゃんたちの尊エネルギーの根源。あれはきっと、この上なく貴重なもの……',
+          "짱들의 존귀 에너지의 근원, 그것은 분명 더없이 소중한 것일 텐데……",
         ],
         true,
       );
       await digital.say_and_wait(
-        '大井……夜……ダート……めったに来ない異郷のコース、この特別なレース場に、私が探してる秘密があるかも……',
+        "오이…… 밤…… 더트…… 이 낯선 타지의 코스에서, 이 특수한 경기장에서라면, 어쩌면 내가 찾고 싶은 비밀이 있을지도 몰라……",
         true,
       );
       era.drawLine();
       await digital.say_and_wait([
         '『',
         japa_dir,
-        '』、なんだかこのレースの空気は独特だね。',
+        "』, 왠지 이 레이스의 분위기는 무척 독특하네요.",
       ]);
       await you.say_and_wait(
         'JpnIのレース……この手のレースには、どうしても偏見がつきまとう。',
       );
       await digital.say_and_wait(
-        'それでも、このレースが運んでくる熱さは、夏の太陽みたい……',
+        "그럼에도 불구하고 이 레이스가 뿜어내는 뜨거운 기운. 마치 여름날의 태양 같아요……",
       );
       await digital.say_and_wait(
-        'コースも景色も、芝もダートも違う。それでもいい……',
+        "코스도, 풍경도, 잔디나 더트냐도 모두 다르지만, 그럼에도……",
       );
       await digital.say_and_wait([
         digital.uma_sex_title,
-        'ちゃんの気持ちは、同じでしょ？',
+        "짱들의 마음은 모두 같겠죠?",
       ]);
       await era.printAndWait(
-        'そうだ。G1でもG3でも、重賞でもオープンでも、芝でもダートでも、中央でも地方でも……',
+        "맞다. G1이든 G3이든, 중상이든 일반 레이스든, 잔디든 더트든, 중앙이든 지방이든……",
       );
-      await you.say_and_wait('同じだ。');
+      await you.say_and_wait("모두 똑같아.");
       await you.say_and_wait(
-        'このレースが終われば、君はあらゆるタイプのレースを経験する。なぜ同じか、きっとわかる。',
+        "이 레이스가 끝나면 너는 모든 유형의 레이스를 경험하게 되는 거야. 왜 똑같은지 분명 알 수 있을 거야.",
       );
       await era.printAndWait([
         digital.get_colored_name(),
@@ -216,9 +216,9 @@ module.exports = {
         'に必要なのは証明だ。このレースで。',
       ]);
       await digital.say_and_wait([
-        '今！ 大井のダート',
+        "지금! 오이의 더트 ",
         digital.uma_sex_title,
-        'ちゃんと一緒に、答えを見つける！',
+        "짱들과 함께 답을 찾아내겠어요!",
       ]);
     };
     f.title = title;
@@ -227,7 +227,7 @@ module.exports = {
 
   // [번역 대상] before_mile_cha_c
   before_mile_cha_c: (() => {
-    const title = 'マイルCS開始！';
+    const title = "마일 챔피언십 시작!";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} halo キングヘイロー
@@ -238,45 +238,45 @@ module.exports = {
         halo.get_colored_name(),
         '——',
         digital.get_colored_name(),
-        ' がデビュー前からずっと仰ぎ見てきた',
+        "이 데뷔 전부터 동경해왔던 ",
         digital.uma_sex_title,
-        '。今、',
+        ". 드디어 ",
         digital.get_colored_name(),
-        ' はやっと',
+        "이 ",
         digital.sex,
-        'と並んで立てた。',
+        "와 같은 무대에 서게 되었다.",
       ]);
       await era.printAndWait([
-        'パドックの ',
+        "예시장 위의 ",
         halo.get_colored_name(),
-        ' は、これまでの衰えを一掃し、気迫が高まっている。まるで全盛期に戻ったようだ。',
+        "는 이전의 부진을 털어낸 듯 기세가 드높았다. 마치 전성기로 돌아간 듯한 모습이었다.",
       ]);
       await halo.say_and_wait([
-        'どう？ ',
+        "어때? ",
         h_call_d,
-        '、今日のわたくしは、目がくらむほどまぶしいでしょう？',
+        ", 오늘의 나는 눈이 멀어버릴 정도로 눈부시지 않아?",
       ]);
       await digital.say_and_wait(
-        'はい！ この上なくまぶしい！ でも……背筋は、今年の春ほどピンとしてない……',
+        "네! 무척 눈부셔요! 하지만…… 등줄기는 올봄만큼 곧지는 않네요……",
       );
       await halo.say_and_wait(
-        'あは……やはり隠せませんわね。そこまで気づくなんて。',
+        "하아…… 정말 못 속이겠네. 설마 그런 것까지 눈치챌 줄이야.",
       );
-      await halo.say_and_wait([h_call_d, '、わたくしをどれくらい好きですの？']);
-      await digital.say_and_wait('この推しは、マリアナ海溝より深いよ！');
+      await halo.say_and_wait([h_call_d, ", 너는 나를 어느 정도까지 좋아해?"]);
+      await digital.say_and_wait("마리아나 해구보다 더 깊게 파고 있을 정도로 좋아해요!");
       await era.printAndWait([
         halo.get_colored_name(),
-        ' と ',
+        "와 ",
         digital.get_colored_name(),
-        ' は笑い合いながら話している。ここでは、',
+        "은 즐겁게 대화를 나누었다. 이곳에서 ",
         digital.couple_title,
         'が言葉にできないレースを見せてくれるとわかる。',
       ]);
       await digital.say_and_wait(
-        'あなたの本当の思い、今日のレースで、はっきりさせたい！',
+        "당신의 진심을 오늘 레이스를 통해 확인하고 싶어요!",
       );
       await halo.say_and_wait([
-        '本物の一流を、全身全霊で理解しなさい！ ',
+        "진정한 일류란 무엇인지 전신으로 이해해봐! ",
         h_call_d,
         '！',
       ]);
@@ -287,71 +287,71 @@ module.exports = {
 
   // [번역 대상] before_nhk_cup
   before_nhk_cup: (() => {
-    const title = 'NHKマイルカップ開始！';
+    const title = "NHK 마일 컵 시작!";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (digital, you) => {
-      await digital.say_and_wait('おおおおおおお！ やっぱり、違う！');
-      await era.printAndWait('G1のレース場。観客10万人を超える一戦……');
+      await digital.say_and_wait("오오오오오오오! 역시, 정말 다르네요!");
+      await era.printAndWait("G1 경기장, 10만 명 이상의 관중이 모인 레이스……");
       await era.printAndWait(
-        '何度も見てきたのに、パドックに立つ感覚はまだ新しい。',
+        "자주 관람해 왔음에도, 예시장에 직접 서서 느끼는 감각은 무척 신선했다.",
       );
       await era.printAndWait(
         '10万人の空気は十分に衝撃だが、本当の主役は、選手の……',
       );
       await digital.say_and_wait(
-        'なななななんだこれは！ この気配、領域みたいな圧！',
+        "어어어어떻게 된 거지! 이 기운, 마치 영역 전개 같은 압박감이야!",
       );
-      await digital.say_and_wait('やばい！ サイコー！ 尊高って言っていい！');
-      await you.say_and_wait('興奮してるな！ なら調子はいいぞ！');
-      await digital.say_and_wait('もう、もう何も考えられない、脳が、もう……');
+      await digital.say_and_wait("위험해! 최고야! 그야말로 존귀함의 극치!");
+      await you.say_and_wait("엄청 흥분했구나! 컨디션은 최고조네!");
+      await digital.say_and_wait("이미, 이미 아무것도 생각할 수 없어요. 머릿속이 이미……");
       await digital.say_and_wait(
-        '美しい、怖い、解像度が4Kまで来てる。今は立ってるのもちょっとキツい……',
+        "아름다워, 공포스러워, 해상도가 4K에 달하는 기분이에요. 지금은 여기 서 있는 것조차 힘들어……",
       );
       await digital.say_and_wait([
-        'でも、わからなきゃ。',
+        "하지만 알아내고 말겠어요, ",
         digital.uma_sex_title,
-        'ちゃんの尊さの奥義を！',
+        "짱들의 존귀함의 오묘함을!",
       ]);
-      await digital.say_and_wait('たとえ……尊さで灰になっても……は?!');
+      await digital.say_and_wait("설령…… 제가 존귀함에 못 이겨 재가 되어 사라질지라도…… 히익?!");
       await era.printAndWait([
-        'どうした、',
+        "왜 그러지? ",
         digital.get_colored_name(),
-        ' は話している途中で、いきなり身震いした。',
+        "이 말을 하다 말고 갑자기 몸을 떨었다.",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' はあたりを見回して、それから……',
+        "은 주위를 둘러보더니……",
       ]);
-      await digital.say_and_wait('誰かに見られてる気がする？');
+      await digital.say_and_wait("왠지 누군가 저를 지켜보고 있는 것 같은데요?");
       await era.printAndWait([
-        '選手のほうは、',
+        "하지만 ",
         you.get_colored_name(),
-        ' にはよく見える。',
+        "이(가) 보기에는 참가자들 중에 ",
         digital.get_colored_name(),
-        ' を見つめている者はいない。観客席からだ。',
+        "을 주시하는 사람은 없었다. 그렇다면 관중석에서 오는 시선일 것이다.",
       ]);
       await digital.say_and_wait(
-        'そうか、私まで、推しの中で、推される夢を見てるのか……',
+        "그런가요, 저도 모르는 사이에 최애 속에서 최애가 되는 꿈이라도 꾸고 있는 걸까요……",
       );
       await digital.say_and_wait('これ以上、軽薄じゃいられない！');
       await era.printAndWait([
-        'これほど大きなレースなら、',
+        "이토록 중대한 레이스라면 분명 ",
         digital.get_colored_name(),
-        ' も',
+        "도 ",
         digital.sex,
-        'の素質を引き出せるだろう。',
+        "의 소질을 일깨울 수 있을 것이었다.",
       ]);
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] before_tenn_sho_s
+  // [번역 완료] before_tenn_sho_s
   before_tenn_sho_s: (() => {
-    const title = '天皇賞（秋）開始！';
+    const title = "텐노상 (가을) 시작!";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} opera テイエムオペラオー
@@ -372,79 +372,79 @@ module.exports = {
       do_call_di,
       tenn_sho,
     ) => {
-      await era.printAndWait(['やっと来た、', tenn_sho, ' 当日。']);
+      await era.printAndWait(["드디어 ", tenn_sho, " 당일이 밝았다."]);
       await era.printAndWait([
-        'パドックで、',
+        "예시장 안에서 ",
         digital.get_colored_name(),
-        ' は馴染みの二人と顔を合わせた。',
+        "은 낯익은 두 사람과 마주쳤다.",
       ]);
       await digital.say_and_wait([
-        'よろしくお願いします！ ',
+        "잘 부탁드려요! ",
         call_15,
         '、',
         call_58,
         '。',
       ]);
       await doto.say_and_wait([
-        'こちらこそ！ よろしくお願いします、',
+        "이쪽이야말로! 잘 부탁해, ",
         do_call_di,
         '！',
       ]);
       await era.printAndWait([
-        '三年越しに、',
+        "3년이라는 시간이 흘러, ",
         digital.get_colored_name(),
-        ' はやっと推しの前で普通に話せるようになった。',
+        "도 드디어 자신의 최애 앞에서 정상적으로 교류할 수 있게 되었다.",
       ]);
       await opera.say_and_wait(
-        'あははは、名刺の交換か？ だが覇王である私は、輝くこの身がすべてを語る！ 紹介など不要だ！',
+        "아하하하, 너희 지금 명함이라도 교환하는 건가? 하지만 패왕인 나, 그 찬란한 존재 자체가 이미 나를 대변하고 있다! 어떤 소개도 필요 없지!",
       );
-      await opera.say_and_wait([o_call_di, '、我が戴冠式へようこそ！']);
+      await opera.say_and_wait([o_call_di, ", 나의 대관식에 온 걸 환영한다!"]);
       await opera.say_and_wait(
-        '君の努力は見てきた。君が我らの後ろまで来たことは認めざるを得ない。',
+        "너의 노력은 지켜보고 있었다. 네가 우리의 뒤편까지 도달했다는 점은 인정해주지.",
       );
       await opera.say_and_wait([
-        'だが後ろは、あくまで後ろだ！ ',
+        "하지만 뒤편은 어디까지나 뒤편일 뿐! ",
         o_call_di,
-        '、この芝では、君はまだ私に勝てない。『世紀末覇王』として、中距離の芝を駆ける私に！',
+        ", 이 잔디 위에서 너는 나를 이길 수 없다. 『세기말 패왕』으로서 중거리 잔디를 호령하는 나를 말이다!",
       ]);
       await digital.say_and_wait(
-        'たしかに……言われたとおり、ハード面ではまだ君に及ばない……',
+        "확실히…… 말씀하신 대로 순수한 실력만으로는 아직 미치지 못할지도 모르죠……",
       );
-      await digital.say_and_wait('でも、私の技術は、芝とダートの技術は……');
+      await digital.say_and_wait("하지만, 저의 기교, 잔디와 더트를 아우르는 기교는……");
       await era.printAndWait([
-        'そうだ。この芝のレースで、二刀流の ',
+        "그렇다. 이번 잔디 레이스에서 이도류인 ",
         digital.get_colored_name(),
-        ' の優位は……もう少し待てば、明らかになる。',
+        "의 강점은…… 잠시 후면 분명해질 것이었다.",
       ]);
-      await era.printAndWait('ぽつ……ぽつ……');
-      await era.printAndWait('ざあ……ざあ……');
-      await era.printAndWait('最初は一点。それから全部に広がった！');
+      await era.printAndWait("똑…… 똑……");
+      await era.printAndWait("좌르르…… 좌르르……");
+      await era.printAndWait("처음에는 조금씩 내리던 비가 이내 사방을 적시기 시작했다!");
       await era.printAndWait([
-        'そう、重馬場だ。今回の ',
+        "그렇다. 포화 마장, 이번 ",
         tenn_sho,
-        ' は、重馬場だ！',
+        "는 포화 마장에서 치러지게 되었다!",
       ]);
       await digital.say_and_wait([
-        'これは……',
+        "이것은…… ",
         digital.uma_sex_title,
-        'ちゃんの涙雨……違う、私が出会ったすべての',
+        "짱들의 눈물비일까요…… 아니요, 제가 만난 모든 ",
         digital.uma_sex_title,
-        'ちゃんのうれし泣き。私の勝利を祝う雨だ！',
+        "짱들이 기뻐하며 흘리는, 저의 승리를 축하하는 비예요!",
       ]);
       await opera.say_and_wait(
-        '……雨か……先に言っておくが、私は重馬場が得意だぞ。覇王は馬場がどうであれ適応できる！',
+        "……비인가…… 미리 말해두지만, 나도 포화 마장은 자신 있다. 패왕은 어떤 상태든 적응할 수 있는 법이니까!",
       );
-      await doto.say_and_wait('あわわわ……雨だああ……');
+      await doto.say_and_wait("아와와와…… 비예요오오……");
       await era.printAndWait([
-        'オペラオーは重馬場が得意だ。だが、',
+        "티엠 오페라 오도 포화 마장에 능숙하지만, ",
         digital.get_colored_name(),
-        ' は、得意なだけじゃない！',
+        "은 단순히 능숙한 수준이 아니었다!",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' は文字どおり泥の上を走ってきた。この状況では……',
+        "은 말 그대로 진흙탕 위를 달려온 몸. 이런 상황이라면……",
       ]);
-      await era.printAndWait('勝つ可能性しかない。');
+      await era.printAndWait("오직 승리만이 보일 뿐이었다.");
     };
     f.title = title;
     return f;
@@ -3580,7 +3580,7 @@ module.exports = {
 
   // [번역 대상] ws_47_1
   ws_47_1: (() => {
-    const title = '新年の抱負';
+    const title = "새해의 포부";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} teio トウカイテイオー
@@ -3591,106 +3591,106 @@ module.exports = {
      */
     const f = async (digital, teio, daiwa, doto, you, callname) => {
       await era.printAndWait([
-        '新しい年。',
+        "새로운 한 해, ",
         digital.get_colored_name(),
-        ' は、',
+        "은 ",
         digital.uma_sex_title,
-        'にとって極めて大事なクラシック級を迎えた。',
+        "에게 있어 지극히 중요한 클래식 시즌을 맞이했다.",
       ]);
       await era.printAndWait([
-        'もっとも',
+        "비록 ",
         digital.sex,
-        'は、クラシック級の',
+        "는 클래식급 ",
         digital.uma_sex_title,
-        'に身をもって近づけること自体に、まだ興奮しているようだ。',
+        "들을 가까이서 접할 수 있다는 사실에만 들떠 있는 것 같았지만 말이다.",
       ]);
-      await digital.say_and_wait(['あけましておめでとう！ ', callname, '！']);
+      await digital.say_and_wait(["새해 복 많이 받으세요! ", callname, '！']);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' は手短に ',
+        "은 ",
         you.get_colored_name(),
-        ' へ新年の挨拶をした。',
+        "에게 가볍게 새해 인사를 건넸다.",
       ]);
-      await era.printAndWait('朝早くからトレーニング室に来るとは、勤勉だな。');
+      await era.printAndWait("이른 아침부터 트레이닝실에 나오다니, 정말 근면했다.");
       await digital.say_and_wait(
-        '年末はどうだった？ コミケでいい本、何冊か買えた？',
+        "연말은 어떻게 보내셨나요? 코미케에서 좋은 책 좀 건지셨나요?",
       );
-      await you.say_and_wait('え？ コミケ？ 本？');
+      await you.say_and_wait("어? 코미케? 책이라니?");
       await digital.say_and_wait(
-        'あ……うん、なければ今の話は忘れて。デジの独り言だから。',
+        "아…… 음, 없으셨다면 방금 한 말은 잊어주세요. 그냥 디지땅의 헛소리였답니다.",
       );
       await digital.say_and_wait(
-        'でも！ 今年のレースは！ 語り甲斐がある！ クラシック級のレースは星のように多いんだから！',
+        "그보다! 올해 레이스! 이건 정말 할 말이 많다구요! 클래식급 레이스는 그야말로 밤하늘의 별처럼 많으니까요!",
       );
       await era.printAndWait([
-        'たしかに、',
+        "과연, ",
         digital.get_colored_name(),
-        ' はクラシック級に出られるようになった。去年より選択肢は一気に増える。G1の大半は、クラシック級にならないと出られない。',
+        "도 이제 클래식급 레이스에 참가할 수 있게 되어 선택지가 작년보다 훨씬 많아졌다. 대부분의 G1 레이스는 클래식급이 되어야 참가할 수 있기 때문이다.",
       ]);
       await digital.say_and_wait([
-        'あ、急に去年のことを思い出した。私、調子に乗りすぎて初心を忘れかけてた。合格な',
+        "아, 문득 작년 생각이 나네요. 제가 너무 우쭐했던 것 같아요. 제 초심을 잊어버린 것 같달까, 분명 훌륭한 ",
         digital.uma_sex_title,
-        'ファンになるって言ったのに?!',
+        " 덕후가 되겠다고 다짐했었는데 말이죠?!",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' は、前回',
+        "은 지난번 ",
         digital.sex,
-        'が ',
+        "와 ",
         doto.get_colored_name(),
-        ' と話したことが、まだ引っかかっているようだ……',
+        "의 대화에 대해 여전히 마음에 걸리는 구석이 있는 듯했다……",
       ]);
       era.println();
       await digital.say_and_wait(
-        'だから！ 今年は、もう一度原点に戻る！ もう一度ファンになる！ それを原則に！',
+        "그러니까! 올해는 다시 원점으로 돌아가겠습니다! 다시 한 명의 팬으로서! 그것을 원칙으로 삼겠어요!",
       );
       await era.printAndWait([
-        'ただ今のところ、どうしようもない。',
+        "하지만 현재로선 딱히 방법이 없어 보였다. ",
         digital.get_colored_name(),
-        ' がそれに気づくには、まだ……',
+        "이 그것을 깨닫기 위해서는 아직……",
       ]);
       await digital.say_and_wait([
         callname,
-        '！ アドバイスくれる？ どう応援すればいい？',
+        "! 저에게 조언 좀 해주실 수 있나요! 어떻게 응원해야 좋을까요?",
       ]);
-      era.print([you.get_colored_name(), ' の選択は：']);
+      era.print([you.get_colored_name(), " 의 선택은:"]);
       era.printButton(`ウマ娘ちゃんに奉仕（スピード+10）`, 1);
-      era.printButton('読書（スタミナ+10）', 2);
-      era.printButton('真似から学ぶ（スキルPt+20）', 3);
+      era.printButton("독서 (스태미나+10)", 2);
+      era.printButton("모방을 통해 배운다 (스킬 포인트+20)", 3);
       const ret = await era.input();
       switch (ret) {
         case 1:
           await you.say_and_wait([
-            'いつものように、',
+            "평소처럼 ",
             digital.uma_sex_title,
-            'ちゃんに奉仕するのはどうだ？',
+            "짱을 받드는 게 좋지 않겠어?",
           ]);
           await digital.say_and_wait([
-            'おおお！ いい助言だ。そういえば最近、レースでも交流でも、ずっと',
+            "오오오! 좋은 제안이에요. 그러고 보니 최근 레이스니 뭐니 하면서 계속 ",
             digital.uma_sex_title,
-            'ちゃんに失礼してたかも……',
+            "짱들에게 결례를 범하고 있었던 기분이 드네요……",
           ]);
           await digital.say_and_wait(
-            'だから！ まさに原点回帰のとき！ 聖地を一回浄化しないと！',
+            "그래요! 역시 원점으로 돌아갈 때입니다! 이제 성지를 정화할 시간이에요!",
           );
-          await era.printAndWait('浄化?!');
-          await era.printAndWait('レース場を手入れしただけだった。よかった。');
+          await era.printAndWait("정화?!");
+          await era.printAndWait("알고 보니 그저 경기장을 청소하려는 것이었다. 다행이다.");
           await era.printAndWait([
-            '手入れのあと、ちょうど ',
+            "청소를 마치자 마침 ",
             daiwa.get_colored_name(),
-            ' が最初に芝へ到着した。',
+            "이 가장 먼저 잔디밭에 도착했다. ",
             daiwa.get_colored_name(),
-            ' が芝を気持ちよく走るのを見て、',
+            "이 잔디 위를 상쾌하게 달리는 모습을 보며, ",
             digital.get_colored_name(),
-            ' もやる気でいっぱいになった。',
+            "은 자신도 의욕이 샘솟는 것을 느꼈다.",
           ]);
           break;
         case 2:
           await you.say_and_wait(
-            'それなら、買ったって本を読んでみたらどうだ？',
+            "그렇다면 아까 말했던 샀다는 책들을 읽어보는 건 어때?",
           );
           await digital.say_and_wait(
-            'え！ それは……どれも短いし、もう一度振り返ってもいいね！',
+            "엣! 그거 정말…… 비록 다 짧은 내용이긴 하지만, 다시 한번 훑어보는 것도 나쁘지 않겠네요!",
           );
           await digital.say_and_wait([
             'いろんな',
@@ -3698,46 +3698,46 @@ module.exports = {
             'ちゃんのエネルギーを摂取して、新しい年も走り続けられるように！',
           ]);
           await era.printAndWait([
-            'こうして ',
+            "그렇게 ",
             digital.get_colored_name(),
-            ' は今日、寮に戻って本を読んだ。次に会ったとき、浸りきった顔の ',
+            "은 오늘 기숙사로 돌아가 책을 읽었다. 나중에 다시 만난 ",
             digital.get_colored_name(),
-            ' を見て、',
+            "의 황홀함에 푹 빠진 표정을 보고, ",
             you.get_colored_name(),
-            ' は',
+            "은(는) ",
             digital.sex,
-            'がよく休めたとわかった。',
+            "가 아주 푹 쉬었음을 알 수 있었다.",
           ]);
           break;
         case 3:
           await you.say_and_wait([
-            '他の',
+            "다른 ",
             digital.uma_sex_title,
-            'を真似て、そこからスキルを学ぶのはどうだ？',
+            "를 흉내 내며 기술을 배워보는 건 어때?",
           ]);
           await digital.say_and_wait(
-            'たしかに！ 推したちを真似てスキルを学ぶ！ まさに吾輩の使命！',
+            "그렇군요! 최애들을 모방하며 기술을 배운다! 그것이야말로 저희의 사명이죠!",
           );
-          await digital.say_and_wait('おおお！ お？');
+          await digital.say_and_wait("오오옷! 오?");
           await era.printAndWait([
-            'トレーニング場のスタンドに行き、以前台上から観察した',
+            "훈련장 관중석으로 이동해, 예전에 스탠드에서 관찰했던 ",
             digital.uma_sex_title,
-            'のスキルを思い出す……',
+            "의 기술을 회상했다……",
           ]);
-          await digital.say_and_wait('次はこちら！ 帝王ステップ！');
+          await digital.say_and_wait("자, 보시라! 테이오 스텝!");
           await era.printAndWait(
-            'おおお、あの有名な帝王ステップだ！ 大きく腿を上げて歩幅を伸ばすスキル！',
+            "오오, 저것은 그 유명한 테이오 스텝! 높은 다리 들어 올리기를 통해 보폭을 늘리는 기술이었다!",
           );
-          await era.printAndWait('おおお、ご本人も来たみたいだ。');
-          await era.printAndWait([teio.get_colored_name(), '？ いつ来た？']);
-          await digital.say_and_wait('うわわわ！ わざと失礼したんじゃないよ！');
+          await era.printAndWait("오오, 본인도 도착한 모양이었다.");
+          await era.printAndWait([teio.get_colored_name(), "? 언제 온 거지?"]);
+          await digital.say_and_wait("우와아아악! 결코 무례를 범하려던 게 아니었어요!");
           await era.printAndWait([digital.get_colored_name(), '！ しおれた！']);
           await era.printAndWait([
-            'そのあと ',
+            "하지만 그 후 ",
             digital.get_colored_name(),
-            ' は、ちゃんと ',
+            "은 ",
             teio.get_colored_name(),
-            ' からコツを教わった。',
+            "에게서 정말로 요령을 전수받았다.",
           ]);
       }
       return [ret];
@@ -3748,7 +3748,7 @@ module.exports = {
 
   // [번역 대상] ws_47_29
   ws_47_29: (() => {
-    const title = '夏合宿（クラシック級）開始';
+    const title = "여름 합숙 시작";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} you プレイヤー
@@ -3757,58 +3757,58 @@ module.exports = {
      */
     const f = async (digital, you, japa_dir, mile_cha) => {
       await era.printAndWait([
-        '夏合宿！ 一年でいちばん大事な行事！ この期間は',
+        "여름 합숙! 일 년 중 가장 중요한 행사다! 이 시기는 ",
         digital.uma_sex_title,
-        'たちの伸びしろが一番大きい！ トレーナーの ',
+        "들이 크게 성장할 절호의 기회였다! 트레이너인 ",
         you.get_colored_name(),
-        ' も、当然この行事を特に重視している。',
+        " 역시 이번 활동을 각별히 중시하고 있었다.",
       ]);
       await era.printAndWait([
-        '特に、前回の ',
+        "특히 지난번 ",
         japa_dir,
-        ' の勢いのまま、次のレースへぶつかっていくためだ。',
+        "의 기세를 이어 다음 레이스까지 몰아쳐야 했다.",
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' には、もう ',
+        "은(는) 이미 ",
         digital.get_colored_name(),
-        ' の明るい道が見えている。ただ……',
+        "의 앞날에 펼쳐진 탄탄대로를 예감하고 있었지만……",
       ]);
       await digital.say_and_wait(
-        'くわ……やっぱり勝利に頭がくらんだ。私ったら、神聖な存在になろうなんて……',
+        "구와악…… 역시 승리에 취해 정신이 나갔었나 봐요. 제가 감히, 제가 감히 그런 신성한 존재가 되려고 하다니……",
       );
-      await era.printAndWait('……ああ、出だしが悪いな。');
+      await era.printAndWait("……아, 시작부터 예감이 좋지 않았다.");
       await digital.say_and_wait(
-        '余韻が過ぎて、いわゆる賢者モードに入ると、自分がどれだけ……って後悔する……',
+        "승리의 여운이 가시고 나니, 소위 말하는 현자 타임이 와서 제가 얼마나 무모했는지 자괴감이 들어요……",
       );
-      era.printButton('「待てデジ、後悔してるのか？ 自分の決断を？」', 1);
+      era.printButton("「잠깐, 디지털, 후회하는 거야? 네가 내린 결정을 후회하는 거냐고?」", 1);
       await era.input();
       await era.printAndWait([
-        '急所を突かれたように、',
+        "아픈 곳을 찔린 듯, ",
         digital.get_colored_name(),
-        ' は体をぴんと伸ばした。',
+        "은 용수철처럼 몸을 벌떡 일으켰다.",
       ]);
       await digital.say_and_wait([
-        'ただ、自分が面倒くさいと思うこともある……なのに ',
+        "그게, 가끔은 제 자신이 참 번거롭다고 느껴져서요…… 분명 스스로 ",
         mile_cha,
-        ' まで予定してるし……',
+        "도 예약해 뒀으면서……",
       ]);
       await digital.say_and_wait(
         'ののののの！ 面倒なことは後回し！ 次はコミックのことを考えないと！',
       );
       era.printButton('「コミック？ 何だそれ？」', 1);
       await era.input();
-      await digital.say_and_wait('え！');
+      await digital.say_and_wait("에엑!");
       await era.printAndWait([
         you.get_colored_name(),
-        ' に急に遮られた ',
+        "에게 갑자기 말을 끊긴 ",
         digital.get_colored_name(),
-        ' は、しどろもどろになった。',
+        "은 우물쭈물하며 말을 흐렸다.",
       ]);
       await digital.say_and_wait(
-        'とにかく！ レースが終わったばかりだし、先にリラックスさせて！ あははは!',
+        "아무튼! 방금 레이스도 끝났으니 일단 좀 쉬게 해주세요, 아하하하!",
       );
-      await era.printAndWait('今回の夏合宿、少し心配だ……');
+      await era.printAndWait("이번 여름 합숙, 조금 걱정되기 시작했다……");
     };
     f.title = title;
     return f;
@@ -3816,7 +3816,7 @@ module.exports = {
 
   // [번역 대상] ws_95_14
   ws_95_14: (() => {
-    const title = 'ファン感謝祭';
+    const title = "팬 대감사제";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} luna シンボリルドルフ
@@ -3825,28 +3825,28 @@ module.exports = {
      */
     const f = async (digital, luna, you, callname) => {
       await digital.say_and_wait([
-        'デジ、',
+        "디지땅, ",
         digital.get_colored_name(),
-        ' の祭りが、やっと来た！ わわわ、この周りの景色、まさにファンの天国……',
+        "만의 축제가 드디어 왔습니다! 와아아, 이 주변 풍경 좀 보세요. 그야말로 팬들의 천국……",
       ]);
       await era.printAndWait([
-        'ファン感謝祭……その名のとおり、アイドル属性を持つ',
+        "팬 대감사제라…… 말 그대로 아이돌 속성을 가진 레이스 ",
         digital.uma_sex_title,
-        'が応援ファンに返す行事だ。',
+        "들이 응원해 주는 팬들에게 보답하는 행사였다.",
       ]);
-      await era.printAndWait('そうは言っても、実際は学園祭にも近い。');
+      await era.printAndWait("말은 그렇지만, 사실 분위기는 학원 축제와 비슷했다.");
       await era.printAndWait([
-        'だが、',
+        "하지만 ",
         digital.get_colored_name(),
-        '。今年の役割は、ファンだけじゃない！',
+        ", 올해 네가 맡은 역할은 단순한 팬이 아니라고!",
       ]);
-      await you.say_and_wait('実はデジ、今日の君は、応援される側だぞ！');
-      await digital.say_and_wait('くや！');
-      await digital.say_and_wait('いやいや、私みたいなのが……');
+      await you.say_and_wait("사실 오늘 너는 응원을 받는 쪽이란 말이야!");
+      await digital.say_and_wait("그아악!");
+      await digital.say_and_wait("아뇨아뇨, 저 같은 사람이 어떻게……");
       await era.printAndWait([
-        '「ありえない」という顔の ',
+        "「그럴 리가 없다」는 표정을 짓는 ",
         digital.get_colored_name(),
-        '。以前ならその通りだった……',
+        ". 예전 같았으면 정말 그랬을지도 모르겠지만……",
       ]);
       await you.say_and_wait(
         'あんなにたくさんのレースで結果を出した君だ。自覚を持とう。ウマ推しのファンに前からの分があるのはわかる。でも新規ファン、少なくないぞ。',
@@ -3857,46 +3857,46 @@ module.exports = {
         ' は両手を上げて降参した。準備はできているらしい。',
       ]);
       await era.printAndWait([
-        'それからサイン会に来た ',
+        "이윽고 사인회장에 도착한 ",
         digital.get_colored_name(),
         '。',
       ]);
       await era.printAndWait([
-        '最初は ',
+        "처음에는 ",
         digital.get_colored_name(),
-        ' も少し戸惑っていた。だがそのあと',
+        "도 좀처럼 적응하지 못하는 듯했으나, 그 뒤의 ",
         digital.sex,
-        'は……',
+        "는……",
       ]);
-      await digital.say_and_wait('はいはい、色紙にちゃんと名前を書いたよ！');
-      await era.printAndWait('ファン一人ひとりを笑わせて並ばせている?!');
+      await digital.say_and_wait("네네! 여기 색지에 정성껏 이름을 써 드렸답니다!");
+      await era.printAndWait("심지어 모든 팬이 웃으며 줄을 서게 만들었다고?!");
       await digital.say_and_wait(
-        '前はずっと推す側だったから……ファンの気持ちは当然わかるよ。',
+        "저도 예전에는 계속 최애를 미는 쪽이었으니까요…… 팬분들의 마음은 누구보다 잘 읽을 수 있거든요.",
       );
       await digital.say_and_wait([
-        'それから、',
+        "그리고 ",
         callname,
-        '、あとでこの会場を最適化させてくれない？ 許可さえ取れれば、デジの主催者魂を見せるよ！',
+        ", 이따가 제가 이 회장을 좀 최적화해도 될까요? 허락만 해주신다면 디지땅의 주최자 혼이 무엇인지 보여드릴게요!",
       ]);
       await era.printAndWait([
-        'スタッフから許可をもらうと、',
+        "스태프에게 허가를 받은 뒤, ",
         digital.get_colored_name(),
-        ' はすぐ各会場を一掃し、いろいろな企画までうまく整えてしまった?!',
+        "은 즉시 회장 곳곳을 휩쓸며 온갖 이벤트들을 완벽하게 개선해 나갔다.",
       ]);
       await era.printAndWait([
-        'そのあと話が ',
+        "그 소식이 ",
         luna.get_colored_name(),
-        ' の耳に入り、',
+        "의 귀에까지 들어가, ",
         digital.sex,
-        '自ら多くの',
+        "가 직접 수많은 ",
         digital.uma_sex_title,
-        'を連れて感謝しに来たとき……',
+        "들을 이끌고 감사를 표하러 오자……",
       ]);
-      await digital.say_and_wait('どうなってる、私が推される一日になった?!');
+      await digital.say_and_wait("이게 무슨 일이죠, 제가 최애가 된 하루인가요?!");
       await era.printAndWait([
-        '興奮しすぎて倒れた ',
+        "감격에 겨워 기절한 ",
         digital.get_colored_name(),
-        ' は、やっと今日の奮闘を終えた。',
+        "의 오늘 하루의 분투가 드디어 끝났다.",
       ]);
     };
     f.title = title;
@@ -3905,7 +3905,7 @@ module.exports = {
 
   // [번역 대상] ws_95_29
   ws_95_29: (() => {
-    const title = '夏合宿（シニア級）開始';
+    const title = "여름 합숙 시작";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} halo キングヘイロー
@@ -3929,18 +3929,18 @@ module.exports = {
       tenn_sho,
     ) => {
       await digital.say_and_wait(
-        'うぐぐ、今年、今年だけは……時間がない！ 止めなきゃ！',
+        "우구구, 올해, 올해 딱 한 번만…… 시간이 없어! 멈춰야 해!",
       );
       await era.printAndWait([
-        '夏合宿の始まりから、頭を抱えてうめく ',
+        "여름 합숙이 시작되자마자 머리를 감싸 쥐고 비명을 지르는 ",
         digital.get_colored_name(),
-        ' が見えた。どう言えばいいか、',
+        "이 보였다. 뭐랄까, 오랫동안 ",
         digital.get_colored_name(),
-        ' をよく見てきた ',
+        "을 지켜본 ",
         you.get_colored_name(),
-        ' もだんだんわかってきた。',
+        "도 서서히 깨달아가고 있었다. ",
         digital.get_colored_name(),
-        ' には同人誌を作る趣味もある。',
+        "에게는 동인지를 만드는 취미가 있다는 것을.",
       ]);
       await era.printAndWait([
         digital.sex,
@@ -3949,52 +3949,52 @@ module.exports = {
       await era.printAndWait('しかも、次の大型即売会は夏合宿の期間中だ。');
       await digital.say_and_wait([
         tenn_sho,
-        '！ この夏は ',
+        "! 이번 여름엔 ",
         call_61,
-        ' の新刊は出さない。レースに全力を尽くす！',
+        " 신간은 내지 않겠어요. 레이스에 모든 힘을 쏟아붓겠습니다!",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' も、テイエムオペラオーとメイショウドトウとの対決を相当重視しているようだ。なら今回の夏合宿は、心配しなくてよさそうだ。',
+        "도 이번 티엠 오페라 오 및 메이쇼 도토와의 대결을 굉장히 중요하게 여기는 듯했다. 이번 여름 합숙은 걱정할 필요가 없을 것 같았다.",
       ]);
-      await halo.say_and_wait('あら、それでは当分お目にかかれませんわね');
-      await digital.say_and_wait(['しゅえ！ ', call_61, '！']);
+      await halo.say_and_wait("어라, 그럼 나는 당분간 볼 수 없겠네.");
+      await digital.say_and_wait(["호엣! ", call_61, '！']);
       await halo.say_and_wait([
-        'それより、',
+        "그것보다 ",
         h_call_d,
-        '、あなたは今年 ',
+        ", 너 올해 ",
         tenn_sho,
-        ' に出ますのよね。',
+        "에 나갈 거지?",
       ]);
       await digital.say_and_wait([
-        'は、はい……',
+        "네, 네에…… 그동안 ",
         call_61,
-        ' に体も意志も鍛えられたから……やっと、',
+        "께 몸도 마음도 단련 받았으니까요…… 드디어 ",
         call_15,
-        ' と ',
+        ", ",
         call_58,
-        ' と決戦できる時が来た！',
+        "와 결전을 치를 때가 왔어요!",
       ]);
       await halo.say_and_wait([
-        'では、',
+        "그렇다면 이번 ",
         tenn_sho,
-        ' は三人——いいえ、四人の対決ですわね。',
+        "은 세 명—— 아니, 네 명의 대결이 되겠네.",
       ]);
       await digital.say_and_wait([
-        'え？ 他にも、実力ありと評される',
+        "에? 또 다른 실력파 ",
         digital.uma_sex_title,
-        'ちゃんが？',
+        "님이 계신가요?",
       ]);
-      await halo.say_and_wait(['今年の ', nhk_cup, '、見に行きましたわよね？']);
+      await halo.say_and_wait(["올해 ", nhk_cup, ", 분명 보러 갔었지?"]);
       await digital.say_and_wait([
-        'もちろん。だって私は ',
+        "그야 당연하죠, 저는 ",
         digital.get_colored_name(),
-        ' だもん！ あははは……まさか……',
+        "이니까요! 아하하하…… 설마……",
       ]);
       await era.printAndWait([
-        '実は、',
+        "사실 ",
         you.get_colored_name(),
-        ' も数日前に噂を聞いていた。それは……',
+        "도 며칠 전 소문을 들은 적이 있었다. 그것은 바로……",
       ]);
       await halo.say_and_wait([
         'クロフネ、',
@@ -4004,11 +4004,11 @@ module.exports = {
         ' に出ますわ。',
       ]);
       await era.printAndWait([
-        'クロフネ……今年のNHKを取ったあの',
+        "쿠로후네…… 올해 NHK 마일을 제패한 ",
         digital.uma_sex_title,
-        'だ。恐ろしい脚を持っている。',
+        ". 가공할 만한 발걸음을 가진 자였다.",
       ]);
-      await era.printAndWait([digital.sex, 'も、このレースに出るのか。']);
+      await era.printAndWait([digital.sex, "도 이 레이스에 참전한다는 것이었다."]);
     };
     f.title = title;
     return f;
@@ -4016,7 +4016,7 @@ module.exports = {
 
   // [번역 대상] ws_95_48
   ws_95_48: (() => {
-    const title = 'クリスマス';
+    const title = "크리스마스";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} luna シンボリルドルフ
@@ -4026,90 +4026,90 @@ module.exports = {
      */
     const f = async (digital, luna, you, callname, l_call_d) => {
       await era.printAndWait([
-        'トレセンはクリスマスの自由行動を、比較的応援している。',
+        "트레센 학원은 크리스마스 자율 활동을 대체로 지지하는 편이었다. ",
         digital.uma_sex_title,
-        'にとっても特別な日だからだ。',
+        "들에게 있어 이날은 특별한 날이기 때문이다.",
       ]);
       await era.printAndWait([
-        '校外だけでなく、一風変わった',
+        "교외 활동 외에도, 조금은 독특한 ",
         digital.uma_sex_title,
-        'にも光を当てるため、学園内でも大きな行事が開かれている。',
+        "들을 배려하여 학원 내부에서도 대형 행사가 열렸다.",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' と各会場を渡り歩いて食べ歩き、いろいろなゲームで遊び、それから ',
+        "과 함께 여러 행사장을 누비며 음식을 얻어먹고 게임을 즐겼으며, ",
         digital.get_colored_name(),
-        ' と熱く議論した。',
+        "과 열띤 토론을 벌였다.",
       ]);
       await era.printAndWait([
-        '突然、',
+        "갑자기 ",
         luna.get_colored_name(),
-        ' と一行が ',
+        "와 그 일행이 ",
         you.get_colored_name(),
-        ' の前に現れた。',
+        "의 앞에 나타났다.",
       ]);
-      await digital.say_and_wait('うわわ、うるさすぎた？');
-      await luna.say_and_wait('心配は要らん。むしろ褒美だ。');
+      await digital.say_and_wait("우와와아, 저희가 너무 시끄러웠나요?");
+      await luna.say_and_wait("너무 걱정 말게. 오히려 포상이라고 봐야겠지.");
       await era.printAndWait([
-        'それから',
+        "이윽고 ",
         digital.sex,
-        'は後ろから大きなギフトボックスを取り出し、',
+        "는 등 뒤에서 커다란 선물 상자를 꺼내 ",
         digital.get_colored_name(),
-        ' に渡した……',
+        "에게 건넸다……",
       ]);
-      await digital.say_and_wait('これは……');
+      await digital.say_and_wait("이건……");
       await era.printAndWait([
         digital.get_colored_name(),
-        ' が箱を開けると、中に入っていたのは——',
+        "이 선물 상자를 열자, 그 안에는——",
       ]);
-      await era.printAndWait('色紙の重ね……びっしりと、いろいろな……名前？');
-      await digital.say_and_wait('ちがう、これ、これは……！ サインだ！');
+      await era.printAndWait("색지 뭉치였다…… 안에는 빼곡하게 온갖…… 이름들이 적혀 있었다?");
+      await digital.say_and_wait("아뇨, 이건, 이건……! 사인이잖아요!");
       await era.printAndWait([
-        'サイン！ よく見ると、ここには馴染みの',
+        "사인! 자세히 보니 거기에는 우리에게 친숙한 수많은 ",
         digital.uma_sex_title,
-        'の直筆サインがたくさん入っている?!',
+        "들의 친필 사인이 담겨 있었다?!",
       ]);
       await digital.say_and_wait(
         'ああああ……単品で買ったら、ウマコインいくついるんだ……私の預金、いくら残ってたっけ……',
       );
       await luna.say_and_wait([
-        'この期間、',
+        "이것은 그동안 ",
         l_call_d,
-        ' の助けや励ましを受けた',
+        "에게 도움을 받았거나 격려를 받았던 수많은 ",
         digital.uma_sex_title,
-        'たちの謝意だ。それに学生会長として、学園の宣伝にも感謝している……',
+        "들의 감사의 표시다. 게다가 학생회장으로서 학원 홍보에 힘써준 점에 대해서도 깊이 감사하고 있고.",
       ]);
       await luna.say_and_wait([
-        'それに、',
+        "게다가 ",
         l_call_d,
-        ' の趣味は……少々独特だからな。',
+        "의 취향이…… 조금 독특하지 않은가. ",
         l_call_d,
-        ' を好きな',
+        "를 좋아하는 모든 ",
         digital.uma_sex_title,
         'を募って、この贈り物を用意した。',
       ]);
       await era.printAndWait([
-        'この大礼を受け取った ',
+        "이 거대한 선물을 받은 ",
         digital.get_colored_name(),
-        ' は……',
+        "은……",
       ]);
       await digital.say_and_wait(
-        'あわあわ……これが……推す者は恒に推される、か……',
+        "아와와와…… 이것이 설마…… 덕질하는 자, 결국 덕질당하게 된다는 그것인가요……",
       );
       await you.say_as_passer_by_and_wait('みんな', [
         'おめでとう！ ',
         digital.get_colored_name(),
       ]);
-      await digital.say_and_wait([callname, '！ ', callname, '！ これ……']);
+      await digital.say_and_wait([callname, '！ ', callname, "! 이건……"]);
       await era.printAndWait([
-        'すぐ尊さで気を失いかけ、',
+        "즉시 감격하여 기절하듯 ",
         you.get_colored_name(),
-        ' にもたれかかった。',
+        "에게 기댔다.",
       ]);
       await era.printAndWait([
-        '意外にも立場が入れ替わった ',
+        "뜻밖에도 입장이 바뀐 ",
         digital.get_colored_name(),
-        ' は、今日、推される喜びも味わった。',
+        "은 오늘만큼은 누군가의 최애가 되는 즐거움을 누렸다.",
       ]);
     };
     f.title = title;
@@ -4118,7 +4118,7 @@ module.exports = {
 
   // [번역 대상] ws_95_6
   ws_95_6: (() => {
-    const title = 'バレンタイン';
+    const title = "발렌타인";
     /**
      * @param {CharaTalk} digital アグネスデジタル
      * @param {CharaTalk} you プレイヤー
@@ -4126,61 +4126,61 @@ module.exports = {
      */
     const f = async (digital, you, callname) => {
       await era.printAndWait([
-        '朝早くトレーニング室に着いた ',
+        "아침 일찍 트레이닝실에 도착한 ",
         digital.get_colored_name(),
-        ' が持ってきたのは——チョコレートの「重ね」。',
+        "이 들고 온 것은—— 초콜릿 한 무더기였다.",
       ]);
-      await era.printAndWait('どうして量詞が「重ね」なんだ?!');
+      await era.printAndWait("왜 초콜릿을 세는 단위가 무더기인 거지?!");
       await digital.say_and_wait([
-        'これは私の心血だ！ 思いつく限りの',
+        "이것은 제 심혈을 기울인 역작입니다! 제가 생각할 수 있는 모든 ",
         digital.uma_sex_title,
-        'の特徴を、全部このチョコに込めた！',
+        "짱들의 특징을 이 초콜릿에 담아냈어요!",
       ]);
       await era.printAndWait(
-        '箱を重ねた塔を見る。まさか、中のチョコ一粒一粒、全部違うのか?!',
+        "상자들이 탑처럼 쌓여 있는 것을 보니, 설마 저 안의 초콜릿이 전부 제각각인 걸까?!",
       );
-      await digital.say_and_wait('では、祭祀だ！');
-      await era.printAndWait('何だ、どこから神棚が?!');
+      await digital.say_and_wait("자, 그럼 제를 올립시다!");
+      await era.printAndWait("뭐라고, 웬 신당이 여기서 튀어나오는 거야?!");
       await era.printAndWait([
         digital.get_colored_name(),
-        ' はチョコを全部神棚の前に並べ、まず何か唱え、それから妙な手もみまでした。',
+        "은 신당 앞에 초콜릿을 전부 차려놓고는, 주문 같은 것을 외우더니 기묘하게 손을 비비기 시작했다.",
       ]);
       await digital.say_and_wait(
-        'よし、できた！ 三女神は私のお願いを受け取ったはず。',
+        "좋아, 됐어요! 세 여신님께서 제 소망을 들어주셨을 거예요.",
       );
-      await era.printAndWait('三女神に拝むなら、どうして中庭に行かない?!');
+      await era.printAndWait("세 여신님께 빌 거면 안뜰로 가라고?!");
       await digital.say_and_wait([
         callname,
-        '、これから一緒に食べよう。無駄にしちゃだめだよ。',
+        ", 이제 같이 먹어요. 음식을 낭비하면 안 되니까요.",
       ]);
-      era.printButton('「食べられるのか?!」', 1);
+      era.printButton("「먹을 수 있는 거였어?!」", 1);
       await era.input();
       await digital.say_and_wait(
-        'もちろん。気持ちがあればいいんだし、食べ物を無駄にするのも冒涜だから！',
+        "당연하죠, 마음만 담겨 있으면 충분하다구요. 게다가 음식을 버리는 건 모독이라구요!",
       );
-      await digital.say_and_wait('これから食べながら話そう！');
+      await digital.say_and_wait("이제 먹으면서 이야기 좀 나눠요!");
       await digital.say_and_wait([
-        'ううう、私って本当に幸運だ。一緒に',
+        "으으으, 전 정말 행운아예요. 이렇게 같이 ",
         digital.uma_sex_title,
-        'を語れる同志に出会えるなんて……',
+        "짱들에 대해 토론할 수 있는 동지를 만나다니……",
       ]);
       await digital.say_and_wait([
-        'ほらほら、',
+        "자자, ",
         callname,
-        '、最近いちばん推してる',
+        ", 최근 가장 밀고 계신 ",
         digital.uma_sex_title,
-        'は……誰？',
+        "짱은…… 누구인가요?",
       ]);
       await era.printAndWait('聞くまでもない。');
-      era.printButton('「はい、チョコを。」', 1);
+      era.printButton("「자, 여기 초콜릿.」", 1);
       await era.input();
-      await era.printAndWait('冷蔵庫から、チョコを取り出す……');
-      await digital.say_and_wait('おおお、私だ。');
+      await era.printAndWait("냉장고에서 초콜릿을 꺼냈다……");
+      await digital.say_and_wait("오오오, 저군요.");
       await digital.say_and_wait('いええええ？ ちがう、チョコなの？');
       await digital.say_and_wait([
-        'こ、これは何という博愛?! こんなマイナーな',
+        "이, 이건 대체 무슨 박애 정신이죠?! 설마 이런 비주류 ",
         digital.uma_sex_title,
-        'を推そうとする人がいる？',
+        "를 파고 싶어 하는 분이 계실 줄이야?",
       ]);
       await you.say_and_wait([
         '何言ってる。俺は君の ',
@@ -4188,26 +4188,26 @@ module.exports = {
         ' だ……それに、自分がマイナーだと思ってたのか……？ ウマ推しのファン数、低くないだろ？',
       ]);
       await era.printAndWait([
-        'そう言われた ',
+        "그 말을 들은 ",
         digital.get_colored_name(),
-        ' は、急にしどろもどろになった。',
+        "은 갑자기 말문이 막힌 듯 버벅거리기 시작했다.",
       ]);
       await digital.say_and_wait(
         'それは……実は私のウマ推し、デビュー前からファンは少なくなかった。前からずっと……同人誌を……',
       );
       await era.printAndWait([
-        'え？ たしかに聞いたことがある。',
+        "어라? 그러고 보니 ",
         digital.get_colored_name(),
-        ' はデビュー前から、ある方面では有名だったらしい……',
+        "은 데뷔 전부터 어떤 방면에서 꽤 유명했다는 소문을 들은 적이 있는 것 같았다……",
       ]);
       await digital.say_and_wait([
-        'でも！ ',
+        "하지만! ",
         callname,
-        ' のこの精神、これこそオタクの鑑！ 君となら、十年でも、もっとでも、一緒にバレンタインを過ごせそう！',
+        "의 그런 정신, 그것이야말로 오타쿠의 귀감입니다! 당신과 함께라면 10년이든 그보다 더 오래든, 매년 발렌타인을 같이 보낼 수 있을 것 같아요!",
       ]);
       await era.printAndWait([
         digital.get_colored_name(),
-        ' と話しながら、騒がしいバレンタインを過ごした。',
+        "과 두런두런 이야기를 나누며 소란스러운 발렌타인을 보냈다.",
       ]);
     };
     f.title = title;
