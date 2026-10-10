@@ -25,7 +25,7 @@ module.exports = {
     );
     era.print([tachyon.get_colored_name(), "은 실험으로 한창 바쁜 모양이었다."]);
   },
-  // [번역 대상] office_prepare
+  // [번역 완료] office_prepare
   async office_prepare(tachyon, callname) {
     if (Math.random() < 0.5) {
       await tachyon.say_and_wait([
@@ -35,10 +35,10 @@ module.exports = {
       ]);
     } else {
       await tachyon.say_and_wait(
-        'ええ？ なぜまだレース前の準備をするのです？ レースは試験と同じ、普段の蓄積を測るものですわ……',
+        '에이, 왜 굳이 레이스 전에 준비를 해야 하는 거지? 레이스도 시험처럼 평소의 실력을 측정하는 것 아닌가……',
       );
       await tachyon.say_and_wait(
-        'もしかしてあなた、試験前になって慌てて詰め込んで単位を祈るタイプですの？',
+        '설마 자네, 시험 직전에야 벼락치기를 해서 낙제를 면하길 바라는 그런 부류인가?',
       );
     }
   },
@@ -1687,30 +1687,30 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(tachyon, callname, jpy) {
     if (jpy > 0) {
       await tachyon.say_and_wait(
-        'おやおや、釣れた分は明日の弁当の材料にしましょう',
+        '오호라, 낚아 올린 건 내일 도시락 재료로 써먹기로 하지.',
       );
     } else {
       await tachyon.say_and_wait([
-        'くっ……なぜ釣れないのです……',
+        '으으…… 왜 한 마리도 안 잡히는 건가……',
         callname,
-        '、この魚たちが『うっかり』水中の『不明物質』を飲んで浮いてきたら、それも釣果に数えてよろしいですわよね？ だめですの？',
+        ', 만약 이 물고기들이 강물에 섞인 『정체불명의 물질』을 『실수로』 마시고 떠오른다면, 그것도 내가 낚은 걸로 쳐 주겠나? 안 되나?',
       ]);
     }
   },
 
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(tachyon, callname, first2shop) {
     await tachyon.say_and_wait([
       callname,
-      '、早くついてこないと、明日の薬は倍ですわよ',
+      ', 빨리 따라오지 않으면 내일 약은 두 배로 늘릴 걸세.',
     ]);
     if (first2shop) {
       await tachyon.say_and_wait(
-        'そういえばこの場所、以前出店したとき……いいえ、何でもありません、気にしないで',
+        '맞다, 이 장소. 예전에 노점을 열었을 때…… 아니, 아무것도 아니네. 신경 쓰지 말게.',
       );
     }
   },
@@ -1784,25 +1784,25 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(tachyon, callname) {
     const buffer = [
       () =>
         tachyon.say_and_wait(
-          '抽選……運という当てにならないものより、金か別の力で賞品を得るほうが正当ではありませんか？',
+          '경품 추첨이라…… 운 같은 불확실한 요소에 기대기보다 재력이나 다른 힘을 동원해 확실하게 경품을 손에 넣는 것이 더 정당한 방법 아니겠나?',
         ),
       () =>
         tachyon.say_and_wait([
-          'ええ～～こんなに操作しやすい箱のくじを、本気で引くのです？ ',
+          '에이~~ 이런 조작 가능성이 다분한 상자에서 정말 뽑기를 하려는 건가, ',
           callname,
-          '？ ……いいえ、異存はありませんわ。ただ念のため……箱の中に本当に大当たりはあるのですか？',
+          '? ……뭐, 말리지는 않겠네만, 만약을 위해…… 저 경품 상자 안에 정말 1등 당첨권이 들어 있는지 확인해 봐도 되겠나?',
         ]),
       async () => {
         await tachyon.say_and_wait(
-          '抽選ですわね。では準備を………よろしい、どうぞ。ん？ 急に眼鏡ですって？',
+          '추첨인가. 그럼 준비를 좀 할 테니……… 됐네, 시작하게. 음? 갑자기 왜 안경을 쓰냐고?',
         );
         await tachyon.say_and_wait(
-          '何でもありませんわ。箱を透視する眼鏡です。それとも、運などという当てにならないものを、私が信じると思います？',
+          '별거 아니네, 이건 그저 상자 속을 꿰뚫어 볼 수 있는 투시 안경일 뿐이라네. 설마 자네, 내가 정말 운 같은 불확실한 요소를 믿을 거라고 생각한 건 아니겠지?',
         );
       },
     ];
@@ -1857,20 +1857,20 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(tachyon) {
-    await tachyon.say_and_wait('……この映画館……外見は綺麗ですわね……');
+    await tachyon.say_and_wait('……이 영화관…… 외관은 참 예쁘게 생겼군……');
     era.printButton('「……」', 1);
     await era.input();
-    await tachyon.say_and_wait('ちょっと、何か言いなさい……');
+    await tachyon.say_and_wait('이보게, 뭐라고 말 좀 해 보게나……');
     await tachyon.say_and_wait(
-      '連れの放つ光が明るすぎて入場を拒まれるなど、このアグネスタキオンでも初めてですわ……',
+      '동행인의 몸에서 뿜어져 나오는 빛이 너무 밝아서 입장을 거절당하다니, 이 아그네스 타키온조차 생전 처음 겪는 일이로군……',
     );
-    await tachyon.say_and_wait('何か言いなさい。謝罪でも何でも');
-    era.printButton('「こうなったのは君のせいだろ！？」', 1);
+    await tachyon.say_and_wait('사과라도 좋으니 한마디라도 해 보게.');
+    era.printButton('「애초에 나를 이렇게 만든 게 누구인데 그래!?」', 1);
     await era.input();
     await era.printAndWait(
-      '結局ふたりは上機嫌で実験室に戻り、NetFlOx を観た。',
+      '결국 두 사람은 오순도순 실험실로 돌아가 NetFlOx를 보았다.',
     );
   },
 
@@ -2131,21 +2131,21 @@ module.exports = {
     }
   },
 
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(tachyon) {
     if (Math.random() < 0.5) {
       await tachyon.say_and_wait([
-        'ちっ……この機体、遅すぎますわ。',
+        '쳇…… 이 기체는 너무 느리군. ',
         tachyon.uma_sex_title,
-        'の出力に全く追いつきませんわよ！',
+        '의 출력 속도를 전혀 따라오지 못하는구만!',
       ]);
     } else {
-      await tachyon.say_and_wait('格闘ゲーム？ 負けたら相手の言うことを聞く？');
+      await tachyon.say_and_wait('격투 게임? 진 쪽이 상대의 말을 듣기로 하는 건가?');
       await tachyon.say_and_wait(
-        'ふふ、コマンド表を全部暗記した私に勝てますの？',
+        '후후, 커맨드 리스트를 전부 외운 나를 이길 방법이 있을 것 같은가?',
       );
       await tachyon.say_and_wait(
-        '……待ちなさい！ 隅に籠って遠距離ばかりは、ひどすぎますわ！',
+        '……잠깐! 구석에 박혀서 원거리 공격만 계속하는 건 너무 비겁하지 않은가!',
       );
     }
   },
@@ -3465,17 +3465,17 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] talk_tenn_spr
+  // [번역 완료] talk_tenn_spr
   async talk_tenn_spr(tachyon, you, tenn_spr) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '은(는) ',
       tachyon.get_colored_name(),
-      ' と ',
+      '와(과) ',
       tenn_spr,
-      ' の話をしたかったが、',
+      '에 관해 이야기하고 싶었지만, ',
       tachyon.sex,
-      'はすぐに姿を消した',
+      '는 곧 모습을 감췄다.',
     ]);
   },
 
