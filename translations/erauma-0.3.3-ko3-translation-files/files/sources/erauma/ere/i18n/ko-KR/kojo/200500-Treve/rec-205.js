@@ -13,7 +13,7 @@ module.exports = {
    * @param {CharaTalk} you プレイヤー
    * @param {PrintedSpan} callname トレヴのプレイヤーへの呼び方
    */
-  // [번역 대상] rec
+  // [번역 완료] rec
   async rec(treve, taste, may, you, callname) {
     const ret = [];
     await era.printAndWait(
@@ -53,7 +53,7 @@ module.exports = {
         '사방을 둘러보니 사람을 마중 나온 이들과 차량이 가득했지만, 파리 트레센의 직원이 어디 있는지는 알 수 없었다.',
       );
       await era.printAndWait(
-        `${you.name} は少し後悔した。${may.name} が送ると言ったのを、${you.name} はきっぱり断ったのだ。`,
+        `${you.name}은(는) 조금 후회했다. ${may.name}가 바래다주겠다고 했지만 ${you.name}이(가) 단호하게 거절했기 때문이다.`,
       );
       await era.printAndWait(
         '이 나이에 장거리 여행을 안 해본 것도 아니고, 이 정도 어려움은 쉽게 이겨낼 수 있을 거라 생각했다.',
@@ -87,7 +87,7 @@ module.exports = {
       era.drawLine();
       if (era.get('flag:当前声望') >= 1000) {
         await era.printAndWait(
-          `${you.name} のトレーナー歴は、もう短いとは言えない。長い歳月に洗われれば、あの取るに足らない功績も、誰にでもできたことだったと思いたくなる。`,
+          `${you.name}의 트레이너 경력은 이제 짧다고 할 수 없다. 오랜 세월이 흐르고 나니, 그때의 보잘것없는 공적도 누구나 해낼 수 있었던 일이라고 생각하고 싶어진다.`,
         );
       }
       await era.printAndWait(
@@ -161,12 +161,12 @@ module.exports = {
         `${you.name}이(가) 손에 든 휴대폰을 가볍게 흔들어 보이자, 갈색 털의 ${treve.sex}는 고개를 끄덕였다.`,
       );
       await era.printAndWait(
-        `とりあえず、このまま電話しても ${you.name} の迷惑にはならない。`,
+        `일단 지금 전화를 걸어도 ${you.name}에게 폐가 되지는 않을 것이다.`,
       );
       era.printButton('「실력을 봐야 알겠죠.」', 1);
       await era.input();
       await taste.say_and_wait(
-        `賛 辞！特に頭が良くて、レース展開がとても上手。${treve.sex}の冷静な走りは新人らしくなくて、教官もすぐ教えることがなくなったの。`,
+        `칭찬! 특히 머리가 좋고 레이스 운영이 아주 뛰어나. ${treve.sex}의 침착한 달리기는 신인답지 않았고, 지도 교관도 금세 가르칠 것이 없어졌지.`,
       );
       await era.printAndWait(
         `${you.name}은(는) 듣기만 해도 우수한 ${treve.uma_sex_title}일 거라 생각했다. 그렇다면 스카우트되지 않은 이유는 아마도…`,
@@ -296,7 +296,7 @@ module.exports = {
       era.printButton('「이상한 건 아니지.」', 1);
       await era.input();
       await era.printAndWait(
-        `やり方が悪い。${you.name} は先に${treve.sex}と同じベンチに座り、それから ${you.name} を見る ${treve.name} に向き直る。`,
+        `방법이 잘못됐다. ${you.name}은(는) 우선 ${treve.sex}와 같은 벤치에 앉은 뒤, 자신을 바라보는 ${treve.name}에게 몸을 돌렸다.`,
       );
       era.printButton(`상황을 설명한다`, 1);
       await era.input();
@@ -474,9 +474,9 @@ module.exports = {
             treve.uma_sex_title,
             '는 연습을 끝내려던 ',
             you.get_colored_name(),
-            ' に近づき、もう一周走りたいと ',
+            '에게 다가가 한 바퀴만 더 달리고 싶다고 ',
             you.get_colored_name(),
-            ' に告げる。',
+            '에게 말했다.',
           ]);
           era.printButton('「상관은 없는데, 왜 그렇게까지 무리하려는 거야?」', 1);
           await era.input();
