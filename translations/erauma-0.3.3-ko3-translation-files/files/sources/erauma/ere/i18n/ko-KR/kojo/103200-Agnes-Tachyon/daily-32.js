@@ -793,78 +793,78 @@ module.exports = {
     await era.printAndWait('たまには、こんな一日も悪くないのかもしれない。');
   },
 
-  // [번역 대상] event_rooftop_a
+  // [번역 완료] event_rooftop_a
   async event_rooftop_a(tachyon, you, callname) {
-    await tachyon.say_and_wait('ふんふんふん～～');
+    await tachyon.say_and_wait('흥흥흥~~');
     await era.printAndWait([
-      '今日も ',
+      '오늘도 ',
       you.get_colored_name(),
-      ' は弁当を持って ',
+      '은(는) 도시락을 챙겨 ',
       tachyon.get_colored_name(),
-      ' と屋上で昼食をとった。',
+      '와 함께 옥상에서 점심을 먹었다.',
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'は微風を楽しみながら、嬉しそうに弁当の鶏唐を挟んだ。',
+      '은(는) 산들바람을 맞으며 기분 좋게 도시락의 닭튀김을 집어 들었다.',
     ]);
-    await era.printAndWait('突然、微風が一瞬で強風に変わった。');
-    await tachyon.say_and_wait('あ');
-    await era.printAndWait('箸に挟んだ鶏唐が、強まった風で地面へ落ちた');
-    await era.printAndWait('ああ……惜しい');
-    await era.printAndWait('でも大丈夫、弁当にはまだ……');
+    await era.printAndWait('그 순간 산들바람이 순식간에 거센 바람으로 바뀌었다.');
+    await tachyon.say_and_wait('아.');
+    await era.printAndWait('젓가락으로 집었던 닭튀김이 강해진 바람에 바닥으로 떨어졌다.');
+    await era.printAndWait('아아…… 아깝군.');
+    await era.printAndWait('하지만 괜찮네. 도시락에는 아직……');
     await era.printAndWait([
-      'そのとき、',
+      '바로 그때 ',
       you.get_colored_name(),
-      ' は ',
+      '은(는) ',
       tachyon.get_colored_name(),
-      ' が落ちた鶏唐をそのまま挟むのを見た',
+      '이(가) 바닥에 떨어진 닭튀김을 그대로 집어 드는 것을 보았다.',
     ]);
-    await tachyon.say_and_wait('では、いただきます——');
-    era.printButton('「待て！？」', 1);
+    await tachyon.say_and_wait('그럼 잘 먹겠네——');
+    era.printButton('「잠깐!?」', 1);
     await era.input();
     await tachyon.say_and_wait([
-      'ん？ 何か問題ですの ',
+      '음? 무슨 문제라도 있나, ',
       callname,
-      '。三秒ルールをご存じないのですか？',
+      '? 3초 법칙도 모르는 건가?',
     ]);
     await era.printAndWait([
-      'いや、なぜ ',
+      '아니, ',
       tachyon.get_colored_name(),
-      ' が三秒ルールなどという根拠のない説を信じるのかはさておき、今のは明らかに三秒を超えている！？',
+      '이(가) 그런 근거 없는 3초 법칙을 믿는 건 둘째 치고, 지금은 명백히 3초가 지났잖아!?',
     ]);
     await tachyon.say_and_wait([
-      '……はあ、',
+      '……하아, ',
       callname,
-      '、科学的に言えば、',
+      '. 과학적으로 말하자면 ',
       tachyon.uma_sex_title,
-      'の胃腸はそんなことで壊れるほど脆弱ではありませんわよ',
+      '의 위장은 그런 일로 탈이 날 만큼 연약하지 않네.',
     ]);
-    await you.say_and_wait('そういう問題じゃないだろ！？');
-    await tachyon.say_and_wait('とにかく私は鶏唐を食べますわ！');
-    await you.say_and_wait('弁当にまだあるだろ！？');
+    await you.say_and_wait('그런 문제가 아니잖아!?');
+    await tachyon.say_and_wait('어쨌든 난 닭튀김을 먹겠네!');
+    await you.say_and_wait('도시락에 더 있잖아!?');
     await era.printAndWait([
       you.get_colored_name(),
-      ' の固持で、',
+      '의 완강한 만류 덕분에 ',
       tachyon.get_colored_name(),
-      ' が落ちた鶏唐を食べるのは止められた',
+      '이(가) 바닥에 떨어진 닭튀김을 먹는 일은 막을 수 있었다.',
     ]);
     await era.printAndWait([
-      '代償として午後ずっと、',
+      '그 대가로 오후 내내 ',
       tachyon.sex,
-      'は恨めしげな目で ',
+      '은(는) 원망스러운 눈으로 ',
       you.get_colored_name(),
-      ' を見ていた',
+      '을(를) 쳐다보았다.',
     ]);
     await era.printAndWait([
-      '夜、眠りについても、',
+      '밤에 잠들어서도 ',
       you.get_colored_name(),
-      ' の耳には ',
+      '의 귓가에는 ',
       tachyon.get_colored_name(),
-      ' の恨めしい悲鳴が残っていた',
+      '의 원망 어린 비명이 남아 있었다.',
     ]);
-    await tachyon.say_and_wait('私の鶏唐……');
+    await tachyon.say_and_wait('내 닭튀김……');
     await you.say_and_wait(
-      ['……明日また', tachyon.sex, 'に唐揚げを作ろう'],
+      ['……내일 또 ', tachyon.sex, '에게 닭튀김을 만들어 줘야겠군.'],
       true,
     );
   },
@@ -4049,9 +4049,9 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ws_punishment1
+  // [번역 완료] ws_punishment1
   ws_punishment1: (() => {
-    const title = '実験記録：ウマ娘化';
+    const title = '실험 기록: 우마무스메화';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -4059,49 +4059,49 @@ module.exports = {
     const f = async (tachyon, you) => {
       if (era.get('love:32') < 75) {
         await tachyon.say_and_wait(
-          'おや、モルモット……いいえ、モルモットさん、来ましたわね……',
+          '오호, 모르모트…… 아니, 모르모트 씨. 찾아왔군……',
         );
         await tachyon.say_and_wait(
-          'ん？ どうして分かったかですの？ ふふ、そうですわね。あのときは昏睡状態でしたもの。',
+          '응? 어떻게 알았느냐고? 후후, 그러고 보니 그때는 의식이 없었지.',
         );
-        await tachyon.say_and_wait('手術は、この私が執刀しましたわ。');
+        await tachyon.say_and_wait('수술은 바로 내가 집도했다네.');
         await tachyon.say_and_wait(
-          'トレーナーとして無能なのは最大の罪。その点であなたは、十悪不赦と言えますわ。',
-        );
-        await tachyon.say_and_wait(
-          'でも喜びなさい。私の研究のおかげで、あなたは二度目の機会を得たのですから。',
+          '트레이너로서 무능하다는 것은 가장 큰 죄지. 그런 의미에서 자네는 도저히 용서할 수 없는 죄인이군.',
         );
         await tachyon.say_and_wait(
-          'そもそも中央トレセンに入れる以上、どこか他人より強いところがあるはず。発掘されるかどうかだけですわ。',
+          '하지만 기뻐하게. 내 연구 덕분에 자네는 두 번째 기회를 얻었으니.',
         );
         await tachyon.say_and_wait(
-          'ウマ娘になったあなた、案外この方面に才があるかもしれませんわよ？',
+          '애초에 중앙 트레센에 입학할 정도라면 남보다 뛰어난 점 하나쯤은 있겠지. 그 재능을 찾아내느냐가 문제일 뿐.',
         );
         await tachyon.say_and_wait(
-          'せいぜい頑張りなさい、モルモットさん……このもう一度の機会で、必死にもがきなさい。',
+          '우마무스메가 된 자네에게 의외로 이쪽 분야의 재능이 있을지도 모르겠군.',
         );
         await tachyon.say_and_wait(
-          'さもなくば……次に手術台で私を見たあとに起きること、あなたは絶対に体験したくないはずですわ……いいえ、そうでもないかしら？',
+          '기껏 얻은 두 번째 기회이니 필사적으로 발버둥 쳐 보게, 모르모트 씨.',
         );
         await tachyon.say_and_wait(
-          '本当にそうなったとき、たっぷり可愛がってあげますわ。',
+          '그렇지 않으면…… 다음에 수술대 위에서 나를 본 뒤 벌어질 일은 결코 겪고 싶지 않을 테니까…… 아니, 어쩌면 원할지도 모르겠군?',
+        );
+        await tachyon.say_and_wait(
+          '정말 그렇게 된다면 아주 귀여워해 주겠네.',
         );
       } else {
         await tachyon.say_and_wait(
-          `モルモット……いいえ、${you.actual_name} 君。`,
+          `모르모트…… 아니, ${you.actual_name} 군.`,
         );
-        await tachyon.say_and_wait('ごめんなさい。でも決まりは決まりですわ……');
+        await tachyon.say_and_wait('미안하네. 그래도 규칙은 규칙이니……');
         await tachyon.say_and_wait(
-          'いいえ……私のせいです…………あなたの手術……執刀したのは私ですわ。',
+          '아니…… 내 탓이네………… 자네의 수술을 집도한 것은 나였으니까.',
         );
-        await tachyon.say_and_wait('……ええ、ふふ。');
+        await tachyon.say_and_wait('……그래, 후후.');
         await tachyon.say_and_wait(
-          '安心なさい……私は気にしませんわ。どんな姿になっても、あなたの瞳の光がある限り、同じように愛していますわ。',
+          '걱정하지 말게…… 난 신경 쓰지 않네. 어떤 모습이 되더라도 자네 눈동자의 빛이 남아 있는 한 똑같이 사랑할 테니까.',
         );
         await tachyon.say_and_wait(
-          '…………それに、ウマ娘になったら遊べることも増えますものね？',
+          '…………게다가 우마무스메가 되면 함께 즐길 수 있는 일도 늘어날 테고.',
         );
-        await tachyon.say_and_wait('ふふ、たっぷり可愛がってあげますわ。');
+        await tachyon.say_and_wait('후후, 잔뜩 귀여워해 주겠네.');
       }
     };
     f.title = title;
