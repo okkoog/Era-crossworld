@@ -1715,69 +1715,69 @@ module.exports = {
     }
   },
 
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(tachyon, callname) {
     const buffer = [
       () =>
         tachyon.say_and_wait([
-          'ええ？ なぜ ',
+          '에에? 어째서 ',
           callname,
-          ' はそんなにクレーンが上手いのです？ やる気に白青回……いいえ、すみません、何のことかわかりませんわ',
+          '은(는) 크레인 게임을 그렇게 잘하는 건가? 의욕에 흰색, 파란색…… 아니, 아무것도 아니네. 무슨 말인지 나도 모르겠군.',
         ]),
       () =>
         tachyon.say_and_wait([
-          'おや、私のぬいぐるみがありますわね？ ……実物より可愛い？ 待ちなさい、',
+          '오호, 내 인형이 있군? ……실물보다 귀엽다고? 잠깐, ',
           callname,
-          '、その言葉の意味を説明しなさい',
+          ', 방금 말이 무슨 뜻인지 설명해 보게.',
         ]),
       async () => {
         await tachyon.say_and_wait(
-          'ちっ……こんなに笑わなければいけないのですか？',
+          '쳇…… 이렇게까지 웃어야 하는 건가?',
         );
         await tachyon.say_and_wait(
-          'いいえ、私が面倒くさいのではありません。このプリクラという企画自体に不合理が多すぎますわ！ …………はあ、わかりましたわ。3、2、1、チーズ',
+          '아니, 내가 까탈스러운 게 아니라 이 스티커 사진기라는 것 자체가 지나치게 비합리적인 걸세! …………하아, 알겠네. 3, 2, 1, 치즈.',
         );
       },
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(tachyon, you, callname) {
     const buffer = [
       async () => {
         await tachyon.say_and_wait(
-          'ん？ 実験器具の買い出しをデートとは呼ばない、ですって？',
+          '음? 실험 도구를 사러 다니는 건 데이트라고 부르지 않는다고?',
         );
         await tachyon.say_and_wait([
           callname,
-          '、デートという言葉は極めて抽象的ですわ。あなたがデートだと思えば、それがデートです。わかりました？',
+          ', 데이트라는 단어는 극히 추상적이네. 자네가 데이트라고 생각하면 그게 곧 데이트인 걸세. 알겠나?',
         ]);
         await tachyon.say_and_wait([
-          '私のような超絶美',
+          '나 같은 절세미인 ',
           tachyon.teen_sex_title,
-          'と外出できる時点で、もうデートと同義でしょう。',
+          '과 외출할 수 있다는 것 자체가 이미 데이트와 동의어 아니겠나?',
         ]);
       },
       async () => {
-        await tachyon.say_and_wait('街歩き、お茶、雑談、食事');
+        await tachyon.say_and_wait('거리 산책, 차 마시기, 잡담, 식사');
         await tachyon.say_and_wait(
-          'これが一般的なデートですの？ ……退屈ですわね',
+          '이게 일반적인 데이트인가? ……지루하군.',
         );
       },
     ];
     if (era.get('relation:32:0') < 50) {
       buffer.push(() =>
         tachyon.say_and_wait(
-          'デートが実験助手兼実験体のやる気をどれだけ上げるかの分析、ですの？ ええ……研究課題にしてみる価値はありますわ',
+          '데이트가 실험 조수 겸 실험체의 의욕을 얼마나 높이는지 분석하자고? 흠…… 연구 과제로 삼을 가치는 있겠군.',
         ),
       );
     } else if (era.get('relation:32:0') < 225) {
       buffer.push(() =>
         tachyon.say_and_wait([
-          'デート？ ……',
+          '데이트? ……',
           callname,
-          '、普通の科学者は自分の実験動物とデートなどしませんわ。私の言いたいことはわかります？',
+          ', 보통 과학자는 자기 실험동물과 데이트하지 않는다네. 무슨 뜻인지 알겠나?',
         ]),
       );
     }
@@ -1809,48 +1809,48 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(tachyon, callname) {
     const buffer = [
       async () => {
         await tachyon.say_and_wait('Winning the soul～～');
         await tachyon.say_and_wait([
-          '……ふふん、どうです、',
+          '……후훗, 어떤가, ',
           callname,
-          '？ 私の喉は悪くありませんでしょう？ ……何ですって？ NEXT FRONTIER が聴きたい？ それとも Special Record？',
+          '? 내 노래 실력도 나쁘지 않지? ……뭐라고? NEXT FRONTIER를 듣고 싶다고? 아니면 Special Record?',
         ]);
-        await tachyon.say_and_wait(['……', callname, '、わざとですわね？']);
+        await tachyon.say_and_wait(['……', callname, ', 일부러 그러는 거지?']);
       },
       async () => {
         await tachyon.say_and_wait(
           'Выходила на берег Катюша,На высокий берег, на крутой……',
         );
         await tachyon.say_and_wait(
-          'ロシア語はわからないはずなのに、歌っていると急に読める気がするのですわ……',
+          '러시아어는 모를 텐데, 노래하다 보면 갑자기 읽을 수 있을 것 같은 기분이 든단 말이지……',
         );
         await tachyon.say_and_wait(
-          'やはりそうですわね。生まれながらにして知るのも、天才の悩みですわ',
+          '역시 그렇군. 태어나면서부터 아는 것도 천재의 고민이라네.',
         );
       },
       async () => {
         await tachyon.say_and_wait([
-          'おや？ ',
+          '오호? ',
           callname,
-          '、なかなか上手ではありませんか……',
+          ', 꽤 잘 부르지 않는가……',
         ]);
         await tachyon.say_and_wait(
-          'でもサビでそんなに昂ぶらないでくれますかしら？',
+          '그렇지만 후렴구에서 그렇게 흥분하지는 말아 주겠나?',
         );
         await tachyon.say_and_wait(
-          'あなたが昂ぶるたび、個室が眩しすぎて何も見えなくなるのですもの。よく歌詞が読めますわね……',
+          '자네가 흥분할 때마다 방 안이 너무 눈부셔서 아무것도 보이지 않는다네. 그런 상태에서 가사를 어떻게 읽는지 신기하군……',
         );
       },
       async () => {
         await tachyon.say_and_wait(
-          'ええ……曲の雰囲気に合わせて色まで変えるのですか。七色ネオン版までありますの……',
+          '에에…… 곡 분위기에 맞춰 몸 색깔까지 바꾸는 건가? 무지개 네온 버전까지 있다니……',
         );
         await tachyon.say_and_wait(
-          'いいえ、発明者の私が、自分の薬にそんな機能があるとは知りませんでしたわ。恐ろしい……',
+          '아니, 발명자인 나조차 내 약에 그런 기능이 있는 줄 몰랐네. 무섭군……',
         );
       },
     ];
@@ -2222,23 +2222,23 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] out_church
+  // [번역 완료] out_church
   async out_church(tachyon, you, callname, plan_b) {
     const buffer = [];
     if (plan_b) {
       buffer.push(
         async () => {
-          await tachyon.say_and_wait('……神よ');
+          await tachyon.say_and_wait('……신이여.');
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は退屈そうに神社を見つめ、何を考えているのかわからない',
+            '은(는) 지루한 표정으로 신사를 바라보았다. 무슨 생각을 하는지는 알 수 없었다.',
           ]);
         },
         async () => {
-          await tachyon.say_and_wait('もし……神が、なら私は……');
+          await tachyon.say_and_wait('만약…… 신이 그렇다면, 나는……');
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は独り言を呟いた',
+            '은(는) 혼잣말을 중얼거렸다.',
           ]);
         },
       );
@@ -2246,24 +2246,24 @@ module.exports = {
       buffer.push(
         async () => {
           await tachyon.say_and_wait(
-            '神など、本当にいるのかしら？ いいえ、三女神は知っていますわ。でも……突き詰めれば三女神も、より強い力を握った凡人……',
+            '신이 정말 존재하기는 하는가? 물론 삼여신은 알고 있네. 하지만…… 따지고 보면 삼여신도 더 강한 힘을 손에 넣은 평범한 존재일 뿐……',
           );
           await era.printAndWait([
             you.get_colored_name(),
-            ' は慌てて ',
+            '은(는) 황급히 ',
             tachyon.get_colored_name(),
-            ' の口を押さえた。',
+            '의 입을 틀어막았다.',
           ]);
         },
         () =>
           tachyon.say_and_wait([
-            'まあまあ、',
+            '이보게, ',
             callname,
-            '、神より実験に戻りましょう',
+            ', 신보다는 실험을 하러 돌아가세.',
           ]),
         () =>
           tachyon.say_and_wait(
-            '大吉か大凶か？ 構いませんわ。そんなものは神が決めるのではなく、私が作るのです',
+            '대길이든 대흉이든 상관없네. 그런 건 신이 정하는 게 아니라 내가 만들어 내는 것이니까.',
           ),
       );
     }
@@ -2582,19 +2582,19 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] select_when_escape
+  // [번역 완료] select_when_escape
   select_when_escape(tachyon, callname) {
-    tachyon.say(['不思議ですわね、', callname, '']);
+    tachyon.say(['참 신기하군, ', callname, '']);
     tachyon.say([
-      '地下室にいたころのあなたの瞳は、ほとんど光を失っていたというのに……今はまた、人を吸い込む輝きを取り戻していますわ。',
+      '지하실에 있었을 때 자네의 눈동자는 빛을 거의 잃고 있었는데…… 지금은 다시 사람을 빨아들일 듯한 광채를 되찾았군.',
     ]);
     tachyon.say([
-      '『私の眼に特別があるなら、それはタキオンの光の反射です』？ ……ふふ、',
+      '『내 눈에 특별한 빛이 있다면 그건 타키온의 빛을 반사하기 때문이야』라고? ……후후, ',
       callname,
-      '、珍しく口が達者ですわね……',
+      ', 평소답지 않게 말솜씨가 좋구먼……',
     ]);
     tachyon.say([
-      'では……もし私の瞳がまた埃をかぶったら、もう一度、あなたが拭き取ってくださいな。',
+      '그렇다면…… 언젠가 내 눈동자에 다시 먼지가 쌓이면 자네가 한 번 더 닦아 주게.',
     ]);
   },
 
@@ -3479,58 +3479,58 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ws_cook02
+  // [번역 완료] ws_cook02
   async ws_cook02(tachyon, you) {
     await era.printAndWait([
-      '昼休み、なぜか ',
+      '점심시간, 어째서인지 ',
       tachyon.get_colored_name(),
-      ' はわざと',
+      '은(는) 일부러 ',
       tachyon.sex,
-      'のミキサーを実験机に据え、出力を最大にして大きな音を立て、',
+      '의 믹서를 실험대 위에 올려놓고 출력을 최대로 높여 요란한 소음을 내며 ',
       tachyon.sex,
-      'の「昼食」を掻き回し始めた',
+      '의 『점심』을 갈아대기 시작했다.',
     ]);
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' はふと思い出した。先週は忙しすぎて',
+      '은(는) 문득 떠올렸다. 지난주는 너무 바빠서 ',
       tachyon.sex,
-      'の弁当を忘れていた……今週は必ず覚えよう',
+      '의 도시락을 잊어버렸다…… 이번 주에는 반드시 챙기자.',
     ]);
   },
 
-  // [번역 대상] ws_cook03
+  // [번역 완료] ws_cook03
   async ws_cook03(tachyon, you, callname) {
     await tachyon.say_and_wait([
       callname,
-      '、九仞の功を一簣に虧く、という言葉はご存知でしょう、',
+      ', 공든 탑도 마지막 한 삽을 빠뜨리면 무너진다는 말을 알고 있겠지?',
     ]);
     await tachyon.say_and_wait(
-      '言い換えれば、百里を行く者は九十を半ばとす。続けられる者だけが成功するのです、',
+      '달리 말해 백 리를 가는 사람은 구십 리를 절반으로 여겨야 하는 법. 끝까지 계속하는 자만이 성공하네.',
     );
     await tachyon.say_and_wait(
-      'レースの世界も同じですわ。ステータスは下がるしスキルは不発する。でも育成で学んだ知識は、あなたを欺きません、',
+      '레이스에서도 마찬가지일세. 능력치가 떨어지고 스킬이 불발될 수는 있지. 하지만 육성을 통해 얻은 지식은 자네를 배신하지 않네.',
     );
     await tachyon.say_and_wait(
-      'ええ、サポートカードが他人より劣っていても構いませんわ。6RでもSS級は育てられます。全ては努力と継続の問題……',
+      '그래, 서포트 카드가 남보다 부족해도 괜찮네. 6R로도 SS급을 육성할 수 있으니까. 모든 건 노력과 끈기의 문제지……',
     );
     era.println();
     await era.printAndWait([
-      '今日トレーナー室に入った途端、',
+      '오늘 트레이너실에 들어오자마자 ',
       tachyon.get_colored_name(),
-      ' はわけのわからない長広舌を始めた',
+      '은(는) 도무지 알 수 없는 장광설을 늘어놓기 시작했다.',
     ]);
     era.println();
     await tachyon.say_and_wait(
-      'つまり、言いたいのは…………努力という点は、料理でも同じですわ',
+      '그러니까 내 말은………… 요리도 노력이 중요하다는 걸세.',
     );
     era.println();
     await era.printAndWait([
-      'その一言で、',
+      '그 말을 듣고 ',
       you.get_colored_name(),
-      ' はやっと気づいた。この二週間は忙しすぎて、',
+      '은(는) 비로소 깨달았다. 지난 2주는 너무 바빠서 ',
       you.get_colored_name(),
-      ' はまた忘れていた。だめだ、今度こそ覚えよう……',
+      '은(는) 또 잊어버린 것이다. 안 되겠어. 이번에는 반드시 기억하자……',
     ]);
   },
 
