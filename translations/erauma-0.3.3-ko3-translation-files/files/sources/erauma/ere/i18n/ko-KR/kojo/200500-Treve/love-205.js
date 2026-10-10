@@ -4,66 +4,66 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/200500-Treve/love-205"),
 
-  // [번역 대상] 49-1
+  // [번역 완료] 49-1
   '49-1': (() => {
-    const title = 'Un amour à taire（隠しておく恋）';
+    const title = 'Un amour à taire (숨겨 두는 사랑)';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (treve, you) => {
       await treve.print_and_wait([
-        'ある夜、',
+        '어느 날 밤, ',
         treve.get_colored_name(),
-        ' は寮で、',
+        '은(는) 기숙사에서 ',
         you.get_colored_name(),
-        ' とフランスでいっしょに聴いた歌を思い出した。',
+        '와 프랑스에서 함께 들었던 노래를 떠올렸다.',
       ]);
       era.setColor(treve.color);
       era.setAlign('center');
       await era.printAndWait(
-        '過ぎた日が私たちを前へ導き、もっと醒めた目で見させる。',
+        '지나간 날들은 우리를 앞으로 이끌고, 한결 냉철한 눈으로 세상을 바라보게 하네.',
       );
       await era.printAndWait(
-        '疑いは危うく、命取りにもなる。感情は、それほど脆い。',
+        '의심은 위험하고 때로는 치명적이지. 감정이란 그토록 연약한 것.',
       );
-      await era.printAndWait('希望に満ちていようと、運に任せようと。');
+      await era.printAndWait('희망으로 가득하든, 운명에 몸을 맡기든.');
       await era.printAndWait(
-        'すべては天のまま。ならば、成り行きに身を委ねよう。',
+        '모든 것은 하늘의 뜻대로. 그렇다면 흘러가는 대로 몸을 맡기자.',
       );
-      await era.printAndWait('別れと再会は、私たちの共有する記憶。');
-      await era.printAndWait('愛は、私たちが思うよりずっと堅い。');
-      await era.printAndWait('私のそばにいるとき、あなたは何をしているの？');
-      await era.printAndWait('時が、神秘の色をまとう。');
-      await era.printAndWait('柔らかい夜風が、ゆっくり通り過ぎる。');
-      await era.printAndWait('愛は、私たちが思うよりずっと堅い。');
-      await era.printAndWait('あるいは、籠の中で楽しく生きるのか。');
+      await era.printAndWait('이별과 재회는 우리가 함께 간직한 기억.');
+      await era.printAndWait('사랑은 우리가 생각하는 것보다 훨씬 굳건해.');
+      await era.printAndWait('내 곁에 있을 때, 당신은 무엇을 하고 있나요?');
+      await era.printAndWait('시간은 신비로운 빛깔을 띠고.');
+      await era.printAndWait('부드러운 밤바람이 천천히 스쳐 지나가네.');
+      await era.printAndWait('사랑은 우리가 생각하는 것보다 훨씬 굳건해.');
+      await era.printAndWait('아니면 새장 속에서 즐겁게 살아갈 것인가.');
       await era.printAndWait(
-        '私たちがいなければ、彼らの選択に何の意味がある？',
+        '우리가 없다면 그들의 선택에 무슨 의미가 있을까?',
       );
-      await era.printAndWait('愛は、私たちよりずっと強い……');
+      await era.printAndWait('사랑은 우리보다 훨씬 강해……');
       await era.printAndWait(
-        '人は、それで足りると言う。もっと愛するために、そう言う。',
-      );
-      await era.printAndWait(
-        'だが、これは私たちの愛でなければならない。私たちより強い、その愛。',
+        '사람들은 그것으로 충분하다고 말하지. 더 깊이 사랑하기 위해 그렇게 말해.',
       );
       await era.printAndWait(
-        'いっしょにいる通行証があれば、それで足りると私は信じる。',
+        '하지만 이것은 우리의 사랑이어야 해. 우리보다 더 강한 바로 그 사랑.',
       );
       await era.printAndWait(
-        '醒めた口で言うべきだ。これは全部、私たちのせいだ、と。',
+        '함께 있을 수 있는 허락만 있다면 그것으로 충분하다고 나는 믿어.',
       );
-      await era.printAndWait('愛は、私たちよりずっと強い……');
+      await era.printAndWait(
+        '차분한 목소리로 말해야겠지. 이 모든 것은 우리 탓이라고.',
+      );
+      await era.printAndWait('사랑은 우리보다 훨씬 강해……');
       era.setAlign('left');
       era.setColor();
       era.println();
       era.printButton(
-        `「私、こんなに単純なフランスの${treve.child_sex_title}だったのね……」（関係を進める）`,
+        `「저는 이렇게나 단순한 프랑스의 ${treve.child_sex_title}였군요……」(관계를 진전시킨다)`,
         1,
       );
       era.printButton(
-        '「余計なことを考えない。寝ないと師匠に叱られるわ。」（当面は進めない）',
+        '「쓸데없는 생각은 하지 말자. 자지 않으면 스승님께 혼날 거야.」(당분간 진전시키지 않는다)',
         2,
       );
       return [await era.input()];
