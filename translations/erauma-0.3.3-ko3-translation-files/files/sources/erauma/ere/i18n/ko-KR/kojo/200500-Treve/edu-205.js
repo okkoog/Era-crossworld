@@ -90,9 +90,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] crazy_fan_end
+  // [번역 완료] crazy_fan_end
   crazy_fan_end: (() => {
-    const title = '慣れない異国の姫';
+    const title = '한 번도 친해지지 못한 이국의 공주';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} montjeu モンジュー
@@ -100,48 +100,48 @@ module.exports = {
      */
     const f = async (treve, montjeu, you) => {
       await era.printAndWait([
-        'ついにある瞬間を境に、',
+        '마침내 어느 순간을 경계로 ',
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         treve.get_colored_name(),
-        ' のつながりは完全に切れた。',
+        '의 연락은 완전히 끊어졌다.',
       ]);
       await era.printAndWait(
-        '担当はトレーナーに会いたがらず、トレーナーは担当に会う勇気がない。',
+        '담당은 트레이너를 만나고 싶어 하지 않았고, 트레이너는 담당을 만날 용기가 없었다.',
       );
       await era.printAndWait([
-        'だが各方面の影響を考えたのか、',
+        '하지만 여러 방면의 영향을 고려했는지, ',
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         treve.get_colored_name(),
-        ' の契約を打ち切れと求める者は現れなかった。',
+        '의 계약을 해지하라고 요구하는 사람은 나타나지 않았다.',
       ]);
       await era.printAndWait([
         montjeu.get_colored_name(),
-        ' が、もう一度フランスの姫を世話する重荷を背負ったらしい。',
+        '가 다시 한번 프랑스의 공주를 돌보는 중책을 짊어진 듯했다.',
       ]);
       era.println();
       await era.printAndWait([
-        '公事で偶然 ',
+        '공적인 일로 우연히 ',
         montjeu.get_colored_name(),
-        ' と会ったとき、',
+        '와 마주쳤을 때, ',
         you.get_colored_name(),
-        ' が受けたのは非難ではなく、',
+        '이(가) 받은 것은 비난이 아니라, ',
       ]);
-      await era.printAndWait('——同情の目だった。');
+      await era.printAndWait('——동정 어린 시선이었다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は慌てて挨拶だけして去るしかなかった。',
+        '은(는) 서둘러 인사만 하고 떠날 수밖에 없었다.',
       ]);
       await era.printAndWait(
-        '見当のつかない同情に不安だったのか、恐れていたのか……',
+        '영문 모를 동정에 불안했기 때문일까, 아니면 두려웠기 때문일까……',
       );
-      await era.printAndWait('ある記者と姫の結末に似て、まったく違う。');
+      await era.printAndWait('어느 기자와 공주의 결말과 닮았으면서도 전혀 달랐다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         treve.get_colored_name(),
-        ' は、もう会わなかった。',
+        '는 두 번 다시 만나지 않았다.',
       ]);
     };
     f.title = title;
