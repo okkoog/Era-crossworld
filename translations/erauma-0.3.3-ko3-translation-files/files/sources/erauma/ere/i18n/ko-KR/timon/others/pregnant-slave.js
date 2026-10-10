@@ -1256,4 +1256,121 @@ module.exports = {
     return f;
   })(),
 
+  // [번역 완료] have_baby_after_raped
+  have_baby_after_raped: (() => {
+    const title = '새로운 생명';
+    /**
+     * 孕袋が強姦で子を産む
+     * @author 幽白書
+     * @param {CharaTalk} you
+     * @param {CharaTalk} father
+     */
+    const f = async (you, father) => {
+      await printAndWait([you.get_colored_name(), ' 은(는) 아이를 품에 안았다——']);
+      const ret = await degeneration_to_evil(
+        '아이에게는 아빠가 필요해',
+        '아니, 나 혼자서도 충분히 키울 수 있어',
+      );
+      if (ret === 1) {
+        await printAndWait(
+          '……어찌 됐든, 나 혼자서 살아갈 수는 있을지 몰라도',
+        );
+        await printAndWait('적어도 아이만큼은 온전한 가정을 갖게 해주고 싶었다.');
+        println();
+        await printAndWait(`아이의 아버지를 바라보며, 품 안의 아이를 ${father.sex}에게 보여주었다`);
+        await printAndWait(`이 아이가 ${father.sex}의 책임감을 일깨워주기를 바랐다`);
+        await printAndWait([
+          father.get_colored_name(),
+          ' 은(는) ', 
+          you.get_colored_name(),
+          ' 과(와) 아이를 꼭 안으며, 앞으로 두 사람을 소중히 대하겠다고 맹세했다.',
+        ]);
+        await printAndWait('개과천선한 아버지와 곁을 지키는 어머니.');
+        await printAndWait(
+          '방금 전까지 품었던 세 가족의 환상이 그대로 현실이 된 것 같았다.',
+        );
+        println();
+        await printAndWait('하지만……');
+        await printAndWait([
+          '임신 주머니로서의 직업적 본능은 ', 
+          you.get_colored_name(),
+          ' 가 놓치지 않았다.',
+        ]);
+        await printAndWait([
+          '자신이 아이에게 젖을 먹이는 모습을 보며 ', 
+          father.get_colored_name(),
+          ' 의 가랑이가 움찔거리는 것을.',
+        ]);
+        println();
+        await printAndWait('가정생활…… 참 좋은 핑계다.');
+        await printAndWait(
+          '그렇다면 아이에게 젖을 먹이는 것과 동시에 입안에 육봉이 박히더라도, 「영양 보충」이라는 명분으로 한마디면 넘어갈 수 있겠지.',
+        );
+        await printAndWait([
+          '남편으로서 ', 
+          father.get_colored_name(),
+          ' 가 아이를 안은 자신을 다정하게 품에 안는 모습은 누구라도 가정에 대한 의심을 거두게 하겠지…… 애액을 흘리는 아래에 굵직한 육봉이 박혀 있다는 사실만 들키지 않는다면.',
+        ]);
+        await printAndWait(
+          '그렇게 아이가 성인이 된 뒤에는…… 아이와 아이의 아버지에게 동시에 사용당하며 그사이에 끼어 수컷의 육봉에 탐닉하는……',
+        );
+        println();
+        await printAndWait([
+          '그런 미래를 상상하자 ', 
+          you.get_colored_name(),
+          ' 는 자신도 모르게 입술을 핥았다……',
+        ]);
+        await printAndWait('그런 내일을 기대하기 시작했다.');
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          ' 은(는) 자신의 몸에 욕망만 쏟아붓고 아무 책임감 없이 안에 사정한 ', 
+          father.get_colored_name(),
+          ' 을(를) 노려보았다.',
+        ]);
+        await printAndWait(`이런 ${father.sex}이(가) 아버지로서의 책임을 다할 리가 없다고 생각했다.`);
+        await printAndWait(
+          '자신에게 필요한 것은 모욕당할 때 자신과 아이를 부축해주고 보호해줄 사람이다.',
+        );
+        await printAndWait(
+          '자신이 욕망의 처리 도구로 취급당할 때 마지막 목소리의 출구까지 육봉으로 틀어막는 쓰레기가 아니라.',
+        );
+        println();
+        await printAndWait('설령 혼자라 해도, 이 아이를 잘 돌볼 것이다.');
+        await printAndWait([
+          '지금 이 순간 ', 
+          you.get_colored_name(),
+          ' 는 의심할 여지 없이 가장 험난한 길을 선택했다.',
+        ]);
+        println();
+        await printAndWait('갑자기 품 안의 아이가 울음을 터뜨렸다.');
+        await printAndWait('배가 고픈가? 젖을 먹여야 하나?');
+        await printAndWait('그렇다면…… 지금의 나, 이 조교로 단련된 몸은');
+        await printAndWait(
+          `유두가 빨릴 때, 분명 자신의 유두를 깨물고 핥았던 그 ${father.uma_sex_title}들을 떠올리겠지.`,
+        );
+        await printAndWait(
+          '가슴이 물리는 순간, 분명 가슴이 주물리고 착유당했던 그 밤들을 떠올리며 순식간에 절정에 달하겠지.',
+        );
+        await printAndWait(
+          '아이가 젖을 다 먹고 가슴 사이에 누워 있을 때…… 아기 체온과 비슷한 육봉이 가슴 위에서 소유권을 선언하며 입안에 진한 백탁액을 쏟아붓던 때를 떠올리게 되지 않을까?',
+        );
+        println();
+        await printAndWait(
+          '그리고 이 모든 것을 견뎌내고 겨우 이 아이를 성인으로 키워냈다 하더라도…………',
+        );
+        await printAndWait(
+          '성인이 된 아이가 아직 사랑이 무엇인지 알기도 전에, 본능적으로 성을 이해한 눈빛을 자신에게 보내온다면',
+        );
+        await printAndWait('나는 대체 어떻게 해야 할까.');
+        println();
+        await printAndWait('눈앞의 길이 마치 칠흑처럼 캄캄해졌다……');
+      }
+      setColor();
+      return [ret];
+    };
+    f.title = title;
+    return f;
+  })(),
+
 };
