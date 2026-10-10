@@ -2,7 +2,7 @@
 # @file メジロパーマー - 日常
 # @author KUN
 # @author Claude (翻訳)
-# [번역 대상] select
+# [번역 완료] select
 select:
   sync: true
   lines:
@@ -43,7 +43,7 @@ select:
               content:
                 - fontWeight: bold
                   content: %CHARA%
-                - 「最近の%CALL_65%%SEX%ってさあ……ねえ、%CALLNAME%、聞いてる？」
+                - 「요즘 %CALL_65%%SEX% 말인데…… 있지, %CALLNAME%, 듣고 있어?」
         - if: era.get('love:64') >= 25
           random: true
           lines:
@@ -174,7 +174,7 @@ office_prepare:
             content: %CHARA%
           - 「그래도 완벽하게 해낼 거야. 승리를 눈앞에서 놓치고 싶지는 않으니까!」
 
-# [번역 대상] talk
+# [번역 완료] talk
 talk:
   # STATUSNAME:10 = 昏睡
   # STATUSNAME:39 = 馬跳S
@@ -298,7 +298,7 @@ talk:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「ねえ、いつか%CALL_71%と一緒に走ってみない？」
+              - 「있지, 언젠가 %CALL_71%와 함께 달려 보지 않을래?」
           - color: %COLOR%
             content:
               - fontWeight: bold
@@ -354,7 +354,7 @@ talk:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「やっぱり、%CALL_65%%SEX%は太陽だよ。まぶしすぎ……」
+              - 「역시 %CALL_65%%SEX%는 태양 같아. 너무 눈부셔……」
           - color: %COLOR%
             content:
               - fontWeight: bold
@@ -367,7 +367,7 @@ talk:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「%CALL_74%%SEX%、やっぱり……頑張ってるね。」
+              - 「%CALL_74%%SEX%, 역시…… 열심히 하고 있구나.」
           - color: %COLOR%
             content:
               - fontWeight: bold
@@ -453,7 +453,7 @@ talk:
                 content: %CHARA%
               - 「예전엔 내가 %CALL_74%의 머리를 자주 정리해 주곤 했어~ 하지만 이젠 %CALLNAME% 너한테 부탁해야겠네.」
 
-# [번역 대상] office_gift
+# [번역 완료] office_gift
 office_gift:
   - if: d.half_life === 0
     lines:
@@ -488,7 +488,7 @@ office_gift:
               - fontWeight: bold
                 content: %CHARA%
               - 「예전엔 내가 %善信称呼光明%의 머리를 자주 정리해 주곤 했어~ 하지만 이젠 %호칭% 너한테 부탁해야겠네.」
-          - %CHARA%は少しもじもじしている。さっき%SEX%が何を言ったかは、聞こえていないことにする。
+          - %CHARA%는 조금 수줍은 듯 몸을 배배 꼬았다. 방금 %SEX%가 뭐라고 했는지는 못 들은 척하기로 했다.
   - if: d.half_life === 1
     lines:
       - color: %COLOR%
@@ -503,7 +503,7 @@ office_gift:
           - 「난 게임도 꽤 잘한다구, 에헴~」
       - %CHARA%는 선물을 품에 꽉 껴안았고, 눈가에는 살짝 이슬이 맺혔다.
 
-# [번역 대상] office_cook
+# [번역 완료] office_cook
 office_cook:
   - if: d.half_life === 0
     random: true
@@ -547,7 +547,7 @@ office_cook:
           - 「먼저 %CALLNAME%의 위장을 사로잡으면, 계속해서……」
       - %YOU%에게는 들리지 않을 정도의 작은 목소리로 중얼거렸다.
 
-# [번역 대상] office_rest
+# [번역 완료] office_rest
 office_rest:
   - random: true
     lines:
@@ -581,7 +581,7 @@ office_rest:
             content: %CHARA%
           - 「에이, 모처럼 시간이 비었는데……」
 
-# [번역 대상] office_game
+# [번역 완료] office_game
 office_game:
   - random: true
     lines:
@@ -744,7 +744,7 @@ o_r_fishing:
           - 「그립네~ 예전에도 자주 이렇게 소풍을 나오곤 했었는데~」
       - %CHARA%는 낚싯대를 던지고 수면 위의 평온한 찌를 바라보며 편안하게 이야기를 나누기 시작했다.
 
-# [번역 대상] o_r_walking
+# [번역 완료] o_r_walking
 o_r_walking:
   - random: true
     lines:
@@ -758,7 +758,7 @@ o_r_walking:
     random: true
     lines:
       - 주변에 아무도 없는 강둑길을 보며 %CHARA%는 슬며시 %YOU%의 곁으로 다가왔다.
-      - 「あの、%SELF_CALL%？」
+      - 「저기, %SELF_CALL% 말이야?」
       - 자신의 팔에 밀착하는 %CHARA%를 보며 마음이 조금 설레었다.
       - %CHARA%는 못 들은 척 아무 말 없이 %YOU%의 팔을 감싸 안으며 몸을 기댔다.
       - color: %COLOR%
@@ -872,7 +872,7 @@ o_s_movie:
           - 「둘이서 영화를 보러 온다니, 왠지 평소랑은 다른 느낌이네……」
       - %CHARA%는 옆에서 잠시 중얼거렸으나, %YOU%의 손을 잡은 힘은 더욱 단단해졌다.
 
-# [번역 대상] o_c_pray
+# [번역 완료] o_c_pray
 o_c_pray:
   - 트레센 근처의 신사는 규모는 작지만 %UMA%들 사이에서는 꽤 유명하다.
   - 많은 %UMA%들이 레이스에 나가기 전 이곳을 찾아 기대를 품고 운세를 점치곤 한다.
@@ -947,7 +947,7 @@ o_c_pray:
           - 「고마워……」
       - 작은 목소리였지만, 고요한 신사 안에서는 무척이나 선명하게 울려 퍼졌다.
 
-# [번역 대상] o_s_restaurant
+# [번역 완료] o_s_restaurant
 o_s_restaurant:
   - random: true
     lines:
@@ -994,7 +994,7 @@ o_s_restaurant:
             content: %CHARA%
           - 「다 먹고 나서 조금만 더 같이 있어 줄래, %CALLNAME%?」
 
-# [번역 대상] o_s_dating
+# [번역 완료] o_s_dating
 o_s_dating:
   - if: d.half_life === 0
     lines:
@@ -1020,7 +1020,7 @@ o_s_dating:
               - fontWeight: bold
                 content: %CHARA%
               - 「다른 사람들 눈에는, 우리가 평범한 연인으로 보이겠지?」
-          - 傍に貼りつき、%YOU%にしか聞こえない声で、そっと耳を噛む。
+          - 파머는 바짝 다가붙어 %YOU%에게만 들릴 만큼 작은 목소리로 속삭이며 귀를 살짝 깨물었다.
           - color: %COLOR%
             content:
               - fontWeight: bold
@@ -1083,7 +1083,7 @@ o_s_shopping:
           - 「%CALLNAME%네 집에 이게 있으면, 나 놀러 가도 돼?」
       - %CHARA%의 눈이 반짝거렸다. 통금 시간 따위는 전혀 안중에 없는 듯했다.
 
-# [번역 대상] good_night_normal
+# [번역 완료] good_night_normal
 good_night_normal:
   sync: true
   lines:
@@ -1324,12 +1324,12 @@ cl_palace:
     - 파머는 다시 무대를 향해 눈을 돌렸다. 그녀의 눈동자에는 동경의 별이 가득 담겨 있었다.
 
 # 育成中バージョン
-# [번역 대상] cl_fans_in_edu
+# [번역 완료] cl_fans_in_edu
 cl_fans_in_edu:
   title: 팬 대감사제
   lines:
     - 팬 감사제 당일의 프로그램을 위해, 현역인 파머 역시 출주 요청을 받았다.
-    - 当日の客席は、各選手のファンで埋まり、登場する%UMA%一人ひとりに歓声が飛ぶ
+    - 당일 관중석은 각 선수의 팬들로 가득했고, 등장하는 %UMA%마다 환호성이 쏟아졌다.
     - 비록 단순한 이벤트 레이스였지만…… 경기장에 선 이들 중 적당히 뛸 생각인 사람은 아무도 없었다.
     - color: %COLOR%
       content:
@@ -1412,17 +1412,17 @@ cl_fans_in_edu:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「マックイーン%THEY%、まだ待ってるかも……ううん、私たちを待ってるよ」
+        - 「맥퀸 %THEY%가 아직 기다리고 있을지도…… 아니, 우릴 기다리고 있을 거야.」
     - 손을 내미는 파머는 한 점 후회 없는 미소를 지었다.
 
 # 育成済みバージョン
-# [번역 대상] cl_fans
+# [번역 완료] cl_fans
 cl_fans:
   title: 팬 대감사제
   lines:
     - 팬 대감사제 당일, 파머는 %YOU%을(를) 따라 다시 트레센 학원을 찾았다.
     - 평소에도 여러 이유로 학원에 들르긴 하지만, 팬 대감사제 날은 분위기가 사뭇 달랐다.
-    - すでにドリームカップへ転戦した%UMA%も、引退した%UMA%も、ファンはこの日を待っている
+    - 이미 드림컵으로 무대를 옮긴 %UMA%도, 은퇴한 %UMA%도 있다. 하지만 팬들은 모두 이날을 기다려 왔다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -1452,7 +1452,7 @@ cl_fans:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「出るなら、%SELF_CALL%の逃げ方で行くよ！」
+            - 「출전한다면 %SELF_CALL%만의 도주 방식으로 달릴 거야!」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -1553,7 +1553,7 @@ cl_fans:
         - 파머는 너털웃음을 터뜨리며 자신의 전매특허인 주법을 소재로 농담을 던졌다.
         - divider: true
           content: 임시 경기장
-        - 自分は出ないつもりでも、先輩の姿を見るのは悪くない
+        - 자신은 출전할 생각이 없어도 선배들의 모습을 지켜보는 건 나쁘지 않다.
         - 이벤트 레이스가 시작되자 주변 팬들은 오랜만에 보는 우마무스메들의 모습에 열광하며 응원을 보냈다.
         - %YOU%은(는) 파머와 나란히 서서 경기장의 풍경을 눈에 담았다.
         - color: %COLOR%
@@ -1993,7 +1993,7 @@ cl_temple_fair:
     - acc: 2
       content: 「아니, 난 안 갈래」
 
-# [번역 대상] cl_halloween
+# [번역 완료] cl_halloween
 cl_halloween:
   title: 할로윈
   lines:
@@ -2016,7 +2016,7 @@ cl_halloween:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あ、天使っぽいほうの衣装も、もう一着選んであるんだよ」
+        - 「아, 천사 같은 느낌의 의상도 한 벌 더 골라 놨어.」
     - 파머는 장난스러운 동작을 멈추고, 겁먹은 척하는 %YOU%을(를) 보며 짓궂게 웃는다.
     - 창밖의 할로윈 분위기가 이미 집무실 안까지 스며들었다. 여기서 일을 고집하는 건 분위기를 망치는 일일 것이다.
     - 분위기를 잘 읽는 파머는 즉시 상황을 파악했다.
@@ -2035,7 +2035,7 @@ cl_halloween:
     - 자연스럽게 %YOU%의 손을 잡고 밖으로 힘차게 뛰어 나갔다.
     - 즐거운 하루였지만, 결국 체력이 파머를 따라가지 못한 %YOU%은(는) 다음 날 꼼짝없이 누워 있어야만 했다.
 
-# [번역 대상] cl_christmas
+# [번역 완료] cl_christmas
 cl_christmas:
   title: 크리스마스
   lines:
@@ -2045,7 +2045,7 @@ cl_christmas:
         - fontWeight: bold
           content: %CHARA%
         - 「야호! 트레이너!」
-    - パーマーは突然入ってきて、仕事中の%YOU%の前まで来る
+    - 파머는 갑자기 문을 열고 들어와 일하던 %YOU%의 앞까지 다가왔다.
     - 창밖의 축제 분위기가 파머의 목소리를 타고 들어왔고, 문틈으로는 작은 별 장식이 굴러 들어왔다.
     - color: %COLOR%
       content:
@@ -2268,15 +2268,15 @@ cl_christmas:
                   content: %CHARA%
                 - 「트레이너가 싫다면…… 방금 건 못 들은 걸로 해 줘, 아하하……」
             - 파머는 아무렇지 않은 척 머리를 긁적인다.
-            - 取り繕いの姿勢では隠しきれず、変に見えない程度にしかできない
-            - %UMA%の落胆は、耳が垂れた瞬間にもう全部出ている
+            - 애써 태연한 척했지만 완전히 숨길 수는 없었다. 그저 이상해 보이지 않을 정도로만 버틸 뿐이었다.
+            - %UMA%의 실망감은 귀가 축 처진 순간 이미 고스란히 드러났다.
             - acc: 1
               content: 「너도 지금 웃고 있잖아」
             - color: %COLOR%
               content:
                 - fontWeight: bold
                   content: %CHARA%
-                - 「パーマーも、すごく楽しかった……」
+                - 「파머도 정말 즐거웠어……」
             - 붉어진 눈시울로 멈춰 서서 놀란 듯 %YOU%을(를) 돌아본다.
             - 목울대가 미세하게 떨리며 무언가 말하려다 삼킨다.
             - color: %COLOR%
