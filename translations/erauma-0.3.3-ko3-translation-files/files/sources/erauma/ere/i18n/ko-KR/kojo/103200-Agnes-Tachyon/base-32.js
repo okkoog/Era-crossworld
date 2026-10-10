@@ -4,7 +4,7 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/103200-Agnes-Tachyon/base-32"),
 
-  // [번역 대상] ask_release_agree
+  // [번역 완료] ask_release_agree
   async ask_release_agree(tachyon, you, callname) {
     await tachyon.say_and_wait(["좋아."]);
     era.println();
@@ -48,7 +48,7 @@ module.exports = {
       tachyon.get_colored_name(),
       "의 눈동자가 지닌 마력…… 그것은 ",
       tachyon.sex,
-      'の夢への渇望から来ていた。限界へ身を捧げる覚悟から来ていた。',
+      '의 꿈을 향한 갈망에서 비롯된 것이었다. 한계를 향해 모든 것을 바치겠다는 각오에서 비롯된 것이었다.',
     ]);
     await era.printAndWait([
       "그렇다면, 지금의 ",
