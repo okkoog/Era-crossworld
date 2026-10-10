@@ -264,28 +264,28 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] chun_hai
+  // [번역 완료] chun_hai
   chun_hai: (() => {
-    const title = '最後の大舞台へ';
+    const title = '마지막 대무대를 향해';
     /** @param {CharaTalk} nature ナイスネイチャ */
     const f = async (nature) => {
-      await nature.say_and_wait('取った！');
-      await nature.say_and_wait('1着。全力で取った……1着！');
-      await nature.say_and_wait('長かったなあ……');
+      await nature.say_and_wait('해냈어!');
+      await nature.say_and_wait('1착. 온 힘을 다해 따낸…… 1착!');
+      await nature.say_and_wait('길었네, 정말……');
       await nature.say_and_wait(
-        'あの弱かったあたしが、励まされて、引っ張られて、必死に追いかけて……',
+        '그렇게 약했던 내가 격려받고, 이끌려서 필사적으로 뒤를 쫓아왔는데……',
       );
-      await nature.say_and_wait('──今やっと、自分の力でここに立てた！');
+      await nature.say_and_wait('——이제야 내 힘으로 이 자리에 섰어!');
       await nature.say_and_wait(
-        'これで胸を張って戦える。あの舞台で……みんなと一緒に！',
+        '이제 가슴을 펴고 싸울 수 있어. 그 무대에서…… 모두와 함께!',
       );
-      era.printButton('「やっとこの日が来た！」', 1);
+      era.printButton('「드디어 이 날이 왔구나!」', 1);
       await era.input();
       await nature.say_and_wait(
-        'うん！ もう逃げないし、みんなの期待も裏切れない。',
+        '응! 이제 도망치지 않을 거고, 모두의 기대도 저버릴 수 없으니까.',
       );
-      await nature.say_and_wait('絶対……勝つ。');
-      await nature.say_and_wait('──『有馬記念』で、輝く主役になる！');
+      await nature.say_and_wait('반드시…… 이길 거야.');
+      await nature.say_and_wait('——『아리마 기념』에서 빛나는 주인공이 될 거야!');
     };
     f.title = title;
     return f;
@@ -1028,26 +1028,26 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_win
+  // [번역 완료] race_win
   race_win: (() => {
-    const title = 'レース勝利！';
+    const title = '레이스 승리!';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {string} callname ナイスネイチャのプレイヤーへの呼び方
      */
     const f = async (nature, callname) => {
       await nature.say_and_wait(
-        `1着……あたしが1着！ ${callname}見て！ あたし、1着だよ`,
+        `1착…… 내가 1착이야! ${callname}, 봤어? 내가 1착이라고!`,
       );
-      era.printButton('「おめでとう。勝てたのは、君が強いからだ」', 1);
-      era.printButton('「自分の力で勝ったんだ」', 2);
+      era.printButton('「축하해. 네가 강하기 때문에 이긴 거야.」', 1);
+      era.printButton('「네 실력으로 따낸 승리야.」', 2);
       if ((await era.input()) === 1) {
         await nature.say_and_wait(
-          'うん、あたしが強い……かは、わからないけど。でも……まあ、たまにはトレーナーの褒め言葉も受け取っとくか。',
+          '응, 내가 강하다……고 할 수 있을지는 모르겠지만. 그래도…… 가끔은 트레이너의 칭찬을 받아들이는 것도 좋겠지.',
         );
       } else {
         await nature.say_and_wait(
-          `なに～～それ、大声で『だってあたし強いから』って宣言してるみたいじゃない？ あとで負けたら、恥ずかしいよ。`,
+          `뭐야~ 그건 마치 『내가 강하니까』라고 큰소리로 선언하는 것 같잖아! 나중에 지면 부끄러워.`,
         );
       }
     };
@@ -1936,7 +1936,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_se
+  // [번역 완료] we_se
   we_se: (() => {
     const title = '夏季合宿終了';
     /**
@@ -1945,22 +1945,22 @@ module.exports = {
      */
     const f = async (nature, callname) => {
       await era.printAndWait(
-        '今日は夏季合宿の最終日。記念に、学園が盛大な花火を打ち上げる',
+        '오늘은 여름 합숙 마지막 날이다. 기념으로 학원에서 성대한 불꽃놀이를 준비했다.',
       );
       await era.printAndWait(
-        'ナイスネイチャと並んで海岸に立ち、海の上で咲く花火を見上げる',
+        '나이스 네이처와 나란히 해안가에 서서 바다 위에 피어나는 불꽃을 올려다보았다.',
       );
       await nature.say_and_wait(
-        `——夏、終わっちゃったね。なんていうか、青春だなあ——あたし、そういう役じゃないけど。でも、${callname}——`,
+        `——여름이 끝나 버렸네. 뭐랄까, 청춘이라는 느낌이야—— 나는 그런 역할이 아니지만. 그래도 ${callname}——`,
       );
       await era.printAndWait(
-        `隣のナイスネイチャは感嘆していたが、花火の破裂音で${nature.sex}の声は聞き取りにくい。`,
+        `곁에 있던 나이스 네이처는 감탄하고 있었지만 불꽃이 터지는 소리 때문에 ${nature.sex}의 목소리가 잘 들리지 않았다.`,
       );
       await era.printAndWait(
-        `${nature.sex}の最後の言葉を聞き返そうとしても、ナイスネイチャは小さく笑って流した。`,
+        `${nature.sex}의 마지막 말을 다시 물으려 했지만, 나이스 네이처는 작게 웃으며 얼버무렸다.`,
       );
       await era.printAndWait(
-        'ナイスネイチャとの夏季合宿は、こうして終わった。',
+        '나이스 네이처와 함께한 여름 합숙은 이렇게 끝났다.',
       );
     };
     f.title = title;
@@ -2045,7 +2045,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_ss_1
+  // [번역 완료] ws_ss_1
   ws_ss_1: (() => {
     const title = '夏季合宿';
     /**
@@ -2054,58 +2054,58 @@ module.exports = {
      */
     const f = async (nature, you) => {
       await era.printAndWait(
-        '今日から『夏季合宿』──実力を伸ばす強化トレーニングが始まる。',
+        '오늘부터 『여름 합숙』—— 실력을 끌어올리는 집중 훈련이 시작된다.',
       );
-      await nature.say_and_wait('暑い……');
+      await nature.say_and_wait('더워……');
       await nature.say_and_wait(
-        'お日さま元気すぎ。日陰暮らしのあたしにはまぶしすぎ……',
+        '햇볕이 너무 기운차네. 음지 생활이 익숙한 나한테는 너무 눈부셔……',
       );
       await nature.say_and_wait(
-        '一瞬で、最後まで無事に持つか心配になってきた。',
+        '벌써부터 마지막까지 무사히 버틸 수 있을지 걱정된다.',
       );
-      era.printButton('「『小倉記念』もあるし、気合い入れないとね」', 1);
+      era.printButton('「『고쿠라 기념』도 있으니 기합을 넣어야겠네.」', 1);
       await era.input();
       await nature.say_and_wait(
-        'いや、問題はそこだよ。合宿の途中でレースとか、スケジュール盛りすぎ。',
+        '아니, 바로 그게 문제라니까. 합숙 중에 레이스까지 뛰면 일정이 너무 빡빡해.',
       );
       await nature.say_and_wait(
-        'ここ、小倉から遠いし、移動でトレーニング量が減る……',
+        '여기는 고쿠라에서 멀어서 이동하다 보면 훈련량도 줄어들고……',
       );
       await nature.say_and_wait(
-        'もともと雲の上の連中に、あっさり置いていかれる──',
+        '원래도 구름 위에 있는 녀석들한테 금세 뒤처질 거야——',
       );
-      era.printButton('「じゃあ小倉まで走り続けよう！」', 1);
+      era.printButton('「그럼 고쿠라까지 계속 달려가자!」', 1);
       await era.input();
       await nature.say_and_wait(
-        'あ、いいねいいね！ 走りながらトレーニング、一石二鳥。',
+        '아, 그거 좋네! 달리면서 훈련도 하고 일석이조잖아.',
       );
-      await nature.say_and_wait('どうせ千キロくらいでしょ？ はいはい、余裕──');
-      await nature.say_and_wait('そんなわけないって──急に変な案出さないでよ。');
-      await nature.say_and_wait('トレーナー、内心楽しみにしてるでしょ……');
+      await nature.say_and_wait('고작 천 킬로미터 정도겠지? 응응, 거뜬해——');
+      await nature.say_and_wait('그럴 리가 없잖아—— 갑자기 이상한 계획 좀 꺼내지 마.');
+      await nature.say_and_wait('트레이너, 속으로 재미있어하고 있지……?');
       await era.printAndWait(
-        `こうして ${you.name} とナイスネイチャの熱い夏季合宿が始まった。`,
+        `그렇게 ${you.name}와 나이스 네이처의 뜨거운 여름 합숙이 시작되었다.`,
       );
       await nature.say_and_wait(
-        'あ、熱血はほどほどでお願い。じゃあ、よろしく──',
+        '아, 열혈은 적당히 부탁할게. 그럼 잘 부탁해——',
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] ws_ss_2
+  // [번역 완료] ws_ss_2
   ws_ss_2: (() => {
     const title = '夏季合宿';
     /** @param {CharaTalk} nature ナイスネイチャ */
     const f = async (nature) => {
       await era.printAndWait(
-        'また合宿の季節が来た。ナイスネイチャは去年とちがい、前向きな態度を見せている。',
+        '또다시 합숙의 계절이 찾아왔다. 나이스 네이처는 작년과는 달리 적극적인 태도를 보였다.',
       );
       await era.printAndWait(
-        '『天皇賞（秋）』……そしてその先の『有馬記念』に向けて──',
+        '『천황상(가을)』…… 그리고 그다음 『아리마 기념』을 향해——',
       );
-      await nature.say_and_wait('天皇賞秋、か……');
-      await era.printAndWait(`${nature.sex}は自分と向き合う、熱い夏を始めた！`);
+      await nature.say_and_wait('천황상(가을)이라……');
+      await era.printAndWait(`${nature.sex}는 자기 자신과 마주하는 뜨거운 여름을 시작했다!`);
     };
     f.title = title;
     return f;
