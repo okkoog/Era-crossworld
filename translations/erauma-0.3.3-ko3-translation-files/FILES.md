@@ -151,7 +151,8 @@
 
 - [kojo/101900-Agnes-Digital/edu-19.js](files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/edu-19.js)
   - 번역 대상: before_begin_race, before_hyac_sta, before_japa_dir, before_mile_cha_c, before_nhk_cup, begin_race_win, hyac_sta_win, japa_dir_win, mile_cha_win_c, nhk_cup_win, oc_95_1, race_end_5, race_end_win, race_start, tenn_sho_win_s, we_42, we_47_24, we_47_29, we_47_32, we_47_37, we_95_17, we_95_23, we_95_32, we_95_48, ws_47_1, ws_47_29, ws_95_14, ws_95_29, ws_95_48, ws_95_6, ws_palace
-  - 복구 완료: before_tenn_sho_s
+
+  - 복구 완료: before_tenn_sho_s
 
 - [kojo/101900-Agnes-Digital/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/101900-Agnes-Digital/entry.js)
   - 번역 대상: aim_desc
