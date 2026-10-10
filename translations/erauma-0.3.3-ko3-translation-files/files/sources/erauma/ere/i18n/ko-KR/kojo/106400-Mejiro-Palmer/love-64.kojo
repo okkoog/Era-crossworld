@@ -75,7 +75,7 @@ pre-happy:
   - color: %COLOR%
     content: 【만약 어느 날，%CHARA%나 %YOU%이(가) 잠에 든다면……】
 
-# [번역 대상] happy
+# [번역 완료] happy
 happy:
   title: 기쁨
   lines:
