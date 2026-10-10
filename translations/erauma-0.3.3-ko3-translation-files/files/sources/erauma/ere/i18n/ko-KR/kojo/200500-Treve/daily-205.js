@@ -12,7 +12,7 @@ const __JaOriginal = require('#/i18n/ja-JP/kojo/200500-Treve/daily-205.js');
 
 module.exports = {
   ...__JaOriginal,
-  // [번역 대상] good_morning
+  // [번역 완료] good_morning
   good_morning(treve) {
     const buffer = [
       () => treve.say("그럼 다음엔 뭘 하고 놀까요?"),
@@ -22,24 +22,24 @@ module.exports = {
       buffer.push(
         () => treve.say("절 너무 예뻐해 주시는 거 아닌가요…… 조금 과보호일지도?"),
         () =>
-          treve.say('朝から夕方まで、一分一秒、あなたのことばかり思ってる。'),
+          treve.say('이른 아침부터 저녁까지, 매분 매초 당신 생각만 하고 있어요.'),
       );
     }
     if (era.get('love:205') >= 75) {
       buffer.push(
-        () => treve.say('私は一途な人間だと思っていた。あなたに会うまでは。'),
+        () => treve.say('당신을 만나기 전까지는 제가 한 사람만 바라보는 사람이라고 생각했어요.'),
         () =>
-          treve.say('あなたの方へ歩くとき、心臓が初恋みたいにどきどきする。'),
+          treve.say('당신에게 다가갈 때면 첫사랑을 시작한 것처럼 심장이 두근거려요.'),
       );
     }
     get_random_entry(buffer)();
   },
-  // [번역 대상] office_prepare
+  // [번역 완료] office_prepare
   async office_prepare(treve, callname) {
     const buffer = [
       () => treve.say_and_wait("당신에게 최고의 선물을 선사할 수 있게 해 주세요."),
       () =>
-        treve.say_and_wait(`今日の勝ちは、私が取る。${callname} のために。`),
+        treve.say_and_wait(`오늘의 승리는 제가 차지하겠어요. ${callname}을(를) 위해서요.`),
     ];
     await get_random_entry(buffer)();
   },
@@ -50,20 +50,20 @@ module.exports = {
     ];
     await get_random_entry(buffer)();
   },
-  // [번역 대상] office_rest
+  // [번역 완료] office_rest
   async office_rest(treve) {
     const buffer = [
-      () => treve.say_and_wait('これからどうなるか、分からない。'),
+      () => treve.say_and_wait('앞으로 어떻게 될지는 모르겠네요.'),
       () => treve.say_and_wait("저랑 같이 쉬니까 즐거우신가요?"),
     ];
     await get_random_entry(buffer)();
   },
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(treve, callname) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          `${callname}！なんで Umaisoft をクソゲーメーカーって呼ぶ人がいるの？`,
+          `${callname}! 왜 우마이소프트를 똥겜 제작사라고 부르는 사람이 있는 건가요?`,
         ),
       () =>
         treve.say_and_wait(
@@ -361,66 +361,66 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] o_c_pray
+  // [번역 완료] o_c_pray
   async o_c_pray(treve, you, callname, dice) {
     await era.printAndWait([
       you.get_colored_name(),
-      ` は ${treve.name} を近くの神社へ誘い、${treve.sex}は嬉しそうに頷いた。`,
+      `은(는) ${treve.name}에게 근처 신사에 가자고 제안했고, ${treve.sex}는 기쁘게 고개를 끄덕였다.`,
     ]);
-    await treve.say_and_wait('何考えてるの。上の空みたい。');
-    await treve.say_and_wait('先におみくじ引いてくる！');
+    await treve.say_and_wait('무슨 생각을 그렇게 하세요? 영 집중하지 못하시는 것 같아요.');
+    await treve.say_and_wait('저 먼저 운세 뽑으러 갈게요!');
     if (dice < 0.5) {
       await treve.say_and_wait(
-        `【大吉】え、もう一回いい？これ、${callname} に贈りたい`,
+        `【대길】이 나왔어요! 한 번 더 뽑아도 될까요? 이건 ${callname}에게 선물하고 싶거든요.`,
       );
     } else {
-      await treve.say_and_wait('うおお、こういうの、一度で十分……');
+      await treve.say_and_wait('으아아, 이런 건 역시 한 번 경험해 보는 걸로 족해요……');
     }
   },
 
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(treve, you) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          '大物がやっとかかった……あなたもこの前、いい品種を釣ったんでしょ？嘘。見てないもの。',
+          '드디어 큰 물고기가 걸려들었네요…… 얼마 전에도 꽤 괜찮은 녀석을 낚으셨다고요? 거짓말, 전 보지도 못했는걸요.',
         ),
     ];
     if (you.sex_code === 1 && treve.sex_code !== 1) {
       buffer.push(() =>
         treve.say_and_wait(
-          `釣れないわ……ふん、${you.actual_name}さま、お恵みありがとう。`,
+          `한 마리도 안 낚이네요…… 흥, ${you.actual_name} 나으리께서 이 소녀에게 하사해 주신 걸로 치죠.`,
         ),
       );
     }
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(treve) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          '安心して私の手を取って。遠くへ飛んでいってもいいから。',
+          '안심하고 제 손을 잡으세요. 설령 멀리 도망친다 해도 괜찮으니까요.',
         ),
       () =>
-        treve.say_and_wait('ぐっ……ロマンチックアレルギーの直男に殺されそう。'),
+        treve.say_and_wait('그으…… 로맨스 알레르기에 눈치 하나도 없는 당신 때문에 속 터져 죽겠어요.'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(treve, you, callname, call_target) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          '知ってる？フランスのゲームセンターには、カップル以外にも、幼なじみの小さな子がたくさん来るの。',
+          '그거 아세요? 프랑스의 오락실에는 연인들뿐만 아니라 귀여운 꼬마 소꿉친구들도 자주 보인답니다.',
         ),
       () =>
         treve.say_and_wait([
-          'うん、負け負け……',
+          '으윽, 져버렸어요……',
           you.get_colored_actual_name(),
-          '、あっちの【パンチ力測定】で再戦しましょ。',
+          '、저기 있는 【펀치력 측정기】에서 다시 한판 붙어요.',
         ]),
     ];
     if (call_target) {
@@ -429,153 +429,153 @@ module.exports = {
           callname,
           '！',
           call_target,
-          ' のぬいぐるみ！一つ掴んでもいい？',
+          ' 인형이 있네요! 하나 뽑아도 될까요?',
         ]),
       );
     }
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(treve) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          'あなたが普段どう一日を過ごすか、ちゃんと見ておきたい。',
+          '당신이 평소에 하루를 어떻게 보내는지 제대로 지켜봐야겠어요.',
         ),
-      () => treve.say_and_wait('花、くれないの？私も花は好きよ。'),
+      () => treve.say_and_wait('왜 제겐 꽃을 안 주시나요? 저도 꽃을 좋아한단 말이에요.'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(treve, callname) {
     const buffer = [
-      () => treve.say_and_wait(`わわわ……${callname}！お小遣い、前借りさせて。`),
-      () => treve.say_and_wait('パリ5日4晩の豪華旅行……当たったら、どうする？'),
+      () => treve.say_and_wait(`와아아…… ${callname}! 제 용돈 좀 가불해 주세요.`),
+      () => treve.say_and_wait('파리 4박 5일 호화 여행…… 진짜로 당첨되면 일정을 어떻게 짤까요?'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(treve) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          '歌声、すごく魅力的。『遠ざかる列車』とか『バラ色の人生』、習ったほうがいいかも……',
+          '당신의 노래 솜씨는 정말 매혹적이네요. 어쩌면 《기차는 떠나고》나 《장밋빛 인생》 같은 곡을 배워 보시는 게 어떨까요……',
         ),
       () =>
         treve.say_and_wait(
-          '先に言っておくけど、喉が疲れてる。ここであなたと……なんて無理。',
+          '미리 말해 두겠는데, 전 목이 너무 아파서 여기서 당신이랑 같이 부르는 건……',
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(treve) {
     const buffer = [
-      () => treve.say_and_wait('没入感のある佳作。impeccable a tous les sens'),
+      () => treve.say_and_wait('엄청난 몰입감을 주는 명작이네요. impeccable à tous les sens.'),
     ];
     if (treve.sex_code !== 1 && era.get('cflag:0:性别') === 1) {
       buffer.push(() =>
         treve.say_and_wait(
-          '師匠が、私たちに合う古い映画があるって。『Un homme et une femme』——男と女。変な題、ははは……',
+          '스승님께서 저희에게 딱 어울리는 고전 영화가 있다고 하셨어요. 《Un homme et une femme》라는 제목인데…… 남자 하나와 여자 하나라니, 참 묘한 제목이죠, 하하하……',
         ),
       );
     }
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(treve) {
     const buffer = [
-      () => treve.say_and_wait('こういう店、カップルのデートみたい……'),
+      () => treve.say_and_wait('이런 레스토랑은 꼭 연인들이 데이트하러 오는 곳 같네요……'),
       () =>
         treve.say_and_wait(
-          'こんないい店、どうやって見つけたの！？安くて量が多い。食べきれない！',
+          '이런 멋진 곳은 어떻게 찾으신 거예요?! 저렴한데 양도 많아서 도저히 다 못 먹겠어요!',
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] o_s_shopping
+  // [번역 완료] o_s_shopping
   async o_s_shopping(treve, callname) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          `スイカ……高っ！？しかも切れ売り。これ、合理的？ ${callname}`,
+          `수박이…… 왜 이렇게 비싸죠?! 게다가 조각으로 팔다니, 이게 말이 되나요, ${callname}?`,
         ),
-      () => treve.say_and_wait('私、いろいろ選ぶの、あまり得意じゃなくて…'),
-      () => treve.say_and_wait('今日、割引があるのね。chanceux～'),
+      () => treve.say_and_wait('전 이것저것 고르는 걸 잘 못해서……'),
+      () => treve.say_and_wait('오늘 마침 할인 행사를 하네요, chanceux~'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_cook
+  // [번역 완료] office_cook
   async office_cook(treve) {
     const buffer = [
-      () => treve.say_and_wait('フランス料理はね……あははは、今はいいわ。'),
-      () => treve.say_and_wait('うっ、胃を悪い人に掴まれそう。'),
+      () => treve.say_and_wait('프랑스 요리는 뭐라고 해야 할까…… 아하하하, 이 이야기는 일단 넘어가죠.'),
+      () => treve.say_and_wait('으우, 나쁜 사람한테 위장을 붙잡혀 버리겠어요.'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_study
+  // [번역 완료] office_study
   async office_study(treve) {
     const buffer = [
       () =>
         treve.say_and_wait(
-          '変ね。あなた、フランス語を習うときもこんなにたどたどしかった？ 違う……忌々しい天才。',
+          '이상하네요, 당신도 프랑스어를 배울 때 이렇게 더듬거리셨나요? 아니라고요? ……얄미운 천재 같으니.',
         ),
       () =>
         treve.say_and_wait(
-          'あなたがそばにいると、もっと跳べる気がする……どう、悪くないでしょ？',
+          '왠지 당신이 곁에 있으면 더 잘 뛸 수 있을 것 같아요…… 어때요, 멋지죠?',
         ),
-      () => treve.say_and_wait('やめて。変態でも、そんな指導はだめ！'),
+      () => treve.say_and_wait('잠깐 멈춰요! 아무리 변태라지만 이런 식으로 지도하는 게 어디 있어요!'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_dating
+  // [번역 완료] s_a_dating
   async s_a_dating(treve) {
     const buffer = [
-      () => treve.say_and_wait('上手すぎて怖い……これが本業なんじゃないの！'),
+      () => treve.say_and_wait('무서울 정도로 능숙하시네요…… 혹시 이게 본업이신 건 아니겠죠!'),
       () =>
-        treve.say_and_wait('今に比べたら、昔の生活は『死を待つ』だけだった。'),
+        treve.say_and_wait('지금에 비하면, 예전의 삶은 그저 『죽음을 기다리는 것』뿐이었다고 할 수 있겠네요.'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_a_tree_hollow
+  // [번역 완료] s_a_tree_hollow
   async s_a_tree_hollow(treve) {
     const buffer = [
-      () => treve.say_and_wait('遠くからの私のキスは、苦くて切ない。'),
-      () => treve.say_and_wait('私たちの運命は、険しくて曲がりくねっている。'),
+      () => treve.say_and_wait('멀리서 전하는 나의 키스는 씁쓸하고도 애달프구나.'),
+      () => treve.say_and_wait('우리의 운명은 험난하고도 굴곡지구나.'),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] s_r_lunch
+  // [번역 완료] s_r_lunch
   async s_r_lunch(treve) {
     const buffer = [
-      () => treve.say_and_wait('じゃーん！今日の品質、なかなかいいでしょ。'),
+      () => treve.say_and_wait('짜잔! 오늘 점심의 퀄리티는 꽤 훌륭하답니다.'),
       () =>
         treve.say_and_wait(
-          'ロブスター、大エビ、焼きエビ、ムール貝とイカ焼き。付け合わせはフライドポテトと海鮮の炊き込み。体をちゃんと補って。',
+          '랍스터, 대하, 구운 새우, 홍합에 구운 오징어, 사이드 메뉴는 감자튀김과 해물죽이에요. 몸보신 톡톡히 하세요.',
         ),
     ];
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] select
+  // [번역 완료] select
   select(treve, callname) {
-    const buffer = [() => treve.say(`Bonjour～指示はある？ ${callname}`)];
+    const buffer = [() => treve.say(`Bonjour~ 지시사항이 있나요, ${callname}?`)];
     if (era.get('love:205') >= 50) {
-      buffer.push(() => treve.say('呼ぶときに、そんなところ突かないで。'));
+      buffer.push(() => treve.say('부르실 때 이런 곳을 찌르면 안 돼요.'));
     }
     if (era.get('love:205') >= 75) {
-      buffer.push(() => treve.say('ふふ、いいわよ。'));
+      buffer.push(() => treve.say('후후, 괜찮아요.'));
     }
     get_random_entry(buffer)();
   },
