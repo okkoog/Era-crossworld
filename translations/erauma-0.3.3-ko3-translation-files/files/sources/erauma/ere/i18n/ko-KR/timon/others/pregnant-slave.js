@@ -1103,4 +1103,157 @@ module.exports = {
       ]);
     }
   },
+  // [번역 완료] report_preg_duty
+  report_preg_duty: (() => {
+    const title = '직무';
+    /**
+     * @author 幽白書
+     * @param {CharaTalk} you
+     * @param {CharaTalk} father
+     * @param {number} edu_count
+     * @param {number} children_count
+     */
+    const f = async (you, father, edu_count, children_count) => {
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 아랫배 음문에 나타난 임신의 문양을 바라보다가 세면대로 달려가 토했다.',
+      ]);
+      await printAndWait([
+        '자신의 계획을 어지럽히는 이 작은 생명에 대해, ',
+        you.get_colored_name(),
+        ' 은 결심했다——',
+      ]);
+      const ret = await degeneration_to_evil(
+        '기쁘게 아이를 기다린다',
+        '어쩔 수 없이 사실을 받아들인다',
+      );
+      if (ret === 1) {
+        await printAndWait([you.get_colored_name(), ' 은 기쁜 마음으로']);
+        await printAndWait('아이가 생긴 뒤의 미래와 태어난 뒤의 교육을 상상했다……');
+        await printAndWait([
+          '하지만, ',
+          you.get_colored_name(),
+          ' 의 마음속에서 가장 고민되는 것은 역시',
+        ]);
+        println();
+        await printAndWait('아이의 아버지는 누구일까 하는 점이었다.');
+        await printAndWait(
+          `며칠 전 레이스에서 지고 분풀이로 온몸에 잇자국을 남겼던 그 ${father.uma_sex_title}일까?`,
+        );
+        await printAndWait(
+          `아니면 레이스에서 이기고 기뻐서 자궁 안에 소변까지 쏟아부었던 그 ${father.uma_sex_title}일까?`,
+        );
+        if (edu_count > 0) {
+          await printAndWait(
+            `\n그것도 아니라면, 매일 훈련 시간마다 보지에 하루치 정액을 가득 채워줘서, 복도에 우윳빛 액체를 뚝뚝 흘리며 훈련장까지 가게 만들었던 그 담당 ${father.uma_sex_title}일까?`,
+          );
+        }
+        if (children_count > 0) {
+          await printAndWait(
+            '\n그것도 아니라면, 기억 속엔 아직 어린아이인데도 마치 엄마 배 속에서 어떻게 나왔는지 기억이라도 하듯, 매번 못난 엄마를 아헤가오 암컷 돼지로 만들어버리는 그 착한 자식일까?',
+          );
+        }
+        println();
+        await printAndWait('\n누구든 간에, 새로운 생명의 탄생은 기쁜 일이다.');
+        await printAndWait([
+          '하지만 역시 ',
+          you.get_colored_name(),
+          ' 가 가장 걱정하는 것은……',
+        ]);
+        println();
+        await printAndWait('（아이를 낳기 전까지, 임신 주머니로서의 직무……）');
+        println();
+        await printAndWait([
+          '생각을 채 마치기도 전에 뒤에서 전해진 충격이 ',
+          you.get_colored_name(),
+          ' 의 사고를 끊어놓았다.',
+        ]);
+        await printAndWait(
+          `상대는 그녀의 의사는 안중에도 없었고, 밑이 젖었는지 확인조차 하지 않았다———물론 육체 개조 덕분에 젖었는지 확인할 필요도 없이, 24시간 내내 젖은 상태로 ${father.uma_sex_title} 님을 환영하고 있지만———그는 그대로 삽입했다.`,
+        );
+        await printAndWait([
+          '격렬한 충돌 속에 ',
+          you.get_colored_name(),
+          ' 를 의식을 잃을 정도로 범한 뒤에야, 뒤에 있던 ',
+          father.uma_sex_title,
+          ' 는 겨우 사정했고, ',
+          you.get_colored_name(),
+          ' 의 얼굴에 육봉을 닦고는 그대로 떠났다.',
+        ]);
+        await printAndWait([
+          '그 과정에서 ',
+          you.get_colored_name(),
+          ' 은 상대의 얼굴조차 알 수 없었다.',
+        ]);
+        println();
+        await printAndWait('\n임신했다는 말은 꺼내지도 못했다.');
+        await printAndWait(
+          `설령 배가 남산만 하게 불러와도 ${father.uma_sex_title} 주인님에게는 그저 가지고 놀 부위가 하나 더 늘어난 것뿐이겠지.`,
+        );
+        await printAndWait([
+          '그 사실을 깨달은 ',
+          you.get_colored_name(),
+          ' 는 아래가 다시 한번 경련하며 억제할 수 없는 조수를 뿜어냈고, 햇빛 아래 만들어진 무지개는 마치 그녀의 임신을 축하하는 듯했다.',
+        ]);
+      } else {
+        await printAndWait('딱히 놀랄 일도 아니었다.');
+        await printAndWait(
+          '———매일 화장실에 갈 때조차 대여섯 개의 육봉에 가로막혀, 결국 조수와 정액, 그리고 실금한 소변이 섞인 바닥을 스스로 깨끗이 핥아 치워야 하는 삶에서, 임신이 그렇게 상상하기 힘든 일일까?',
+        );
+        println();
+        await printAndWait('아이의 아버지는 누구일까?');
+        await printAndWait([
+          you.get_colored_name(),
+          ' 은 다시 한번 생각했다——',
+        ]);
+        await printAndWait(
+          `어제 사이좋게 임신 주머니를 공유하던 그 두 명의 ${father.uma_sex_title}일까?`,
+        );
+        await printAndWait(
+          '아니면 자신의 앞에서 출정식을 하던 팀원 중 누군가가, 모든 구멍에 정액을 가득 채워 숨결에서조차 진한 정액 냄새가 나게 했던…… 마지막에 몸에 묻은 정액을 하나하나 핥아 삼키고 보지에 밀어 넣었을 때——그때 임신한 것일지도 모른다.',
+        );
+        println();
+        await printAndWait([
+          '어느덧 ', 
+          you.get_colored_name(),
+          ' 의 마음속에는 아이의 미래에 대한 막연한 공포와 두려움이 피어올랐다.',
+        ]);
+        if (children_count > 0) {
+          await printAndWait(
+            `그 아이의 어린 시절이 엊그제 같은데, 어느새 성인이 된 ${father.sex}은(는) 순진했던 눈망울을 지운 채 자신을 낳아준 구멍을 성욕 어린 눈으로 바라보는 짐승이 되어 있었다`,
+          );
+          await printAndWait([
+            you.get_colored_name(),
+            ' 은 자신이 다시 한번 성인이 된 아이에게 유린당해 차마 어머니라 부를 수 없는 수치스러운 모습이 되지 않을까 두려워졌다.',
+          ]);
+        } else {
+          await printAndWait(
+            `태어날 이 아이도 훗날 성인이 되면 다른 ${father.uma_sex_title}들처럼 나를 그저 임신 주머니로 취급하게 될까……`,
+          );
+          await printAndWait(
+            '……안 돼, 직무를 다해야 해. 적어도 이 아이만큼은 제대로 훌륭하게 키워내야 해.',
+          );
+        }
+        println();
+        await printAndWait('임신 주머니에 의해 길러진 아이가 정말 제대로 된 어른이 될 수 있을까?');
+        await printAndWait(
+          `매일같이 자신의 엄마가 온갖 ${father.elder_sibling_sex_title}들에게 범해져 침을 흘리며 품위 없이 용서를 구하는 모습을 보며`,
+        );
+        await printAndWait('그런 아이가 정말 굴하지 않고 꿋꿋하게 자라날 수 있을까?');
+        await printAndWait('하지만 비웃을 처지도 아니었다.');
+        await printAndWait([
+          '지금도 화장실을 지나가던 ',
+          father.uma_sex_title,
+          '에게 바닥에 깔려 육봉을 수발들고 있는 ',
+          you.get_colored_name(),
+          ' 는, 그저 그런 희박한 희망에 기댈 수밖에 없었다.',
+        ]);
+      }
+      setColor();
+      return [ret];
+    };
+    f.title = title;
+    return f;
+  })(),
+
 };
