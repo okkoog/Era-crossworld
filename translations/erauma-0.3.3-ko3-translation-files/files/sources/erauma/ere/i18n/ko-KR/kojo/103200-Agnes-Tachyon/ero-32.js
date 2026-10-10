@@ -5,6 +5,189 @@ const part_enum = require('#/data/ero/part-const')["part_enum"];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/103200-Agnes-Tachyon/ero-32"),
 
+  // [번역 완료] ero_start_reward2
+  ero_start_reward2: (() => {
+    /**
+     * @param {CharaTalk} tachyon 아그네스 타키온
+     * @param {CharaTalk} you 플레이어
+     * @param {PrintedSpan} callname 아그네스 타키온이 플레이어를 부르는 호칭
+     */
+    const f = async (tachyon, you, callname) => {
+      await tachyon.say_and_wait([
+        callname,
+        '～ 오늘 실험도 수고 많았네.',
+      ]);
+      await tachyon.say_and_wait('그럼…… 보상이 필요한가❤️');
+      await you.say_and_wait('부탁해.');
+      era.println();
+      await era.printAndWait('찌걱찌걱');
+      await era.printAndWait('실험실 안은 외설적인 소리로 가득 찼다.');
+      era.println();
+      await tachyon.say_and_wait([callname, '…… ', callname, '❤️']);
+      await tachyon.say_and_wait('어서…… 나의 암컷 구멍을 가득 채워주게❤️');
+      await tachyon.say_and_wait(
+        '실험 도중부터 줄곧 애액을 흘려댄 이 음탕한 구멍을…… 제대로 길들여달란 말일세.',
+      );
+      await era.printAndWait(
+        '육봉이 삽입되기도 전에 이미 완전히 젖어버린 좁은 구멍이 육봉을 꽉 조여왔다.',
+      );
+      await era.printAndWait([
+        '허리를 쳐올릴 때마다 애액이 사방으로 튀어, 책상과 바닥이 ',
+        tachyon.get_colored_name(),
+        '의 비릿한 액체로 물들어갔다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait('으으…… 너무 강해❤️');
+      await tachyon.say_and_wait('조금만… 조금만 천천히 해주게……❤️');
+      await tachyon.say_and_wait('소리가…… 아응❤️');
+      era.println();
+      await era.printAndWait('그렇게 유혹하면서 천천히 하길 바란다고?');
+      await era.printAndWait([
+        you.get_colored_name(),
+        '은(는) ',
+        tachyon.get_colored_name(),
+        '의 엉덩이를 세게 내리쳤다.',
+      ]);
+      await era.printAndWait('부탁은 아랑곳하지 않고 속도를 더욱 높였다.');
+      era.println();
+      await tachyon.say_and_wait([callname, '…… ', callname, '❤️']);
+      await tachyon.say_and_wait('아❤️ 응아❤️ 아❤️ 아아❤️');
+      await tachyon.say_and_wait([callname, '…… 줘❤️ 나에게 더 많이 줘❤️']);
+      era.println();
+      await era.printAndWait([
+        '절정에 가까워지자, 허리는 이미 ',
+        you.get_colored_name(),
+        '의 통제를 벗어나 스스로 속도를 높이기 시작했다.',
+      ]);
+      await era.printAndWait([
+        '그토록 능동적으로 감겨오는 움직임에 ',
+        you.get_colored_name(),
+        '의 흥분도 정점에 달했고, 눈앞의 암컷을 수컷의 본능대로 유린하고 싶다는 갈망이 몸을 지배했다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait([
+        '너무 좋아❤️ ',
+        callname,
+        '의 자지❤️ 정말 대단해❤️',
+      ]);
+      era.println();
+      await era.printAndWait('살이 맞부딪히는 소리가 더욱 요란하게 울려 퍼졌다.');
+      await era.printAndWait('실험실 전체가 음란한 냄새와 소리로 가득 찼다.');
+      era.println();
+      await tachyon.say_and_wait('또…… 또 커졌군❤️');
+      await tachyon.say_and_wait([
+        '쌀 것 같은가…… 아, 안에 내보내 주게❤️ 갖고 싶어…… ',
+        callname,
+        '의 아기를❤️',
+      ]);
+      await tachyon.say_and_wait([
+        '좋아해…… ',
+        callname,
+        '에게 질내사정 당하는 게 제일 좋아❤️',
+      ]);
+      await tachyon.say_and_wait([
+        '좁은 구멍 안에…… 마음껏 내보내 주게…… ',
+        callname,
+        '의 아이를 낳고 싶어❤️ ',
+        callname,
+        '의 새끼 모르모트를 잔뜩 낳아주고 싶네❤️',
+      ]);
+      era.println();
+      await era.printAndWait([
+        tachyon.get_colored_name(),
+        '의 말을 듣자, ',
+        you.get_colored_name(),
+        '은(는) 더욱 무자비하게 허리를 놀렸다.',
+      ]);
+      await era.printAndWait([
+        '아무리 ',
+        tachyon.uma_sex_title,
+        '의 신체라 해도 그저 ',
+        you.get_colored_name(),
+        '의 움직임에 맞춰 휘둘릴 수밖에 없었다.',
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        '은(는) 앞에서 격렬하게 흔들리는 두 유두를 움켜쥐고 힘껏 아래로 잡아당겼다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait('히이이이이익❤️');
+      await tachyon.say_and_wait('가, 가버려❤️ 젖꼭지가 잡아당겨져서 가버린단 말이네❤️');
+      era.println();
+      await era.printAndWait('도퓨, 도퓨, 뷰루루루❤️');
+      await era.printAndWait(
+        '마지막으로 뿌리 끝까지 밀어 넣으며 몇 번 더 피스톤질하자, 사정감이 폭발했다.',
+      );
+      await era.printAndWait([
+        '백탁액이 ',
+        tachyon.get_colored_name(),
+        '의 보지 구멍을 가득 채웠다.',
+      ]);
+      await era.printAndWait([
+        '정액이 쏟아져 들어오는 순간, ',
+        tachyon.get_colored_name(),
+        ' 역시 전신을 경련하며 정점에 도달했다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait([
+        '며칠간 맛보지 못했던…… ',
+        callname,
+        '의 자지❤️ 에헤헤❤️',
+      ]);
+      await tachyon.say_and_wait(['정말 최고야…… ', callname, '의…… 하으으❤️']);
+      era.println();
+      await era.printAndWait([
+        '이제 끝났다고 생각한 ',
+        tachyon.get_colored_name(),
+        '이 감상을 말하려던 찰나,',
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        '의 육봉이 다시 한번 그녀의 입을 막아버렸다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait('쮸웁…… 쮸우❤️');
+      era.println();
+      await era.printAndWait([
+        tachyon.get_colored_name(),
+        '은 순종적으로 ',
+        you.get_colored_name(),
+        '의 육봉을 청소해 주었다.',
+      ]);
+      await era.printAndWait([
+        '자신의 애액과 ',
+        callname,
+        '의 정액으로 뒤범벅이 된 육봉은, ',
+        tachyon.get_colored_name(),
+        '에게 있어 지금 당장 ',
+        callname,
+        '이(가) 만든 도시락이 앞에 있다 해도 ',
+        tachyon.sex,
+        '는 아마 육봉을 우선해서 택할 만큼 매혹적이었다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait(
+        '다음 실험 때도…… 똑같이 부탁하네❤️ 쮸❤️ 쮸뵷❤️',
+      );
+      await tachyon.say_and_wait('으읍! 으쮸❤️ 쮸루❤️');
+      era.println();
+      await era.printAndWait([
+        '「다음에 또 하자」는 말을 돌려 말하는 ',
+        tachyon.get_colored_name(),
+        '의 목소리에, ',
+        you.get_colored_name(),
+        '의 육봉은 다시금 단단해졌다.',
+      ]);
+      await era.printAndWait([
+        '그 유혹에 눈앞의 ',
+        tachyon.uma_sex_title,
+        '은 다시 한번 암컷의 표정을 지었다.',
+      ]);
+    };
+    f.title = '실험의 보수・2';
+    return f;
+  })(),
+
   // [번역 대상] ask_blow_job
   async ask_blow_job(tachyon) {
     await tachyon.say_and_wait('まったく……仕方ありませんわね……');
