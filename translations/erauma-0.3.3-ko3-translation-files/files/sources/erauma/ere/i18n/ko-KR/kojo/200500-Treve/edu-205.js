@@ -148,9 +148,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] foreign_travel
+  // [번역 완료] foreign_travel
   foreign_travel: (() => {
-    const title = 'ヴェルサイユのばら';
+    const title = '베르사유의 장미';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} montjeu モンジュー
@@ -158,130 +158,126 @@ module.exports = {
      */
     const f = async (treve, montjeu, you) => {
       await era.printAndWait(
-        `テュイルリー庭園はパリの中心にある。シャンゼリゼを抜け、コンコルド広場とルーヴル美術館を隔てた都心でも大きな庭園で、観光名所であるだけでなく、市民の憩いの場としても広く愛されている。`,
+        `튈르리 정원은 파리 중심부에 위치해 있다. 샹젤리제 거리를 지나 콩코르드 광장과 루브르 미술관 사이에 있는 파리 중심부의 대형 정원으로, 관광 명소일 뿐만 아니라 시민들의 휴식처로도 널리 사랑받고 있다.`,
       );
       await era.printAndWait(
-        `휴일 낮이면 가족 단위 방문객도 많아 곳곳에서 아이들이 뛰어노는 모습이 보인다.`,
+        `휴일 낮이 되자 가족 단위로 찾은 사람들이 많았고, 여기저기서 아이들이 뛰어노는 모습을 볼 수 있었다.`,
       );
-      await era.printAndWait(`突然、${treve.name} がすっかり縮こまる。`);
+      await era.printAndWait(`돌연, ${treve.name}는 완전히 움츠러들었다.`);
       await era.printAndWait(
-        `${you.name} が顔を上げると、挨拶する声が聞こえた。`,
+        `${you.name}이(가) 고개를 들자 인사를 건네는 목소리가 들렸다.`,
       );
-      await montjeu.say_and_wait('来たのね。ただ、私の話は主にあの人へよ。');
+      await montjeu.say_and_wait('왔구나, 하지만 내가 볼일이 있는 사람은 저쪽이야.');
       await era.printAndWait(
-        `慎重さと知恵の滲む${montjeu.adult_sex_title}の声。`,
-      );
-      await era.printAndWait(
-        `だが最初に反射で思い出したのは、何度も聴いた${treve.sex}の勝利ライブの声だ。`,
+        `신중함과 지성이 묻어나는 ${montjeu.adult_sex_title}의 목소리.`,
       );
       await era.printAndWait(
-        `振り返ると、すらりと高い${treve.uma_sex_title}が腕を組み、こちらを見つめている。`,
-      );
-      await era.printAndWait(`——伝説。`);
-      await treve.say_and_wait(`師匠！`);
-      await era.printAndWait(`${treve.name} は目を輝かせて、その人を呼ぶ。`);
-      await era.printAndWait(`${you.name} は全身が硬直し、一歩も動けない。`);
-      await era.printAndWait(`速い心拍が警鐘のように頭を満たす。`);
-      await montjeu.say_and_wait(`では。`);
-      await era.printAndWait(
-        `${montjeu.sex}は ${you.name} の左手の紙袋を見る。`,
+        `하지만 반사적으로 가장 먼저 떠오른 기억은, 수없이 들었던 ${treve.sex}의 위닝 라이브 목소리였다.`,
       );
       await era.printAndWait(
-        `${you.name} を木陰のベンチへ招き、苦笑しながら土産を受ける。`,
+        `뒤를 돌아보니 늘씬하고 키 큰 ${treve.uma_sex_title}가 팔짱을 낀 채 이쪽을 바라보고 있었다.`,
+      );
+      await era.printAndWait(`——전설.`);
+      await treve.say_and_wait(`스승님!`);
+      await era.printAndWait(`${treve.name}는 눈을 반짝이며 그 인물을 불렀다.`);
+      await era.printAndWait(`그리고 ${you.name}은(는) 온몸이 굳어 한 발자국도 움직일 수 없었다.`);
+      await era.printAndWait(`경종처럼 빠른 심장 박동이 머릿속을 가득 채웠다.`);
+      await montjeu.say_and_wait(`그러면.`);
+      await era.printAndWait(
+        `${montjeu.sex}는 ${you.name}의 왼손에 들린 종이봉투를 바라보았다.`,
       );
       await era.printAndWait(
-        `${
-          montjeu.name
-        }。フランスの伝説的な${treve.uma_sex_title}、凱旋門賞の覇者の一人。`,
+        `${you.name}을(를) 나무 그늘 아래 벤치로 초대하고, 쓴웃음을 지으며 특산품을 받아들었다.`,
+      );
+      await era.printAndWait(
+        `${montjeu.name}. 프랑스의 전설적인 ${treve.uma_sex_title}이자 개선문상 우승자 중 한 명.`,
       );
       await montjeu.say_and_wait(
-        `トレセンに入ってからも、休日は${treve.sex}に個人指導をしていたわ。素養に技術が乗れば教える、と簡単に伝えただけ。瞬く間にレースの心得を掴んだ。`,
+        `트레센에 들어간 뒤에도 나는 휴일마다 ${treve.sex}에게 개인 지도를 했어. 타고난 소양에 기술을 더할 수 있다면 가르쳐 주겠다고 했을 뿐이지만, 순식간에 레이스의 요령을 터득하더군.`,
       );
-      era.printButton(`「私に不満ですか？」`, 1);
+      era.printButton(`「내 방식이 불만인 건가?」`, 1);
       await era.input();
       await era.printAndWait(
-        `${montjeu.name} は答えず、風に揺れる木をじっと見ている。`,
+        `${montjeu.name}는 대답 대신, 바람에 흔들리는 나무를 지그시 응시했다.`,
       );
-      await era.printAndWait(`その向こうに、陽を受けたセーヌの青が見える。`);
-      await era.printAndWait(`秋になれば、もう暑さは感じないはずだ。`);
+      await era.printAndWait(`그 너머로 햇빛을 받아 반짝이는 센강의 푸른 물결이 보였다.`);
+      await era.printAndWait(`가을이 되었으니 더위는 이미 느껴지지 않을 터였다.`);
       await era.printAndWait(
-        `だが ${you.name} のこめかみから頬へ、一滴の汗がゆっくり、その存在を刻むように流れる。`,
+        `하지만 ${you.name}의 관자놀이에서 뺨으로, 한 방울의 땀이 존재를 새기듯 천천히 흘러내렸다.`,
       );
       await era.printAndWait(
-        `無言の時間は、${you.name} が自分の横顔を見つめる ${montjeu.name} に気づいたとき終わる。`,
+        `침묵은 ${you.name}이(가) 자신을 바라보는 ${montjeu.name}의 시선을 느낀 순간 끝났다.`,
       );
       await montjeu.say_and_wait(
-        `不満かどうかは、自分の目で決めたかった。実際に相手を見なければ分からない。だから、いま答えを出す。`,
+        `불만이 있는지 없는지는 직접 만나보고 결정하고 싶었어. 상대를 실제로 보지 않으면 알 수 없으니까. 그래서, 지금에서야 답을 정했지.`,
       );
       await era.printAndWait(
-        `${montjeu.name} はその鋭い双眸を ${you.name} へ向け、眉間に皺を寄せ、言葉で追い打ちする。`,
+        `${montjeu.name}는 그 날카로운 눈동자를 ${you.name}에게 돌리고, 미간을 찌푸리며 말로 추격해 왔다.`,
       );
-      await montjeu.say_and_wait(`不満よ。`);
+      await montjeu.say_and_wait(`불만이다.`);
       era.printButton(`「……」`, 1);
       await era.input();
-      await era.printAndWait(`${montjeu.name} は続ける。`);
+      await era.printAndWait(`${montjeu.name}는 말을 이어나갔다.`);
       await montjeu.say_and_wait(
-        `これまでの実績には一定の説得力がある。良いところはそのまま、悪いところは直せる。${treve.uma_sex_title}の素質を最大限に引き出すやり方が放任に見えても、育成の手段だと理解はできる。完成度の高い ${
-          treve.name
-        } を任されていれば、なお説得力が増す。`,
+        `지금까지 네 실적은 꽤 설득력이 있었지. 좋은 점은 그대로 살리고, 나쁜 점은 고쳐나간다. ${treve.uma_sex_title}의 소질을 최대한 이끌어내는 방식이 결과적으로 방임주의적인 방식이더라도, 하나의 육성 수단으로서 이해할 수 있었어. 완성도가 높은 ${treve.name}를 담당하니 더더욱 설득력이 있게 되겠지.`,
       );
-      await era.printAndWait(`そう見えるだろう。`);
+      await era.printAndWait(`방임주의처럼 보였던 거겠지.`);
       await montjeu.say_and_wait(
-        `だが、いまのあなたのやり方は、ただの放置よ。自分にできることを捨て、${treve.name} の完全を目指す努力を捨て、傍観者になっている。`,
+        `하지만, 지금 네 태도는 그저 방치하는 것에 불과해. 넌 네가 할 수 있는 일을 포기했고, ${treve.name}의 완성을 향한 노력을 저버렸어. 넌 그저 방관자일 뿐이야.`,
       );
-      await era.printAndWait(`では、どうすればいい。`);
+      await era.printAndWait(`그럼, 어떡해야 할까.`);
       await era.printAndWait(
-        `これまで自分の技術を信じ、担当の${treve.uma_sex_title}を信頼してきた。では、完璧な${treve.uma_sex_title}に、欠けた自分はどう触れる。`,
+        `지금까지 자신의 기술을 믿고, 담당 ${treve.uma_sex_title}를 신뢰해 왔다. 그렇다면, 완벽한 ${treve.uma_sex_title}를 상대로, 결함 투성이인 자신은 어떻게 다가가야 할까?`,
       );
-      await era.printAndWait(`${you.name} は${treve.sex}をどう思えばいい。`);
-      await era.printAndWait(`${montjeu.name} は続ける。`);
+      await era.printAndWait(`${you.name}은(는) ${treve.sex}에 대해 어떻게 생각해야 할까?`);
+      await era.printAndWait(`${montjeu.name}가 이어 말했다.`);
       await montjeu.say_and_wait(
-        `凱旋門賞は高い壁よ。フランスの天才でも、そう簡単には取れない。`,
+        `개선문상은 높은 벽이야. 아무리 프랑스의 천재라 해도, 그렇게 쉽게 거머쥘 수 있는 건 아니지.`,
       );
-      era.printButton(`「いまのままでは勝てない、ということですか？」`, 1);
+      era.printButton(`「지금 상태로는 이길 수 없다는 뜻이야?」`, 1);
       await era.input();
-      await montjeu.say_and_wait(`ええ。`);
+      await montjeu.say_and_wait(`그래.`);
       await era.printAndWait(
-        `멀리서 ${treve.name}이(가) 들판을 달렸다. 그 뒤를 따라 어느새 모여든 소년소녀들도 함께 달렸다.`,
+        `멀리서 ${treve.name}가 들판을 달리고 있다. 그 뒤를 쫓듯 어느새 늘어난 소년 소녀들도 달리고 있었다.`,
       );
       await era.printAndWait(
-        `${treve.sex}がそうすれば、誰もが魅了されるだろう。`,
+        `${treve.sex}가 그렇게 하면 누구라도 매료되겠지.`,
       );
       await era.printAndWait(
-        `そしてそれを難なく力に変え、天才の能力でレースにも勝つだろう。`,
+        `그리고 그것을 아무런 어려움 없이 힘으로 바꾸어, 천재적인 능력으로 레이스에서 이기겠지.`,
       );
       await era.printAndWait(
-        `心の中の呟きを肯定するように、かつての伝説が口を開く。`,
+        `마음속 중얼거림을 긍정하듯, 왕년의 전설이 입을 열었다.`,
       );
       await montjeu.say_and_wait(
-        `${treve.sex}は勝つわ。あなたがいなくても勝てる、強い芽よ。`,
+        `${treve.sex}는 이길 거다. 분명 너 없이도 이길 수 있는 강력한 떡잎이지.`,
       );
-      era.printButton(`「分かっています。」`, 1);
+      era.printButton(`「알고 있어.」`, 1);
       await era.input();
-      await montjeu.say_and_wait(`だからこそ、問わなければならない。`);
+      await montjeu.say_and_wait(`그렇기 때문에, 물어봐야만 해.`);
       await era.printAndWait(
-        `${montjeu.name} は立ち上がり、${you.name} を睨む目は少し冷たいが、見下しているわけではない。`,
+        `${montjeu.name}가 일어서서 ${you.name}의 눈을 쏘아보는 시선은 조금 차가웠지만, 결코 깔보는 것은 아니었다.`,
       );
       await era.printAndWait(
-        `欠点を正面から指摘する公平な場が、${you.name} の心をきつく握る。`,
+        `단점을 노골적으로 지적받는 공평한 무대가, ${you.name}의 심장을 꽉 쥐는 듯했다.`,
       );
       await era.printAndWait(
-        `これまで避けてきたものを、目の前へ押し出された感じだ。`,
+        `지금까지 외면해 왔던 것을 눈앞에 들이미는 듯한 감각이었다.`,
       );
       await montjeu.say_and_wait(
-        `一人でも勝てる ${treve.name} の隣に、あなたがいる理由。`,
+        `혼자서도 이길 수 있는 ${treve.name}의 곁에, 네가 있는 이유를.`,
       );
-      await era.printAndWait(`${treve.name} が遠くから手を振る。`);
+      await era.printAndWait(`${treve.name}가 멀리서 손을 흔들며 인사했다.`);
       await era.printAndWait(
-        `${montjeu.name} は優しく微笑んで${treve.sex}に手を振り、${you.name} はベンチで肩を落とし、${treve.sex}から目を離せない。`,
+        `${montjeu.name}는 부드러운 미소와 함께 ${treve.sex}에게 손을 흔들었지만, ${you.name}은(는) 벤치에서 어깨를 늘어뜨린 채 ${treve.sex}를 응시할 수밖에 없었다.`,
       );
       await montjeu.say_and_wait(
-        `答えは凱旋門の前で出しなさい、${you.actual_name}。さもなくば、あなたは${treve.sex}の将来を奪う。`,
+        `개선문 앞에 서기 전에 답을 내야 할 거다, ${you.actual_name}. 그렇지 않으면 넌 ${treve.sex}의 미래를 빼앗게 될 거야.`,
       );
       await era.printAndWait(
-        `다시 달리기 시작한 ${treve.name}의 뒤를 수많은 아이들이 쫓았다.`,
+        `다시 뛰어나간 ${treve.name}의 뒷모습을 수많은 아이들이 쫓고 있었다.`,
       );
-      await era.printAndWait(`それが朧になり、森の中へ消える。`);
+      await era.printAndWait(`그 모습은 점차 아스라이 숲 속으로 사라졌다.`);
     };
     f.title = title;
     return f;
