@@ -607,7 +607,7 @@ begin_race_win:
     - %SEX%를 믿어주는 것, 그것이야말로 지금 해야 할 일이었다.
 
 #ジュニア級7月
-# [번역 대상] mejiro
+# [번역 완료] mejiro
 mejiro:
   title: 메지로라는 이름의 부담
   lines:
@@ -628,7 +628,7 @@ mejiro:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「マックイーンもライアン%THEY%も、トレーナーのことを悪く言わないよ。本当」
+        - 「맥퀸이나 라이언 %THEY%도 트레이너를 나쁘게 말하지 않아. 진짜야」
     - acc: 1
       content: 「아니, 긴장한 건 내가 아닌 것 같은데.」
     - 정곡을 찌르는 말에 두 사람 사이의 대화가 돌연 멈추었다.
@@ -647,7 +647,7 @@ mejiro:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「だってマックイーンもライアンも、みんなから期待されてる新星でしょ。%THEY%と並ぶと、どうしても……」
+        - 「맥퀸도 라이언도 모두에게 기대받는 신성이잖아. %THEY%와 나란히 서면 아무래도……」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -657,7 +657,7 @@ mejiro:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「それに、こんなはしゃぎ屋の%UMA%じゃ、%THEY%みたいな優雅さは出せないし。ちょっと……」
+        - 「게다가 이렇게 부산스러운 %UMA%로서는 %THEY% 같은 우아함을 낼 수 없으니까. 조금……」
     - 굳이 말로 다 하지 않아도 파머가 하고 싶은 말은 충분히 전달되었다.
     - acc: 1
       content: 「메지로라는 이름이 그렇게 중요한 거야?」
@@ -697,7 +697,7 @@ mejiro:
           content: %CHARA%
         - 「그럼, 약속 하나 할까, 트레이너?」
     - 갑자기 걸음을 멈추자, 뺨을 스치는 미풍이 파머의 가벼운 머릿결을 흔들었다.
-    - 急に止まった動きに遮られ、パーマーの前で振り返る
+    - 갑자기 움직임이 멈추는 바람에 발길을 멈추고 파머를 향해 돌아섰다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -713,7 +713,7 @@ mejiro:
           content: %CHARA%
         - 「그래도 이제 막 데뷔했으니까 너무 서두를 필요는 없겠지? 아하하……」
     - 홀가분한 웃음소리와 함께 파머가 다시 달리기 시작했다.
-    - %YOU%の位置を追い越し、校外へ向かって走る
+    - 파머는 %YOU%을(를) 지나쳐 학원 밖을 향해 달려갔다
     - 오늘은 모임이 있으니 발걸음을 서둘러야 할 때였다.
 
 #クラシック級1月1週
@@ -2226,12 +2226,12 @@ summer_middle_1:
         - 「오늘의 내가 달린 이유는 내가 달리고 싶었기 때문이야!」
     - 메지로 파머는 웃음 띤 얼굴로 짐짓 농담 섞인 표정을 지어 보였다.
 
-# [번역 대상] summer_end_1
+# [번역 완료] summer_end_1
 summer_end_1:
   title: 여름 합숙（클래식 시즌）종료
   lines:
     - 여름 합숙이 끝났다. 다이타쿠 헬리오스 덕분에 메지로 파머의 이번 여름은 무척이나 충실했다.
-    - そのあいだに見つけた、本当に欲しかったもの——走りたい、ということ
+    - 그동안 찾아낸 진정으로 원하던 것—— 바로 달리고 싶다는 마음이었다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2252,7 +2252,7 @@ summer_end_1:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%THEY%を見てると、それだけじゃ足りない気がして～」
+        - 「%THEY%를 보고 있으면 그것만으로는 부족한 것 같아서~」
     - 메지로 파머의 시선을 따라 %YOU%도 의아한 듯 그쪽을 바라보았다.
     - color: %COLOR_13%
       content:
@@ -2289,14 +2289,14 @@ summer_end_1:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「……%SEX%に比べたら、あたしは走るのが好きなだけ」
+        - 「……%SEX%에 비하면 난 그냥 달리는 걸 좋아할 뿐이야」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
         - 「게다가 난 아직 잘 모르겠어…… 내가 정말로 레이스라는 것 자체를 좋아하는 건지.」
     - 메지로 파머가 한 마디 한 마디 내뱉을수록 목소리는 점점 작아졌다.
-    - そっと顔を覆い、少し不安そうに%YOU%を見る
+    - 파머는 살짝 얼굴을 가리며 조금 불안한 듯 %YOU%을(를) 바라보았다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2351,7 +2351,7 @@ summer_end_1:
         - fontWeight: bold
           content: %CHARA%
         - 「나 같은 건 참 골치 아픈 녀석이지……」
-    - 視線が沈み、不安そうな自分の指へ落ちていく
+    - 파머의 시선은 점점 아래로 향해 불안하게 꼼지락거리는 자신의 손가락에 머물렀다
     - 메지로 파머는 정말로 다정하고도 섬세한 성격의 소유자였다.
     - acc: 1
       content: 「난 감수성이 풍부한 것도 나쁘지 않다고 생각해」
@@ -2825,7 +2825,7 @@ c_arim_kin_lose:
         - 「잠시만…… 잠시만 여기서 도망치게 해줘……」
 
 #シニア級1月1週
-# [번역 대상] new_year_2
+# [번역 완료] new_year_2
 new_year_2:
   title: 새해 참배
   lines:
@@ -2874,15 +2874,15 @@ new_year_2:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%THEY%にお参り、試してみない？ 今から行ってみよっか」
+        - 「%THEY%에게 참배해 보는 건 어때? 지금 가 볼까?」
     - acc: 1
       content: 「그거…… 꽤 재미있겠네.」
-    - 神社で昔ながらの神様に手を合わせるより、%THEY%のほうが今っぽい力を貸してくれるかもしれない
+    - 신사에서 옛날부터 내려오는 신에게 비는 것보다 %THEY%가 더 현대적인 힘을 빌려줄지도 모른다
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「じゃあ、%THEY%を探しに行こう！」
+        - 「그럼 %THEY%를 찾으러 가자!」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2907,12 +2907,12 @@ new_year_2:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「あ、そうだ。前に%SEX%が言ってた、天神みたいに輝いてる%UMA%を知ってるって！」
+            - 「아, 맞다. 전에 %SEX%가 말했잖아. 천신처럼 빛나는 %UMA%를 알고 있다면서!」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「このあいだ%SEX%にそっけなくされて、『お嬢さま冷たい～！』って大声出してたの、覚えてる。名前は……」
+            - 「얼마 전에 %SEX%에게 냉대를 받고 『아가씨 너무 차가워~!』라고 크게 외치던 게 기억나. 이름이……」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -2947,7 +2947,7 @@ new_year_2:
         - if: era.get('cflag:85:66') === 1
           lines:
             - acc: 1
-              content: 「実は……%SEX%、知ってるんだ」
+              content: 「사실은…… %SEX%, 알고 있거든」
             - color: %COLOR%
               content:
                 - fontWeight: bold
@@ -2962,7 +2962,7 @@ new_year_2:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「%SEX%、かわいすぎてメーター振り切れてるよ！ 見てるだけでいいよ」
+            - 「%SEX%는 귀여움 수치가 한계를 넘었어! 보기만 해도 충분해」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -3011,7 +3011,7 @@ new_year_2:
               content: %MARU%
             - 「와서 같이 춤추자, 흥, 흥~」
         - divider: true
-          content: %MARU%、昭和レトロとバブルの文化を愛する%UMA%
+          content: %MARU%, 쇼와 레트로와 버블 시대 문화를 사랑하는 %UMA%
         - color: %COLOR_4%
           content:
             - fontWeight: bold
@@ -4477,7 +4477,7 @@ senior_arim_kin:
     - 등 뒤로 엄지손가락을 치켜세워 보인 뒤, 결연한 눈빛으로 경기장을 향해 발걸음을 내디뎠다. 그리고 저 멀리서 손을 흔드는 친구에게로 다가갔다.
 
 # 通常勝負服
-# [번역 대상] s_arim_kin_win_clothe1
+# [번역 완료] s_arim_kin_win_clothe1
 s_arim_kin_win_clothe1:
   title: 이게 바로 내 피가 끓어오르는 달리기야!
   lines:
@@ -4497,7 +4497,7 @@ s_arim_kin_win_clothe1:
           content: %CHARA%
         - 「우리는 평생의 친구야!」
     - 마지막 가속과 함께 폐부의 공기를 쥐어짜 내며, 메지로 파머는 그 누구의 추월도 허용하지 않은 채 1위로 골인했다.
-    - 勝ちの歓声が耳に現実じゃなく聞こえる。画面に自分が映って、やっと大声を出し、観客席の%YOU%へ手を振る
+    - 승리를 축하하는 함성이 현실감 없이 들려왔다. 화면에 자신이 비치자 그제야 크게 소리를 지르며 관중석의 %YOU%에게 손을 흔들었다
     - divider: true
       content: 대기실
     - 레이스의 열기가 가시지 않은 몸으로 메지로 파머가 흥분한 채 대기실 문을 박차고 들어왔다.
@@ -4517,7 +4517,7 @@ s_arim_kin_win_clothe1:
     - acc: 1
       content: 「우와앗!」
     - %YOU%의 비명과 함께 두 사람은 하마터면 바닥으로 굴러떨어질 뻔했다.
-    - パーマーに押し倒されそうなのを避け、なんとか立ってから、パーマーの後ろへ焦って手を振る
+    - 파머에게 떠밀려 넘어질 뻔한 것을 간신히 피하고 일어선 뒤, 파머의 등 뒤를 향해 황급히 손을 저었다
     - acc: 1
       content: 「저기 파머, 일단 좀 놓아줄래?」
     - color: %COLOR%
@@ -4575,7 +4575,7 @@ s_arim_kin_win_clothe1:
             - fontWeight: bold
               content: %CHARA%
             - 「냄새 맡는 거라면…… 난 사실 전혀 상관없거든?」
-        - 気まずいのに、控え室の扉を閉じて鍵をかける
+        - 어색한 기분이 들었지만 대기실 문을 닫고 잠갔다
         - 순식간에 세상엔 오직 서로를 마주 보는 두 사람만이 남게 되었다.
         - %YOU%의 눈엔 이제 메지로 파머의 존재만이 가득했다.
         - 눈앞의 연인을 향해 메지로 파머는 그저 두 팔을 벌려 보였다.
@@ -4606,7 +4606,7 @@ s_arim_kin_win_clothe1:
           content: 「진정하자…… 진정해……」
           lines:
             - 승부복 겉옷을 내려놓고, 메지로 파머의 드러난 어깨를 가만히 붙잡았다.
-            - パーマーの驚いた目の中で、%YOU%は自分の上着を%SEX%へかける
+            - 파머가 놀란 눈으로 바라보는 가운데 %YOU%은(는) 자신의 겉옷을 %SEX%에게 걸쳐 주었다
             - acc: 1
               content: 「감기 걸리면 안 되니까」
             - color: %COLOR%
@@ -5075,7 +5075,7 @@ party_sex_end:
   - 응원을 받은 파머는 즉시 주먹을 불끈 쥐고 상대를 따라 경기장으로 내려갔다.
 
 #シニア級宝塚記念優勝、有馬記念連覇後。育成後（4年目）1月4週
-# [번역 대상] winner
+# [번역 완료] winner
 winner:
   title: 고개를 높게!
   lines:
@@ -5160,7 +5160,7 @@ winner:
       content:
         - fontWeight: bold
           content: %LUNA%
-        - 「前回グランプリ三連覇を成し遂げた%UMA%は、私が敬愛するあの%UMA%だ」
+        - 「지난번 그랑프리 3연패를 달성한 %UMA%는 바로 내가 존경하는 그 %UMA%다」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -5215,7 +5215,7 @@ winner:
       content:
         - fontWeight: bold
           content: %BOURBON%
-        - 「パーマーの功績は、逃げの%UMA%たちが見る夢ですから」
+        - 「파머의 업적은 도주형 %UMA%들이 꿈꾸는 이상이니까요」
     - 모두가 머리를 맞대고 의논한 덕분에 축하 의식은 무사히 마무리되었다.
     - 다만 그 후에——
     - color: %COLOR%
@@ -5254,7 +5254,7 @@ winner:
         - 「고개를 든 것…… 아, 축하 의식 때 말이지.」
     - 메지로 파머의 표정이 눈부시게 밝아졌다.
     - 고개를 드는 자세가 마음가짐까지 함께 바로잡아준 모양이었다.
-    - つまりそうしてから、パーマーの体に、グランプリ三連覇の%UMA%としての誇りが乗った
+    - 그렇게 파머는 그랑프리 3연패를 이룬 %UMA%로서의 자부심을 온몸에 새기게 되었다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -5274,11 +5274,11 @@ winner:
     - 그랑프리 3연패의 자부심을 가슴에 새기고, 메지로 파머는 앞으로도 새로운 축제에 도전해 나갈 것이다.
 
 #称号条件達成後、2月1週
-# [번역 대상] sports_car
+# [번역 완료] sports_car
 sports_car:
   title: 충격!스포츠카 선물이라니!
   lines:
-    - 穏やかな日、事務室にいた%YOU%へ、突然%MINORU%から知らせが来る
+    - 평온한 어느 날, 사무실에 있던 %YOU%에게 갑자기 %MINORU%의 연락이 왔다
     - color: %COLOR_301%
       content:
         - fontWeight: bold
@@ -5375,7 +5375,7 @@ sports_car:
             - 「잠깐…… 어라? 트레이너?」
         - acc: 1
           content: 「여어, 파머, 타」
-        - スポーツカーに座る%YOU%が、ぼんやりしているパーマーへ声をかけ、%SEX%のそばで停める
+        - 스포츠카에 앉은 %YOU%은(는) 멍하니 있던 파머에게 말을 걸고 %SEX%의 곁에 차를 세웠다
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -5415,7 +5415,7 @@ sports_car:
             - fontWeight: bold
               content: %CHARA%
             - 「계속 달려! 야호!」
-        - 海風が窓からパーマーに当たり、もともと楽しそうな%SEX%が自然にはしゃぐ
+        - 창문으로 들어온 바닷바람이 파머를 스쳤고, 원래도 즐거워 보이던 %SEX%는 저절로 들뜨기 시작했다
         - 차가 한적한 백사장에 천천히 멈춰 서고 나서야 멈출 줄 모르던 웃음소리가 잦아들었다.
         - 파도가 해변을 때리며 기분 좋은 소리를 냈다.
         - color: %COLOR%
@@ -5432,7 +5432,7 @@ sports_car:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「たまに日常から爆逃げして、好きなように楽しむのも大事だよ」
+            - 「가끔은 일상에서 전력으로 도망쳐서 마음껏 즐기는 것도 중요해」
         - acc: 1
           content: 「파머, 너는 원래 그런 사람이잖아」
         - %YOU%의 긍정적인 말에 메지로 파머는 참지 못하고 가벼운 웃음을 터뜨렸다.
@@ -5540,7 +5540,7 @@ sports_car:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「思い切りドライブしよう、%YOURNAME%！」
+            - 「실컷 드라이브하자, %YOURNAME%!」
         - acc: 1
           content: 「우리? 나도 포함인 거야?」
         - color: %COLOR%
@@ -5888,7 +5888,7 @@ important_place_notify:
     content: 【%CHARA%는 전에 이곳에서 자유 레이스에 출전했지…… 다시 한번 데려와 볼까?】
 
 #（自由レース、行く？）発動後、クラシック級商店街
-# [번역 대상] important_place
+# [번역 완료] important_place
 important_place:
   title: 중요한 장소니까
   lines:
@@ -5925,7 +5925,7 @@ important_place:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「端役……%THEY%が自由レースを走ってるから弱い、って思うのは違うよ」
+        - 「단역이라니…… %THEY%가 자유 레이스를 뛴다고 약하다고 생각하는 건 잘못이야」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -5986,7 +5986,7 @@ important_place:
       key: select
       content: 「도주도 정말 다양하구나」 (스피드+10)
       lines:
-        - 友人を守るために全力で走った姿がかっこよかった、と%YOU%は%SEX%に伝える
+        - %YOU%은(는) 친구를 지키기 위해 전력으로 달리던 모습이 멋있었다고 %SEX%에게 전했다
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -6020,7 +6020,7 @@ important_place:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「でもそうだね。%THEY%がいたから、今のあたしがある」
+            - 「하지만 맞아. %THEY%가 있었기에 지금의 내가 있는 거야」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -6031,7 +6031,7 @@ important_place:
             - fontWeight: bold
               content: %CHARA%
             - 「그걸 누구에게도 부정당하고 싶지 않아!」
-        - そのあとパーマーは%YOU%に、%SEX%の友人たちの話をたくさんした
+        - 그 후 파머는 %YOU%에게 %SEX%의 친구들에 관한 이야기를 잔뜩 들려주었다
 
 # [번역 완료] golf_notify
 golf_notify:
@@ -6039,7 +6039,7 @@ golf_notify:
     content: 【최근 %CHARA%는 훈련이 끝나면 서둘러 상점가로 향한다.】
 
 #恋慕＞49、シニア級クリスマス 商店街
-# [번역 대상] golf
+# [번역 완료] golf
 golf:
   title: 먼 길을 돌아 홀인원
   lines:
@@ -6214,7 +6214,7 @@ golf:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「店長にトレーナーだって言ったら、%SEX%がちょっと多めにしてくれた……言わないでね？」
+            - 「점장님께 트레이너라고 말했더니 %SEX%가 조금 더 챙겨 줬어…… 비밀이야, 알겠지?」
         - acc: 1
           content: 「아무에게도 말 안 할게. 점장님께도 고맙다고 전해줘.」
         - color: %COLOR%
@@ -6237,7 +6237,7 @@ golf:
             - fontWeight: bold
               content: %CHARA%
             - 「순록 파머가 보내는 선물이야~ 열어봐.」
-        - 受け取って開けると、中は有名ゴルフブランドのグローブだった
+        - 받아서 열어 보니 안에는 유명 골프 브랜드의 장갑이 들어 있었다
         - acc: 1
           content: 「이건……」
         - color: %COLOR%
@@ -6341,7 +6341,7 @@ golf:
                 - fontWeight: bold
                   content: %CHARA%
                 - 「그런 건 굳이 말 안 해도 된다니까!」
-            - この贈り物を渡すために、パーマーは自分のやり方で、かなり努力したのだろう
+            - 이 선물을 건네기 위해 파머는 나름의 방식으로 상당히 노력했을 것이다
             - 그렇게 생각하며 %YOU%은(는) 이 장갑을 소중히 간직하겠다고 다짐했다.
         - random: true
           lines:
@@ -6418,7 +6418,7 @@ lottery_notify:
     content: 【%CHARA%와 함께 추첨에 참가하자!】
 
 # 恋慕＞49、シニア級1月 商店街抽選
-# [번역 대상] lottery
+# [번역 완료] lottery
 lottery:
   title: 경품 추첨!
   lines:
@@ -6501,7 +6501,7 @@ lottery:
               content:
                 - fontWeight: bold
                   content: %CHARA%
-                - 「あたしのところ、おいしいハンバーグあるよ。いっしょに食べる？」
+                - 「우리 쪽에 맛있는 함박스테이크가 있어. 같이 먹을래?」
     - if: d.dice === 4
       lines:
         - 특별： 온천 여행권
@@ -7018,7 +7018,7 @@ lunch_break:
       # やる気down、体力-50
 
 #クラシック級以降、外出時ランダム
-# [번역 대상] dis_talent
+# [번역 완료] dis_talent
 dis_talent:
   title: 거리감의 천재
   lines:
@@ -7067,7 +7067,7 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「なるほど、ハヤヒデさんが自己ベストを更新したから、%SEX%に贈り物したい」
+        - 「그렇군요. 하야히데 씨가 개인 최고 기록을 갱신해서 %SEX%에게 선물을 하고 싶다는 거군요」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -7090,7 +7090,7 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %BRIAN%
-        - 「……%SEX%はバナナが好きだ。贈るならバナナだ」
+        - 「……%SEX%는 바나나를 좋아해. 선물한다면 바나나지」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -7130,7 +7130,7 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %TAISHIN%
-        - "「ハヤヒデの頑張りを無駄にしたくないだけ！」"
+        - "「그냥 하야히데의 노력이 헛되지 않았으면 하는 것뿐이야!」"
     - color: %COLOR_50%
       content:
         - fontWeight: bold
@@ -7146,7 +7146,7 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - "「うんうん！ 大人っぽくて、ハヤヒデに似合いそう！」"
+        - "「응응! 어른스러운 느낌이라 하야히데한테 잘 어울릴 것 같아!」"
     - color: %COLOR_16%
       content:
         - fontWeight: bold
@@ -7178,12 +7178,12 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - "「あー、ちゃんと決まってよかった。ハヤヒデも喜ぶよ！」"
+        - "「아, 제대로 정해져서 다행이다. 하야히데도 좋아할 거야!」"
     - color: %COLOR_50%
       content:
         - fontWeight: bold
           content: %TAISHIN%
-        - "「うん……ハヤヒデの役には立つけど……」"
+        - "「응…… 하야히데한테 도움은 되겠지만……」"
     - color: %COLOR_16%
       content:
         - fontWeight: bold
@@ -7198,7 +7198,7 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%SEX%、このヘアケア、効くっていつも言ってるし、レースの邪魔にもならない！」
+        - 「%SEX%도 이 헤어 케어 제품이 효과가 좋다고 늘 말하고, 레이스에도 방해되지 않을 거야!」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -7221,12 +7221,12 @@ dis_talent:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%THEY%、最初からハヤヒデを思う気持ちは同じだった」
+        - 「%THEY%는 처음부터 하야히데를 생각하는 마음만큼은 같았어」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あたしは%THEY%の意見を、わかりやすくしただけ！」
+        - 「난 %THEY%의 의견을 알아듣기 쉽게 정리했을 뿐이야!」
     - acc: 1
       key: select
       content: 「그건 결코 간단히 할 수 있는 일이 아니야」（호감도+10）
@@ -7235,7 +7235,7 @@ dis_talent:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「えー、お上手だね。%SELF_CALL%、照れるよ」
+            - 「에이, 칭찬도 잘하시네. %SELF_CALL%, 부끄럽잖아」
         - color: %COLOR%
           content:
             - fontWeight: bold
@@ -7295,7 +7295,7 @@ dis_talent:
         - 두 사람의 장난 섞인 분위기 속에 귀가길에 올랐다.
 
 #シニア級以降、外出時にランダム
-# [번역 대상] choice
+# [번역 완료] choice
 choice:
   title: 궁극의 선택!
   lines:
@@ -7369,7 +7369,7 @@ choice:
           content: %CHARA%
         - 「으와아, 어떡하면 좋지……」
     - 평소 대인관계에서 여유가 넘치던 파머가 드물게 혼란에 빠져 불안한 듯 좌우로 서성거렸다.
-    - いまは%YOU%が代わりに決めたほうがいいかもしれない
+    - 지금은 %YOU%이(가) 대신 결정하는 편이 나을지도 모른다
     # どちらを選んでもスピード+15
     # チーム内ならスピード+25、好感+25
     - acc: 1
