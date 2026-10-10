@@ -1151,9 +1151,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] s_a_47_42
+  // [번역 완료] s_a_47_42
   s_a_47_42: (() => {
-    const title = '王座の裏側';
+    const title = '왕좌의 이면';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} teio トウカイテイオー
@@ -1164,141 +1164,141 @@ module.exports = {
      */
     const f = async (nature, teio, luna, maya, you, callname) => {
       await era.printAndWait(
-        `${you.name} とナイスネイチャが次の目標『有馬記念』に向けてトレーニングを続けるある日……`,
+        `${you.name}과(와) 나이스 네이처가 다음 목표인 「아리마 기념」을 위해 훈련을 이어가던 어느 날……`,
       );
       await nature.say_and_wait(
-        `ベンチプレス終わり～${callname}、ちょっと休んでいい？`,
+        `벤치 프레스 끝~ ${callname}, 잠깐 쉬어도 될까?`,
       );
-      era.printButton('「いいよ」', 1);
+      era.printButton('「물론이지」', 1);
       await era.input();
-      await nature.say_and_wait('じゃあ10分だけ。');
-      await teio.say_and_wait('はぁ……はぁ……！ あと3セット……！');
-      await nature.say_and_wait('ん？ あれは……');
+      await nature.say_and_wait('그럼 딱 10분만 쉴게.');
+      await teio.say_and_wait('허억…… 후우……! 이제 세 세트 남았다……!');
+      await nature.say_and_wait('응? 저건……');
       await era.printAndWait(
-        `${you.name} がナイスネイチャの視線を追うと、トウカイテイオーが必死にトレーニングしていた。${teio.sex}は体を支える特殊な機器を使っているようだ……`,
+        `${you.name}이(가) 네이처의 시선을 따라가자 토카이 테이오가 필사적으로 훈련하고 있었다. ${teio.sex}는 몸을 지탱하는 특수 기구를 쓰고 있는 듯했다……`,
       );
-      await maya.say_and_wait('あ、ネイチャちゃん～♪ 一緒に休もー！');
+      await maya.say_and_wait('앗, 네이처 짱이다~♪ 같이 쉬자──!');
       await nature.say_and_wait(
-        'おっ──マヤノ、ちょうどいい。見て、テイオーなにやってるの？',
+        '오~ 마야노, 잘 왔어. 저기 봐, 테이오가 지금 뭐 하고 있는 거야?',
       );
       await maya.say_and_wait(
-        `${teio.sex}、リハビリだよ──！ 怪我、ちょっと大変だったんだ。`,
+        `${teio.sex}는 지금 재활 훈련 중이야——! 크게 다쳤거든.`,
       );
-      await nature.say_and_wait('えっ……');
+      await nature.say_and_wait('어……');
       await maya.say_and_wait(
-        'だってテイオーちゃん、前はベッドでずっと寝てたし──',
+        '테이오짱이 꽤 오랫동안 침대 신세를 졌었잖아──',
       );
-      await nature.say_and_wait('そっか……');
-      await teio.say_and_wait('……痛い、脚が重い～～！ ちょっと頑張りすぎ？');
-      await luna.say_and_wait('テイオー、奮闘しているようだな。');
+      await nature.say_and_wait('그렇구나……');
+      await teio.say_and_wait('……아파라, 다리가 너무 무거워~~! 조금 너무 무리했나──?');
+      await luna.say_and_wait('테이오, 아주 열심히 하고 있구나.');
       await teio.say_and_wait(
-        'わあ、会長！ もちろん、絶好調で頑張ってるよ！……って言いたいけど、絶好調まではまだ遠い。',
-      );
-      await teio.say_and_wait(
-        'でも、完全復活の道は見えてきた！ 前より強くなれるはずだよ♪',
-      );
-      await luna.say_and_wait('む……努力を褒めろと先に言われると思っていたが……');
-      await teio.say_and_wait(
-        'えっ──そんな要求しないよ！ 勝ちたいときに褒められたい！',
+        '와앗, 회장님! 당연하죠, 최상의 컨디션으로 노력 중이에요! ……라고 말하고 싶지만, 사실 최상의 컨디션까지는 아직 멀었어요.',
       );
       await teio.say_and_wait(
-        '努力は当たり前だもん！ ずっとここに縛られてられないし。',
+        '그래도 완전 부활의 길이 보여요! 예전보다 더 강해질 수 있을 것 같아요♪',
+      );
+      await luna.say_and_wait('음…… 곧장 칭찬해달라고 조를 줄 알았는데……');
+      await teio.say_and_wait(
+        '에이── 그런 거 안 바란다니까요! 저는 이겼을 때 칭찬받고 싶어요!',
       );
       await teio.say_and_wait(
-        '早く治さないと走れない。走らないと……会長に追いつけない。でしょ？',
+        '노력하는 건 당연한 거니까요! 저도 언제까지고 여기 멈춰 있을 수는 없고요.',
+      );
+      await teio.say_and_wait(
+        '빨리 낫지 않으면 달릴 수 없잖아요. 달리지 못하면…… 회장님을 따라잡을 수 없게 되니까. 안 그래요?',
       );
       await luna.say_and_wait(
-        '……なるほど。失礼した。君の精神力を、以前は見くびっていた。',
+        '……과연 그렇군. 실례했다. 내가 너의 정신력을 과소평가했던 모양이구나.',
       );
       await luna.say_and_wait(
-        '今は実力が安定し、心身ともに充実した時期だ。ここで怪我をすれば、私でも苦しい。',
+        '실력이 안정되고 심신이 충실한 시기에 닥친 부상은 나조차 고통스러울 터인데.',
       );
       await teio.say_and_wait(
-        '……だから励ましに来たの？ へへ。会長ったら、ボクを誰だと思ってるの？',
+        '……그래서 저를 응원하러 오신 거예요? 헤헤. 회장님도 참, 제가 누구라고 생각하세요?',
       );
       await teio.say_and_wait(
-        'レースもライブも大活躍！ 誰より速く、強く、かっこいい。',
+        '레이스에서도 공연에서도 대활약! 누구보다 빠르고, 강하고, 멋진.',
       );
       await teio.say_and_wait(
-        'ボク……吾は無敵のテイオー様だよ！ なにがあっても軽く乗り越える！',
+        '저는…… 이 몸은 무적의 테이오 님이라고요! 어떤 일이 생겨도 가볍게 이겨낼 수 있어요!',
       );
       await luna.say_and_wait(
-        'ふ……そうだな。期待しているぞ、トウカイテイオー！',
+        '훗…… 그렇군. 기대하마, 토카이 테이오!',
       );
-      await teio.say_and_wait('うん！');
-      await nature.say_and_wait(`……${teio.sex}、前より輝いてない？`);
+      await teio.say_and_wait('네!');
+      await nature.say_and_wait(`……${teio.sex}, 전보다 더 빛나지 않아?`);
       await nature.say_and_wait(
-        `壁にぶつかったせいで、${teio.sex}が強くなった、ってやつか……`,
-      );
-      await nature.say_and_wait(
-        'あたしみたいな端役は……壁にぶつかっても悩むだけ。',
+        `한계에 부딪혔기 때문에 ${teio.sex}가 더 강해진 걸까……`,
       );
       await nature.say_and_wait(
-        `……でも${teio.sex}は簡単に立て直す。さすが主役、格が違う。`,
+        '나 같은 조연은…… 벽에 부딪히기만 해도 온갖 잡생각이 다 드는데.',
+      );
+      await nature.say_and_wait(
+        `……하지만 ${teio.sex}는 금세 다시 일어서지. 역시 주인공은 뭔가 달라.`,
       );
       await maya.say_and_wait(
-        `ん──簡単かな？ テイオーちゃん${teio.sex}、あのときすごく泣いてたよ。`,
+        `음——쉬웠을까? 테이오짱 ${teio.sex}, 그때 정말 많이 울었잖아.`,
       );
-      await nature.say_and_wait('えっ……？');
+      await nature.say_and_wait('어……?');
       await maya.say_and_wait(
-        `だって大事なレースに出られなかったんだもん。あのとき${teio.sex}、ほんとに苦しそうだった。`,
+        `소중한 레이스에 나갈 수 없었으니까. ${teio.sex}는 그때 정말 괴로워 보였어.`,
       );
-      await nature.say_and_wait('……そ……そっか。あのテイオーが……');
+      await nature.say_and_wait('……그…… 그렇구나. 그 테이오가 말이지……');
       await era.printAndWait(
-        'その後のトレーニング中、ナイスネイチャは考え込んでいた。',
+        '이어진 훈련 도중, 나이스 네이처는 깊은 생각에 잠긴 듯 보였다.',
       );
       await era.printAndWait(
-        `──トレーニングが終わると、${nature.sex}はゆっくりと ${you.name} に気持ちを話した。`,
+        `──훈련이 끝난 후, ${nature.sex}는 천천히 ${you.name} 에게 자신의 속마음을 털어놓았다.`,
       );
       await nature.say_and_wait(
-        '……あたし、ずっと誤解してた。ちがう、たぶん……わざと誤解してた。',
+        '……지금까지 오해하고 있었어. 아니, 어쩌면…… 일부러 오해하고 있었던 걸지도 몰라.',
       );
       await nature.say_and_wait(
-        `テイオーは主役だから強い。${teio.sex}は生まれつき才能がある。最初から恵まれてる。`,
+        `테이오는 주인공이니까 강한 거야. ${teio.sex}는 타고난 재능이 있고 처음부터 특별하니까.`,
       );
       await nature.say_and_wait(
-        `${teio.sex}はあたしみたいな端役とはちがう。そう思って、弱い自分を守ってた。`,
+        `${teio.sex}는 나 같은 조연과 달라. 그렇게 생각하며 나약한 자신을 지켜 왔어.`,
       );
-      await nature.say_and_wait('でも……違った。テイオーもあたしも、同じ。');
+      await nature.say_and_wait('하지만…… 사실은 내가 틀렸어. 테이오도 나랑 똑같았어.');
       await nature.say_and_wait(
-        `${teio.sex}だって、どれだけ頑張っても勝てないこともあるし、怪我もする……その苦しさも知ってる。`,
-      );
-      await nature.say_and_wait(
-        `${teio.sex}とちがうのは……打撃を受けたあとの反応。自分の力で立ち上がれるのが、${teio.sex}の強さ。`,
+        `${teio.sex}도 아무리 노력해도 지거나 다칠 수 있어…… 그런 고통이 얼마나 큰지도 알고 있지.`,
       );
       await nature.say_and_wait(
-        '……もう、いまさら怖い。あんなに強い子に勝てるなんて、思ってたなんて。',
+        `${teio.sex}가 나와 다른 건…… 좌절한 뒤의 태도야. 스스로 다시 일어서는 게 바로 ${teio.sex}의 강함이지.`,
       );
       await nature.say_and_wait(
-        'あたしなんて、根性も勇気もなくて、前を走る人を見て不公平だって言うだけ。',
+        '……정말이지, 이제 와서 생각해도 무서워. 내가 저렇게 강한 애를 이길 수 있다고 생각했다니.',
       );
       await nature.say_and_wait(
-        '──あの舞台に立てないと思ってたけど、降りたのは自分だった。',
+        '나란 녀석은 의지도 용기도 없으면서, 앞서가는 사람만 쳐다보며 불공평하다고 투덜대기나 하고.',
       );
       await nature.say_and_wait(
-        '身の程知らずで、欲張りで、甘えるだけ。でも、でも……',
+        '──내가 그 무대에 설 수 없는 게 아니라, 내 스스로 무대에서 내려왔던 거야.',
       );
-      era.printButton('「それでも勝ちたい」', 1);
+      await nature.say_and_wait(
+        '분수도 모르고, 욕심만 많고, 응석받이에…… 하지만, 하지만……',
+      );
+      era.printButton('「그래도 이기고 싶지」', 1);
       await era.input();
-      await nature.say_and_wait('……うん。');
+      await nature.say_and_wait('……응.');
       await nature.say_and_wait(
-        'あの子と、ほんの少しでも同じところがあるなら、あたしも……',
+        '저 아이와 아주 조금이라도 공통점이 있다면, 나도……',
       );
-      await nature.say_and_wait('あたしも……！');
+      await nature.say_and_wait('나도……!');
       await era.printAndWait(
-        `${nature.sex}は続きを言わなかったが、覚悟の宿った瞳がすべてを語っていた。`,
+        `비록 말은 끝맺지 못했지만, 결의에 찬 ${nature.sex}의 눈동자가 모든 것을 말해주고 있었다.`,
       );
-      era.printButton('「勝とう！」', 1);
+      era.printButton('「꼭 이기자!」', 1);
       await era.input();
-      await nature.say_and_wait('──うん！');
+      await nature.say_and_wait('──응!');
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] s_a_95_42
+  // [번역 완료] s_a_95_42
   s_a_95_42: (() => {
-    const title = 'きらきら';
+    const title = '반짝반짝 빛나기를';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} you プレイヤー
@@ -1307,160 +1307,158 @@ module.exports = {
      */
     const f = async (nature, you, callname, trophies) => {
       await era.printAndWait(
-        `その日、トレーニング時間になってもナイスネイチャは現れなかった。いつもは${nature.sex}のほうが早いのに……`,
+        `그날, 훈련 시간이 되었는데도 나이스 네이처가 나타나지 않았다. 평소라면 누구보다 일찍 왔을 ${nature.sex}인데……`,
       );
       await era.printAndWait(
-        `${you.name} は${nature.sex}を心配して、学園内を探した──`,
+        `${you.name}은(는) ${nature.sex}가 걱정되어 학원 안을 찾아다녔다——`,
       );
       await era.printAndWait(
-        `──そして枯れ木の洞の前で${
-          nature.sex
-        }を見つけた。${nature.uma_sex_title}なら知っている、心の声を叫びたいときに来る場所だ。`,
+        `——그러다 마른 나무의 구멍 앞에서 ${nature.sex}를 발견했다. ${nature.uma_sex_title}라면 누구나 알 만한, 속마음을 털어놓으러 오는 곳이다.`,
       );
-      await nature.say_and_wait('……誰もいないよね。');
-      await nature.say_and_wait('よし……！');
+      await nature.say_and_wait('……주변에 아무도 없겠지?');
+      await nature.say_and_wait('좋아……!');
       await nature.say_and_wait(
-        'なんで……あんなこと言ったの？ バカだあたし──！！',
+        '도대체── 왜! 그런 소릴 한 거야!? 나 이 멍청아──!!',
       );
-      await nature.say_and_wait('正統派の主役に宣戦布告しちゃった……！');
+      await nature.say_and_wait('감히 그 정통파 주인공에게 선전포고를 하다니……!');
       await era.printAndWait(
-        `話は天皇賞（秋）のあと、${you.name} とナイスネイチャが帰り道でトウカイテイオーに会い、`,
+        `사건의 발단은 텐노상(가을)이 끝난 후였다. ${you.name}과(와) 나이스 네이처는 돌아가는 길에 토카이 테이오를 만났고,`,
       );
       await era.printAndWait(
-        `${nature.sex}も今年の有馬記念に出ると知ったところに戻る。その場の勢いで、ナイスネイチャは「有馬記念であなたに勝つ」と宣言してしまった——`,
+        `${nature.sex}가 올해 아리마 기념에 출주한다는 소식을 듣게 되었다. 분위기에 휩쓸린 나이스 네이처는 그만 「아리마 기념에선 반드시 널 이기겠어」라고 선언해버렸는데──`,
       );
       await nature.say_and_wait(
-        '端役のくせに調子乗りすぎ！！ もう無理……バカ────！！',
+        '나 같은 조연이 너무 들떠버렸어!! 정말 못 봐주겠네…… 바보────!!',
       );
       await nature.say_and_wait(
-        'まだ全然輝いてないのに……バカバカバカバカ！ バカ──！！',
+        '아직 반짝반짝하지도 않으면서…… 바보 바보 바보 바보! 바보──!!',
       );
-      await nature.say_and_wait('はぁ……はぁ……');
-      await nature.say_and_wait('だめ、全然すっきりしない……');
-      era.printButton('「ネイチャ！」', 1);
+      await nature.say_and_wait('허억…… 허억……');
+      await nature.say_and_wait('안 돼, 전혀 시원하지가 않아……');
+      era.printButton('「네이처!」', 1);
       await era.input();
       await nature.say_and_wait(
-        `うわっ！？${callname.substring(0, 1).repeat(4)}、${callname}！？`,
+        `으악!? ${callname.substring(0, 1).repeat(4)}, ${callname}!?`,
       );
-      await nature.say_and_wait('どうしてここに……って、あ！');
-      await nature.say_and_wait('もしかして、もうトレーニングの時間……？');
-      era.printButton('「そうだよ」', 1);
+      await nature.say_and_wait('쌤이 여긴 왜…… 아, 앗!');
+      await nature.say_and_wait('설마 벌써 트레이닝 시간이야……?');
+      era.printButton('「응, 맞아」', 1);
       await era.input();
       await nature.say_and_wait(
-        'ああああああああああ……あー！？ 前にも同じことあった！？',
+        '아아아아아아아아아…… 아──!? 전에도 똑같은 일이 있지 않았어!?',
       );
       await nature.say_and_wait(
-        'あうう……なんでいつもトレーナーに、こんな恥ずかしいとこ見せるの……',
+        '아우우…… 왜 항상 쌤한테만 이런 창피한 꼴을 보일까……',
       );
-      era.printButton('「いいんだよ」', 1);
+      era.printButton('「괜찮아」', 1);
       await era.input();
-      await nature.say_and_wait('えっ……');
-      era.printButton('「僕の前では、恥ずかしい顔いくらでも見せていい」', 1);
+      await nature.say_and_wait('어……');
+      era.printButton('「내 앞에서는 얼마든지 한심한 모습 보여줘도 돼」', 1);
       await era.input();
-      await nature.say_and_wait('……っ！！');
-      await nature.say_and_wait('ううう……ううううう～～！！');
-      await nature.say_and_wait(`${callname}、あたし……`);
-      await nature.say_and_wait('走りたくない！ 怖い……！');
-      await nature.say_and_wait('うわあああ……！');
+      await nature.say_and_wait('……윽!!');
+      await nature.say_and_wait('으으윽…… 으아아아앙～～!!');
+      await nature.say_and_wait(`${callname}, 나……`);
+      await nature.say_and_wait('달리기 싫어! 너무 무서워……!');
+      await nature.say_and_wait('으와아아앙……!');
       await era.printAndWait(
-        '그 뒤 나이스 네이처는 어린아이처럼 감정을 숨기지 않고 계속 울었다. 그리고──',
+        '그 후 나이스 네이처는 아이처럼 격식 없이 한참을 울어댔다. 그리고──',
       );
       await era.printAndWait(
-        `落ち着いてから、${nature.sex}は ${you.name} に気持ちを話した……`,
+        `마음이 좀 진정되자, ${nature.sex}는 ${you.name} 에게 솔직한 심정을 털어놓았다……`,
       );
       await nature.say_and_wait(
-        '……今の調子、完璧だよね？ たぶん……今が今まででいちばんいい状態。',
+        '……지금 내 컨디션 정말 최고로 좋지? 내 생각에도…… 지금까지 중에 가장 완벽한 상태야.',
       );
       await nature.say_and_wait(
-        '実力も増えたし、自分にも自信がある。本気で戦う覚悟も決めた。',
+        '실력도 늘었고, 나 자신을 믿어보려고도 했어. 이번엔 정말 진지하게 부딪쳐보겠다고 결심도 했고.',
       );
-      await nature.say_and_wait('でも……それでも負けたら？');
+      await nature.say_and_wait('하지만…… 만약 이래도 지면 어떡해?');
       await nature.say_and_wait(
-        'この最強の状態のあたしでも、輝きからまだ遠かったら……？',
+        '최강의 상태인 지금의 나조차, 여전히 저 반짝이는 빛과는 거리가 한참 멀다면……?',
       );
-      await nature.say_and_wait('……怖い。');
+      await nature.say_and_wait('……그게 너무 무서워.');
       await nature.say_and_wait(
-        'ここで負けたら、昔のあたしまで全部否定される気がする。',
-      );
-      await nature.say_and_wait(
-        '『まだ本気じゃなかった』『まだ伸びしろがある』『これが全部じゃない』……',
+        '여기서 지게 되면, 지금까지의 내 모습들까지 전부 부정당하는 기분이 들 것 같아.',
       );
       await nature.say_and_wait(
-        '今までそうやって自分を守ってきた。でもその言い訳……もう使えない。',
+        '『난 아직 진심을 다하지 않았어』, 『아직 성장할 여지가 있어』, 『이건 내 실력의 전부가 아니야』……',
       );
-      era.printButton('「本気なんだね」', 1);
+      await nature.say_and_wait(
+        '지금까지 그런 식으로 필사적으로 나를 보호해왔어. 하지만 그런 핑계…… 이제는 통하지 않잖아.',
+      );
+      era.printButton('「그만큼 진심이라는 거네」', 1);
       await era.input();
-      await nature.say_and_wait('……！ そう、本気！');
+      await nature.say_and_wait('……! 그래, 나 정말 진심이야!');
       await nature.say_and_wait(
-        'こんなに本気なのに負けたら……また『いい走り、でもいちばんじゃない』自分に戻る。',
+        '이렇게까지 진심인데 지게 된다면…… 또다시 『잘은 하지만 최고는 아닌』 예전의 나로 돌아가게 되잖아.',
       );
-      await nature.say_and_wait('怖い。ほんとに怖い……');
-      era.printButton('「大丈夫、君は負けない」', 1);
+      await nature.say_and_wait('무서워. 정말 무서워……');
+      era.printButton('「걱정 마, 넌 지지 않아」', 1);
       await era.input();
-      await nature.say_and_wait('……ごめん、今回は前より素直に受け取れない。');
+      await nature.say_and_wait('……미안, 이번만큼은 예전처럼 그 말을 곧이곧대로 받아들이기가 힘드네.');
       await nature.say_and_wait(
-        'だって結果で返せないと思うから。もう一歩も踏み出せない……',
+        '결과로 보답할 자신이 없거든. 이제는 더는 한 걸음도 못 나갈 것 같아……',
       );
-      era.printButton('「それでも信じたい。だめ？」', 1);
+      era.printButton('「그래도 널 믿고 싶은데, 안 될까?」', 1);
       await era.input();
-      await nature.say_and_wait('……っ。信じる根拠はなに？');
-      era.printButton('「ここに、根拠がいっぱいある」', 1);
+      await nature.say_and_wait('……윽. 쌤이 나를 믿는 근거가 뭔데?');
+      era.printButton('「여기 근거가 잔뜩 있어」', 1);
       await era.input();
-      await nature.say_and_wait('──これ……');
-      await nature.say_and_wait('……折り紙のトロフィー……？ いびつだね。');
+      await nature.say_and_wait('──이건……');
+      await nature.say_and_wait('……종이로 접은 트로피……야? 여전히 삐뚤삐뚤하네.');
       await nature.say_and_wait(
-        '……ほんとに作ったんだ。えへへ、相変わらずいびつ。',
+        '……정말 계속 만들고 있었구나? 헤헤, 역시 비뚤어져 있어.',
       );
-      await nature.say_and_wait('今日も……いびつなトロフィー、用意してある？');
-      await nature.say_and_wait('トレーナーのトロフィー……');
+      await nature.say_and_wait('오늘도 나를 위해 준비해준 거야? ……그 삐뚤삐뚤한 트로피를.');
+      await nature.say_and_wait('쌤이 직접 만든 트로피……');
       await era.printAndWait(
-        `${you.name} は、今まで ${you.name} が${nature.sex}に渡してきた手づくりトロフィーの試作を見せた。`,
+        `${you.name}은(는) 자신이 그동안 ${you.name}의 손으로 만들어 ${nature.sex}에게 건넸던 트로피의 시제품들을 보여 주었다.`,
       );
       await nature.say_and_wait([
-        trophies.map((e) => `『${e}』`).join('、'),
-        '……それ以外にもたくさん……',
+        trophies.map((e) => `『${e}』`).join('·'),
+        '……이 밖에도 수없이 많다……',
       ]);
-      await era.printAndWait('……こんなに、作ってくれたんだ……');
-      era.printButton('「これも、君を信じ続けてきた成果だ」', 1);
+      await era.printAndWait('……날 위해 이렇게까지 해줬구나……');
+      era.printButton('「이게 바로 내가 널 계속 믿어온 증거들이야」', 1);
       await era.input();
-      await nature.say_and_wait('──あたしが今まで積み上げてきたもの……');
+      await nature.say_and_wait('──지금까지 내가 쌓아온 것들……');
       await nature.say_and_wait(
-        '……途中で見捨ててもよかったのに。なんでトレーナーは信じてくれるの？',
+        '……중간에 나를 포기할 수도 있었을 텐데. 왜 쌤은 나를 계속 믿어주는 거야?',
       );
-      era.printButton('「大好きだから」', 1);
+      era.printButton('「그야 널 정말 좋아하니까」', 1);
       await era.input();
-      await nature.say_and_wait('……は！？ なんでこんなときに……');
+      await nature.say_and_wait('……뭐!? 왜 이런 타이밍에……');
       await era.printAndWait(
-        `${you.name}はナイスネイチャに伝えた。トレーナーとして、${you.name} は勝ちを諦めずここまで必死に走ってきた${nature.sex}を、心から応援している……`,
+        `${you.name}은(는) 네이처에게 전했다. 트레이너로서 ${you.name}은(는) 승리를 포기하지 않고 여기까지 달려온 ${nature.sex}를 진심으로 응원한다고……`,
       );
       await nature.say_and_wait(
-        '……うん、言いたいことはわかった。前から思ってたけど……',
+        '……응, 무슨 뜻인지 알겠어. 대충 예상은 했지만.',
       );
-      await nature.say_and_wait('はあ……うん、ごめん。ちょっと慌てすぎた。');
-      await nature.say_and_wait('『勝つ』って大声で言うの、ほんとに怖いね。');
+      await nature.say_and_wait('휴우…… 응, 미안해. 내가 너무 당황했나 봐.');
+      await nature.say_and_wait('『이기겠다』고 큰소리치는 건 역시 정말 무서운 일이네.');
       await nature.say_and_wait(
-        `……テイオー${nature.sex}は、ずっとこの圧と戦ってたんだ。`,
+        `……테이오 ${nature.sex}는 계속 이런 압박감과 싸웠던 거구나.`,
       );
-      await nature.say_and_wait('すごい……でも、あたしももう怖がらない。');
+      await nature.say_and_wait('대단해…… 하지만, 나도 더는 두려워하지 않을래.');
       await nature.say_and_wait(
-        'だって、好きだって言ってくれる人がそばにいるし？',
+        '나를 좋아해 주는 사람이 이렇게 곁에 있으니까!',
       );
-      await nature.say_and_wait('勝つ。大事な……すごく大事な理由があるから。');
+      await nature.say_and_wait('이겨야겠어. 나한테는 이제 정말 중요하고…… 아주 소중한 이유가 생겼으니까.');
       await nature.say_and_wait(
-        '……それにしてもトレーナーも大変だね。メンタルケアまで。',
+        '……그나저나, 트레이너도 참 고생이 많네. 내 멘탈 관리까지 해줘야 하고.',
       );
-      await nature.say_and_wait('まあ、仕事のうちかもだけど。');
-      era.printButton('「僕の仕事は、君を輝かせることだから」', 1);
+      await nature.say_and_wait('물론 이것도 당신 일 중 하나겠지만.');
+      era.printButton('「내 일은 널 반짝이게 만드는 거니까」', 1);
       await era.input();
-      await nature.say_and_wait('……仕事だから？');
+      await nature.say_and_wait('……그냥 일이라서 그런 거라고?');
       await nature.say_and_wait(
-        '……じょ、う、だ、ん、だ、よ──！ 今のは聞かなかったことにして！',
+        '……농, 담, 이야──! 방금 한 말은 못 들은 걸로 해줘!',
       );
       await nature.say_and_wait(
-        'トレーニングの時間でしょ！ わ、走って着替えてくる！',
+        '이제 훈련해야지! 나, 어서 가서 옷 갈아입고 올게!',
       );
       await era.printAndWait(
-        `……${nature.sex}は気持ちを立て直せたようだ。なら、この先も一緒に進もう！`,
+        `……${nature.sex}는 다시 기운을 차린 듯하다. 그렇다면 앞으로도 함께 나아가자!`,
       );
     };
     f.title = title;
