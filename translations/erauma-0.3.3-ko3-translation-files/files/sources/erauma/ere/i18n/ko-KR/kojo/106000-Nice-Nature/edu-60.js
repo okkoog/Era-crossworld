@@ -1838,96 +1838,96 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] waka_sta_win
+  // [번역 완료] waka_sta_win
   waka_sta_win: (() => {
-    const title = '「偶然」から';
+    const title = '「우연」에서 시작되다';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} teio トウカイテイオー
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (nature, teio, you) => {
-      await nature.say_and_wait('勝っちゃった……あたし……テイオーに勝った？');
+      await nature.say_and_wait('이겼어…… 내가…… 테이오를 이겼다고?');
       await nature.say_and_wait(
-        'は、はは……はは……！ すごい、ほんとに……！？ あたしが勝った……',
+        '하, 하하…… 하하……! 대단해, 정말이야……!? 내가 이겼어……',
       );
-      await teio.say_and_wait('いやー負けちゃった！');
-      await nature.say_and_wait('……うっ！ テイオー……！ あたし──');
-      await teio.say_and_wait('──強くなるきっかけ、見つけちゃった！');
-      await nature.say_and_wait('えっ……');
+      await teio.say_and_wait('이런── 져버렸네!');
+      await nature.say_and_wait('……윽! 테이오……! 나는──');
+      await teio.say_and_wait('──강해질 계기를 찾았어!');
+      await nature.say_and_wait('에……');
       await teio.say_and_wait(
-        'ボク、まだ強くなれるんだ！ へへ、楽しみになってきた──！',
+        '내가 아직 더 강해질 수 있다는 거잖아! 헤헤, 기대되기 시작했어──!',
       );
-      await teio.say_and_wait('最強まであと何キロ？ 一気に駆け上がるよ！');
-      await nature.say_and_wait('あ……');
+      await teio.say_and_wait('최강이 되기까지 몇 킬로미터나 남았을까? 한숨에 달려가서 따라잡겠어!');
+      await nature.say_and_wait('아……');
       await nature.say_and_wait(
-        '危ない危ない。あたし、得意げになるとこだった。',
+        '위험해라. 정말로 우쭐해질 뻔했네.',
       );
-      await nature.say_and_wait('ちがう。今回勝てたの……ただの偶然。');
+      await nature.say_and_wait('아니야. 이번에 이긴 건…… 그냥 우연이야.');
       await nature.say_and_wait(
-        'だって、どう考えても──あの子のほうが輝いてるし……',
+        '그야, 아무리 생각해도── 그 아이가 훨씬 더 빛나고 있는걸……',
       );
-      era.printButton('「勝ったね、ネイチャ！」', 1);
+      era.printButton('「네가 이겼어, 네이처!」', 1);
       await era.input();
-      await nature.say_and_wait('……うん。');
-      era.printButton('「嬉しくないの？」', 1);
-      await era.input();
-      await nature.say_and_wait(
-        '勝った直後は嬉しかったよ。嬉しいけど……この勝ち、絶対に偶然。実力で勝ったんじゃない。',
-      );
-      era.printButton('「どうしてそう思うの？」', 1);
+      await nature.say_and_wait('……응.');
+      era.printButton('「기쁘지 않아?」', 1);
       await era.input();
       await nature.say_and_wait(
-        'だって……おかしいでしょ？ あたしがテイオーより強いなんて。',
+        '방금 이겼을 때는 당연히 기뻤지. 기쁘긴 하지만…… 이 승리는 분명 우연일 거야. 실력으로 이긴 게 아니라고.',
+      );
+      era.printButton('「왜 그렇게 생각해?」', 1);
+      await era.input();
+      await nature.say_and_wait(
+        '그치만…… 이상하잖아? 내가 테이오보다 강할 리가 없잖아.',
       );
       await nature.say_and_wait(
-        'これっぽっちも輝いてないあたしだよ？ どこかで間違えてる。──もう！ 勘違いして、恥ずかしい──！',
+        '조금도 반짝이지 않는 이 나라고? 분명 어딘가 잘못된 거야. ──정말이지! 착각이나 하고, 정말 한심해──!',
       );
       await era.printAndWait(
-        `ナイスネイチャは確かに勝った。そしてその理由は間違いなく${nature.sex}の実力だ。でも${nature.sex}は……`,
+        `나이스 네이처는 분명 승리했다. 그리고 그 원인은 의심할 여지 없이 ${nature.sex}의 실력 덕분이다. 하지만 ${nature.sex}는……`,
       );
-      await nature.say_and_wait('……ほんと恥ずかしい。');
+      await nature.say_and_wait('……정말 한심해.');
       await era.printAndWait(
-        `勝ったのに負けたみたいに沈むのは、${nature.sex}がまだ自分の実力を信じきれないからだ。つまり自信不足。なら、今必要なのは──`,
+        `이기고도 진 것처럼 침울해 있는 것은, ${nature.sex}가 아직 자신의 실력을 완전히 믿지 못하기 때문이다. 즉 자신감 부족. 그렇다면 지금 필요한 것은──`,
       );
-      era.printButton('「ネイチャ、遠征しない？」', 1);
+      era.printButton('「네이처, 원정 가보지 않을래?」', 1);
       await era.input();
-      await nature.say_and_wait('遠征……？ えっ？ どうして……');
-      era.printButton('「夏も、結果を残そう」', 1);
-      await era.input();
-      await era.printAndWait(
-        `今${nature.sex}をクラシック戦線に乗せると危険な賭けになる。残っているわずかな自信まで失わせかねない。それより地方競走に挑んで堅実に結果を残し、最後は${nature.sex}の成長につなげたい。`,
-      );
-      await nature.say_and_wait(
-        'つまり……目標は『皐月賞』でも『日本ダービー』でもない……？……あたし、まだ実力が足りないから。',
-      );
-      era.printButton('「今は焦らず、本当に強くなったことを確かめよう」', 1);
-      await era.input();
-      await nature.say_and_wait('……わかった。');
-      await nature.say_and_wait(
-        'そうだね。今のあたしじゃ、次また勝っても……受け止められない。',
-      );
-      era.printButton('「この夏を乗り越えれば、きっと強くなれる」', 1);
-      await era.input();
-      await nature.say_and_wait('……そうだといいけど。');
-      await era.printAndWait('そう言って、ナイスネイチャは長く息を吐いた');
-      await nature.say_and_wait(
-        'うん、OKOK！ 各地巡回、あたしも向いてるかも。それで？ ずっと巡回させるつもりじゃないよね？ どのレースにするか、決めた？',
-      );
-      era.printButton('「『小倉記念』はどう？」', 1);
+      await nature.say_and_wait('원정……? 어? 왜……');
+      era.printButton('「여름에도 성과를 남겨보자」', 1);
       await era.input();
       await era.printAndWait(
-        '小倉で行われる重賞。ナイスネイチャの自信を育てるには、これ以上ない一戦だ。',
+        `지금 ${nature.sex}를 클래식 전선에 내보내는 것은 위험한 도박이다. 남은 자신감까지 잃게 할 수도 있다. 차라리 지방 레이스에 도전해 꾸준히 성적을 쌓고 ${nature.sex}의 성장으로 이어 가고 싶다.`,
       );
       await nature.say_and_wait(
-        'なるほど、距離も若駒ステークスと同じだったよね？ うん、そこにしよう。でも、夏の小倉か……熱中症になりそう……',
+        '그러니까…… 목표는 『사츠키상』도 아니고, 『일본 더비』도 아니라고……? ……내 실력이 부족하니까.',
+      );
+      era.printButton('「지금은 조급해하지 말고, 자신이 정말 강해졌는지 확인부터 하자」', 1);
+      await era.input();
+      await nature.say_and_wait('……알겠어.');
+      await nature.say_and_wait(
+        '그렇네. 지금 내 상태로는 설령 다음에 또 이긴다 해도…… 스스로 납득하기 힘들 테니까.',
+      );
+      era.printButton('「이 여름을 이겨내면 반드시 강해질 수 있어」', 1);
+      await era.input();
+      await nature.say_and_wait('……그러면 좋겠네.');
+      await era.printAndWait('말을 마치고, 나이스 네이처는 길게 한숨을 내쉬었다.');
+      await nature.say_and_wait(
+        '응, OKOK! 각지를 도는 순회 공연도 나한테 어울릴지 몰라. 그래서? 설마 정말로 나를 계속 여기저기 뺑뺑이 돌릴 건 아니지? 어느 레이스에 나갈지 정했어?',
+      );
+      era.printButton('「『코쿠라 기념』은 어때?」', 1);
+      await era.input();
+      await era.printAndWait(
+        '코쿠라에서 열리는 중상 레이스. 나이스 네이처의 자신감을 높여주기에 이보다 적합한 레이스는 없다.',
+      );
+      await nature.say_and_wait(
+        '과연, 거리도 와카고마랑 같았던가? 응, 거기로 가자. 근데 여름에 코쿠라라니…… 더워서 쓰러지는 거 아냐……?',
       );
       await era.printAndWait([
-        'こうして、',
+        '그렇게, ',
         you.get_colored_name(),
-        ' と ',
+        ' 와 ',
         nature.get_colored_name(),
-        ' は次の目標を『小倉記念』に決めた！',
+        ' 는 다음 목표를 「코쿠라 기념」으로 결정했다!',
       ]);
     };
     f.title = title;
