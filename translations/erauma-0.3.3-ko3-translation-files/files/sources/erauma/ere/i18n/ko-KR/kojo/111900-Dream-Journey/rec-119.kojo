@@ -3,6 +3,7 @@
 # @author 幽白書
 # @author Claude (翻訳)
 # 訓練場、募集イベント
+# [번역 완료] rec1
 rec1:
   title: 불행한 영입운
   lines:
