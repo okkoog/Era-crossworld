@@ -1316,3 +1316,488 @@ white_lightning2:
     - "관중 「타·마·모!」 「타·마·모!」 「타·마·모!」"
     - "스탠드에서 산이 무너지는 듯한 함성이 터져 나왔지만, 지금 %YOU%은(는) 축제 분위기에 합류하고 싶지 않았다. 그저 앞으로 달려 나가 자신을 너무나도 자랑스럽게 만든, 귀엽고 멋지고 영리하면서도 얄미운 타마모 크로스를 꽉 껴안아 주고 싶을 뿐이었다."
 
+# [번역 완료] misfortune
+misfortune:
+  title: 청천벽력
+  lines:
+    #ジュニア級 8月第1週 トレーナー室
+    - 트레이닝실 문이 거칠게 열렸다. 쾅 하고 울리는 충돌 소리에 서류를 처리하던 %YOU%은(는) 깜짝 놀라 몸을 떨었다.
+    - 뒤를 돌아보니, 숨을 헐떡이는 타마모 크로스가 서 있었다. %SEX%의 창백한 얼굴과 눈동자에는 당혹감이 가득했다. 분명 무슨 일이 생긴 모양이었다...
+    -
+    - acc: 1
+      content: 「타마? 무슨 일이야?」
+    -
+    - %YOU%은(는) 자리에서 일어나, 금방이라도 쓰러질 것 같은 %UMA%를 돕기 위해 다가갔다.
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「저... 저기... 우리 어무이가 병원에 실려 갔다 안 카나...」
+    -
+    - %SEX%는 집에서 어머니가 갑자기 쓰러져 병원으로 이송된 경위를 %YOU%에게 더듬거리며 이야기했다.
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「꼬매이들한테 신고하라고는 했는디... 근데...」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「내... 내 너무 무섭다...! 와 하필 이럴 때 내가 곁에 없는 기고!」
+    - acc: 1
+      content: 「...알았어. 일단 훈련은 제쳐두자. 어머니 병문안부터 가자.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「미안타... 트레이너. 니 신경 쓰게 맹글어서...」
+    -
+    - 타마모 크로스는 언제나 가족을 끔찍이 아꼈다. 평소 밝고 활기차던 아이가 이토록 기운 없는 모습을 보이는 것은 오직 가족 문제뿐이었다.
+    -
+    - acc: 1
+      content: 「아냐. 가족이 언제나 1순위야. ...그리고 타마도 가족을 위해서 여기서 훈련하는 거잖아?」
+    -
+    - 이런 때 가족을 외면하는 것은 본말전도였다.
+    -
+    - %SEX%의 찌푸려졌던 미간이 조금 펴졌고, 눈앞의 상대에게 옅고 억지스러운 미소를 지어 보였다.
+    - 그 후, %YOU%은(는) 서둘러 택시를 불러 타마모의 어머니가 있는 병원으로 향했다. 그곳에서 %YOU%은(는) 처음으로 타마모 크로스의 부모님을 만났다.
+    - 가장 먼저 눈에 들어온 것은 병실 안쪽에서 시무룩하게 앉아 있는 동생들의 모습이었다.
+    - 타마모 아버지의 얼굴도 잔뜩 굳어 있었다. 병실 안의 분위기가 숨이 막힐 듯 무거운 것도 무리는 아니었다.
+    - 어머니는 침대에 평온하게 누워 있었으나, 아직 혼수상태에서 깨어나지 못한 상태였다.
+    - 아버지는 침대 옆 의자에서 일어나 %SEX%의 트레이너를 맞이했다.
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「아부지, 이쪽이 내 트레이너다...」
+    - 중년 남성의 머리카락은 이미 희끗희끗했고, 미간에는 깊은 주름이 패어 있었다.
+    # CFLAGNAME:0 = 性別
+    - if: era.get('cflag:21:0') === 1
+      content:
+        - fontWeight: bold
+          content: 타마모 크로스의 아버지
+        - 「반갑습니대이. 우리 아가 평소에 신세를 많이 지고 있네예.」
+    - if: era.get('cflag:21:0') !== 1
+      content:
+        - fontWeight: bold
+          content: 타마모 크로스의 아버지
+        - 「반갑습니대이. 우리 가스나가 평소에 신세를 많이 지고 있네예.」
+    - acc: 1
+      content: 「어머님께서 무사하시길 바랍니다.」
+    -
+    - %YOU%은(는) 환자에게 방해가 되지 않을 정도의 낮은 목소리로 말했다. 중년 남성은 가볍게 고개를 끄덕였고, 걱정 탓인지 미간의 주름은 더욱 깊어졌다.
+    - 다행히 타마모의 어머니의 병명은 과로였으며, 며칠간 휴식을 취하면 퇴원할 수 있다는 진단이 내려졌다.
+    - 트레이너와 %UMA%는 병원에서 몇 시간 동안 간호를 마친 후, 차를 타고 트레센 학원으로 돌아왔다.
+    -
+    - acc: 1
+      content: 「오늘 늦었으니까, 기숙사 가서 푹 쉬어.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「......」
+    - acc: 1
+      content: 「왜 그래?」
+    - if: era.get('relation:21:0') > 225
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「내... 잠이 안 온다.」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「아까 차 안에서 자려고 해봤는디...」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「자꾸 어무이 생각이 나가꼬...」
+        - acc: 1
+          key: select
+          content: 「그럼... 오늘 밤에는 내가 같이 자 줄게.」（애정도+2, 피로 1단계 획득）
+          lines:
+            - color: %COLOR%
+              content:
+                - fontWeight: bold
+                  content: %CHARA%
+                - 「와 그리 아무렇지도 않게 오해 살 만한 소리를 해대노...」
+            - color: %COLOR%
+              content:
+                - fontWeight: bold
+                  content: %CHARA%
+                - 「근데 뭐, 곁에 있어 주는 거라믄... 못 할 것도 없나...」
+            - if: era.get('love:21') >= 50
+              content:
+                - 두 사람은 침대에서 서로 의지하며 잠들었다. 상대방에게서 전해지는 따스한 온기는 살결이 닿기를 갈구하던 본능을 충족시켜 주었다.
+        - acc: 2
+          content: 「나 수면제 있는데... 좀 나눠줄까?」（호감도+10）
+          lines:
+            - color: %COLOR%
+              content:
+                - fontWeight: bold
+                  content: %CHARA%
+                - 「우와— 변태 로리콘이 본색을 드러냈구마—」
+            - color: %COLOR%
+              content:
+                - fontWeight: bold
+                  content: %CHARA%
+                - 「근데 와 수면젠데? 멜라토닌 아이고?」
+            - acc: 1
+              content: 「트레이너도 사는 게 힘들거든.」
+            - color: %COLOR%
+              content:
+                - fontWeight: bold
+                  content: %CHARA%
+                - 「......」
+    - if: era.get('relation:21:0') <= 225
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「아무것도 아이다...」
+        - 타마모 크로스를 기숙사까지 바래다준 후, %YOU%들은 서로 작별 인사를 나누었다.
+#（獲得状態【雷撃】：電流が衰える。※帝王の【脚部不安】に準拠）
+
+
+# [번역 완료] cloudy3
+cloudy3:
+  title: 잔뜩 낀 구름 III
+  lines:
+    #ジュニア級 10月 第2週 トレーナー室
+    - 달칵 소리와 함께, %YOU%은(는) 타마모 크로스가 트레이닝실 문을 열고 들어오는 것을 보았다.
+    - 지난주의 사고는 %SEX%의 몸 곳곳에 크고 작은 찰과상을 남겼다. 그나마 찰과상이었기에 망정이지, 아니었으면 미라처럼 붕대를 칭칭 감고 있어야 했을 것이다.
+    - 하지만 %UMA%의 놀라운 속도에서 발생한 충돌인 만큼, 멍과 타박상을 가볍게 여겨서는 안 되었다. %YOU%도 훈련 강도를 낮추고 신체 회복에 집중할 수밖에 없었다.
+    -
+    - acc: 1
+      content: 「음, 회복 상태가 좋아 보이네.」
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「왔나, 트레이너.」
+    -
+    - 타마모 크로스는 웃으며 고개를 끄덕였고, 오늘 트레이닝을 시작할 준비가 되었음을 알렸다.
+    - 두 사람은 북적이는 트레이닝 코스로 향했다. 이곳에서 트레이닝 중이거나 준비 중인 학생들은 지난주의 대규모 사고에 대해 별다른 동요를 보이지 않는 듯했다.
+    - 결국 비극은 자신에게 일어난 일이 아니며, 앞으로도 일어나지 않을 일이라 생각하기 때문이리라.
+    -
+    - acc: 1
+      content: 「오늘은 사고 후 일주일 만의 정식 주행이니까, 무리하지 마.」
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「하모!」
+    -
+    - 타마모 크로스는 한편에 서서 준비 운동과 스트레칭을 시작했다. %YOU%은(는) 트레이너로서의 책무를 다하며 %SEX%의 걸음걸이와 자세를 세심하게 관찰했다.
+    - 뜨거운 시선을 느낀 타마모 크로스의 입가에 미소가 번졌다.
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「니 요즘 들어 너무 대놓고 보는 거 아이냐, 로리콘 자슥아.」（전 능력치+3 기술 포인트+45）
+    -
+    - acc: 1
+      key: select
+      content: 「그, 그런 거 아냐! 이건 정식 절차라고, 절차!」（호감도+10）
+    - acc: 2
+      content: 「본다고 닳는 것도 아니잖아.」（애정도+5）
+    -
+    - %SEX%는 하하 웃으며 코스에 섰고, %YOU%의 신호와 함께 오늘의 훈련을 시작했다.
+
+
+# [번역 완료] lightning_heart1
+lightning_heart1:
+  title: 번개의 심장 I
+  lines:
+    #（隠し）4月 第3週 皐月賞前 トレーナー室
+    #トリガー：周回育成で【閃光】を得て、皐月賞出走を選択
+    - 딱히 특별할 것 없는 어느 날, %YOU%은(는) 봉투 하나를 들고 트레이닝실로 들어왔다. 그리고 먼저 와서 소파에 누워 있던 타마모 크로스에게 손을 흔들었다.
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「응? 뭔디?」
+    -
+    - 타마모 크로스는 %YOU%의 손에 들린 봉투를 바로 알아채고는, 파란 눈동자로 싱글벙글 웃는 %YOU%의 얼굴을 의심스럽게 훑어보았다.
+    -
+    - acc: 1
+      content: 「이건 타마를 위한 선물이야.」
+    -
+    - %YOU%은(는) 봉투를 타마모 크로스에게 건네며 %SEX%에게 열어 확인해보라고 했다.
+    - 봉투의 크기는 적당했고, 내용물은 납작하고 부드러웠다...
+    - 타마모 크로스는 풍부한 집안일 경험을 살려, 손으로 만져보는 것만으로 안에 무엇이 들었는지 눈치챘다.
+    -
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「옷이가? ...야한 기가?」
+    -
+    - 타마모 크로스의 눈빛이 날카로워졌다. 아주 찌를 듯한 기세였다!
+    -
+    - acc: 1
+      key: select
+      content: 「그건 다음에 사줄게.」（애정도+2）
+      lines:
+        - 타마모 크로스의 눈빛이 날카로움에서 걱정으로 바뀌었다. 양쪽 눈썹이 제각각 움직이며 비탈길 같은 모양을 만들어냈다.
+        - %SEX%는 입술을 지그시 깨물더니, 무슨 결심이라도 한 듯 %YOU%에게 작은 손을 내밀었다.
+        - 경계하는 것 같기도 하고 애원하는 것 같기도 한 태도로, %SEX%는 손가락 끝으로 %YOU%의 소매를 꽉 쥐었다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「아프믄 병원 가라, 알았제?」
+        - acc: 1
+          content: 「나 안 아파— 왜 내가 트레이너가 될 수 있었겠어?」
+    - acc: 2
+      content: 「아냐——!」（호감도+10）
+      lines:
+        - 팍 소리가 났다. 조금 당황한 %YOU%이(가) 타마모 크로스의 가슴께를 가볍게 수도로 쳤다.
+        - acc: 1
+          content: 「아니라고— 도대체 어떤 놈이 이걸 보고 야한 옷이라고 생각하는 건데!」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「아아—? 로리콘 주제에 말이 많네?」
+        - acc: 1
+          content: 「네가 로리콘이지. 네 가족도 다 로리콘이야!」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「고건 말이 안 되제. 내 같은 로리가 우째 같은 로리를 좋아하노?」
+        - 타마모 크로스는 낄낄 웃으며 팔짱을 꼈다. 손가락에는 옷 봉투를 걸고 흔들흔들거렸다.
+        - acc: 1
+          content: 「넌 분명히 로리콘이야. 안 그러면 왜 맨날 이나리 원이랑 붙어 다니는 건데?」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「그건 그냥 동기끼리 노는 기지, 상관없다카이.」
+        - acc: 1
+          content: 「맨날 남의 가슴이나 쳐다보고 말이야.」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「그건 부족한 걸 채우고 싶어서... 니 지금 내 맥이나!」
+        - 이번에는 %YOU%이(가) 수도 타격을 받을 차례였다. 하지만 기분 탓인지 가슴을 때리는 힘이 조금 매서웠다.（플레이어 체력-10%）
+    - 소동이 끝난 후, %YOU%과(와) 타마모 크로스는 봉투를 열었다...
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「어라?」
+    - 그 안에 들어있던 것은——
+
+
+# [번역 완료] arim_kin
+arim_kin:
+  title: 아리마 기념
+  lines:
+    #シニア級 12月 第4週 （G1）有馬記念 1着 中山 芝 2500m（長距離） 右・内
+    #効果：（全能力+3 スキルPt+45）
+    - 연말 최고의 축제인 아리마 기념에서도 %YOU%의 애마 타마모 크로스가 우승을 차지했다.
+    - 길었던 3년의 세월은 %YOU%과(와) 타마모 크로스의 승리로 마침표를 찍었다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「십년감수했구마. 하마터면 그 자슥한테 질 뻔했다……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「아리마 기념, 과연 올스타급 대회라 카더니 이름값 하네……」
+    - 타마모 크로스는 대기실 소파에 몸을 파묻은 채 두 팔을 벌려 마치 %YOU%을(를) 초대하는 듯한 포즈를 취했다.
+    - %YOU%은(는) 그대로 %SEX%의 곁에 앉아, %SEX%가 자신의 품으로 뛰어드는 것을 받아주었다.
+    - 밝은 조명 아래 타마모 크로스의 얼굴에 어린 홍조가 너무나 선명해서, %YOU%이(가) 머리를 쓰다듬어 주는 동안에도 어렴풋이 보일 정도였다.
+    - acc: 1
+      content: 「고생했어, 타마.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「음흐흐, 쫌 더 말해봐라.」
+    - acc: 1
+      content: 「타마는 정말 대단해. 예전이랑은 완전히 딴판이네.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「내도 그래 생각한다. 꼬매이랑 우리 어무이도 그래 말하대.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「그라고 보니……」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「역시 다 니 덕분이다, 트레이너.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「고맙데이.」
+    - acc: 1
+      key: sex
+      content: 「전부 타마가 노력한 결과지. 난 뭐, 기껏해야 절반 정도?」 (애정도 +2, 호감도 +10)
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「하! 내는 바로 요런 소리가 듣고 싶었다 아이가!」
+        - 가슴팍에 닿은 옷감을 통해, %YOU%은(는) 타마모 크로스가 더 격렬하게 몸을 비비며 안쪽으로 파고들려는 의지를 느꼈다.
+        - 안타깝게도 인간은 뼈와 살로 구성되고「뇌」라는 기생충에게 조종당하는 이 육체에 갇혀 살아야 하는 법이다.
+        - %YOU%은(는) 쓴웃음을 지으며 타마모 크로스가 더 편하게 기어오를 수 있도록 자세를 고쳐 잡았다.
+        - 그렇게 살을 에는 빗속에서 만난 두 사람의 이야기는, 따뜻하고 햇살 눈부신 어느 날 일단락되었다.
+    - if: era.get('love:21') >= 50
+      acc: 2
+      content: 「그럼 타마는 어떻게 보답해 줄 거야?」 (우마뾰이 시작)
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「이 빌어먹을 로리콘 자슥은 여전하구마……」
+        - 가슴팍에 닿은 옷감을 통해, %YOU%은(는) 타마모 크로스가 더 격렬하게 몸을 비비며 안쪽으로 파고들려는 의지를 느꼈다.
+        - 안타깝게도 인간은 뼈와 살로 구성되고「뇌」라는 기생충에게 조종당하는 이 육체에 갇혀 살아야 하는 법이다.
+        - %YOU%은(는) 쓴웃음을 지으며 타마모 크로스가 더 편하게 기어오를 수 있도록 자세를 고쳐 잡았다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「앞으로 내 땜에 쫌 고생 좀 할 기다……」
+        - %YOU%은(는) 자신의 얼굴을 빤히 쳐다보는 타마모 크로스의 눈빛을 보았다. 거기에는 장난기, 혹은 정욕이 섞여 있을지도 몰랐다.
+        - %SEX%는 혀로 입술을 축이더니 옷을 하나씩 벗기 시작했다……
+        - 그렇게 살을 에는 빗속에서 만난 두 사람의 이야기는, 따뜻하고 축축한 어느 날 일단락되었다.
+
+#お出かけイベント
+
+# [번역 완료] my_clothe
+my_clothe:
+  title: 내한테 어울리는 옷
+  lines:
+    #トレーナー室内
+    #イベント名：わしに似合う服
+    - 어느 날 오후, 햇볕을 쬐기에 딱 좋은 날씨였다.
+    - 트레이닝실에 온 타마모 크로스가 %YOU%의 의자 등받이에 머리를 기대었다. %SEX%의 숨결이 귓가에 살짝 닿자, %YOU%은(는) 얼굴이 화끈거리는 것을 느꼈다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「트레이너, 트레이너. 내 뭐 좀 물어보자.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「니, 로리콘 맞제?」
+    - acc: 1
+      key: select1
+      content: 「그건 모함이야.」（호감도+10）
+    - acc: 2
+      content: 「그래서?」（애정도+2）
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「뭐시든 상관없다만…… 니는 꼬매이들이 우째 입는 게 취향인지 궁금해서 그란다.」
+    - acc: 1
+      content: 「그건 왜?」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「실은 이랬다……」
+    - 알고 보니, 타마모 크로스는 반에서 이런 이야기를 들었다고 했다——
+    - color: %COLOR_24%
+      content:
+        - fontWeight: bold
+          content: ???
+        - 「마야는 다 알고 있어! 어른들은 다 성숙한 스타일을 좋아한다구!」
+    - color: %COLOR_3%
+      content:
+        - fontWeight: bold
+          content: ???
+        - 「맞아, 회장처럼 어른스럽고 여유 넘치는 모습은 정말 부럽다니까……」
+    - color: %COLOR_302%
+      content:
+        - fontWeight: bold
+          content: ???
+        - 「동감! 자네들의 생각은 충분히 이해하네, 하지만……!」
+    - color: %COLOR_302%
+      content:
+        - fontWeight: bold
+          content: ???
+        - 「무기! 복장은 자신의 성격과 체형에 맞춰야 하며, 스스로의 강점을 활용해야 하는 법!」
+    - 이런 대화들이 오가는 것이 참으로 청춘다운 분위기를 풍겼다.
+    - 다만 타마모의 실감 나는 성대모사 덕분에, %YOU%은(는) 아주 익숙한 말투를 하나 알아챌 수 있었다.
+    - acc: 1
+      content: 「이사장님, 거기서 뭐 하시는 거예요——!」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「암튼 간에, 니는 성숙한 쪽이가, 아니모 애기 같은 쪽이가?」
+    - 타마모 크로스는 짓궂은 표정으로 윗입술을 살짝 핥으며 천천히 다가와 손가락 끝으로 %YOU%의 가슴팍을 톡톡 건드리며 대답을 기다렸다.
+    - 아, 외통수였다.
+    - acc: 1
+      key: select2
+      content: 「성숙한 쪽.」（스피드+20）
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「글쿠나…… 그라모 니는 카페나 드림 저니 같은 스타일을 좋아한다 이 말이가?」
+        - 말은 그렇게 했지만, 타마모가 검은 옷을 입고 의미심장하면서도 위험한 미소를 짓는 모습은 쉽게 상상되지 않았다.
+        - 타마모 크로스도 %YOU%의 난처한 기색을 알아차렸는지, 손바닥으로 %YOU%의 가슴을 가볍게 쳤다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「농담이다 마, 니가 겉모습만 보고 사람 판단할 자슥이 아니라는 거 내도 다 안다.」
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「……안 그라모 내한테 『노예 계약서』 쓰게 할라고 그라고 용을 썼겠나?」
+        - 타마모 크로스는 너스레를 떨며 웃었지만, %YOU%은(는) 그 후 그녀가 몰래 스마트폰으로「멋진」,「성숙한」,「양복」 같은 키워드를 검색하는 것을 보았다.
+    #以降G1ではデフォルトで雷神タマ勝負服
+    - acc: 2
+      content: 「어린애 같은 쪽……」（파워&근성+10）
+      lines:
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「글쿠나…… 그라모 니는 테이오나 마야노 같은 스타일을 좋아한다 이 말이가?」
+        - 말은 그렇게 했지만, 타마모는 평소 모습 그대로도 충분히 귀여웠다.
+        - 타마모 크로스도 %YOU%의 난처한 기색을 알아차렸는지, 손바닥으로 %YOU%의 가슴을 가볍게 쳤다.
+        - color: %COLOR%
+          content:
+            - fontWeight: bold
+              content: %CHARA%
+            - 「그카니까, 내 평소 모습만으로도 충분하다 이 말이제?」
+        - 너무나도 정답인 결론 앞에 %YOU%은(는) 고개를 끄덕일 수밖에 없었다.
+        - 만족스러운 답을 얻은 %SEX%는 싱긋 웃으며 멋지게 자신의 자리로 돌아갔다.
+  #以降G1ではデフォルトでセーラー服タマ勝負服
+
+
+
