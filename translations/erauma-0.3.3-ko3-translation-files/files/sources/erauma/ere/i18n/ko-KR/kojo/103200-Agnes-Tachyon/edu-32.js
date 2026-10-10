@@ -6925,7 +6925,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ts_add_low_rel
+  // [번역 완료] ts_add_low_rel
   ts_add_low_rel: (() => {
     const title = '追加実験';
     /**
@@ -6934,63 +6934,63 @@ module.exports = {
      */
     const f = async (tachyon, you) => {
       await tachyon.say_and_wait(
-        '足りませんわ、実験データがまだ山ほど欠けて……',
+        '아직 부족하네. 실험 데이터가 산더미만큼 빠져 있어서……',
       );
       await tachyon.say_and_wait(
-        '続けなければなりません……続きたくないなら帰りなさい。私ひとりでやりますわ',
+        '계속해야 하네…… 계속하고 싶지 않다면 돌아가게. 혼자서도 할 수 있으니까.',
       );
       era.println();
-      era.print([you.get_colored_name(), ' は決めた']);
-      era.printButton('任せる', 1);
-      era.printButton('止める', 2);
+      era.print([you.get_colored_name(), '은(는) 결심했다.']);
+      era.printButton('맡긴다', 1);
+      era.printButton('중지한다', 2);
       const ret = await era.input();
       if (ret === 1) {
         await era.printAndWait(
-          'ただの追加トレーニングなら止められたかもしれない',
+          '단순한 추가 훈련이었다면 말렸을지도 모른다.',
         );
-        await era.printAndWait('だが実験データの不足は……');
+        await era.printAndWait('하지만 실험 데이터의 부족은……');
         era.println();
-        await you.say_and_wait('確かに、致命的だな……なら今日はもう少し残ろう');
+        await you.say_and_wait('확실히 치명적이지…… 그렇다면 오늘 조금 더 남자.');
         await tachyon.say_and_wait(
-          '……帰りなさいと言ったはずですわ。追加トレではありません。私自身の実験にデータが要るだけです',
+          '……돌아가라고 하지 않았나. 추가 훈련이 아닐세. 내 실험에 데이터가 필요할 뿐이네.',
         );
-        you.say('ああ、だから');
-        era.printButton('「実験に、助手なしは困るだろう」', 1);
+        you.say('그래, 그러니까.');
+        era.printButton('「실험에 조수가 없으면 곤란하지 않겠어?」', 1);
         era.printButton(
-          '「トレーナーとしてじゃなく、退勤後の自由時間だ。使い方は俺の自由だろう？」',
+          '「트레이너로서가 아니라 퇴근 후의 자유시간이야. 어떻게 쓰든 내 마음이지.」',
           2,
         );
         await era.input();
-        await tachyon.say_and_wait('…………フフ');
-        await tachyon.say_and_wait('では、データの記録をお願いしますわ');
+        await tachyon.say_and_wait('…………후후.');
+        await tachyon.say_and_wait('그럼 데이터 기록을 부탁하겠네.');
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は頷き、',
+          '은(는) 고개를 끄덕이고 ',
           tachyon.sex,
-          'が再び走り出すのを見た',
+          '이(가) 다시 달리기 시작하는 모습을 보았다.',
         ]);
       } else {
-        await era.printAndWait('だめだ');
+        await era.printAndWait('안 돼.');
         await era.printAndWait(
-          '名目が何であれ、追加トレーニングは認められない',
+          '명목이 무엇이든 추가 훈련은 허용할 수 없다.',
         );
         await era.printAndWait([
-          'それに ',
+          '게다가 ',
           tachyon.get_colored_name(),
-          ' もわかっているはずだ。こうしても効率は上がらない。無理に進度を急げば、かえってミスが増える',
+          '도 알고 있을 것이다. 이런 식으로는 효율이 오르지 않는다. 무리해서 서두르면 오히려 실수가 늘어날 뿐이다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('…………ちっ');
+        await tachyon.say_and_wait('…………쳇.');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は何も言わずに帰った',
+          '은(는) 아무 말 없이 돌아갔다.',
         ]);
         await era.printAndWait([
-          '筋の通った説得なら素直に聞く。それも',
+          '이치에 맞는 설득이라면 순순히 받아들인다. 그것도 ',
           tachyon.sex,
-          'の美点だろう',
+          '의 장점이겠지.',
         ]);
       }
       return [ret];
