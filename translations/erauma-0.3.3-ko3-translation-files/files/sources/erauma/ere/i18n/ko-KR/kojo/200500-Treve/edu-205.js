@@ -977,9 +977,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_start
+  // [번역 완료] race_start
   race_start: (() => {
-    const title = 'レースの前';
+    const title = '레이스 전';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
@@ -988,15 +988,15 @@ module.exports = {
       const buffer = [
         () =>
           treve.say_and_wait(
-            '今日の勝利は、私が取る。フランスの皆さんのために',
+            '오늘의 승리는 제가 차지하겠어요. 프랑스의 모두를 위해.',
           ),
-        () => treve.say_and_wait('栄光は、もう私の手の中。'),
-        () => treve.say_and_wait('胸の躍る争いをしましょう！'),
+        () => treve.say_and_wait('영광은 이미 제 손안에 있어요.'),
+        () => treve.say_and_wait('가슴 뛰는 승부를 펼쳐봐요!'),
       ];
       if (era.get('love:205') >= 50) {
         buffer.push(() =>
           treve.say_and_wait(
-            `今日の勝利は、私が取る。${you.actual_name} のために！`,
+            `오늘의 승리는 제가 차지하겠어요. ${you.actual_name}을(를) 위해.`,
           ),
         );
       }
@@ -1006,18 +1006,18 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_win
+  // [번역 완료] race_win
   race_win: (() => {
-    const title = 'レース勝利';
+    const title = '레이스 승리';
     /** @param {CharaTalk} treve トレヴ */
     const f = async (treve) => {
       const buffer = [
-        () => treve.say_and_wait('ゴール！勝ったわ～'),
-        () => treve.say_and_wait('Merci beaucoup！（皆さん、ありがとう）'),
-        () => treve.say_and_wait('皆さん、祝福をありがとう！'),
+        () => treve.say_and_wait('골인! 제가 이겼어요~'),
+        () => treve.say_and_wait('Merci beaucoup! (감사합니다!)'),
+        () => treve.say_and_wait('여러분, 축복해주셔서 감사합니다!'),
         () =>
           treve.say_and_wait(
-            'これも、私がこの栄誉を得られた理由。皆さんへ、最上の贈り物を。',
+            '이 모든 게 제가 이런 영광을 누릴 수 있는 이유랍니다, 여러분께 최고의 선물을 바치게 해주세요.',
           ),
       ];
       await get_random_entry(buffer)();
