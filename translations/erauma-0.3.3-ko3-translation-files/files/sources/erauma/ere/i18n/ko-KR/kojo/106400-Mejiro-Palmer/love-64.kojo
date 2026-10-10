@@ -3,7 +3,7 @@
 # @author Bottle
 # @author KUN
 # @author Claude (翻訳)
-# [번역 대상] distance
+# [번역 완료] distance
 distance:
   # 恋慕24、外出で堤を散歩中に発生
   title: 거리감
@@ -750,7 +750,7 @@ here:
     - 그것은 꼬불꼬불한 검은색 털 한 가닥이었다. 낙인처럼 %TEEN%의 입가에 달라붙어 있었다.
     - ……%SEX%에게 알려줘야 할까?
 
-# [번역 대상] escape
+# [번역 완료] escape
 escape:
   title: 너와 함께 세상 끝까지 도망쳐
   lines:
@@ -1218,7 +1218,7 @@ trust:
         - 「아주 멋진 꿈이었어……」
   # 依存心
 
-# [번역 대상] is_you
+# [번역 완료] is_you
 is_you:
   title: 바로 너이기에……
   lines:
@@ -1635,7 +1635,7 @@ come_for_you:
     - acc: 2
       content: 저항을 포기한다.
 
-# [번역 대상] come_fy_end
+# [번역 완료] come_fy_end
 come_fy_end:
   - color: %COLOR%
     content:
@@ -1655,7 +1655,7 @@ come_fy_end:
         content: %CHARA%
       - 「어이, %ACE称呼善信%, 나 두어 바퀴 뛰고 올게. 문 닫기 몇 분 전에는 돌아올 거니까…… 너무 오래 끌지 마.」
 
-# [번역 대상] endless_escape
+# [번역 완료] endless_escape
 endless_escape:
   title: 끝없는 도망
   lines:
@@ -1750,7 +1750,7 @@ rooftop_3:
   lines:
     -
 
-# [번역 대상] rooftop_event
+# [번역 완료] rooftop_event
 rooftop_event:
   # 依存心取得後、天皇賞（春）未勝利、屋上で発生
   # 発生9回以下：待つ、それとも……
@@ -2021,7 +2021,7 @@ s_feeling_end:
   - 파머는 %YOU%을(를) 꽉 껴안으며, 초점 없는 눈으로 가볍게 미소 지었다.
   - 꼬리가 자기도 모르게 옆으로 미끄러져 슬그머니 허리에 감긴다.
 
-# [번역 대상] pre-nap
+# [번역 완료] pre-nap
 pre-nap:
   - color: %COLOR%
     content: 【%CHARA%와 옥상에서 점심을 먹겠습니까?】
@@ -2272,7 +2272,7 @@ nap:
             - 파머는 이미 빨갛게 달아오른 얼굴을 들고 %YOU%의 얼굴에 강하게 입을 맞췄다.
             # 馬跳
 
-# [번역 대상] nap_end
+# [번역 완료] nap_end
 nap_end:
   - color: %COLOR%
     content:
@@ -2308,7 +2308,7 @@ pre-leisure:
   - color: %COLOR%
     content: 【%CHARA%와 가라오케에 가보자!】
 
-# [번역 대상] leisure
+# [번역 완료] leisure
 leisure:
   title: 여유로운 시간
   lines:
@@ -3439,7 +3439,7 @@ not_joke:
               content: %CHARA%
             - 「난 정말…… 바보야!」
 
-# [번역 대상] not_joke_end
+# [번역 완료] not_joke_end
 not_joke_end:
   - %YOU%의 곁에 쓰러져 움직이지 않는 파머는 그저 미소 지을 뿐이었다.
   - %YOU%의 몸에 살며시 기대어 그 품속으로 파고들었다.
