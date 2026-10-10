@@ -161,7 +161,7 @@ module.exports = {
         `テュイルリー庭園はパリの中心にある。シャンゼリゼを抜け、コンコルド広場とルーヴル美術館を隔てた都心でも大きな庭園で、観光名所であるだけでなく、市民の憩いの場としても広く愛されている。`,
       );
       await era.printAndWait(
-        `休日の昼になると家族連れも多く、子どもが走り回る姿があちこちで見える。`,
+        `휴일 낮이면 가족 단위 방문객도 많아 곳곳에서 아이들이 뛰어노는 모습이 보인다.`,
       );
       await era.printAndWait(`突然、${treve.name} がすっかり縮こまる。`);
       await era.printAndWait(
@@ -242,7 +242,7 @@ module.exports = {
       await era.input();
       await montjeu.say_and_wait(`ええ。`);
       await era.printAndWait(
-        `遠くで ${treve.name} が野原を走る。後ろを追うように、いつの間にか増えた少年少女も走る。`,
+        `멀리서 ${treve.name}이(가) 들판을 달렸다. 그 뒤를 따라 어느새 모여든 소년소녀들도 함께 달렸다.`,
       );
       await era.printAndWait(
         `${treve.sex}がそうすれば、誰もが魅了されるだろう。`,
@@ -279,7 +279,7 @@ module.exports = {
         `答えは凱旋門の前で出しなさい、${you.actual_name}。さもなくば、あなたは${treve.sex}の将来を奪う。`,
       );
       await era.printAndWait(
-        `また走り出した ${treve.name} の背を、多くの子どもが追う。`,
+        `다시 달리기 시작한 ${treve.name}의 뒤를 수많은 아이들이 쫓았다.`,
       );
       await era.printAndWait(`それが朧になり、森の中へ消える。`);
     };
@@ -400,7 +400,7 @@ module.exports = {
       );
       await era.printAndWait(`柔らかい栗色の髪。澄んだ蒼い双眸。`);
       await era.printAndWait(
-        `そして${treve.sex}の顔には、赤ん坊を見るような慈しみの笑みがある。`,
+        `그리고 ${treve.sex}의 얼굴에는 아기를 바라보듯 자애로운 미소가 떠올라 있었다.`,
       );
       await treve.say_and_wait(`Bonjour、よく眠れた？`);
       await era.printAndWait(`撫でるような優しい声色が、微かな睡気を誘う。`);
