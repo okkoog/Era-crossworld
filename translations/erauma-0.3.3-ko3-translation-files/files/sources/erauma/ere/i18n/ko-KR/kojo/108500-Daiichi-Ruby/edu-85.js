@@ -1075,7 +1075,7 @@ module.exports = {
       await you.say_and_wait('それで、ここはどういう店だ？');
       await ruby.say_and_wait('ええ、赤ちゃん本舗ですわ。');
       await era.printAndWait(
-        '周囲には、腹がわずかに張った女性や、子どもを抱いて歩く夫婦などがいた。',
+        '주변에는 배가 조금 불룩한 여성이나 아이를 안고 다니는 부부 등이 있었다.',
       );
       await era.printAndWait([
         'こちらの店には、そちらの方が似つかわしい客だ。',
