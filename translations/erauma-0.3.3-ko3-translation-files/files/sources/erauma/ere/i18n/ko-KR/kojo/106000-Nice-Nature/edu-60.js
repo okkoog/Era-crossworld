@@ -870,7 +870,7 @@ module.exports = {
       await nature.say_and_wait(
         '……つまり、大人のくせにホテルでこもりながらトロフィー作ってたの？',
       );
-      await nature.say_and_wait('あたし、小学生じゃないよ。');
+      await nature.say_and_wait('나 초등학생 아니거든.');
       era.printButton('「それはそうだね……」', 1);
       await era.input();
       await era.printAndWait(
