@@ -353,149 +353,149 @@ before_tenn_sho_s:
     - 「힘내!」
 
 
-# [번역 대상] before_tenn_spr
+# [번역 완료] before_tenn_spr
 before_tenn_spr:
-  title: 欠けたBNW
+  title: 빠진 한 자리가 있는 BNW
   lines:
-    - 天皇賞（春）。本来なら、強力な組み合わせ——「BNW」が初めて同じ舞台に立つ日だ。
-    - だが……
+    - 천황상(봄). 원래는 강력한 세 사람—— 『BNW』가 처음으로 같은 무대에 서는 날이었다.
+    - 하지만……
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「うわあああああああああああああああ！」
-    - コースの片隅で、チケットの泣き声が予兆もなく響く。
+        - 「으아아아아아아아아!」
+    - 코스 한편에서 티켓의 울음소리가 갑자기 울려 퍼졌다.
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「私も出たかったあああああ。」
-    - タイシンはいつものように舌打ちせず、チケットの肩を軽く叩く。
+        - 「나도 출전하고 싶었단 말이야아아!」
+    - 타이신은 평소와 달리 혀를 차지 않고 티켓의 어깨를 가볍게 두드렸다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「はいはい。自分でレース前に怪我したんでしょ。」
-    - 鼻水と涙でぐしゃぐしゃでも、親友の慰めの下、涙はだんだん止まった。
-    - 傍では、長く黙っていたビワハヤヒデが、ようやく口を開く。
+        - 「알았어, 알았어. 레이스 전에 다친 건 네 잘못이잖아.」
+    - 콧물과 눈물로 엉망이 된 얼굴이었지만 친한 친구의 위로를 받으며 울음은 점차 잦아들었다.
+    - 곁에서 오래 침묵하던 비와 하야히데가 마침내 입을 열었다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「チケットが出ないなら、つまり。」
-    - %SEX%は眼鏡を上げる。
+        - 「티켓이 나오지 않는다면, 그러니까.」
+    - %SEX%는 안경을 고쳐 썼다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「今度のレース、また決着をつけよう、タイシンさん。」
+        - 「이번 레이스에서는 다시 승부를 가리자, 타이신 씨.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ええ……それに。」
-    - タイシンはいきなり声を上げ、高く顔を向ける。
+        - 「그래…… 그리고.」
+    - 타이신은 갑자기 목소리를 높이고 고개를 치켜들었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「私は、負けないから！」
+        - 「난 절대로 지지 않을 거야!」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「では、試してみよう！」
-    - 次いで、また予兆もなく、誰かの泣き声が響く。
+        - 「그럼 겨뤄 보자!」
+    - 그 직후 또 아무 예고 없이 누군가의 울음소리가 터졌다.
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「わ、わ、私、全力で応援するからあああああ！」
+        - 「나, 나, 나도 온 힘을 다해 응원할게에에에!」
 
 
-# [번역 대상] before_toky_yus
+# [번역 완료] before_toky_yus
 before_toky_yus:
   title: 「BNW」
   lines:
-    - 控え室にいても、場内の熱気が伝わってくる
+    - 대기실에서도 경기장의 뜨거운 열기가 전해졌다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「BNW、『二強』の次はBNW……はあ。」
-    - BNWとは、ビワハヤヒデ、ナリタタイシン、ウイニングチケットの三人の略称だ。皐月賞の走りのあと、タイシンもスターの一人になった。
-    - 「それが、タイシンの欲しかったものだろ。」
-    - 「実力を、みんなに認められた。」
+        - 「BNW, 『양강』 다음은 BNW인가…… 하아.」
+    - BNW란 비와 하야히데, 나리타 타이신, 위닝 티켓 세 사람을 가리키는 이름이다. 사츠키상 이후 타이신도 스타의 반열에 올랐다.
+    - 「그게 네가 바라던 거잖아, 타이신.」
+    - 「모두가 네 실력을 인정하게 됐어.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「浮かれるな。まだ一勝しただけ。」
+        - 「들뜨지 마. 아직 한 번 이겼을 뿐이야.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ここで緩んだら、また『所詮それだけ』とか言われる。」
-    - %SEX%の言葉には一理ある。まして今回のレース——日本ダービーは、無数の%UMA%が全力で夢を追う場だ。一瞬の油断も許されない。
+        - 「여기서 방심했다간 또 『결국 그 정도』라는 소릴 들을 거야.」
+    - %SEX%의 말에는 일리가 있었다. 게다가 이번 일본 더비는 수많은 %UMA%가 온 힘을 다해 꿈을 좇는 무대다. 한순간의 방심도 용납되지 않는다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「じゃあ、行く。」
-    - 「行け！ タイシン！」
+        - 「그럼 다녀올게.」
+    - 「가자, 타이신!」
     -
-    - コースで、BNWの B と N が顔を合わせた。
+    - 코스에서 BNW의 B와 N이 마주쳤다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「来ましたね。」
+        - 「오셨군요.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ん……あいつは？」
+        - 「응…… 그 녀석은?」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「チケットのことですか、」
+        - 「티켓 말인가요?」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「一人になりたいと言っていました。緊張でしょう。」
+        - 「혼자 있고 싶다고 하더군요. 긴장한 모양입니다.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「この数日、%SEX%ちょっとおかしい。」
+        - 「요 며칠 %SEX%가 좀 이상했어.」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「さすがタイシン。チケットの変化に気づくなんて。」
-    - タイシンは鼻で笑う。
+        - 「역시 타이신이군요. 티켓의 변화를 알아채다니.」
+    - 타이신은 코웃음을 쳤다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あんなにうるさいやつが急に静かになったら、誰だって気づく。」
+        - 「그렇게 시끄러운 녀석이 갑자기 조용해지면 누구라도 알아차려.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「でも、あいつがどうでもいい。勝つのは私。」
+        - 「하지만 그 녀석이 어떻든 상관없어. 이기는 건 나야.」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 顔を上げ、文字のない挑戦状を受け取った。
+        - 고개를 들자 말 없는 도전장을 받은 것만 같았다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「その言葉、そのままお返しします。」
+        - 「그 말, 그대로 돌려드리겠습니다.」
 
 # 全能力+7
 
@@ -691,47 +691,47 @@ hope_sta_win:
 
 # クラシック一月第一週
 
-# [번역 대상] kiku_sho_hayahide_win
+# [번역 완료] kiku_sho_hayahide_win
 kiku_sho_hayahide_win:
-  title: 天命には逆らえない
+  title: 천명은 거스를 수 없다
   lines:
-    - 実況「ビワハヤヒデ！ 菊花賞の勝ち馬はビワハヤヒデ！」
-    - 実況「一年の蟄伏のあと！ ビワハヤヒデはついに、この金秋の華を摘んだ！」
+    - 중계 「비와 하야히데! 국화상 우승자는 비와 하야히데입니다!」
+    - 중계 「1년의 와신상담 끝에! 비와 하야히데가 마침내 황금빛 가을의 꽃을 거머쥡니다!」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - せわしなく下の観客へ手を振る。いま勝ったのがG1でも、%SEX%は落ち着いている。すべて%SEX%の計画どおりみたいだ。
-    - 勝者の傍で、ナリタタイシンは黙ってコースを離れた。
+        - 분주하게 아래쪽 관중에게 손을 흔들었다. 방금 G1에서 이겼는데도 %SEX%는 침착했다. 모두 %SEX%의 계획대로 된 듯했다.
+    - 승자의 곁에서 나리타 타이신은 말없이 코스를 떠났다.
     - divider: true
     - color: %COLOR%
-      content: 負けた。
+      content: 패배했다.
     - color: %COLOR%
-      content: レース前から負けの準備はしていた。でも、本当に向かい合うと、こんなに辛い。
+      content: 레이스 전에 질 각오는 했지만 실제로 맞닥뜨리니 이렇게 괴로울 줄은 몰랐다.
     - color: %COLOR%
-      content: 特に、こんなとき。
+      content: 특히 이런 순간에는.
     - color: %COLOR%
-      content: 足を止め、振り返ってビワハヤヒデを見る。今回のレースの勝者。
+      content: 걸음을 멈추고 돌아서 비와 하야히데를 바라본다. 이번 레이스의 승자.
     - color: %COLOR%
-      content: あそこに立っているのが私なら、どうなる。
+      content: 저 자리에 서 있는 게 나라면 어떨까.
     - color: %COLOR%
-      content: 興奮する？ 勝利で喜ぶ？ 今よりまし？
+      content: 흥분할까? 승리의 기쁨에 취할까? 지금보다 나을까?
     - color: %COLOR%
-      content: わからない。
+      content: 모르겠다.
     - color: %COLOR%
-      content: そもそも、私がやってきたことは、根っから……
+      content: 애초에 지금까지 내가 해 온 일은 근본적으로……
     - color: %COLOR%
-      content: ああ、まったく意味がない。
+      content: 아아, 아무런 의미가 없다.
     - color: %COLOR%
-      content: 他人の目を引き、他人の認めを得るために走る。ずっと、その考えが私を支えてきた。
+      content: 남의 시선을 끌고 인정받으려고 달린다. 그 생각이 줄곧 나를 지탱해 왔다.
     - color: %COLOR%
-      content: 幼稚で、ほとんど滑稽な言い訳。あとどれだけ、支えられる。
+      content: 유치하고 우스꽝스러운 변명. 앞으로 얼마나 더 버틸 수 있을까.
     - color: %COLOR%
-      content: 苦笑いが、勝手に顔へ出る。
+      content: 쓴웃음이 저절로 얼굴에 떠올랐다.
     - color: %COLOR%
-      content: もう……
+      content: 이제……
     - color: %COLOR%
-      content: 私は、ずっと何をしてたんだ……
+      content: 난 대체 지금까지 뭘 하고 있었던 거지……
 
 # 菊花賞敗北、かつナリタタイシンの好感が300未満
 
@@ -3061,86 +3061,86 @@ ws_christmas_c:
 
 # シニア一月第一週
 
-# [번역 대상] ws_contestants
+# [번역 완료] ws_contestants
 ws_contestants:
   title: 「二強」
   lines:
-    - 次の皐月賞に向け、%YOU%はオフィスに座り、タイシンと皐月賞で当たりそうな相手を話し合った。
-    - クラシック第一冠の挑戦者は、全員が実力者の%UMA%だ。
-    - だが今回、特に目を引く新星が二人いる。
+    - 다가올 사츠키상을 위해 %YOU%은(는) 사무실에서 타이신과 맞붙을 상대들을 살펴봤다.
+    - 클래식 첫 관문에 도전하는 선수들은 모두 실력 있는 %UMA%다.
+    - 하지만 이번에는 특히 눈길을 끄는 신성이 둘 있었다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 。デビューから一貫して一番人気を占め、これまで走ったレースは優勝か二着ばかり。
+        - 데뷔 이후 꾸준히 가장 큰 인기를 누렸고, 지금까지 출전한 레이스에서는 우승이나 2착만 기록했다.
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 。初戦は順調ではなかったが、デビュー後はいくつものレースで先頭を取り続け、実力は侮れない。
+        - 첫 경기는 순조롭지 않았지만 데뷔 이후 여러 경기에서 선두를 차지했고, 실력을 얕볼 수 없었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ん……どっちも強そう。」
-    - %YOU%は二人の資料を、もう一度よく見た。
+        - 「음…… 둘 다 강해 보여.」
+    - %YOU%은(는) 두 선수의 자료를 다시 한번 꼼꼼히 들여다봤다.
     -
     - acc: 1
-      content: 「ビワハヤヒデは体が大きい。レースでは%SEX%に押し潰されないように。」（パワー+15）
+      content: 「비와 하야히데는 몸집이 커. 레이스에서는 %SEX%에게 밀리지 않도록 조심하자.」 (파워 +15)
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「余計な世話。わかってる、」
+            - 「쓸데없는 참견이야. 알고 있어,」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「あの子、ほんと大きいわね。」
-        - トレセンのどこか。
+            - 「그 녀석, 진짜 크긴 하네.」
+        - 트레센 학원 어딘가에서.
         - color: %COLOR_23%
           content:
             - fontWeight: bold
               content: %HAYAHIDE%
-            - 「はっくしょん！」
+            - 「에취!」
         - color: %COLOR_23%
           content:
             - fontWeight: bold
               content: %HAYAHIDE%
-            - 「誰かに悪く言われている気がします……」
+            - 「누군가 내 흉을 보는 것 같은데……」
     - acc: 2
-      content: 「ウイニングチケットは新馬戦以降負けていない。油断するな。」（賢さ+15）
+      content: 「위닝 티켓은 데뷔전 이후 한 번도 지지 않았어. 방심하지 마.」 (지능 +15)
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「はあ、連戦連勝のやつね。」
-        - %SEX%はチケットの資料を手に取って見る。
+            - 「하아, 연전연승하는 녀석 말이지.」
+        - %SEX%는 티켓의 자료를 손에 들고 살펴봤다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「なんで写真の%SEX%、泣いてるの。」
-        - トレセンのどこか。
+            - 「사진 속 %SEX%는 왜 울고 있어?」
+        - 트레센 학원 어딘가에서.
         - color: %COLOR_35%
           content:
             - fontWeight: bold
               content: %TICKET%
-            - 「うわああああ！」
+            - 「으아아아아!」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「誰かが泣いてる気がする……気のせいかな。」
-    - 「このところ学園で噂の『二強』が、%THEY%だ。」
-    - %CHARA% は拳を握った。
+            - 「누군가 울고 있는 것 같은데…… 기분 탓인가?」
+    - 「최근 학원에서 화제가 된 『양강』이 바로 %THEY%야.」
+    - %CHARA%는 주먹을 꽉 쥐었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%THEY%には負けない……絶対！」
+        - 「%THEY%에게는 지지 않을 거야…… 절대로!」
 
 
 # [번역 완료] ws_dream_3_crowns
