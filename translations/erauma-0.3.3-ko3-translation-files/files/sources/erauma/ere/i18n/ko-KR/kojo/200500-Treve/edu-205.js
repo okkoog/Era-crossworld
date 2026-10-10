@@ -1026,9 +1026,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_33
+  // [번역 완료] we_47_33
   we_47_33: (() => {
-    const title = '遠きへ';
+    const title = '먼 곳을 향해';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
@@ -1036,143 +1036,139 @@ module.exports = {
      */
     const f = async (treve, you, callname) => {
       await era.printAndWait(
-        `鼻歌を歌い、秋の陽が薄い暖かさを残す日、賑やかな茶葉店へ来る。`,
+        `콧노래를 흥얼거리며, 가을 햇살이 은은한 온기를 남기는 날에 활기찬 찻집을 찾았다.`,
       );
       await era.printAndWait(
-        `相手は ${treve.name} の師匠だ。空手で訪ねるわけにもいかない。`,
+        `어쨌든 상대는 ${treve.name}의 스승이니 빈손으로 찾아가기도 멋쩍었다.`,
       );
-      await era.printAndWait(`籠には、自分用に買う予定の茶筒が入っている。`);
+      await era.printAndWait(`바구니에는 자신에게 주려고 산 찻캔이 들어 있었다.`);
       await era.printAndWait(
-        `少し視線を上げると、オーバーサイズのコートを着た ${treve.name} が品を丁寧に眺めている。`,
+        `그곳에서 살짝 시선을 올리자, 오버사이즈 코트를 입은 ${treve.name}가 자세히 상품을 바라보고 있었다.`,
       );
       await era.printAndWait(
-        `いくつかの茶の香りを確かめている${treve.sex}へ、${you.name} は少し寄る。`,
+        `여러 찻잎의 향을 확인하고 있는 ${treve.sex}에게, ${you.name}은(는) 슬며시 다가갔다.`,
       );
-      era.printButton(`「……トレーナー室の花茶が少ない。補充を頼む。」`, 1);
+      era.printButton(`「……트레이닝실에 두는 홍차 찻잎이 얼마 안 남았는데, 좀 골라 줄래?」`, 1);
       await era.input();
       await era.printAndWait(
-        `${treve.name} は耳を立て、嬉しそうに尻尾を振って品評を始める。`,
+        `${treve.name}는 귀를 쫑긋 세우며 기쁜 듯 꼬리를 흔들고 품평을 시작했다.`,
       );
       await era.printAndWait(
-        `刺激の弱い茶がいいと思い、入口の缶を籠へ入れると、中にはすでにレモン香のものが入っていた。`,
+        `자극이 적은 찻잎이 좋겠다고 생각하며 입구 쪽의 캔을 바구니에 담으려 하자, 이미 그 안에는 레몬 향이 나는 찻잎이 들어 있었다.`,
       );
       await era.printAndWait(
-        `${treve.name} は特に気に入ったらしく、にこにこと ${you.name} を見る。`,
+        `${treve.name}는 유독 신경이 쓰이는지 생글생글 웃으며 ${you.name}을(를) 바라보았다.`,
       );
-      era.printButton(`「レモンか？」`, 1);
+      era.printButton(`「레몬이야?」`, 1);
       await era.input();
       await era.printAndWait(
-        `不満を出すつもりはなかったが、${treve.name} は急に頬を膨らませて抗議する。`,
+        `딱히 불만을 표시하려던 건 아니었지만, ${treve.name}는 갑자기 볼을 부풀리며 항의했다.`,
       );
-      await treve.say_and_wait(`${callname}、何か不満？`);
-      era.printButton(`「不満じゃない……前にも買った。好きな味だ。」`, 1);
+      await treve.say_and_wait(`${callname}, 무슨 불만이라도 있으신가요?`);
+      era.printButton(`「불만이 있는 건 아냐…… 예전에 산 적이 있어서. 좋아하는 맛이거든.」`, 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} が茶筒三つ入った籠をレジに置くと、顔見知りの店主が驚いた顔をする。`,
+        `${you.name}이(가) 찻캔 세 개가 든 바구니를 계산대에 올려놓자, 낯익은 점원이 깜짝 놀란 표정을 지었다.`,
       );
-      await era.printAndWait(`彼はレジを指で叩きながら眉を上げる。`);
+      await era.printAndWait(`그는 손가락으로 계산기를 두드리며 눈썹을 치켜올렸다.`);
       await you.say_as_passer_by_and_wait(
-        '茶葉店の店主',
-        `久しぶり。その${treve.child_sex_title}は新しい担当か？`,
+        '찻집 주인',
+        `오랜만이네요. 그 ${treve.child_sex_title}가 새로 담당하시게 된 우마무스메인가요?`,
       );
-      await era.printAndWait(`店主は ${you.name} の肩越しに後ろを見る。`);
+      await era.printAndWait(`주인은 ${you.name}의 어깨너머로 뒤를 바라보았다.`);
       await era.printAndWait(
-        `いまも紅茶を愛でている ${treve.name} は依然として無敗の金身で、オークスも勝った。ファンも相応に増えている。`,
+        `지금도 홍차를 구경하고 있는 ${treve.name}는 여전히 무패 행진 중인데다 오크스에서 우승했기에 팬이 제법 늘어난 상태였다.`,
       );
       await era.printAndWait(
-        `だが大衆の視線を集める人気選手かといえば、そこまではいかない。`,
+        `하지만 대중의 시선을 한 몸에 받는 인기 우마무스메라고 하기에는 아직 조금 무리가 있었다.`,
       );
-      await era.printAndWait(`知る人ぞ知る、その程度だ。`);
+      await era.printAndWait(`아는 사람만 아는, 딱 그 정도의 느낌이었다.`);
       await era.printAndWait(
-        `紅茶を包むとき、店主は何か気づいたように顔を上げる。`,
+        `홍차를 포장하던 주인은 무언가를 눈치챈 듯 고개를 들었다.`,
       );
-      era.printButton(`「どうした？」`, 1);
+      era.printButton(`「무슨 일 있나요?」`, 1);
       await era.input();
       await you.say_as_passer_by_and_wait(
-        '茶葉店の店主',
-        `${treve.sex}、けっこう人気だろう？`,
+        '찻집 주인',
+        `${treve.sex}도 꽤 인기 있는 거 아닌가요?`,
       );
       await era.printAndWait(
-        `${you.name} が振り返ると、若い女性二人が ${treve.name} と握手している。`,
+        `${you.name}이(가) 뒤를 돌아보니, 두 명의 젊은 여성이 ${treve.name}와 악수를 나누고 있었다.`,
       );
       await era.printAndWait(
-        `二人とも${
-          treve.sex
-        }のファンらしく、明るく応対する憧れの${treve.uma_sex_title}にすっかり見入っている。`,
+        `두 사람 모두 ${treve.sex}의 팬인 듯했고, 밝게 응대해 주는 동경의 ${treve.uma_sex_title}에게 푹 빠진 모습이었다.`,
       );
       await era.printAndWait(
-        `G1を勝つ前から感じていたが、${treve.name} には独特の魅力がある。`,
+        `G1에서 우승하기 전부터 눈치채고는 있었지만, ${treve.name}에게는 독특한 매력이 있었다.`,
       );
       await era.printAndWait(
-        `透き通るかわいさを放つ${treve.sex}に惹かれる人は、トレセンの中でも少なくない。`,
+        `투명한 귀여움을 뿜어내는 ${treve.sex}에게 매료된 사람은 트레센 내에서도 적지 않았다.`,
       );
       await era.printAndWait(
-        `ファンがまだ少なかったころも、熱狂的に${treve.sex}を支える人はいた。`,
+        `팬이 아직 적었을 때부터 수많은 사람들이 ${treve.sex}를 열광적으로 지지해 주었다.`,
       );
-      await era.printAndWait(`そう思ううちに、紙袋が二つレジに並ぶ。`);
+      await era.printAndWait(`그런 생각을 하는 사이, 종이 가방 두 개가 계산대 위에 놓였다.`);
       await era.printAndWait(
-        `財布から紙幣を二、三枚出して渡すころ、${treve.name} は ${you.name} のそばへ戻る。`,
+        `지갑에서 지폐 몇 장을 꺼내 주인에게 건네자, ${treve.name}가 ${you.name}의 곁으로 돌아왔다.`,
       );
       await you.say_as_passer_by_and_wait(
-        '茶葉店の店主',
-        'お釣りです。これからもよろしくお願いします。',
+        '찻집 주인',
+        '여기 거스름돈입니다. 앞으로도 잘 부탁드립니다.',
       );
       await era.printAndWait(
-        `${you.name} は私用の茶葉の袋を${treve.sex}に渡し、店を出る。`,
+        `${you.name}은(는) 개인적으로 쓸 찻잎이 든 봉투를 ${treve.sex}에게 건네며 가게를 나섰다.`,
       );
       await era.printAndWait(
-        `等間隔の並木は少しずつ葉を落とすが、金色の秋景はまだ楽しめる。`,
+        `일정하게 늘어선 가로수들이 조금씩 잎을 떨어뜨리기 시작했지만, 아직은 황금빛 가을 풍경을 즐길 수 있을 것 같았다.`,
       );
       await era.printAndWait(
-        `大通りを歩くと、隣の${treve.teen_sex_title}が振り返る。`,
+        `대로를 걷다 보니, 옆에 있던 ${treve.teen_sex_title}가 뒤를 돌아보았다.`,
       );
-      await era.printAndWait(`その向こうに、さっきの女性二人の背が見える。`);
-      era.printButton(`「さっきのファンか？」`, 1);
+      await era.printAndWait(`그 시선 끝에는 방금 전 두 여성의 뒷모습이 보였다.`);
+      era.printButton(`「방금 그 팬들이야?」`, 1);
       await era.input();
       await treve.say_and_wait(
-        `ええ……${treve.couple_title}、ずっと私のレースを見てくれてるんですって。`,
+        `네…… ${treve.couple_title}께서 줄곧 제 레이스를 지켜보고 계셨대요.`,
       );
-      await treve.say_and_wait(`嬉しい。`);
-      await era.printAndWait(`${treve.name} は照れて言う。`);
+      await treve.say_and_wait(`정말 기뻐요.`);
+      await era.printAndWait(`${treve.name}가 수줍게 말했다.`);
       await era.printAndWait(
-        `それでも${treve.sex}は真剣な目で、自分の走りを期待する二人のファンに感嘆している。`,
+        `그러면서도 ${treve.sex}는 진지한 눈빛으로, 자신의 활약을 기대해 주는 두 팬을 보며 감회에 젖어 있었다.`,
       );
       await treve.say_and_wait(
-        `ここに来る前、たくさんの人に助けてもらった。師匠もその一人。家族と友のためにがんばりたい気持ちは、今も変わらない。`,
+        `여기에 오기 전까지 정말 많은 분의 도움을 받았어요. 스승님도 그중 한 분이고요. 가족과 친구들을 위해 노력하고 싶다는 마음은 지금도 변함없어요.`,
       );
       await treve.say_and_wait(
-        `私の走りを期待してくれる人が増えると思うと、もっと走りたくなる。もっと勝ちたくなる。`,
+        `절 응원해 주시는 분들이 점점 늘어난다고 생각하면, 더 많이 달리고 싶고, 더 많이 이기고 싶어져요.`,
       );
       await era.printAndWait(
-        `多くの${treve.uma_sex_title}は、衆目に晒されることを重荷に感じる。`,
+        `수많은 ${treve.uma_sex_title}들이 대중의 시선에 노출되는 것에 압박감을 느낀다.`,
       );
       await era.printAndWait(
-        `${
-          you.name
-        } の担当の中にも、G1のような目立つ舞台で実力を出せず悩む${treve.uma_sex_title}はいた。`,
+        `${you.name}의 담당 중에서도 G1처럼 주목받는 무대에서 실력을 제대로 발휘하지 못해 괴로워하는 ${treve.uma_sex_title}가 있었다.`,
       );
       await era.printAndWait(
-        `だが ${treve.name} は、活躍するほど増える期待に迷わない。`,
+        `하지만 ${treve.name}는 활약할수록 더 커져만 가는 기대에 조금도 주저하지 않았다.`,
       );
-      await era.printAndWait(`そのすべてを力に変え、夢へ進む。`);
+      await era.printAndWait(`그 모든 것을 힘으로 바꾸어 꿈을 향해 나아간다.`);
       await era.printAndWait(
-        `そして${treve.sex}のいまの目標は、シャンゼリゼ通りの先にある巨大な建造物が象徴するあのレースだ。`,
-      );
-      await era.printAndWait(
-        `ナポレオンが築いた凱旋門。高く聳える勝利の象徴。`,
+        `그리고 그런 ${treve.sex}의 지금 목표는 바로 샹젤리제 거리 끝에 서 있는 거대한 건축물이 상징하는 그 레이스다.`,
       );
       await era.printAndWait(
-        `${treve.sex}は必ずその向こうに現れ、その名を冠した世界最高峰の舞台で輝くだろう。`,
+        `나폴레옹이 세운 개선문. 우뚝 솟아 있는 승리의 상징.`,
       );
-      era.printButton(`「……君は必ず勝つ。」（好感+5）`, 1);
+      await era.printAndWait(
+        `${treve.sex}는 분명 그 건너편에 나타나, 그 이름이 붙은 세계 최고봉의 레이스 무대에서 눈부시게 빛날 것이다.`,
+      );
+      era.printButton(`「……넌 반드시 이길 거야.」（호감도 +5）`, 1);
       await era.input();
-      await era.printAndWait(`${treve.name} がふと振り返る。`);
+      await era.printAndWait(`${treve.name}가 갑자기 뒤를 돌아보았다.`);
       await era.printAndWait(
-        `いつものように稚い笑顔を咲かせるのとは違い、${treve.sex}は優しく——だが、何かを訴えるように、静かな海のような微笑を浮かべ、小さく言う。`,
+        `평소처럼 천진난만한 미소를 짓던 모습과는 달리, ${treve.sex}는 상냥하게——하지만 무언가를 호소하듯, 고요한 바다와 같은 미소를 지으며 나지막이 속삭였다.`,
       );
-      await treve.say_and_wait(`必ず。`);
+      await treve.say_and_wait(`반드시요.`);
       await era.printAndWait(
-        `${you.name} は思う。あれは自分だけに言った言葉ではないのかもしれない、と。`,
+        `${you.name}은(는) 그것이 단지 자신만을 향한 말이 아닐지도 모른다고 생각했다.`,
       );
     };
     f.title = title;
@@ -2091,65 +2087,65 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_33
+  // [번역 완료] ws_47_33
   ws_47_33: (() => {
-    const title = '家貧しければ他郷へ';
+    const title = '가난한 집? 타향으로';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (treve, you) => {
       await era.printAndWait(
-        `夏も終わりに近づき、海辺の合宿から戻った ${you.name} は、またG1の出走登録書を書いている。`,
+        `어느덧 여름도 막바지에 접어들고, 바닷가 합숙에서 돌아온 ${you.name}은(는) 다시 G1 출주 등록 서류를 작성하고 있었다.`,
       );
       await era.printAndWait(
-        `フランスオークスを制してから、まだそう経っていないのに、気づくとまたG1だ。`,
+        `프랑스 오크스를 제패한 지 얼마 지나지 않은 것 같은데, 정신을 차려보니 또 G1이었다.`,
       );
-      await era.printAndWait(`次に出るのは、${treve.sex}が待ち望む凱旋門賞。`);
+      await era.printAndWait(`대망의 다음 무대는 ${treve.sex}가 그토록 고대하던 개선문상.`);
       await era.printAndWait(
-        `すでに示した強さだけを見れば、${treve.name} がその栄誉を得るのも不思議ではない。`,
+        `지금까지 보여준 압도적인 실력만 놓고 본다면, ${treve.name}가 그 영예를 차지한다 해도 전혀 이상할 게 없었다.`,
       );
       await era.printAndWait(
-        `${you.name} は出走登録にサインし、トレーナー室のソファに寝そべる ${treve.name} へ渡す。`,
+        `${you.name}은(는) 출주 신청서에 서명을 마친 뒤, 트레이닝실 소파에 누워 있는 ${treve.name}에게 건넸다.`,
       );
-      era.printButton(`「出走登録だ。サインを。」`, 1);
+      era.printButton(`「출주 신청서야. 서명해 줘.」`, 1);
       await era.input();
-      await treve.say_and_wait(`うん。`);
+      await treve.say_and_wait(`네에.`);
       await era.printAndWait(
-        `いつの間にか${treve.sex}は、ここが自分の個室であるかのようにトレーナー室へ入り込んでいる。`,
+        `어느샌가 ${treve.sex}는 트레이닝실을 마치 자신의 개인 방인 양 드나들고 있었다.`,
       );
-      await era.printAndWait(`契約した以上、文句も言えない。`);
+      await era.printAndWait(`계약한 이상 딱히 불평할 수도 없는 노릇이었다.`);
       await era.printAndWait(
-        `それより ${you.name} は、${treve.sex}の私生活のだらしなさのほうをなんとかしてほしいと思っている。`,
+        `그것보다 ${you.name}은(는) ${treve.sex}가 사생활에서의 이 칠칠치 못한 모습부터 어떻게든 해결해 주기를 바랐다.`,
       );
       await era.printAndWait(
-        `${treve.name} はソファから転げ落ちて立ち上がり、渡されたボールペンを叩きながら ${you.name} を一瞥する。`,
+        `${treve.name}는 소파에서 스르륵 미끄러지듯 일어나, 건네받은 볼펜을 톡톡 두드리며 ${you.name}을(를) 슬쩍 바라보았다.`,
       );
-      await treve.say_and_wait(`そういえば、今度の日曜日、空いてる？`);
-      era.printButton(`「昼は空いてる。」（恋慕+1）`, 1);
-      era.printButton(`「追加の練習か？」（好感+5）`, 2);
+      await treve.say_and_wait(`그러고 보니, 이번 주 일요일에 시간 있으세요?`);
+      era.printButton(`「낮에는 한가해.」（애정도+1）`, 1);
+      era.printButton(`「추가 트레이닝이라도 하려고?」（호감도+5）`, 2);
       const ret = await era.input();
-      await era.printAndWait(`${treve.name} はサインしながら沈思する。`);
+      await era.printAndWait(`${treve.name}는 서명을 하며 생각에 잠겼다.`);
       await treve.say_and_wait(
-        `師匠が会いたいって。${treve.sex}、夏合宿が終わったらでいいって。そろそろ一度、帰りましょう。`,
+        `스승님이 만나고 싶어 하신대요. ${treve.sex}는 여름 합숙이 끝나면 들러도 된다고 하셨으니, 슬슬 한 번 다녀오려고요.`,
       );
-      era.printButton(`「師匠？」`, 1);
+      era.printButton(`「스승님?」`, 1);
       await era.input();
-      await treve.say_and_wait(`ええ、走りを教えてくれた人。`);
-      await era.printAndWait(`${treve.sex}の走りを育てた人物。`);
+      await treve.say_and_wait(`네, 제게 달리는 법을 가르쳐 주신 분이에요.`);
+      await era.printAndWait(`${treve.sex}를 달리는 우마무스메로 키워낸 인물.`);
       await era.printAndWait(
-        `完成度の高い ${treve.name} を別の角度から見る人に会えれば、${treve.sex}を知る良い機会にもなるだろう。`,
+        `완성도 높은 실력을 갖춘 ${treve.name}를 또 다른 시선에서 바라본 인물을 만난다면, ${treve.sex}를 더 깊이 이해할 좋은 기회가 될 것이다.`,
       );
       await era.printAndWait(
-        `${you.name} は出走登録を入れた封筒を糊で閉じながら、${treve.sex}の誘いを受ける。`,
+        `${you.name}은(는) 출주 신청서가 담긴 봉투를 풀로 붙이며, ${treve.sex}의 제안을 수락했다.`,
       );
       await era.printAndWait(
-        `それなら手土産も要る。${you.name} は茶筒の並ぶ棚へ目をやる。`,
+        `그렇다면 빈손으로 갈 수는 없으니 선물을 준비해야 했다. ${you.name}은(는) 찻잎 캔이 진열된 선반으로 시선을 돌렸다.`,
       );
       await era.printAndWait(
-        `秋の収穫期はまだ遠い。秋らしい茶葉はどこにもない。`,
+        `가을 수확기까지는 아직 멀었기에, 어디에도 가을의 청명함을 담은 찻잎은 없었다.`,
       );
-      await era.printAndWait(`それなら、収穫期の長いアッサムがいい。`);
+      await era.printAndWait(`그렇다면 수확 기간이 긴 아삼 찻잎을 고르는 편이 나을 것이다.`);
       return [ret];
     };
     f.title = title;
