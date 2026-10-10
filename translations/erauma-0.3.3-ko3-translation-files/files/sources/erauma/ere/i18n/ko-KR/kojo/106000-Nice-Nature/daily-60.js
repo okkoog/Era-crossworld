@@ -343,10 +343,10 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] o_r_walking
+  // [번역 완료] o_r_walking
   async o_r_walking(nature, callname) {
     await nature.say_and_wait(
-      `今日はいい天気だね～ いっそ昼ごはん、この川沿いで食べない？ ${callname} も一緒？`,
+      `정말 좋은 날씨네~ 아예 점심도 여기 강가에서 먹을까? ${callname}도 같이 할래?`,
     );
   },
 
@@ -376,10 +376,10 @@ module.exports = {
     }
   },
 
-  // [번역 대상] o_s_drawing
+  // [번역 완료] o_s_drawing
   async o_s_drawing(nature) {
     await nature.say_and_wait(
-      `なにが出るかな？ まあ十中八九は三等賞だけど……でも、万一はね？`,
+      `뭐가 나올까? 뭐 십중팔구 3등상이겠지만…… 혹시 모르잖아?`,
     );
   },
 
@@ -449,17 +449,17 @@ module.exports = {
     );
   },
 
-  // [번역 대상] office_cook
+  // [번역 완료] office_cook
   async office_cook(nature, callname, self_call) {
     await nature.say_and_wait(
-      `料理は ${self_call} に任せて！ ${callname} は横で休んでて！ ほらほら行って行って！`,
+      `요리는 이 ${self_call}에게 맡기라고! ${callname}은(는) 저기 가서 좀 쉬고 있어! 자, 어서 어서!`,
     );
   },
 
-  // [번역 대상] office_game
+  // [번역 완료] office_game
   async office_game(nature, self_call) {
     await nature.say_and_wait(
-      `おっ？ ${self_call} に勝負？ いい度胸！ 負けたほうは勝ちのお願いひとつ聞く、でどう？ そのほうがやる気出るでしょ！`,
+      `오? 이 ${self_call}에게 도전하겠다고? 배짱 좋은걸! 그럼 진 사람이 이긴 사람 소원 하나 들어주기다? 그래야 의욕이 생기지!`,
     );
   },
 
@@ -476,17 +476,17 @@ module.exports = {
     }
   },
 
-  // [번역 대상] office_prepare
+  // [번역 완료] office_prepare
   async office_prepare(nature, callname) {
     await nature.say_and_wait(
-      `商店街のみんなと ${callname} の期待、裏切れないからね！`,
+      `상점가 식구들이랑 ${callname}의 기대를 저버리지 않을게!`,
     );
   },
 
-  // [번역 대상] office_study
+  // [번역 완료] office_study
   async office_study(nature, callname) {
     await nature.say_and_wait(
-      `へぇ——${callname}、こんな問題もわかるんだ？ 昔、優等生だったりして？`,
+      `헤에— ${callname}이(가) 이런 문제까지 풀 줄 알다니 의외인걸? 혹시 예전엔 수재였어?`,
     );
   },
 
@@ -505,33 +505,33 @@ module.exports = {
     );
   },
 
-  // [번역 대상] s_a_dating
+  // [번역 완료] s_a_dating
   async s_a_dating(nature, callname) {
     await nature.say_and_wait(
-      `学園のなかでこう……周りの目、さすがに気になるね……でも ${callname} が気にしないなら——`,
+      `학원에서 이런 짓을…… 아무래도 주변 시선이 좀 신경 쓰이긴 하네…… 그래도 ${callname}이(가) 상관없다면——`,
     );
   },
 
-  // [번역 대상] s_a_tree_hollow
+  // [번역 완료] s_a_tree_hollow
   async s_a_tree_hollow(nature, callname) {
     await nature.say_and_wait(
-      `くそっ！！！！！ みんなも ${callname} もあんなに期待してくれてるのに、あたしは——`,
+      `빌어먹을!!!!! 다들, 그리고 ${callname}이(가) 나한테 그렇게 기대를 걸어 줬는데 나는——`,
     );
   },
 
-  // [번역 대상] s_r_lunch
+  // [번역 완료] s_r_lunch
   async s_r_lunch(nature, self_call) {
     await nature.say_and_wait(
-      `じゃーん！ ${self_call} の手作り弁当だよ！ 毎日栄養バランス大事！`,
+      `쨔잔! ${self_call}표 수제 도시락이야! 매일 영양 균형을 잘 맞춰야 한다니까!`,
     );
   },
 
-  // [번역 대상] select
+  // [번역 완료] select
   select(nature, self_call) {
     if (Math.random() < 0.5) {
-      nature.say(`どうしたどうした？ ${self_call} に用？`);
+      nature.say(`무슨 일이야, 무슨 일? ${self_call}에게 볼일이라도 있어?`);
     } else {
-      nature.say(`ん？ やることある？ じゃあ ${self_call} も付き合うよ！`);
+      nature.say(`응? 할 일이 있는 거야? 그럼 ${self_call}가 같이 가 줄게!`);
     }
   },
 
