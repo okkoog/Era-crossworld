@@ -1351,8 +1351,8 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 89-continue-confirm
-  '89-continue-confirm': '二戦目を始める？',
+  // [번역 완료] 89-continue-confirm
+  '89-continue-confirm': '두 번째 승부를 시작할까?',
 
   // [번역 대상] 99
   99: (() => {
