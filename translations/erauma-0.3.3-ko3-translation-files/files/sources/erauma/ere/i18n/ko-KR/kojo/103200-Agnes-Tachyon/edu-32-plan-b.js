@@ -133,30 +133,30 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_takz_kin_b
+  // [번역 완료] before_takz_kin_b
   before_takz_kin_b: (() => {
-    const title = '心を一つに';
+    const title = '마음을 하나로';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname アグネスタキオンがプレイヤーを呼ぶ名
      */
     const f = async (tachyon, you, callname) => {
-      await era.printAndWait('血が沸く');
-      await era.printAndWait('どれほど久しぶりだろう。この、レースの熱');
+      await era.printAndWait('피가 끓어오른다.');
+      await era.printAndWait('얼마 만일까. 레이스가 주는 이 뜨거운 열기는.');
       era.println();
-      await tachyon.say_and_wait([callname, '……行きますわ']);
+      await tachyon.say_and_wait([callname, '……다녀오겠네.']);
       era.printButton(
-        `「行け！ ${tachyon.uma_sex_title}の限界を見せてくれ！」`,
+        `「가라! ${tachyon.uma_sex_title}의 한계를 보여 줘!」`,
         1,
       );
-      era.printButton('「安心して勝て。もう一度、熱くさせてくれ！」', 2);
+      era.printButton('「안심하고 이기고 와. 다시 한번 내 가슴을 뜨겁게 해 줘!」', 2);
       await era.input();
-      await tachyon.say_and_wait('ええ……それから、宝塚が終わったら……');
+      await tachyon.say_and_wait('그래…… 그리고 다카라즈카가 끝나면……');
       era.println();
-      await era.printAndWait([you.get_colored_name(), ' は頷いた']);
-      await era.printAndWait('あのとき約束した、もっと広い世界');
-      era.printButton('「俺たちの限界を、世界の頂点に刻もう！」', 1);
+      await era.printAndWait([you.get_colored_name(), '은(는) 고개를 끄덕였다.']);
+      await era.printAndWait('그날 약속했던 더욱 넓은 세계.');
+      era.printButton('「우리의 한계를 세계의 정상에 새기자!」', 1);
       await era.input();
     };
     f.title = title;
@@ -4227,40 +4227,40 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_b_95_14
+  // [번역 완료] ws_b_95_14
   ws_b_95_14: (() => {
-    const title = 'ファン感謝祭';
+    const title = '팬 감사제';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (tachyon, you) => {
       await era.printAndWait([
-        '身体の準備がまだ整いきっていないため、',
+        '몸 상태가 아직 완전히 회복되지 않았기에 ',
         tachyon.get_colored_name(),
-        ' はファン感謝祭の企画と取材を断った',
+        '은(는) 팬 감사제 기획과 취재 요청을 거절했다.',
       ]);
       await era.printAndWait([
-        'それが周囲の、「',
+        '그 때문에 주변에는 『',
         tachyon.get_colored_name(),
-        ' の復帰」への不安定な空気と疑いを生んだ',
+        '의 복귀』를 둘러싼 불안과 의심이 퍼져 나갔다.',
       ]);
       await era.printAndWait([
-        'だが、それは ',
+        '하지만 그것은 ',
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' には関係ない。疑いは……',
+        '에게는 상관없는 일이었다. 의혹이라……',
       ]);
       await era.printAndWait(
-        'いや、二人の予定どおり進めるなら、疑いが多いほど計画には追い風になるはずだ',
+        '아니, 두 사람의 계획대로 진행된다면 의심이 많을수록 오히려 계획에 유리할 터였다.',
       );
       await era.printAndWait([
-        '……だから、',
+        '……그렇기에 ',
         tachyon.get_colored_name(),
-        ' への批判を耳にしても、',
+        '에 대한 비난을 들으면서도 ',
         you.get_colored_name(),
-        ' は歯を食いしばってその場を離れるしかなかった',
+        '은(는) 이를 악물고 그 자리를 떠날 수밖에 없었다.',
       ]);
     };
     f.title = title;
