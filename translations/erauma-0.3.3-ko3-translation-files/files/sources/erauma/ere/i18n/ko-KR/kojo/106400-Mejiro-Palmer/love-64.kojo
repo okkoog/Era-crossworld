@@ -1017,7 +1017,7 @@ escape:
               content: 「당연히 되지」
           # 馬跳
 
-# [번역 대상] valentine_out_after_sex
+# [번역 완료] valentine_out_after_sex
 valentine_out_after_sex:
   - color: %COLOR%
     content:
@@ -1280,7 +1280,7 @@ is_you:
           content: %CHARA%
         - （언젠가는, %YOURNAME%이(가) 줄곧 나만을 바라보게 될 거야）
 
-# [번역 대상] nega_dis
+# [번역 완료] nega_dis
 nega_dis:
   title: 마이너스 거리의 우리
   lines:
@@ -1910,7 +1910,7 @@ rooftop_event:
             content: %CHARA%
           - （너이기 때문에, 그래서……）
 
-# [번역 대상] s_feeling
+# [번역 완료] s_feeling
 s_feeling:
   title: 이질감
   lines:
@@ -2006,7 +2006,7 @@ s_feeling:
         - %YOU%의 대답을 기다리지 않고, 파머는 호텔 문을 밀어 열었다.
         # 強姦
 
-# [번역 대상] s_feeling_end
+# [번역 완료] s_feeling_end
 s_feeling_end:
   - color: %COLOR%
     content:
@@ -2767,7 +2767,7 @@ cinema:
         - 침대에 앉은 두 사람은 시선을 교환하더니, 침대 위에서 옷이 벗겨진 채 앉아 있는 %YOU%을(를) 일제히 바라보았다.
       # 3Pへ。アルダン上位、パーマー助手
 
-# [번역 대상] movie_end
+# [번역 완료] movie_end
 movie_end:
   - color: %COLOR_71%
     content:
@@ -2851,7 +2851,7 @@ delicious:
     - ……머지않아 갑자기 파티 분위기로 변해버린 상황을 무시한다면 말이다.
 # 二人の体力+200、体重+10～20（x10）
 
-# [번역 대상] rest
+# [번역 완료] rest
 rest:
   title: 휴식……?
   lines:
@@ -3501,7 +3501,7 @@ end_joke:
         - 「정말 기대되네…… 트레이너~」
   # 恋慕+4
 
-# [번역 대상] concern
+# [번역 완료] concern
 concern:
   title: 너무 신경쓰지 마!
   lines:
@@ -3955,7 +3955,7 @@ concern_end:
         content: %RYAN%
       - 「아…… 이젠 선생님한테 붙잡혀서 보충 수업을 들어야겠네.」
 
-# [번역 대상] dessert
+# [번역 완료] dessert
 dessert:
   title: 디저트……뭔가 이상한데?
   lines:
@@ -4474,7 +4474,7 @@ dessert_end:
         content: %MCQUEEN%
       - 「당신도 보러…… 트레이너님도 계셨군요.」
 
-# [번역 대상] party
+# [번역 완료] party
 party:
   title: 파티 타임
   lines:
