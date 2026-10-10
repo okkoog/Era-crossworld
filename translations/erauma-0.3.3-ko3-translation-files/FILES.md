@@ -610,7 +610,7 @@
   - 번역 대상: 없음 — 연결/보조 파일
 
 - [kojo/111900-Dream-Journey/rec-119.kojo](files/sources/erauma/ere/i18n/ko-KR/kojo/111900-Dream-Journey/rec-119.kojo)
-  - 번역 대상: rec2
+  - 번역 대상: 없음 — rec1, rec2 번역 완료
 
 - [kojo/112000-Calstone-Light-O/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/112000-Calstone-Light-O/entry.js)
   - 번역 대상: achieve_track_aim_template
