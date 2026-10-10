@@ -608,9 +608,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] prix_lat_win_classical
+  // [번역 완료] prix_lat_win_classical
   prix_lat_win_classical: (() => {
-    const title = '最強';
+    const title = '최강';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} montjeu モンジュー
@@ -618,92 +618,92 @@ module.exports = {
      */
     const f = async (treve, montjeu, you) => {
       await era.printAndWait(
-        `これまでなかったほどの自信に満ちた言葉なのに、${you.name} にはどう聴いても空虚だった。`,
+        `지금껏 들어 본 적 없을 만큼 자신감에 가득 찬 말인데도, ${you.name}에게는 어쩐지 공허하게 들렸다.`,
       );
       await era.printAndWait(
-        `聞こえる歓声は遠雷のようで、距離があっても耳を潰す。`,
+        `멀리서 들려오는 함성은 천둥소리 같아서, 거리가 떨어져 있는데도 귀를 먹먹하게 했다.`,
       );
       await era.printAndWait(
-        `${treve.name} の走りに、${you.name} が直すべき箇所はほとんどない。`,
+        `${treve.name}의 주행에서 ${you.name}이(가) 고쳐 줄 부분은 거의 없다.`,
       );
       await era.printAndWait(
-        `この稀な才能を開花させたのは、おそらく ${montjeu.name} だ。`,
+        `이 보기 드문 재능을 꽃피운 것은 아마 ${montjeu.name}일 것이다.`,
       );
       await era.printAndWait(
-        `そして、あの ${montjeu.name} の走りを追憶させるように。`,
+        `그리고 그 ${montjeu.name}의 달리기를 떠올리게 하듯이.`,
       );
       await era.printAndWait(
-        `先行策のある一瞬、集団の前方を走る ${treve.name} が、最後の直線を待つとき。`,
+        `선행 전술을 펼치며 무리 앞쪽을 달리는 ${treve.name}가 마지막 직선 주로를 기다리는 순간.`,
       );
-      await era.printAndWait(`ロンシャンの熱が最高潮に達したとき。`);
+      await era.printAndWait(`롱샹의 열기가 최고조에 달한 순간.`);
       await era.printAndWait(
-        `あれほど憧れた、日本が数十年取れなかった凱旋門賞の前で、${you.name} の胸には二つの感情が絡む。`,
+        `그토록 동경했지만 일본이 수십 년 동안 차지하지 못했던 개선문상을 눈앞에 두고, ${you.name}의 가슴속에는 두 감정이 뒤엉켰다.`,
       );
-      await era.printAndWait(`一つは、勝利の確信。`);
+      await era.printAndWait(`하나는 승리에 대한 확신.`);
       await era.printAndWait(
-        `${treve.name} はこれまでのレースでも巧みな位置取りで勝ち、${treve.sex}がいちばん得意なのは先行、とりわけ集団の先頭にいるときだ。`,
-      );
-      await era.printAndWait(
-        `そこからの末脚があれば、無敗の${treve.teen_sex_title}に追いつける${treve.uma_sex_title}はいない。`,
+        `${treve.name}는 지금껏 뛰어난 위치 선정으로 승리해 왔다. ${treve.sex}가 가장 잘하는 것은 선행, 특히 무리의 선두에 설 때다.`,
       );
       await era.printAndWait(
-        `はっきり言えば、この局面まで来れば${treve.sex}の勝利は確定している、それほどの確信だ。`,
-      );
-      await era.printAndWait(`もう一つは、敗北の恐怖。`);
-      await era.printAndWait(
-        `だがそれは、いま眼前を走る ${treve.name} が負けるという意味ではない。`,
+        `거기서 마지막 스퍼트를 펼친다면 무패의 ${treve.teen_sex_title}를 따라잡을 ${treve.uma_sex_title}는 없을 것이다.`,
       );
       await era.printAndWait(
-        `数年前、あの日本の怪鳥の前に ${montjeu.name} が好位へ現れたとき、全身が凍った恐怖。`,
+        `단언하자면 이 국면까지 왔으니 ${treve.sex}의 승리는 확정적이라는, 그만큼 강한 확신이었다.`,
+      );
+      await era.printAndWait(`다른 하나는 패배에 대한 공포.`);
+      await era.printAndWait(
+        `하지만 지금 눈앞을 달리는 ${treve.name}가 패배할 것 같다는 의미가 아니다.`,
       );
       await era.printAndWait(
-        `${treve.sex}に勝てない絶望のフラッシュバックが、まったく同じ姿を見せる ${treve.name} に重なる。`,
+        `몇 년 전 일본의 그 괴조 앞에 ${montjeu.name}가 좋은 위치를 차지하며 나타났을 때 온몸이 얼어붙던 공포.`,
       );
-      await era.printAndWait(`歓声は、まだ遠い。`);
       await era.printAndWait(
-        `最後の直線で先頭の ${
+        `${treve.sex}에게는 이길 수 없다는 절망의 기억이 똑같은 모습을 보여 주는 ${treve.name}에게 겹쳐졌다.`,
+      );
+      await era.printAndWait(`환호성은 아직 멀게 느껴진다.`);
+      await era.printAndWait(
+        `마지막 직선 주로에서 선두를 달리는 ${
           treve.name
-        } が、後ろの${treve.uma_sex_title}を徐々に引き離す。`,
+        }가 뒤따르는 ${treve.uma_sex_title}들과의 거리를 서서히 벌렸다.`,
       );
-      await era.printAndWait(`ロンシャンを埋める声援に支えられるように。`);
-      await era.printAndWait(`あの英姿に、自分の寄与した部分はあるのか。`);
+      await era.printAndWait(`롱샹을 가득 메운 응원에 떠밀리듯이.`);
+      await era.printAndWait(`저 늠름한 모습에 내가 보탠 것은 과연 있을까.`);
       await era.printAndWait(
-        `${you.name} は柵を掴み、震える体を少し乗り出し、${treve.sex}の横顔をはっきり捉える。`,
+        `${you.name}은(는) 울타리를 붙잡고 떨리는 몸을 살짝 내밀어 ${treve.sex}의 옆얼굴을 똑똑히 바라보았다.`,
       );
       await era.printAndWait(
-        `汗を流しながら重馬場の最後100メートルを走る${treve.sex}に、${you.name} に何ができる。`,
+        `땀을 흘리며 무거운 주로의 마지막 100미터를 달리는 ${treve.sex}를 위해 ${you.name}이(가) 할 수 있는 일은 무엇인가.`,
       );
       await you.say_and_wait(`……`);
-      await era.printAndWait(`声が出ない。`);
+      await era.printAndWait(`목소리가 나오지 않는다.`);
       await era.printAndWait(
-        `${treve.sex}の勝利はもう決まっている。${you.name} がすべきことは、もうない。`,
+        `${treve.sex}의 승리는 이미 결정됐다. ${you.name}이(가) 해야 할 일은 더 이상 없다.`,
       );
       await era.printAndWait(
-        `興奮した歓声が耳を潰し、その響きを通して ${you.name} は、${treve.name} が凱旋門賞のゴールを踏んだ瞬間をはっきり理解する。`,
+        `흥분에 찬 함성이 귀를 울렸고, 그 소리 속에서 ${you.name}은(는) ${treve.name}가 개선문상의 결승선을 통과했다는 사실을 분명히 깨달았다.`,
       );
       era.println();
-      await era.printAndWait(`${you.name} は、その瞬間を見ていなかった。`);
+      await era.printAndWait(`정작 ${you.name}은(는) 그 순간을 보지 못했다.`);
       era.println();
       await era.printAndWait(
-        `凱旋門賞を取った感想を訊かれ、携帯の通知に怒涛のように来る短信、場内から戻った ${treve.name} に何を言ったかさえ、もう覚えていない。`,
+        `개선문상 우승 소감을 질문받은 일도, 휴대전화로 밀려든 문자들도, 경기장에서 돌아온 ${treve.name}에게 무슨 말을 했는지도 이제 기억나지 않는다.`,
       );
       await era.printAndWait(
-        `だが一事だけが、${you.name} の頭に深く刻まれた。`,
+        `하지만 단 하나만은 ${you.name}의 머릿속에 깊이 새겨졌다.`,
       );
       await era.printAndWait(
-        `凱旋門賞後の会見で、ワインレッドのボードを背にトロフィーを抱えた ${treve.name} が、誰かの問いに答えた言葉。`,
+        `개선문상 뒤 기자회견에서 와인빛 배경판 앞에 트로피를 안고 서 있던 ${treve.name}가 누군가의 질문에 답한 말이었다.`,
       );
       await era.printAndWait(
-        `何かを訊かれた瞬間、恍惚の ${you.name} の右手が、いきなり掴まれる。`,
+        `무언가 질문받은 순간, 넋이 나가 있던 ${you.name}의 오른손이 갑자기 붙잡혔다.`,
       );
-      await treve.say_and_wait(`来年も${you.sex}といっしょに勝つ！`);
-      await era.printAndWait(`なぜ。`);
-      await era.printAndWait(`なぜ自分なのか。`);
+      await treve.say_and_wait(`내년에도 ${you.sex}와 함께 이길 거야!`);
+      await era.printAndWait(`어째서.`);
+      await era.printAndWait(`어째서 나인 걸까.`);
       await era.printAndWait(
-        `何が、空虚な自分を ${treve.name} の隣に立たせるのか。`,
+        `무엇이 이렇게 공허한 나를 ${treve.name}의 곁에 서 있게 하는 걸까.`,
       );
       await era.printAndWait(
-        `フラッシュの白い光は眩しい。疲労の溜まった目には、何も入ってこない。`,
+        `카메라 플래시의 새하얀 빛이 눈부셨다. 피로에 지친 눈에는 아무것도 들어오지 않았다.`,
       );
     };
     f.title = title;
