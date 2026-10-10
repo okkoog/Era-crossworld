@@ -1967,76 +1967,76 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_ny
+  // [번역 완료] ws_ny
   ws_ny: (() => {
-    const title = '新年';
+    const title = '새해';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {string} callname ナイスネイチャのプレイヤーへの呼び方
      * @param {string} self_call ナイスネイチャの自称
      */
     const f = async (nature, callname, self_call) => {
-      await nature.say_and_wait(`${callname}、新年の抱負、書かない？`);
+      await nature.say_and_wait(`${callname}, 새해 다짐 안 써볼래?`);
       await era.printAndWait(
-        'ナイスネイチャはそう言いながら、筆と紙を差し出してきた。',
+        '나이스 네이처가 그렇게 말하며 붓과 종이를 내밀었다.',
       );
       await era.printAndWait(
-        '新年の抱負——新しい一年への期待と祝福を紙に託すものだ。書くべきは——',
+        '새해 다짐——새로운 한 해에 거는 기대와 축복을 종이에 담는다. 무엇을 쓸까——',
       );
-      era.printButton('「健康」（体力+300）', 1);
-      era.printButton('「強くなれ」（全能力+10）', 2);
-      era.printButton('「多才」（スキルPt+70）', 3);
+      era.printButton('「건강」(체력 +300)', 1);
+      era.printButton('「강해지자」(모든 능력치 +10)', 2);
+      era.printButton('「다재다능」(스킬 Pt +70)', 3);
       if (era.get('love:60') >= 75) {
-        era.printButton('「子孫繁栄」', 4);
+        era.printButton('「자손 번창」', 4);
       }
       const ret = await era.input();
       switch (ret) {
         case 1:
           await nature.say_and_wait(
-            `健康か……${callname} もその年になったんだね、腰痛とか煩いよね？ ${self_call} わかる——`,
+            `건강이라니…… ${callname}도 이제 그런 걸 챙길 나이가 됐구나. 허리 아픈 건 귀찮지? ${self_call}도 알아——`,
           );
           await nature.say_and_wait([
-            'ん？ 自分に書くんじゃない？ じゃあ……？ えっ！？ あたし？ ちょ、その……',
+            '어? 본인 걸 쓴 게 아냐? 그럼……? 엣!? 나? 잠깐, 그게……',
             callname,
-            '、自分よりあたしを気にしてるんだ……うっ！ そういうの反則！',
+            '은(는) 자기보다 나를 더 챙겨주는구나…… 으윽! 그런 건 반칙이야!',
             callname,
-            ' もあたしも、新しい一年は元気に過ごそうね！',
+            '도 나도 새해에는 건강하게 지내자!',
           ]);
           break;
         case 2:
           await nature.say_and_wait([
-            '強くなれ、か～',
+            '강해지자는 거구나~',
             callname,
-            '、意外と熱血？ それとも見た目より精神年齢が……ははは、冗談……',
+            ', 의외로 열혈인걸? 아니면 보기보다 정신 연령이…… 하하하, 농담이야……',
           ]);
           await nature.say_and_wait([
-            'ん？ 自分に書くんじゃない？ じゃあ……？ えっ！？ あたし？ ちょ、その……',
+            '어? 본인 걸 쓴 게 아냐? 그럼……? 엣!? 나? 잠깐, 그게……',
             callname,
-            '、自分よりあたしを気にしてるんだ……うっ！ そういうの反則！',
+            '은(는) 자기보다 나를 더 챙겨주는구나…… 으윽! 그런 건 반칙이야!',
             callname,
-            ' もあたしも、新しい一年は楽しく過ごそうね！',
+            '도 나도 새해에는 즐겁게 지내자!',
           ]);
           break;
         case 3:
           await nature.say_and_wait(
-            `多才？ たしかに才能が多い人のほうが${nature.child_sex_title}にもモテるよね、${callname} もその年だし、そろそろ自分の${
+            `다재다능? 확실히 재능 많은 사람이 ${nature.child_sex_title}에게도 인기가 많겠지. ${callname}도 이제 그런 걸 신경 쓸 나이니까 자기 ${
               nature.sex
-            }のこと考えたほうが……あたしが言うのも変だけど、はははは……`,
+            }를 생각해 봐야 할 텐데…… 내가 이런 말 하는 것도 이상하지만, 하하하하……`,
           );
           await nature.say_and_wait([
-            'ん？ 自分に書くんじゃない？ じゃあ……？ えっ！？ あたし？ ちょ、その……',
+            '어? 본인 걸 쓴 게 아냐? 그럼……? 엣!? 나? 잠깐, 그게……',
             callname,
-            '、自分よりあたしを気にしてるんだ……うっ！ そういうの反則！',
+            '은(는) 자기보다 나를 더 챙겨주는구나…… 으윽! 그런 건 반칙이야!',
             callname,
-            ' もあたしも、新しい一年は楽しく過ごそうね！',
+            '도 나도 새해에는 즐겁게 지내자!',
           ]);
           break;
         case 4:
           await nature.say_and_wait(
-            `し、子孫繁栄？ ${callname} もほんと、朝から大胆な話題……でも ${callname} が望むなら……あたしもいいよ？ いっそ……今から？`,
+            `자, 자손 번창? ${callname}도 참, 아침부터 대담한 화제네…… 그래도 ${callname}이(가) 원한다면 나도 괜찮아. 아니면…… 지금부터?`,
           );
           await era.printAndWait(
-            '頬を赤らめたナイスネイチャが一歩ずつ近づいてくる。どうやら一戦は避けられそうにない……',
+            '얼굴이 붉어진 나이스 네이처가 한 걸음씩 다가왔다. 아무래도 한판 대결을 피하기는 어려울 것 같다……',
           );
       }
       return [ret];
