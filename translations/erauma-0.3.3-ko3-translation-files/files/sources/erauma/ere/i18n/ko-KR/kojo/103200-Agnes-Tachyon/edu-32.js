@@ -1652,7 +1652,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_hoch_sho
+  // [번역 완료] before_hoch_sho
   before_hoch_sho: (() => {
     const title = '実験対照';
     /**
@@ -1664,72 +1664,72 @@ module.exports = {
      */
     const f = async (tachyon, you, callname, t_call_c, vs_coffee) => {
       await tachyon.say_and_wait(
-        '覚悟はしていましたけれど……やはり、特筆すべき実験対照はありませんわね',
+        '각오는 했지만…… 역시 눈에 띄는 실험 대조군은 없군.',
       );
       era.println();
-      await era.printAndWait(['だが、このレースは皐月賞の前哨戦だ']);
+      await era.printAndWait(['하지만 이번 레이스는 사츠키상 전초전이다.']);
       await era.printAndWait([
-        '皐月賞を目指すなら、強弱にかかわらず、この結果は見逃せない',
+        '사츠키상을 목표로 한다면 상대의 강약과 관계없이 이 결과는 놓칠 수 없다.',
       ]);
       era.println();
       if (vs_coffee) {
         await tachyon.say_and_wait([
-          'そういえば、今日は ',
+          '그러고 보니 오늘은 ',
           t_call_c,
-          ' も出走していますわね',
+          '도 출전했군.',
         ]);
         await tachyon.say_and_wait([
           t_call_c,
-          '……満足できる走りを見せてほしいですわ。なにしろ……',
+          '……만족할 만한 달리기를 보여 주면 좋겠네. 왜냐하면……',
         ]);
       } else {
         await tachyon.say_and_wait([
           t_call_c,
-          ' が出走していれば……実験価値はもっと高かったでしょうに',
+          '가 출전했다면…… 실험 가치는 더욱 높았을 텐데.',
         ]);
       }
       await tachyon.say_and_wait([
-        'ところで、',
+        '그런데 ',
         callname,
-        '、あなたは ',
+        ', 자네는 ',
         t_call_c,
-        ' をどう見ていますの？',
+        '을(를) 어떻게 보고 있나?',
       ]);
       era.println();
-      await era.printAndWait('え？');
+      await era.printAndWait('응?');
       await era.printAndWait([
-        '唐突な問いに、',
+        '갑작스러운 질문에 ',
         you.get_colored_name(),
-        ' は考え込んだ',
+        '은(는) 생각에 잠겼다.',
       ]);
-      await era.printAndWait('灰色の脳細胞が回り始める');
+      await era.printAndWait('회색 뇌세포가 돌아가기 시작한다.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' がそう聞く意図は……',
+        '이(가) 이런 질문을 하는 의도는……',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' が身構えるのを見て、',
+        '이(가) 긴장하는 모습을 보더니 ',
         tachyon.get_colored_name(),
-        ' は笑った',
+        '은(는) 웃었다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'そんなに緊張しないでくださいまし。ただの質問ですわ。個人的には、あなたが',
+        '그렇게 긴장하지 말게. 그저 질문일 뿐일세. 개인적으로는 자네가 ',
         tachyon.sex,
-        'と良好な関係を築いてくれると嬉しいですの……万一のために',
+        '와(과) 좋은 관계를 맺어 준다면 기쁘겠군…… 만일의 경우를 위해서.',
       ]);
-      era.printButton('「不安になる言い方だな……」', 1);
-      era.printButton('「俺はいつまでもタキオンのトレーナーだ！」', 2);
+      era.printButton('「불안해지는 말투인데……」', 1);
+      era.printButton('「난 언제까지나 타키온의 트레이너야!」', 2);
       await era.input();
       await tachyon.say_and_wait(
-        'どこへ想像を飛ばしているのです……もういいですわ。出場します',
+        '무슨 상상을 하는 건가…… 됐네. 출전하지.',
       );
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'はホープフルの前に見たスプレーを脚に吹き、出走の準備をした',
+        '은(는) 호프풀 전에 보았던 스프레이를 다리에 뿌리고 출전 준비를 했다.',
       ]);
     };
     f.title = title;
