@@ -1,6 +1,6 @@
 # 최종 ko-KR 작업 파일: 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 
-# [번역 대상] o_r_fishing
+# [번역 완료] o_r_fishing
 o_r_fishing:
   - random: true
     lines:
@@ -8,23 +8,23 @@ o_r_fishing:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「釣りで大事なのは落ち着き。我慢して機会を待つ。中盤で突破口を探すのと同じ。」
-      - %CHARA% は手際よく竿を上げ、魚を一匹引き上げた。
+          - 「낚시에서 중요한 건 침착함이야. 참고 기회를 기다리는 거지. 레이스 중반에 돌파구를 찾는 것과 같아.」
+      - %CHARA%는 능숙하게 낚싯대를 들어 올려 물고기 한 마리를 낚았다.
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「釣ってると、自然と一体になったみたい。周りに気づかれない。この感じ、好き。」
+          - 「낚시를 하고 있으면 자연과 하나가 된 것 같아. 주변에서도 날 알아채지 못하고. 이런 느낌이 좋아.」
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「なに？ 気づかれないのは、魚が掛からないからだって？」
+          - 「뭐? 아무도 모르는 건 물고기가 안 잡히기 때문 아니냐고?」
 
 
-# [번역 대상] o_r_walking
+# [번역 완료] o_r_walking
 o_r_walking:
   - random: true
     lines:
@@ -32,30 +32,30 @@ o_r_walking:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ふぁ、ここの空気、きれい。気分が良くなった」
+          - 「하아, 여기 공기 맑네. 기분 좋아졌어.」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「あそこのベンチで座ろう。なに、膝枕してほしいって？」
+          - 「저기 벤치에 앉자. 뭐야, 무릎베개라도 해 달라고?」
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「また蹴り飛ばされたいの。」
+          - 「또 걷어차이고 싶은 거야?」
 
 
-# [번역 대상] o_s_arcade
+# [번역 완료] o_s_arcade
 o_s_arcade:
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「音ゲー、一緒にやる？ いいけど、簡単な曲にするわよ……」
-  - 結果、簡単な曲でも、こうしたゲームに触れたことのない %YOU% は歯が立たなかった。
-  - 一方、タイシンの画面には大きな FULL COMBO が出ている。
+      - 「리듬 게임, 같이 할래? 상관없지만 쉬운 곡으로 할 거야……」
+  - 결국 쉬운 곡인데도 이런 게임을 해 본 적 없는 %YOU%은(는) 상대가 되지 못했다.
+  - 반면 타이신의 화면에는 커다란 FULL COMBO가 떠 있었다.
 
 
 # [번역 대상] o_s_drawing
@@ -142,16 +142,16 @@ o_s_drawing:
       - そうは言っても、最下等しか引けないのは、不運としか言いようがない。
 
 
-# [번역 대상] o_s_ktv
+# [번역 완료] o_s_ktv
 o_s_ktv:
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「歌う？ あまり得意じゃない。勝者ステージくらいが限界。次はアンタが歌えよ、%CALLNAME%。」
+      - 「노래 부를래? 별로 자신은 없어. 우승 무대에서 부르는 정도가 한계야. 다음은 네 차례니까 불러, %CALLNAME%.」
 
 
-# [번역 대상] o_s_movie
+# [번역 완료] o_s_movie
 o_s_movie:
   - random: true
     lines:
@@ -159,65 +159,65 @@ o_s_movie:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「『賑やかな、私たちのレース場』。地方のウマ%UMA%が主役の話。悪くなさそう。これにする。」
+          - 「『떠들썩한 우리들의 경마장』. 지방의 우마 %UMA%가 주인공인 이야기네. 나쁘지 않겠어. 이걸로 할래.」
       - divider: true
-        content: ⏰映画終了後⏰
+        content: ⏰영화 종료 후⏰
         position: left
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「映画とはいえ、脚色が多すぎない？……」
+          - 「영화라지만 각색이 너무 심한 거 아니야?……」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「『宇宙の果てまで』。久しぶりにSFが見たい。これで。」
+          - 「『우주 끝까지』. 오랜만에 SF 영화를 보고 싶네. 이걸로 하자.」
       - divider: true
-        content: ⏰映画終了後⏰
+        content: ⏰영화 종료 후⏰
         position: left
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「……なんで半分以上ラブストーリーなの。チッ、タイトルに騙された。」
+          - 「……왜 절반 넘게 연애 이야기인데. 칫, 제목에 속았어.」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「『最後の白騎士』。暗い時代に、金髪の%UMA%が立ち上がり、手の槍で闇を貫く……ねえ%CALLNAME%、なんで騎士なの。何にも乗ってないのに……」
-      - %YOU% は急にまずいと思い、%CHARA% の手を引いて別の映画に変えた。
+          - 「『최후의 백기사』. 암흑의 시대에 금발의 %UMA%가 일어나 손에 든 창으로 어둠을 꿰뚫는다…… 있지, %CALLNAME%, 왜 기사야? 아무것도 타지 않았는데……」
+      - %YOU%은(는) 갑자기 불길한 예감이 들어 %CHARA%의 손을 잡고 다른 영화로 바꿨다.
 
 # 50 恋慕以上
 
-# [번역 대상] o_s_restaurant
+# [번역 완료] o_s_restaurant
 o_s_restaurant:
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「いただきます。」
+      - 「잘 먹겠습니다.」
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「え？ なんでこれしか頼まないの。」
+      - 「응? 왜 이거밖에 주문 안 해?」
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「ふたりなら、これで十分でしょ。もう暴飲暴食はしない。」
+      - 「둘이 먹을 거면 이걸로 충분하지. 이제 폭음폭식 안 해.」
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「前にアンタがわざわざ言ったんだから、ちゃんと気をつけるわよ。」
+      - 「전에 네가 굳이 말해 줬잖아. 그러니까 나도 제대로 신경 쓰고 있어.」
 
-# [번역 대상] office_game
+# [번역 완료] office_game
 office_game:
   - random: true
     lines:
@@ -225,17 +225,17 @@ office_game:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「一緒にゲーム？ いいよ。負けても拗ねるなよ。」
+          - 「같이 게임하자고? 좋아. 져도 삐치지 마.」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「対戦より一人用のほうが好き。でもアンタとなら、悪くない。ちょっ、なにニヤニヤしてるの！」
+          - 「대전 게임보다 혼자 하는 게임이 더 좋아. 그래도 너랑이라면 나쁘지 않지. 잠깐, 왜 실실 웃는 거야!」
 
 
-# [번역 대상] office_prepare
+# [번역 완료] office_prepare
 office_prepare:
   - if: era.get('cflag:50:干劲') >= 1
     lines:
@@ -243,24 +243,24 @@ office_prepare:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「まだ始まらないの？ 緊張じゃない。今の調子がいいから、逃したくないだけ。」
+          - 「아직 시작 안 해? 긴장한 게 아니야. 지금 컨디션이 좋아서 기회를 놓치기 싫을 뿐이야.」
   - if: era.get('cflag:50:干劲') <= -1
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「もう始まるのか……調子を整える暇はない。できることは、やり切る！」
+          - 「벌써 시작인가…… 컨디션을 가다듬을 틈은 없네. 할 수 있는 건 다 해야지!」
   - if: era.get('cflag:50:干劲') === 0
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「調子？ まあ普通。決めた走りで行けばいい。」
+          - 「컨디션? 뭐, 보통이야. 정해 둔 대로 달리면 돼.」
 
 
-# [번역 대상] office_rest
+# [번역 완료] office_rest
 office_rest:
   - random: true
     lines:
@@ -268,17 +268,17 @@ office_rest:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ふぅ……こういう休みの日も必要だな。アンタもたまには休めよ。%CALLNAME%？」
+          - 「후우…… 이런 휴일도 필요하지. 너도 가끔은 쉬어, %CALLNAME%.」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「適度な休みはトレーニングを倍にする。アンタもハヤヒデも、似たようなこと言ってた。」
+          - 「적당한 휴식은 훈련 효과를 두 배로 만든다. 너도 하야히데도 비슷한 말을 했었지.」
 
 
-# [번역 대상] office_study
+# [번역 완료] office_study
 office_study:
   - random: true
     lines:
@@ -286,17 +286,17 @@ office_study:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「『理論もレースの一部だ』って先生は言うけど、歴史の授業がレースの役に立つわけ？……」
+          - 「선생님은 『이론도 레이스의 일부다』라고 하시지만, 역사 수업이 레이스에 도움이 되기는 해?……」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「成績は悪くないけど、目立ってもない。ハヤヒデのやつなんか、テストも試験もいつも上位……チケット？ %SEX%の成績は私より下かもよ。」
+          - 「성적이 나쁜 건 아니지만 특별히 눈에 띄지도 않아. 하야히데 녀석은 시험만 보면 항상 상위권이고…… 티켓? %SEX%의 성적은 나보다 낮을지도 몰라.」
 
 
-# [번역 대상] s_a_dating
+# [번역 완료] s_a_dating
 s_a_dating:
   - random: true
     lines:
@@ -304,17 +304,17 @@ s_a_dating:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「今日はどこへ連れてくの？ 私に案は期待しないで。よく行く場所は静かなとこばかりで、デート向きじゃない……一緒にいればいい？ ……好きにすれば。」
+          - 「오늘은 어디 데려갈 거야? 나한테 아이디어는 기대하지 마. 평소 가는 곳은 조용한 데뿐이라 데이트에는 안 어울리거든…… 같이 있으면 된다고? ……마음대로 해.」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ねえ、%CALLNAME%？ あそこにいい花屋があるんだけど、付き合って。」
+          - 「있지, %CALLNAME%? 저기 괜찮은 꽃집이 있는데 같이 가 줘.」
 
 
-# [번역 대상] s_a_tree_hollow
+# [번역 완료] s_a_tree_hollow
 s_a_tree_hollow:
   - random: true
     lines:
@@ -322,7 +322,7 @@ s_a_tree_hollow:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「次のレース、絶対勝つ！」
+          - 「다음 레이스는 반드시 이길 거야!」
   - if: era.get('cflag:50:育成回合计时') >= 48 && era.get('cflag:50:育成回合计时') < 144
     random: true
     lines:
@@ -330,7 +330,7 @@ s_a_tree_hollow:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「あいつらに、今の私を見せつけてやる！」
+          - 「그 녀석들에게 지금의 나를 똑똑히 보여 주겠어!」
   - if: era.get('love:50') >= 50 && era.get('love:50') < 75
     random: true
     lines:
@@ -338,10 +338,10 @@ s_a_tree_hollow:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「なんで頭の中、あのバカのことばっかなのよ！」
+          - 「왜 머릿속에 그 바보 생각만 가득한 거야!」
 
 
-# [번역 대상] school_rooftop
+# [번역 완료] school_rooftop
 school_rooftop:
   - random: true
     lines:
@@ -349,17 +349,17 @@ school_rooftop:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ん……ここで昼寝してるの、もう隠せないか。まあいい、チケットのやつ、どうせそのうち言いふらすし。」
+          - 「으음…… 여기서 낮잠 자는 것도 이제 숨길 수 없겠네. 뭐 됐어. 어차피 티켓 녀석이 조만간 소문낼 테니까.」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「気持ちいい風。もう少し、ここにいたい。」
+          - 「기분 좋은 바람이네. 조금만 더 여기 있고 싶어.」
 
 
-# [번역 대상] select_after_recruit
+# [번역 완료] select_after_recruit
 select_after_recruit:
   sync: true
   lines:
@@ -367,17 +367,17 @@ select_after_recruit:
       content:
         - fontSize: bold
           content: %CHARA%
-        - 「担当契約したからって、それで終わりだと思うなよ。」
+        - 「담당 계약을 맺었다고 이걸로 끝이라고 생각하지 마.」
     - color: %COLOR%
       content:
         - fontSize: bold
           content: %CHARA%
-        - 「だって、言ったでしょ。私を勝たせる方法を見つけるって。」
+        - 「말했잖아. 날 이기게 할 방법을 찾아내겠다고.」
     - color: %COLOR%
       content:
         - fontSize: bold
           content: %CHARA%
-        - 「本気か空言か、これからの三年で証明してもらうから。」
+        - 「진심인지 빈말인지는 앞으로 3년 동안 증명해 봐.」
 
 
 # [번역 대상] talk
