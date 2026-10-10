@@ -16,6 +16,16 @@
 
 확인 방식: 기존 한국어 보존, 현행 키/분기 구조 유지, 문자열 치환 변수의 일치 여부 및 처리 장면의 잔여 일본어 가나 검사. 게임 전체를 실행한 통합 검증은 수행하지 않았다. 기존 장부의 정량 감사 카운터는 여기서 임의 수정하지 않았다.
 
+## 이번 채팅의 추가 진행 — 스윕 토쇼 육성
+
+- 대상: `kojo/104400-Sweep-Tosho/edu-44.kojo`
+- 기존 `[번역 대상]` 82개 중 **12개 장면 신규 한국어 번역**, 이후 70개. 기존 한국어 문장에는 변경을 가하지 않았다.
+- 1차 8장면: `ws_md_w_1_end`, `ws_ny_sub_select`, `ws_ny_sub_reject`, `we_in_school`, `ws_md_w_2_end`, `rs_yush_him`, `re_shuk_sho_win`, `we_new_turn`. 커밋 `1c7c6010377b7a0d46b1b160a311257ea4e3dbae`.
+- 2차 2장면: `ws_md_w_1`, `ws_md_w_2`. 커밋 `a99692179ec906843824a38de5dc8257e5b431e7`.
+- 3차 2장면: `ws_md_w_3`, `ws_md_w_3_end`. 커밋 `1fcf56eced68e8bbe2ec38e9c60d19d351c3200f`.
+- **분류: 새로운 한국어 번역.** 이 경로와 대응되는 old-KR `event/edu/edu-44.kojo`/`edu-44.js`는 저장소에서 발견하지 못했으므로 구버전 번역 재사용 실적으로 세지 않는다.
+- 각 장면의 구조와 placeholder 토큰을 보존하고, 대상 장면의 비주석 원문 가나 잔여 여부를 검사했다. 게임 런타임 전체 검증은 아직 미실시다. 다른 미완료 장면을 완료로 취급하지 않는다.
+
 ## 직접 연령/학교 표현 검색의 14개 원문 파일
 
 경로는 모두 `sources/erauma/ere/i18n/ja-JP/kojo/` 기준이며, 아래 수치는 2026-10-10의 한국어 파일 내 **번역 대상 마커 개수**다. 0은 번역 대상 마커 0을 뜻할 뿐 전체 런타임 한국어 커버리지 100%를 보증하지 않는다.
@@ -50,7 +60,7 @@
 | `kojo/102400-Mayano-Top-Gun/edu-24.js` | 56 | 미완료 |
 | `kojo/105200-Haru-Urara/daily-52.js` | 37 | 미완료 |
 | `kojo/105200-Haru-Urara/love-52.js` | 12 | 미완료 |
-| `kojo/104400-Sweep-Tosho/edu-44.kojo` | 82 | 미완료 |
+| `kojo/104400-Sweep-Tosho/edu-44.kojo` | 70 | 이번 추가 작업에서 비성적 12장면 번역; 다른 장면 미완료 |
 | `kojo/110000-Wonder-Acute/ero-100.js` | 74 | 미완료 |
 | `timon/child/daily.js` | 0 | 기존 완료본 보존 |
 | `timon/child/ero.js` | 0 | 기존 완료본 보존 |
