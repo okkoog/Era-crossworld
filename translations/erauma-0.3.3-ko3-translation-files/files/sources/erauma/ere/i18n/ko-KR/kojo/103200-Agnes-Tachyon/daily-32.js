@@ -869,55 +869,55 @@ module.exports = {
     );
   },
 
-  // [번역 대상] event_rooftop_b
+  // [번역 완료] event_rooftop_b
   async event_rooftop_b(tachyon, coffee, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は',
+      '은(는) ',
       tachyon.sex,
-      'を屋上へ連れて弁当を食べ、気分を変えようとした',
+      '을(를) 옥상으로 데려가 도시락을 먹으며 기분을 전환하려 했다.',
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'は嬉しそうに ',
+      '은(는) 기쁜 듯 ',
       you.get_colored_name(),
-      ' が語る最近の ',
+      '이(가) 들려주는 최근 ',
       coffee.get_colored_name(),
-      ' の訓練の変化を聞き、たまに自分の考えを挟んだ',
+      '의 훈련 변화를 들으며 때때로 자기 생각을 덧붙였다.',
     ]);
-    await era.printAndWait('その過程で、自分の話は一切出なかった');
+    await era.printAndWait('그 과정에서 정작 자신의 이야기는 한 번도 나오지 않았다.');
     await era.printAndWait([
-      '訓練に出られない',
+      '훈련에 나설 수 없는 ',
       tachyon.sex,
-      'は、いくら時間を割いて傍にいても、他の',
+      '은(는) 아무리 시간을 내어 곁에 있어도 다른 ',
       tachyon.uma_sex_title,
-      'の訓練のあいだは離れなければならない',
+      '의 훈련이 진행되는 동안에는 떨어져 있어야 했다.',
     ]);
-    await tachyon.say_and_wait(['最近の', tachyon.sex, 'は、どうです']);
+    await tachyon.say_and_wait(['최근 ', tachyon.sex, '은(는) 어떤가?']);
     era.printButton('「……」', 1);
-    era.printButton('「……君は？ 最近どうだ？」', 2);
+    era.printButton('「……자네는? 요즘은 어떻게 지내고 있나?」', 2);
     if ((await era.input()) === 1) {
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' の話が終わると、急に沈黙が落ち、その食事はすぐに終わった',
+        '에 대한 이야기가 끝나자 갑자기 침묵이 흘렀고, 식사도 곧 끝났다.',
       ]);
     } else {
       await tachyon.say_and_wait(
-        '私？ ……まあ、そんなところですわ。特別なことはありません。',
+        '나? ……뭐, 그럭저럭일세. 별다른 일은 없네.',
       );
-      await era.printAndWait([tachyon.sex, 'は気のない返事をした']);
+      await era.printAndWait([tachyon.sex, '은(는) 심드렁하게 대답했다.']);
       await era.printAndWait([
         tachyon.sex,
-        'と長く付き合ってきた ',
+        '와(과) 오랫동안 지낸 ',
         you.get_colored_name(),
-        ' にはわかる。',
+        '은(는) 알 수 있었다.',
         tachyon.sex,
-        'ははぐらかしているのではなく、本当に自分の暮らしに語る話題がないと思っている',
+        '은(는) 말을 얼버무리는 것이 아니라 자신의 일상에는 정말로 할 말이 없다고 생각하고 있었다.',
       ]);
       await era.printAndWait([
-        'それを思うと、',
+        '그런 생각을 하니 ',
         you.get_colored_name(),
-        ' は胸が痛んだ。',
+        '은(는) 가슴이 아팠다.',
       ]);
     }
   },
@@ -3399,69 +3399,69 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] talk_hizamakura
+  // [번역 완료] talk_hizamakura
   async talk_hizamakura(tachyon, you, callname) {
-    await tachyon.say_and_wait([callname, '、疲れましたわ。寝かせてください']);
-    era.printButton('承知する', 1);
-    era.printButton('断る', 2);
+    await tachyon.say_and_wait([callname, ', 피곤하군. 좀 눕겠네.']);
+    era.printButton('승낙한다', 1);
+    era.printButton('거절한다', 2);
     await era.input();
     await era.printAndWait([
       you.get_colored_name(),
-      ' が心の中で選ぶより先に、',
+      '이(가) 마음속으로 답을 정하기도 전에 ',
       tachyon.get_colored_name(),
-      ' はもう ',
+      '은(는) 이미 ',
       you.get_colored_name(),
-      ' の膝に横たわっていた',
+      '의 무릎 위에 누워 있었다.',
     ]);
-    era.printButton('「おい、タキオン」', 1);
+    era.printButton('「이봐, 타키온.」', 1);
     await era.input();
     await tachyon.say_and_wait('ZZZ');
     era.println();
-    await era.printAndWait('早すぎる！？');
+    await era.printAndWait('너무 빠르잖아!?');
     await era.printAndWait([
       tachyon.sex,
-      'を起こさないため、',
+      '을(를) 깨우지 않으려고 ',
       you.get_colored_name(),
-      ' はおとなしく元の姿勢のまま動けなかった',
+      '은(는) 얌전히 그 자세를 유지한 채 꼼짝할 수 없었다.',
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'が起きたら、ちゃんと注意しなければ。迷惑はまだしも、異性の膝にいきなり寝るのは危機感がなさすぎる',
+      '이(가) 일어나면 꼭 주의를 줘야겠다. 민폐도 문제지만 이성의 무릎에 불쑥 눕다니 경계심이 너무 없잖아.',
     ]);
     era.println();
-    await tachyon.say_and_wait('んぅ……');
+    await tachyon.say_and_wait('으음……');
     era.println();
     await era.printAndWait([
-      '眠りは浅そうに',
+      '얕게 잠든 듯 ',
       tachyon.sex,
-      'は寝返りを打った。',
+      '은(는) 몸을 뒤척였다.',
       you.get_colored_name(),
-      ' の胸の説教は、',
+      '의 마음속에서 준비하던 잔소리는 ',
       tachyon.sex,
-      'の正面を見た瞬間に跡形もなく消えた',
+      '의 얼굴을 본 순간 흔적도 없이 사라졌다.',
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'の目尻の隈、倒れ込むような疲労。',
+      '의 눈가에 드리운 다크서클과 쓰러질 듯한 피로는 ',
       tachyon.sex,
-      'の睡眠がいかに不安定かを、何度も示していた',
+      '이(가) 얼마나 불안정하게 잠을 자는지 보여 주고 있었다.',
     ]);
     await era.printAndWait([
-      'よく考えれば、最近の',
+      '생각해 보니 요즘 ',
       tachyon.sex,
-      'は研究の壁に当たり、ろくに眠れていないらしい',
+      '은(는) 연구가 벽에 부딪혀 제대로 잠도 못 자는 모양이다.',
     ]);
     await era.printAndWait([
-      '唯一ほっとするのは、',
+      '그나마 다행인 것은 ',
       you.get_colored_name(),
-      ' の膝にいるとき、',
+      '의 무릎 위에 있을 때 ',
       tachyon.sex,
-      'の眉間がほどけていることだった',
+      '의 미간이 편안하게 풀린다는 사실이었다.',
     ]);
     await era.printAndWait([
-      '……これで',
+      '……이렇게 해서 ',
       tachyon.sex,
-      'が少しでも眠れるなら、たまにこれくらい、構わないかもしれない',
+      '이(가) 조금이라도 잠을 잘 수 있다면, 가끔은 이 정도쯤 괜찮겠지.',
     ]);
   },
 
