@@ -4,6 +4,148 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/108500-Daiichi-Ruby/rec-85"),
 
+  // [번역 완료] rec_start
+  async rec_start(ruby, you) {
+    const ret = [];
+    era.print(
+      '오늘의 훈련장은 평소보다 훨씬 북적거린다. 응원, 환호, 감탄……',
+    );
+    await era.printAndWait(
+      `이토록 풍부하고 감정이 가득 찬 목소리는, 오직 경기장 위의 ${ruby.sex}를 위해 자아내진 것이다. 경기장 전체의 시선이 그 한 사람에게 집중된 듯했다.`,
+    );
+    era.println();
+
+    era.print('신입 트레이너A 「이봐, 이쪽이야!」');
+    era.print('신입 트레이너A 「이미 시작했다고!」');
+    era.printButton('「지금 갈게!」', 1);
+    await era.input();
+
+    await era.printAndWait(
+      '신입 트레이너 동료: 「선배가 자세히 봐두는 게 좋다고 했던 우마무스메가…… 봐, 바로 저 아이야.」',
+    );
+    era.println();
+
+    await era.printAndWait(`친구의 시선을 따라, ${you.name}은(는) 알아차렸다——`);
+    era.printButton('（꽤 뒤쪽에서 달리고 있네……）', 1);
+    era.printButton('（흰색 스타킹 + 짧은 브루마……）', 2);
+    ret.push((ret['hentai1'] = await era.input()));
+    if (ret['hentai1'] === 2) {
+      era.println();
+      era.print('제길, 위의 머리는 멀쩡한데, 아래 머리에 불이 붙어 버렸다.');
+      era.print(
+        `자신이 완전히 발기한 것을 확인한 순간, ${you.name}의 마음속 깊은 곳에서 불길한 예감이 엄습했다. 설마 나, 로리콘인가?`,
+      );
+      era.print(
+        `${you.name}은(는) 경기장 위의 갈색 머리 우마무스메를 바라보았다. 뛰어난 감식안 덕분에 ${you.name}은(는) 소녀의 키가 겨우 140cm를 넘을까 말까 하다는 것을 한눈에 알아챘다.`,
+      );
+      era.print(`찰나의 순간, ${you.name}의 시선은 교차하는 두 다리 사이에 고정되었다.`);
+      era.print(
+        `몸에 딱 붙는 붉은색 체육복 바지 아래로, 새하얀 스타킹이 소녀의 은밀한 곳을 가리고 있었다. 하지만 ${you.name}의 눈에는 통통하고 핑크빛인 조개가 이미 눈앞에 선연히 드러난 것만 같았다. 분명 두부보다 부드러울 것이고, 한 입 머금고 싶어질 만큼 매끄러울 터였다.`,
+      );
+      era.print(
+        `어렴풋이, ${you.name}은(는) 그 짧은 바지 한가운데에 치구로 인해 그려진 유혹적인 가느다란 틈새를 본 것 같았다……`,
+      );
+      await era.printAndWait(
+        '흰색 스타킹을 신은 허벅지는 화창한 햇살 아래에서 사랑스러운 핑크빛을 띠었고, 둥글고 귀여운 엉덩이는 달리는 반동 속에서 기묘한 아름다움을 자아냈다.',
+      );
+    }
+    era.println();
+
+    await era.printAndWait('신입 트레이너A 「이봐 이봐, 너무 넋 놓고 보지 말라고.」');
+    era.println();
+
+    await era.printAndWait(
+      `${you.name}은(는) 황급히 고개를 돌렸지만, 마지막 순간까지 소녀의 복숭아 빛이 도는 흰색 스타킹 신은 종아리를 훔쳐보는 것을 잊지 않았다.`,
+    );
+    era.println();
+
+    era.print('신입 트레이너A 「앞이 저렇게 꽉 막혀 있으니, 거리를 좁히기는 힘들겠지.」');
+    era.printButton('「그러게.」', 1);
+    era.printButton('「아니, 대외곽으로 돌면……」', 2);
+    await era.input();
+
+    era.print('신입 트레이너A 「에? 거짓말이지!」');
+    await era.printAndWait(
+      `베테랑 트레이너A 「정말 대단한 뒷심이군, 저게 바로 그…… 화려한 일족의, ${ruby.name}다.」`,
+    );
+    era.println();
+
+    era.print(
+      '화려한 일족. 정계와 재계, 그리고 우마무스메의 레이스 세계에 이르기까지 모든 곳에서 명성을 떨친 혈족으로, 정통 후계자들이 지금 이 순간에도 도처에서 빛을 발하고 있다.',
+    );
+    await era.printAndWait('이 나라에서 그 이름을 들어보지 못한 사람은 존재하지 않을 것이다.');
+    era.println();
+
+    await era.printAndWait(
+      `이미 데뷔한 선배들은 안중에도 없다는 듯, ${ruby.name}는 그 누구보다 빠른 속도로 결승선을 통과했다.`,
+    );
+    era.println();
+
+    era.print(
+      `신입 트레이너A 「엄청나!——…… 저게 소문으로만 듣던 화려한 일족, ${ruby.name}구나. 보아하니 이미 완전히 본격화에 접어들었네.」`,
+    );
+    era.printButton('（그럼 키는 이제 더 안 크는 건가?）', 1);
+    await era.input();
+
+    await era.printAndWait(
+      `과연 어떤 트레이너가 그녀의 곁을 지키게 될까? 지금 ${ruby.name}의 주변에는 그녀를 스카우트하고 싶어 안달이 난 수많은 트레이너들이 모여들고 있었다.`,
+    );
+    era.println();
+
+    era.print(`${you.name}은(는)——`);
+    era.printButton('그럴 자신이 없다.（모집을 포기한다）', 1);
+    era.printButton('（저런 질주를 보고서, 어떻게 제자리에 멈춰 서 있겠어!）', 2);
+    era.printButton('（흰색 스타킹 로리 향긋해……）', 3);
+    ret.push((ret['hentai2'] = await era.input()));
+    if (ret['hentai2'] > 1) {
+      era.println();
+
+      await ruby.say_and_wait(
+        '트레이너 여러분, 오늘 저는 이 자리를 빌려 여러분께 한 가지 전해드릴 말씀이 있습니다.',
+      );
+      era.println();
+
+      era.print(
+        `${you.name}은(는) 집사에게서 ${ruby.name}의 전속 트레이너를 결정하는 【선발 테스트】의 상세 자료를 전달받았다.`,
+      );
+      era.print(
+        '【선발 테스트】의 기한은 30일이며, 각 테스트마다 평가를 진행하여 종합 점수에 따라 합격 여부를 결정한다.',
+      );
+      await era.printAndWait('동점자가 발생할 경우 새로운 테스트 항목이 추가된다고 집사가 덧붙였다.');
+      era.println();
+
+      await era.printAndWait(
+        `${you.name}은(는) 자료를 살펴보았다. 사교댄스, 테이블 매너…… 그 외에도 다양한 항목들이 있었다. 확실한 것은 평범한 사람이 고작 30일 만에 마스터할 수 있는 내용이 결코 아니라는 점이다.`,
+      );
+      era.println();
+
+      await ruby.say_and_wait(
+        '질문이 없으시다면, 이것으로 마치겠습니다. 귀중한 시간을 내어주셔서 대단히 감사합니다.',
+      );
+      era.println();
+
+      era.print(`말을 마친 뒤 사람들을 둘러보던 ${ruby.name}의 시선이 ${you.name}과(와) 마주쳤다.`);
+      await era.printAndWait(
+        '상냥한 표정은 온데간데없이 사라지고, 선홍빛 눈동자에는 유열과 경멸이라는 두 가지 상반된 감정이 어려 있었다.',
+      );
+      era.println();
+
+      era.print(
+        '학원에서 가장 가까운 도장이 제1시험장이다. 테스트 내용이 트레이너의 업무와는 전혀 상관없어 보이지만, 선배 트레이너들은 이미 옷을 갈아입고 출발했다. 참가하겠습니까?',
+      );
+      era.printButton('（역시 그만두자.）（모집을 포기한다）', 1);
+      era.printButton('（……어쩌면 이게 절호의 기회일지도 몰라.）', 2);
+      ret.push((ret['select'] = await era.input()));
+      if (ret['select'] === 2) {
+        era.println();
+        await era.printAndWait(
+          '선발 테스트를 돌파한 자신의 모습을 상상하며, 당신은 도장으로 출발하기로 결심했다.',
+        );
+      }
+    }
+    return ret;
+  },
+
   // [번역 완료] rec_final
   async rec_final(ruby, you) {
     await ruby.say_as_passer_by_and_wait(
