@@ -5839,7 +5839,7 @@ module.exports = {
         era.println();
         await era.printAndWait('いや、言いづらい事情というより、問題は……');
         era.printButton('「生徒と一緒に居酒屋は、NGだろう」', 1);
-        era.printButton('「未成年と一緒に居酒屋は、違法だろう」', 2);
+        era.printButton('「미성년자와 함께 이자카야에 가는 건 불법이지」', 2);
         await era.input();
         await era.printAndWait([
           tachyon.get_colored_name(),
