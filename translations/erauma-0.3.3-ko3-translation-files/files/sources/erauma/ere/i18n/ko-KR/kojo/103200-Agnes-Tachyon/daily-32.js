@@ -3626,28 +3626,28 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ws_cook12
+  // [번역 완료] ws_cook12
   async ws_cook12(tachyon, you) {
-    await tachyon.say_and_wait('ん……');
+    await tachyon.say_and_wait('으음……');
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は今日、少し落ち着かない様子だった',
+      '은(는) 오늘 조금 안절부절못하는 모습이었다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は緊張して',
+      '은(는) 긴장한 채 ',
       tachyon.sex,
-      'に、何かあったのかと訊いた',
+      '에게 무슨 일이라도 있었는지 물었다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('…………ふん、何でもありませんわ');
+    await tachyon.say_and_wait('…………흥, 아무것도 아닐세.');
     era.println();
-    await era.printAndWait([tachyon.sex, 'は拗ねたように、大丈夫だと言った']);
-    await tachyon.say_and_wait('ぐぅ～～～～');
+    await era.printAndWait([tachyon.sex, '은(는) 토라진 듯 아무렇지도 않다고 말했다.']);
+    await tachyon.say_and_wait('꾸르르～～～～');
     await era.printAndWait([
-      'そのとき、あまりにも都合よく、',
+      '그때 마침 기가 막힌 타이밍에 ',
       tachyon.sex,
-      'の腹が大きな音を立てた',
+      '의 배에서 커다란 소리가 났다.',
     ]);
     era.println();
     await tachyon.say_and_wait('……………');
@@ -3655,73 +3655,73 @@ module.exports = {
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' はふと思い出した。先週、',
+      '은(는) 문득 떠올렸다. 지난주에 ',
       you.get_colored_name(),
-      ' は完全に',
+      '은(는) 완전히 ',
       tachyon.sex,
-      'の弁当を忘れていた',
+      '의 도시락을 잊어버린 것이다.',
     ]);
-    await era.printAndWait('まさか……');
+    await era.printAndWait('설마……');
     era.println();
     await tachyon.say_and_wait(
-      '…………とにかく、食事は最低限の活動エネルギーさえ保てれば足りますわ',
+      '…………어쨌든 식사란 최소한의 활동 에너지만 유지할 수 있으면 충분하네.',
     );
     era.println();
     await era.printAndWait([
       tachyon.sex,
-      'はまだ強がっている。',
+      '은(는) 여전히 강한 척하고 있었다.',
       you.get_colored_name(),
-      ' は慌てて',
+      '은(는) 황급히 ',
       tachyon.sex,
-      'に詫び、今日こそ忘れないと約束した',
+      '에게 사과하고 오늘만큼은 잊지 않겠다고 약속했다.',
     ]);
   },
 
-  // [번역 대상] ws_cook13
+  // [번역 완료] ws_cook13
   async ws_cook13(tachyon, you, callname) {
-    await tachyon.say_and_wait(['ふん、', callname, '、今日の薬ですわ']);
+    await tachyon.say_and_wait(['흠, ', callname, ', 오늘 먹을 약일세.']);
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は突然トレーナー室に押し入り、',
+      '은(는) 갑자기 트레이너실로 들이닥쳐 ',
       you.get_colored_name(),
-      ' に色の奇妙な——いや、その点に限ればいつもどおりの——薬を飲ませた',
+      '에게 색깔이 기묘한—— 아니, 그런 점에서는 늘 그렇듯한—— 약을 먹였다.',
     ]);
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は飲んだあと、間もなく眠りに落ちた',
+      '은(는) 약을 마신 뒤 얼마 지나지 않아 잠에 빠졌다.',
     ]);
     await era.printAndWait([
-      '夢の中で、',
+      '꿈속에서 ',
       you.get_colored_name(),
-      ' は砂漠を歩いていた。もう何日も飲まず食わずで、',
+      '은(는) 사막을 걷고 있었다. 며칠째 먹지도 마시지도 못한 채……',
     ]);
     await era.printAndWait([
-      '突然場面が変わり、夢の中の ',
+      '갑자기 장면이 바뀌었고 꿈속의 ',
       you.get_colored_name(),
-      ' は、誰かに泥状の栄養素を次々と押し込まれた。喉を通らないのに、',
+      '은(는) 누군가에게 진흙 같은 영양식을 계속 억지로 먹었다. 목으로 넘기기도 어려운데……',
     ]);
     await era.printAndWait([
-      '先ほどの砂漠の夢を思い出し、',
+      '방금 전 사막을 헤매던 꿈을 떠올리고 ',
       you.get_colored_name(),
-      ' は仕方なくそれを飲み込んだ…………',
+      '은(는) 어쩔 수 없이 그것을 삼켰다…………',
     ]);
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は夢から飛び起きた。眼前には ',
+      '은(는) 꿈에서 화들짝 깨어났다. 눈앞에는 ',
       tachyon.get_colored_name(),
-      ' の得意げな顔があった',
+      '의 의기양양한 얼굴이 있었다.',
     ]);
     era.println();
-    await tachyon.say_and_wait(['どうです、悪夢でした？ ', callname]);
+    await tachyon.say_and_wait(['어떤가, 악몽을 꿨나? ', callname]);
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は苦笑した。この薬の意味はだいたいわかった。今週こそ ',
+      '은(는) 쓴웃음을 지었다. 이 약이 무슨 의미인지는 대강 알겠다. 이번 주에는 반드시 ',
       tachyon.get_colored_name(),
-      ' の弁当を忘れないと、急いで誓った',
+      '의 도시락을 잊지 않겠다고 서둘러 다짐했다.',
     ]);
   },
 
@@ -3862,58 +3862,58 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ws_cook22
+  // [번역 완료] ws_cook22
   async ws_cook22(tachyon, you, callname, cook_times) {
     await era.printAndWait([
-      '昼休み、',
+      '점심시간에 ',
       you.get_colored_name(),
-      ' がデータを打っていると、トレーナー室の扉が突き飛ばされた',
+      '이(가) 데이터를 입력하고 있는데 트레이너실 문이 벌컥 열렸다.',
     ]);
     era.println();
-    await tachyon.say_and_wait([callname, '！ 私のご飯は！ 早く早く！']);
+    await tachyon.say_and_wait([callname, '! 내 밥은 어디 있나! 빨리, 빨리!']);
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は入るなり机に飛びつき、ごろごろ転がり始めた',
+      '은(는) 들어오자마자 책상 위로 뛰어올라 데굴데굴 구르기 시작했다.',
     ]);
     era.println();
-    await era.printAndWait('危ない危ない');
+    await era.printAndWait('위험해, 위험해!');
     await era.printAndWait([
       you.get_colored_name(),
-      ' は慌てて机上のパソコンを退け、',
+      '은(는) 황급히 책상 위의 컴퓨터를 치워 ',
       tachyon.get_colored_name(),
-      ' に落とされないようにした',
+      '에게 떨어뜨림을 당하지 않도록 했다.',
     ]);
     era.println();
     await tachyon.say_and_wait([
       '……',
       callname,
-      '！ もう一週間も弁当を作ってくれないんですの！ 餓死しそうですわ、早く、私の弁当は！',
+      '! 벌써 일주일이나 도시락을 만들어 주지 않았잖나! 굶어 죽겠네. 빨리, 내 도시락은 어디 있나!',
     ]);
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は袖を振り、怒って ',
+      '은(는) 소매를 휘두르며 화가 난 채 ',
       you.get_colored_name(),
-      ' の前で足を踏んだ。弾ければ割れそうな頬はフグのように膨らみ、とはいえ',
+      '의 앞에서 발을 쿵쿵 굴렀다. 터질 듯이 부푼 볼은 복어 같았지만……',
     ]);
-    era.printButton('「作っただろう？」', 1);
+    era.printButton('「만들어 줬잖아?」', 1);
     await era.input();
     if (cook_times < 20) {
-      await tachyon.say_and_wait('あんな手抜き、弁当と呼べますか！？');
+      await tachyon.say_and_wait('그렇게 대충 만든 걸 도시락이라고 할 수 있나!?');
     } else {
       await tachyon.say_and_wait(
-        '味の差はわかりませんけれど……直感が、いい加減に作ったと告げていますわ',
+        '맛의 차이는 모르겠지만…… 내 직감은 자네가 대충 만들었다고 말하는군.',
       );
     }
     era.printButton('「……」', 1);
     await era.input();
-    await tachyon.say_and_wait('今『面倒なやつだ』と思っていますわね？');
+    await tachyon.say_and_wait('방금 『귀찮은 녀석』이라고 생각했지?');
     await you.say_and_wait('……');
-    await you.say_and_wait('なぜバレた', true);
+    await you.say_and_wait('어떻게 알았지?', true);
     era.println();
     await tachyon.say_and_wait(
-      'とにかく明日は弁当を見せなさい！ でないと後悔しますわよ',
+      '어쨌든 내일은 반드시 도시락을 보여 주게! 그러지 않으면 후회할 걸세.',
     );
   },
 
