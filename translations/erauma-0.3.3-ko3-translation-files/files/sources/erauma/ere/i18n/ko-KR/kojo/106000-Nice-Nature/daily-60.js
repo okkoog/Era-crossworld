@@ -535,49 +535,49 @@ module.exports = {
     }
   },
 
-  // [번역 대상] talk
+  // [번역 완료] talk
   async talk(nature, callname, self_call) {
     const buffer = [];
     switch (era.get('cflag:60:干劲')) {
       case -2:
         buffer.push(
-          () => nature.say_and_wait('あー……体が……動かない……'),
+          () => nature.say_and_wait('아아…… 몸에…… 기운이 하나도 안 나……'),
           () =>
             nature.say_and_wait(
-              'あーだめ！ 頭の中が悪いことばっかり……早く落ち着かないと……',
+              '아, 안 돼! 머릿속에 안 좋은 생각만 가득해…… 빨리 진정해야 하는데……',
             ),
         );
         break;
       case -1:
         buffer.push(
-          () => nature.say_and_wait('うーん——なんか気力がわかないね。'),
+          () => nature.say_and_wait('으음—— 왠지 의욕이 좀 안 생기네.'),
           () =>
-            nature.say_and_wait('全身どこかしっくりこない……休んだほうがいい？'),
+            nature.say_and_wait('몸 여기저기가 찌뿌둥한데…… 좀 쉬는 게 나을까?'),
         );
         break;
       case 0:
         buffer.push(
           () =>
             nature.say_and_wait(
-              `こんにちは、${callname}。今日のトレーニングは？`,
+              `안녕, ${callname}. 오늘 훈련 내용은 뭐야?`,
             ),
           () =>
             nature.say_and_wait(
-              `トレーニングでもレースでもその他でも、${callname} に任せるよ～ できる範囲でやるから。`,
+              `훈련이든 레이스든 뭐든 ${callname}의 판단에 맡길게~ 내가 할 수 있는 범위에서 해 볼 테니까.`,
             ),
-          () => nature.say_and_wait(`はにゃ——あ、${callname}。今日の予定は？`),
+          () => nature.say_and_wait(`하아암—— 아, ${callname}. 오늘 일정은 어떻게 돼?`),
         );
         break;
       case 1:
         buffer.push(
           () =>
             nature.say_and_wait(
-              'ん～いい感じ。この調子なら……なんでもない！ はははは……',
+              '음~ 느낌이 좋은데? 이 기세라면 혹시…… 아무것도 아냐! 하하하하……',
             ),
-          () => nature.say_and_wait('いい天気だね。今日はなにがあるかな？'),
+          () => nature.say_and_wait('정말 좋은 날씨네. 오늘은 무슨 일이 생길까?'),
           () =>
             nature.say_and_wait(
-              `おっ～なにかいいこと起きそう？ どう思う、${callname}？`,
+              `오~ 왠지 좋은 일이 생길 것 같은 예감이 들어. ${callname}은(는) 어때?`,
             ),
         );
         break;
@@ -585,15 +585,15 @@ module.exports = {
         buffer.push(
           () =>
             nature.say_and_wait(
-              'おっす～今日も全力で——冗談。でもできる範囲では頑張るよ。',
+              '오쓰~! 오늘도 전력으로 가 보자고—— 농담이야. 뭐, 가능한 범위에서 최선을 다해 볼게.',
             ),
           () =>
             nature.say_and_wait(
-              `${self_call}、絶好調！ いっそ二周走っちゃう？ 結果は期待しないでね。`,
+              `${self_call}, 컨디션 최고! 이대로 가볍게 두 바퀴 뛰어 볼까? 결과에 너무 큰 기대는 하지 말고.`,
             ),
           () =>
             nature.say_and_wait(
-              `おっ？ ${callname}、おはよ～ 朝ごはんか散歩、一緒にどう？ おごるよ？`,
+              `오? ${callname}, 안녕~ 같이 아침이라도 먹거나 산책할래? 내가 쏠게!`,
             ),
         );
     }
