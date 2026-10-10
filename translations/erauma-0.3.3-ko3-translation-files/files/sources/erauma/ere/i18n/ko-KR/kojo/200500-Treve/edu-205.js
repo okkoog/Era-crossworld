@@ -1875,7 +1875,7 @@ module.exports = {
         await era.input();
         await treve.say_and_wait(`つまり先に恋人になるってことね。感動した！`);
         await treve.say_and_wait(
-          `周りの人もきっと理解して受け入れてくれる！さもなくば、子どもが本当に苦しむわ！`,
+          `주변 사람들도 분명 이해하고 받아들여 줄 거야! 그렇지 않으면 아이가 정말 고통받을 거야!`,
         );
         era.printButton(`「私はヨーロッパ人じゃない。」`, 1);
         await era.input();
