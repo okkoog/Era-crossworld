@@ -382,7 +382,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_arim_kin_a
+  // [번역 완료] before_arim_kin_a
   before_arim_kin_a: (() => {
     const title = '最終実験、準備完了';
     /**
@@ -394,74 +394,74 @@ module.exports = {
      * @param {PrintedSpan} call_25 アグネスタキオンのマンハッタンカフェへの呼び方
      */
     const f = async (tachyon, coffee, you, callname, call_25) => {
-      await era.printAndWait('その日が来ても、すべては意外なほど穏やかだった');
+      await era.printAndWait('그날이 찾아왔지만 모든 것은 놀라우리만큼 평온했다.');
       await era.printAndWait([
-        '前夜の安眠のおかげか、今日は格別に調子のいい ',
+        '어젯밤 푹 잔 덕분인지 오늘 유난히 컨디션이 좋은 ',
         you.get_colored_name(),
-        ' は、朝早く起きて ',
+        '은(는) 일찍 일어나 ',
         tachyon.get_colored_name(),
-        ' に紅茶を淹れた',
+        '에게 홍차를 끓여 주었다.',
       ]);
-      await era.printAndWait('陽光が室内に落ち、埃が光の中で舞う');
+      await era.printAndWait('햇살이 방 안에 쏟아지고 먼지가 빛 속에서 춤췄다.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は実験をしていない。いつものように朝刊を読んでいるだけだ',
+        '은(는) 실험하지 않았다. 평소처럼 조간신문을 읽을 뿐이다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' も光を放つわけではなく、静かに紅茶を味わっている',
+        '역시 빛을 내뿜지 않고 조용히 홍차를 음미하고 있었다.',
       ]);
       await era.printAndWait(
-        '二人は研究室で、嵐の前の最後の静けさを味わっていた',
+        '두 사람은 연구실에서 폭풍 전 마지막 고요를 즐겼다.',
       );
       era.println();
       await you.say_as_passer_by_and_wait('記者A', [
-        'タキオン',
+        '타키온 ',
         tachyon.adult_sex_title,
-        '、今回の有馬記念で特に意識している相手はいますか',
+        ', 이번 아리마 기념에서 특별히 의식하는 상대가 있나?',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '……ええ、数日前に現れましたわ。',
+        '……그래, 며칠 전에 나타났네.',
         coffee.get_colored_name(),
         '、',
         call_25,
-        '……おそらく、ライバルと呼べる存在ですわね',
+        '……아마 라이벌이라 부를 만한 존재일 걸세.',
       ]);
-      await you.say_as_passer_by_and_wait('記者A', 'おそらく……？');
-      await tachyon.say_and_wait('ええ、だいたいそういうことですわ');
+      await you.say_as_passer_by_and_wait('記者A', '아마……?');
+      await tachyon.say_and_wait('그래, 대충 그런 뜻일세.');
       era.println();
       await era.printAndWait([
-        'コースへ向かう前、',
+        '코스로 향하기 전 ',
         you.get_colored_name(),
-        ' はふと、先日の取材で ',
+        '은(는) 문득 얼마 전 취재에서 ',
         tachyon.get_colored_name(),
-        ' が言っていた言葉を思い出した',
+        '이(가) 했던 말을 떠올렸다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '、物理学の二大暗雲、聞いたことがありますの？',
+        ', 물리학의 두 먹구름에 대해 들어 본 적 있나?',
       ]);
-      await tachyon.say_and_wait('ない？ 大丈夫ですわ。ただの話の枕ですもの');
+      await tachyon.say_and_wait('없다고? 괜찮네. 그냥 서두로 꺼낸 이야기니까.');
       await tachyon.say_and_wait(
-        'ケルヴィン卿はこう言ったとされていますわ。物理学の大厦はすでに成った。ただ、空には小さな雲が二つ残っている、と',
+        '켈빈 경은 이렇게 말했다고 전해지지. 물리학이라는 거대한 건물은 완성되었지만 하늘에는 작은 구름 두 개가 남았다고.',
       );
       await tachyon.say_and_wait(
-        'ところが誰も予想しなかった。その小さな雲二つが、量子力学と相対性理論という近代物理の双璧を引き出したのです……',
+        '하지만 누구도 예상하지 못했네. 그 작은 구름 두 개가 양자역학과 상대성이론이라는 현대물리학의 두 기둥을 낳으리라고는……',
       );
       await tachyon.say_and_wait([
-        'もちろん、この逸話の八割は後世の附会でしょう。ですが……言いたいのは、',
+        '물론 이 일화의 팔 할은 후세의 각색일 걸세. 다만…… 내 말은 ',
         call_25,
-        ' こそが、その雲だということですわ',
+        '이(가) 바로 그 구름이라는 뜻이네.',
       ]);
       await tachyon.say_and_wait([
-        '私の理論では、',
+        '내 이론에서 ',
         call_25,
-        ' は最後に残ったピース……では、その先は？',
+        '은(는) 마지막으로 남은 조각이지…… 그렇다면 그 다음은?',
       ]);
       await tachyon.say_and_wait(
-        'この雲は、相対性理論ほどの衝撃を私にくれますの？ 見せて……くださいまし',
+        '이 구름이 상대성이론만큼의 충격을 내게 가져다줄까? 보여…… 주게.',
       );
     };
     f.title = title;
@@ -1014,7 +1014,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_takz_kin_a
+  // [번역 완료] before_takz_kin_a
   before_takz_kin_a: (() => {
     const title = '万衆一心';
     /**
@@ -1023,62 +1023,62 @@ module.exports = {
      */
     const f = async (tachyon, you) => {
       await era.printAndWait([
-        '阪神競馬場に着いたころ、場内はすでに沸き返っていた',
+        '한신 경마장에 도착했을 때는 이미 경기장이 열기로 들끓고 있었다.',
       ]);
       era.println();
       await you.say_as_passer_by_and_wait('観客A', [
-        'やっぱり本命は ',
+        '역시 우승 후보는 ',
         tachyon.get_colored_name(),
-        ' だな',
+        '이지.',
       ]);
       await you.say_as_passer_by_and_wait('観客B', [
         tachyon.get_colored_name(),
-        '？ あれは……前に……',
+        '? 아, 저건…… 전에……',
       ]);
       await you.say_as_passer_by_and_wait('観客C', [
-        'その言い方で大阪杯を見てないのがわかる。あんな走りができる',
+        '그런 말만 봐도 오사카배를 안 봤다는 걸 알겠군. 그렇게 달릴 수 있는 ',
         tachyon.uma_sex_title,
-        'が悪人なわけないだろ！',
+        '이(가) 나쁜 녀석일 리가 없잖아!',
       ]);
       await you.say_as_passer_by_and_wait(
         '観客D',
-        '人格走り法論はもういい……でも、確かに他と違う走りだ',
+        '인격과 주법에 관한 논쟁은 됐고…… 하지만 확실히 다른 선수들과는 다른 달리기야.',
       );
       await you.say_as_passer_by_and_wait('観客E', [
-        '頑張れ！ 大阪杯の走りをもう一度見せてくれ！',
+        '힘내라! 오사카배에서 보여 준 달리기를 다시 보여 줘!',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'おやおや……人気ですわね。しかも話題は大阪杯ばかり……去年のレースは、それほど退屈でしたか？',
+        '이런…… 인기가 많군. 게다가 오사카배 이야기뿐이라니…… 작년 레이스는 그렇게 지루했던 건가?',
       );
-      era.printButton('「去年ももちろん精彩だった」', 1);
-      era.printButton('「大阪杯が特に精彩だっただけだ」', 2);
+      era.printButton('「작년에도 물론 멋있었지.」', 1);
+      era.printButton('「오사카배가 특히 멋있었을 뿐이야.」', 2);
       await era.input();
       await era.printAndWait([
-        '去年の ',
+        '작년의 ',
         tachyon.get_colored_name(),
-        ' の走りは、光の眩しさのほかに、儚さがまとわりついていた',
+        '의 달리기에는 눈부신 빛과 더불어 덧없음이 감돌았다.',
       ]);
       await era.printAndWait([
-        'だから',
+        '그래서 ',
         tachyon.sex,
-        'のレースを見終わると、驚嘆より心配が先に立った',
+        '의 레이스를 보고 나면 감탄보다 걱정이 앞섰다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'が、そのまま光になって消えてしまわないかと',
+        '이(가) 그대로 빛이 되어 사라져 버리지 않을까 하고.',
       ]);
-      await era.printAndWait('その儚さが消えた今');
+      await era.printAndWait('이제 그 덧없음이 사라진 지금,');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の走りは、芸術と呼べる',
+        '의 달리기는 예술이라 부를 만하다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……一応、褒め言葉として受け取っておきますわ。では、この空気は二度目の実験にちょうどいい',
+        '……일단 칭찬으로 받아들이겠네. 그럼 이런 분위기는 두 번째 실험에 딱 좋겠군.',
       );
       await tachyon.say_and_wait(
-        '大阪杯では……途中で確かめきれませんでした。今はG1の舞台、応援するファンもいます。ふふ、どこまで行けるかしら',
+        '오사카배에서는…… 중간에 끝까지 확인하지 못했지. 지금은 G1 무대고 응원하는 팬도 있네. 후후, 어디까지 갈 수 있을까.',
       );
     };
     f.title = title;
