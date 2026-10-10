@@ -4,7 +4,7 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/106000-Nice-Nature/edu-60"),
 
-  // [번역 대상] arim_kin_classical
+  // [번역 완료] arim_kin_classical
   arim_kin_classical: (() => {
     const title = '遠望';
     /**
@@ -12,90 +12,90 @@ module.exports = {
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (nature, you) => {
-      await nature.say_and_wait('勝、勝っちゃった……！ 『有馬記念』で勝った……');
-      era.printButton('「おめでとう！」', 1);
+      await nature.say_and_wait('이, 이겨 버렸어……! 『아리마 기념』에서 우승했어……');
+      era.printButton('「축하해!」', 1);
       await era.input();
-      await nature.say_and_wait('トレーナー！ 聞いて、あたし……！');
-      await nature.say_and_wait('全部聞こえた。みんなが応援してくれる声！');
-      await nature.say_and_wait('嘘みたいでしょ？ でも、ほんと！');
+      await nature.say_and_wait('트레이너! 들어 봐, 나……!');
+      await nature.say_and_wait('전부 들렸어. 모두가 응원하는 목소리!');
+      await nature.say_and_wait('거짓말 같지? 하지만 진짜야!');
       await nature.say_and_wait(
-        'いつもは自分の心拍と呼吸と、風の音しか聞こえないのに。',
+        '평소에는 내 심장 소리와 숨소리, 바람 소리밖에 들리지 않았는데.',
       );
       await nature.say_and_wait(
-        '今日は……はっきり聞こえた。『ネイチャ、頑張れ』って声！',
+        '오늘은…… 똑똑히 들렸어. 『네이처, 힘내!』라고 외치는 소리가!',
       );
       await nature.say_and_wait(
-        'だから体力が尽きそうなときも踏ん張れた。ほんと……楽しく走れた！',
+        '그래서 체력이 바닥날 것 같을 때도 버틸 수 있었어. 정말…… 즐겁게 달렸어!',
       );
       await era.printAndWait(
-        `ナイスネイチャと応援してくれる人たちの間には深い絆がある。${nature.sex}にとって、今日の『有馬記念』は特別な一戦だったようだ。`,
+        `나이스 네이처와 응원하는 사람들 사이에는 깊은 유대가 있다. ${nature.sex}에게 오늘의 『아리마 기념』은 특별한 경기였던 듯하다.`,
       );
-      await nature.say_and_wait('まだ走りたい。来年も……この舞台に立ちたい！');
-      await nature.say_and_wait('……あー、バカ！ 焦りすぎ！');
-      await nature.say_and_wait('でもほんと楽しかったんだよ……（もじもじ）');
+      await nature.say_and_wait('아직 더 달리고 싶어. 내년에도…… 이 무대에 서고 싶어!');
+      await nature.say_and_wait('……아, 바보야! 너무 앞서갔잖아!');
+      await nature.say_and_wait('하지만 정말 즐거웠단 말이야…… (우물쭈물)');
       await era.printAndWait(
-        'たしかに、今から来年の『有馬記念』を目標にするのは少し早い。その間に今の勢いを保てるレースを入れるなら……',
+        '확실히 지금부터 내년 『아리마 기념』을 목표로 삼는 건 조금 이르다. 그 사이 지금의 기세를 유지할 레이스를 넣는다면……',
       );
-      era.printButton('「『宝塚記念』もあるよ！」', 1);
-      await era.input();
-      await nature.say_and_wait(
-        '『宝塚記念』……ファン投票で出走者を決めるレースだよね？ 『有馬記念』と同じ……',
-      );
-      await nature.say_and_wait(
-        'あたし、こういうレースのほうが力出せるかも。うん、出たい……『宝塚記念』！',
-      );
-      await era.printAndWait(
-        `とはいえ、そのレースまでまだ少し時間がある。${you.name}とナイスネイチャは、その間にいろいろなレースに出て、『宝塚記念』へ向けて成長していくことにした。`,
-      );
-      await nature.say_and_wait(
-        'あたしたち、焦りすぎ？ ここで次のレースまで決めちゃうなんて──',
-      );
-      await era.printAndWait(
-        '商店街のみんな「ネイチャ──！ いい走りだったよ──！」',
-      );
-      await era.printAndWait(
-        `商店街のみんな「世界一の${nature.uma_sex_title}だ！ あたしたちの誇りだよ──！」`,
-      );
-      await nature.say_and_wait(
-        '待って、み、みんな……！ 声大きすぎ、ここ店の中じゃないよ！',
-      );
-      await nature.say_and_wait('それに世界一とか大げさ！ もう、恥ずかしい！');
-      await nature.say_and_wait('もう……えへへ。');
-      era.printButton('「今は素直に喜ぼう」', 1);
+      era.printButton('「『다카라즈카 기념』도 있어!」', 1);
       await era.input();
       await nature.say_and_wait(
-        'それがあたしにはいちばん難しいんだよ！ わかってるでしょ。でも、今は……ね。うん、そうだね。',
+        '『다카라즈카 기념』…… 팬 투표로 출전 선수를 정하는 레이스 맞지? 『아리마 기념』처럼……',
       );
       await nature.say_and_wait(
-        '今のうちに……思いっきり喜ばないと。ここで全部終わるわけじゃないから。',
+        '나, 이런 레이스에서 더 힘을 낼 수 있을지도 몰라. 응, 출전하고 싶어…… 『다카라즈카 기념』!',
       );
       await era.printAndWait(
-        `ナイスネイチャは小さくそう呟き、『有馬記念』を共に走った${nature.uma_sex_title}たちを見つめる……`,
+        `하지만 그 레이스까지는 아직 시간이 조금 남았다. ${you.name}와 나이스 네이처는 그동안 여러 레이스에 출전하며 『다카라즈카 기념』을 향해 성장하기로 했다.`,
       );
-      await nature.say_and_wait('今日も……いびつなトロフィー、用意してある？');
-      era.printButton('「もちろん！」', 1);
+      await nature.say_and_wait(
+        '우리 너무 앞서가나? 여기서 다음 레이스까지 정하다니──',
+      );
+      await era.printAndWait(
+        '상점가 사람들 「네이처──! 멋진 달리기였어──!」',
+      );
+      await era.printAndWait(
+        `상점가 사람들 「세계 최고의 ${nature.uma_sex_title}야! 우리의 자랑이야──!」`,
+      );
+      await nature.say_and_wait(
+        '잠깐, 모, 모두들……! 너무 시끄러워, 여긴 가게 안도 아니잖아!',
+      );
+      await nature.say_and_wait('그보다 세계 최고라니 너무 과장하잖아! 정말, 부끄러워!');
+      await nature.say_and_wait('정말이지…… 에헤헤.');
+      era.printButton('「지금은 마음껏 기뻐하자.」', 1);
       await era.input();
       await nature.say_and_wait(
-        '……えへへ。ありがとう。じゃあ……先に反省会だね。',
+        '그게 나한테는 제일 어렵다니까! 알고 있지? 하지만 지금은…… 그래. 네 말이 맞아.',
       );
       await nature.say_and_wait(
-        'テイオーとの差ばかり気にして、他のライバルを忘れてた。',
-      );
-      await nature.say_and_wait(
-        '今日のレースでそれがわかった。少しでも気を抜けば、負けてた。',
-      );
-      await nature.say_and_wait(
-        '今は勝てても……これから周りの選手はもっと強くなる。',
-      );
-      await nature.say_and_wait(
-        'このままじゃだめ。テイオーに勝つ、って言うだけじゃ足りない。',
+        '지금은…… 마음껏 기뻐해야겠지. 여기서 모든 게 끝나는 것도 아니니까.',
       );
       await era.printAndWait(
-        `世代を超えて競う『有馬記念』に出たことで、${nature.sex}の視野が広がった……成長の証だ！`,
+        `나이스 네이처는 나지막이 중얼거리며 『아리마 기념』에서 함께 달렸던 ${nature.uma_sex_title}들을 바라보았다……`,
       );
-      await nature.say_and_wait('周りの選手のこと、もっと知らないと……！');
+      await nature.say_and_wait('오늘도…… 울퉁불퉁한 트로피, 준비해 뒀어?');
+      era.printButton('「물론이지!」', 1);
+      await era.input();
+      await nature.say_and_wait(
+        '……에헤헤. 고마워. 그럼…… 먼저 반성회부터 하자.',
+      );
+      await nature.say_and_wait(
+        '테이오와의 차이에만 신경 쓰다가 다른 라이벌들을 잊고 있었어.',
+      );
+      await nature.say_and_wait(
+        '오늘 레이스에서 그걸 깨달았지. 조금이라도 방심했다면 졌을 거야.',
+      );
+      await nature.say_and_wait(
+        '지금은 이겼지만…… 앞으로 주변 선수들은 더 강해질 테니까.',
+      );
+      await nature.say_and_wait(
+        '이대로는 안 돼. 테이오에게 이기겠다고 말하는 것만으로는 부족해.',
+      );
+      await era.printAndWait(
+        `세대를 넘어 경쟁하는 『아리마 기념』에 출전하면서 ${nature.sex}의 시야가 넓어졌다…… 성장했다는 증거다!`,
+      );
+      await nature.say_and_wait('다른 선수들에 관해서도 더 많이 알아야겠어……!');
       if (era.get('love:60') >= 75) {
-        era.printButton('「それから、いつものあれ——」', 1);
+        era.printButton('「그리고 늘 하던 그것도——」', 1);
         await era.input();
       }
     };
@@ -1599,9 +1599,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] takz_kin
+  // [번역 완료] takz_kin
   takz_kin: (() => {
-    const title = '届いた指先';
+    const title = '닿은 손끝';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} mcqueen メジロマックイーン
@@ -1609,66 +1609,66 @@ module.exports = {
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (nature, mcqueen, ryan, you) => {
-      await nature.say_and_wait('──よかった……！ あたし……勝った！');
-      era.printButton('「すごい！」', 1);
+      await nature.say_and_wait('──다행이다……! 나…… 이겼어!');
+      era.printButton('「대단해!」', 1);
       await era.input();
-      await nature.say_and_wait('どうしてだろ。今までよりずっと嬉しい……');
-      era.printButton('「必死に走って、ようやく掴んだ勝ちだからだ」', 1);
+      await nature.say_and_wait('왜일까. 지금까지보다 훨씬 기뻐……');
+      era.printButton('「필사적으로 달려서 마침내 손에 넣은 승리니까.」', 1);
       await era.input();
-      await nature.say_and_wait('うん、そうだね。');
+      await nature.say_and_wait('응, 그렇네.');
       await nature.say_and_wait(
-        '『どうせあたしみたいな』とか、『無理だよ』とか……',
+        '『어차피 나 같은 건』이라든가 『무리야』라든가……',
       );
       await nature.say_and_wait(
-        '今日はそういう考え、全然浮かばなかった。ただ、追いつくって心のなかで叫び続けて……',
+        '오늘은 그런 생각이 전혀 안 들었어. 그저 따라잡겠다고 마음속으로 계속 외치면서……',
       );
       await mcqueen.say_and_wait(
-        '──印象的な走りでしたよ、ネイチャ。また勝負できるなら、次は負けません。',
+        '──인상적인 달리기였어요, 네이처. 다시 승부할 수 있다면 다음에는 지지 않겠어요.',
       );
       await ryan.say_and_wait(
-        'うんうん！ あたしも鍛え直しだね！ ありがとう、ネイチャ！',
+        '맞아, 맞아! 나도 다시 단련해야겠어! 고마워, 네이처!',
       );
-      await nature.say_and_wait('そんな、こっちこそ……ありがとう！');
+      await nature.say_and_wait('아니, 나야말로…… 고마워!');
       era.drawLine();
       await nature.say_and_wait(
-        `あの二人、最後まで爽やかだったね。${mcqueen.couple_title}はもう先を見てる。`,
+        `저 둘, 끝까지 상쾌했지. ${mcqueen.couple_title}는 벌써 앞을 바라보고 있어.`,
       );
       await nature.say_and_wait(
-        '負けてもすぐ未来を見る。次の段階へ手を伸ばして、次は絶対勝つって思ってる。',
+        '패배해도 곧바로 미래를 바라봐. 다음 단계에 손을 뻗고 다음에는 반드시 이기겠다고 생각하지.',
       );
-      await nature.say_and_wait('……テイオーもそう。だからあんなに強い。');
+      await nature.say_and_wait('……테이오도 그래. 그래서 그렇게 강한 거야.');
       await nature.say_and_wait(
-        'あたしは勝手に自分の限界を決めてた。どれだけ頑張っても、ここまで、って。',
-      );
-      await nature.say_and_wait(
-        '3着もそれが理由。これ以上は無理、って……自分を諦めてた。',
+        '나는 멋대로 내 한계를 정해 버렸어. 아무리 노력해도 여기까지라고.',
       );
       await nature.say_and_wait(
-        'でも、それじゃだめ。光に触りたいなら、自分を信じ続けないと。',
+        '3착도 그랬기 때문이야. 더 이상은 무리라고…… 스스로 포기했던 거지.',
       );
       await nature.say_and_wait(
-        '1着を取る覚悟で取った3着なら、きっと……これからに繋がる。',
+        '하지만 그래서는 안 돼. 빛에 닿고 싶다면 계속 나를 믿어야 해.',
+      );
+      await nature.say_and_wait(
+        '1착을 각오하고 달려서 얻은 3착이라면 분명…… 다음으로 이어질 거야.',
       );
       await era.printAndWait(
-        `ナイスネイチャも前を見ている。今なら大舞台に上げても、${nature.sex}は恐れずに挑めるだろう。`,
+        `나이스 네이처도 앞을 바라보고 있다. 지금이라면 큰 무대에 올라도 ${nature.sex}는 두려워하지 않고 도전할 것이다.`,
       );
       await era.printAndWait(
-        `次のあのレースなら、今の${nature.sex}の自信と輝きを、もっと引き出せる……！`,
+        `다음 그 레이스라면 지금 ${nature.sex}의 자신감과 빛을 더욱 끌어낼 수 있을 것이다……!`,
       );
-      era.printButton('「次は『天皇賞（秋）』に挑む？」', 1);
+      era.printButton('「다음에는 『텐노상 (가을)』에 도전해 볼래?」', 1);
       await era.input();
       await nature.say_and_wait('『天皇賞（秋）』……！');
-      await nature.say_and_wait('あたしが……歴史と伝統のある『天皇賞』に？');
-      await nature.say_and_wait('……だめだめ。なんで引いてるのあたし。');
+      await nature.say_and_wait('내가…… 역사와 전통이 있는 『텐노상』에?');
+      await nature.say_and_wait('……안 돼, 안 돼. 내가 왜 주눅 드는 거야.');
       await nature.say_and_wait(
-        'こういうとき……資格があるか疑っちゃだめ。出る！ 自分を鼓舞しないと！',
+        '이럴 때…… 자격이 있는지 의심하면 안 되지. 나가겠어! 스스로 기운을 내야지!',
       );
-      await nature.say_and_wait('行こ。秋の大舞台へ……！');
+      await nature.say_and_wait('가자. 가을의 큰 무대로……!');
       await era.printAndWait(
-        `──こうして、${you.name}とナイスネイチャは中距離最強を争う『天皇賞（秋）』への挑戦を決めた！`,
+        `──그렇게 ${you.name}와 나이스 네이처는 중거리 최강을 다투는 『텐노상 (가을)』에 도전하기로 했다!`,
       );
       if (era.get('love:60') >= 75) {
-        era.printButton('「それから、いつものあれ——」', 1);
+        era.printButton('「그리고 늘 하던 그것도——」', 1);
         await era.input();
       }
     };
