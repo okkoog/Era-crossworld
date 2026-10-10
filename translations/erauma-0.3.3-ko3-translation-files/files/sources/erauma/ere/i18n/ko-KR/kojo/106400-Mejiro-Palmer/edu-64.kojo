@@ -3953,7 +3953,7 @@ summer_middle_2:
             - 「부탁할게……」
       # 馬跳び
 
-# [번역 대상] summer_sex_end
+# [번역 완료] summer_sex_end
 summer_sex_end:
   - color: %COLOR%
     content:
@@ -4795,7 +4795,7 @@ s_arim_kin_win_clothe46:
                 - 「부탁할게, 크리스마스의 %SELF_CALL%니까」
             # 馬跳びへ
 
-# [번역 대상] ak_c46_hug_sex_end
+# [번역 완료] ak_c46_hug_sex_end
 ak_c46_hug_sex_end:
   - color: %COLOR%
     content:
@@ -4811,13 +4811,13 @@ ak_c46_hug_sex_end:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「あたしはトレーナー……あたしは%YOURNAME%の1着！」
+      - 「난 트레이너의…… 난 %YOURNAME%의 1착이야!」
   - 가볍게 제자리걸음을 하며 준비가 완벽함을 증명해 보였다.
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「これから、ううん、一生よろしくね、%YOURNAME%！」
+      - 「앞으로도, 아니 평생 잘 부탁해, %YOURNAME%!」
 
 # [번역 완료] ak_c46_kiss_sex_end
 ak_c46_kiss_sex_end:
