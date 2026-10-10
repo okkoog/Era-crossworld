@@ -1874,60 +1874,60 @@ module.exports = {
     );
   },
 
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(tachyon, you, callname, cook_times) {
     if (cook_times < 10) {
       await tachyon.say_and_wait(
-        '……不味い。全部レトルトの既製品、味付けは香料と化学調味料ばかり。普段の薬が足りないとでも？ こんなものを私に食べさせるなんて',
+        '……맛없군. 전부 레토르트 기성품이고 향료와 화학조미료로 맛만 냈잖나. 평소 먹는 약으로도 부족하다고 생각하는 건가? 이런 걸 내게 먹이다니.',
       );
       await era.printAndWait([
-        '料理が出た瞬間から ',
+        '요리가 나오자마자 ',
         tachyon.get_colored_name(),
-        ' に頭から尻尾まで酷評された。気晴らしのつもりが、かえって',
+        '에게 머리부터 꼬리까지 혹평을 들었다. 기분을 전환하려던 것이 도리어 ',
         tachyon.sex,
-        'の機嫌を悪くしてしまった。',
+        '의 기분만 망쳐 버렸다.',
       ]);
-      await tachyon.say_and_wait('ただ……このデザートは悪くありませんわ');
-      await era.printAndWait('え……歯が痛くなるほど甘いプリン？ 本当か');
+      await tachyon.say_and_wait('다만…… 이 디저트는 나쁘지 않군.');
+      await era.printAndWait('뭐…… 이가 아플 만큼 달콤한 푸딩이라고? 정말인가?');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の好みを、少し掴んだ気がした',
+        '의 취향을 조금은 알게 된 것 같았다.',
       ]);
     } else {
       const buffer = [
         async () => {
           await tachyon.say_and_wait([
-            'ねえ ',
+            '이보게, ',
             callname,
-            '……外食に連れてきてくれるのはありがたいですけれど、あなたにも及ばない料理をわざわざ食べに来る意味は何ですの？',
+            '……외식하러 데려와 주는 건 고맙지만, 자네 요리보다도 못한 음식을 일부러 먹으러 올 필요가 있는 건가?',
           ]);
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は困惑した目で ',
+            '은(는) 어리둥절한 눈으로 ',
             you.get_colored_name(),
-            ' を見た',
+            '을(를) 바라보았다.',
           ]);
         },
         async () => {
           await tachyon.say_and_wait([
-            '味は悪くありませんわ。でも ',
+            '맛은 나쁘지 않네. 하지만 ',
             callname,
-            ' のと比べると……何かが足りない……ええ、そうですわ。甘さが足りません',
+            '의 요리와 비교하면…… 뭔가 부족해…… 아, 그렇지. 단맛이 부족하군.',
           ]);
           await tachyon.say_and_wait([
-            'これ以上砂糖を取ったら糖尿病、ですって？ 心配いりませんわ。',
+            '설탕을 더 먹으면 당뇨병에 걸린다고? 걱정할 필요 없네.',
             tachyon.uma_sex_title,
-            'の代謝がなんとかしますもの',
+            '의 신진대사가 알아서 해결해 줄 테니까.',
           ]);
         },
         async () => {
           await era.printAndWait(
-            '紅焼肉、酢豚、和菓子、致死量まで砂糖を入れた紅茶、締めは蜂蜜プリン',
+            '홍샤오러우, 탕수육, 화과자, 치사량에 가까울 만큼 설탕을 넣은 홍차, 그리고 마무리는 꿀 푸딩.',
           );
-          await tachyon.say_and_wait([callname, '？ 食べないのですか？']);
-          await you.say_and_wait('……見ているだけで歯が痛い。遠慮する');
+          await tachyon.say_and_wait([callname, '? 먹지 않는 건가?']);
+          await you.say_and_wait('……보기만 해도 이가 아프군. 사양하겠어.');
         },
       ];
       await get_random_entry(buffer)();
@@ -2150,72 +2150,72 @@ module.exports = {
     }
   },
 
-  // [번역 대상] office_study
+  // [번역 완료] office_study
   async office_study(tachyon, callname) {
     const buffer = [
       async () => {
         await tachyon.say_and_wait([
-          'ああ、',
+          '아아, ',
           callname,
-          '、この章、指導してもらえますかしら？',
+          ', 이 단원을 좀 가르쳐 주겠나?',
         ]);
         await tachyon.say_and_wait(
-          '『タキオンにもわからないことがあるなんて』ですって？ 褒めてはいますけど、褒めすぎですわ。自分の無知の大きさくらい、わきまえていますもの。',
+          '『타키온도 모르는 게 있다니』라고? 칭찬인 건 알겠지만 너무 과하군. 나도 내가 모르는 게 얼마나 많은지는 알고 있으니까.',
         );
       },
       async () => {
         await tachyon.say_and_wait([
-          'ああ、',
+          '아아, ',
           callname,
-          '、こちらの話、教えてくれますかしら？',
+          ', 이것 좀 알려 주겠나?',
         ]);
         await tachyon.say_and_wait(
-          'ええ、この章ですわ。科学倫理。なぜかいつも頭に残らないのよ……不思議ですわね……',
+          '그래, 이 단원 말일세. 과학 윤리. 어째서인지 도무지 머릿속에 들어오질 않아…… 신기한 일이군……',
         );
       },
       async () => {
         await tachyon.say_and_wait(
-          '試験のために学ぶ知識に、本当に意味があるのかしら？',
+          '시험을 위해 배우는 지식에 정말 의미가 있는 걸까?',
         );
         await tachyon.say_and_wait([
-          '私の言いたいことはわかりますわね、',
+          '내 말이 무슨 뜻인지 알겠지, ',
           callname,
           '。',
         ]);
         await tachyon.say_and_wait(
-          '生活で一切使わないものを学んでも、無駄ですわ。',
+          '실생활에서 전혀 쓰이지 않는 걸 배워 봤자 쓸모없지.',
         );
         await tachyon.say_and_wait(
-          'だから倫理だ道徳だといった、古臭い堅苦しい話は、学ばなくても構いませんでしょう。',
+          '그러니 윤리니 도덕이니 하는 고리타분한 얘기는 배우지 않아도 되지 않겠나?',
         );
-        await tachyon.say_and_wait('……だめですの？');
+        await tachyon.say_and_wait('……안 된다고?');
       },
       async () => {
         await tachyon.say_and_wait([
-          '地理？ いいえ、',
+          '지리? 아니, ',
           callname,
-          '……こんな簡単な科目まで補習が要ると思われては困りますわ。',
+          '……그렇게 쉬운 과목까지 보충수업을 받아야 한다고 생각하면 곤란하군.',
         ]);
         await tachyon.say_and_wait(
-          '疑うなら試してみなさい。スイスの首都はベルン、ブラジルの公用語はスペイン語、アメリカの前身は十三の英領植民地……ほら、全部答えられましたでしょう？',
+          '의심스럽다면 시험해 보게. 스위스의 수도는 베른, 브라질의 공용어는 스페인어, 미국의 전신은 영국의 13개 식민지…… 어떤가, 전부 대답했지 않나?',
         );
         await tachyon.say_and_wait(
-          '南がどちらかですって？ 愚問ですわ。地面の下に決まっています。',
+          '남쪽이 어디냐고? 우문이군. 당연히 땅 아래쪽이지.',
         );
       },
       async () => {
         await tachyon.say_and_wait([
           callname,
-          '、この作文のどこが問題なのか、さっぱりわかりませんわ。',
+          ', 이 작문의 어떤 부분이 문제인지 도통 모르겠군.',
         ]);
         await tachyon.say_and_wait(
-          '題は『なぜカーテンは青いのか』でしたわよね？',
+          '주제는 『커튼은 왜 파란색인가』였지?',
         );
         await tachyon.say_and_wait(
-          'だから発色の原理と、人間が錐体細胞から得る情報に基づいて二万字の分析を書いたのですけれど、何がおかしいのかしら？',
+          '그래서 발색 원리와 인간의 원추세포가 받아들이는 정보를 바탕으로 2만 자에 걸친 분석을 썼는데, 뭐가 잘못됐다는 거지?',
         );
         await tachyon.say_and_wait(
-          '……なるほど、字数オーバーですのね。次は二千字以内に収めますわ。',
+          '……그렇군, 글자 수를 초과한 거였나. 다음에는 2천 자 이내로 쓰겠네.',
         );
       },
     ];
