@@ -3496,78 +3496,62 @@ ws_letter:
 
 # クラシックのクリスマス
 
-# [번역 대상] ws_new_year_c
+# [번역 완료] ws_new_year_c
 ws_new_year_c:
-  title: 新年の装い
+  title: 새해 단장
   lines:
-    - 「よいしょ。」
-    - %YOU%は汗を拭き、自分の仕事の成果を満足げに眺めた——新年の飾りで埋まったオフィスだ。
-    - 「雰囲気がないと、祭りの気がしない。」
-    - 「さて、この午後はどう過ごすか。」
-    - %YOU%はふとタイシンを思い出した。珍しい新年の午後だ。%SEX%と一緒に過ごせばいい。
-    - 「タイシン、午前中ずっと姿を見せないな。どこにいる？」
-    - タイシンがいそうな場所を考えながら扉を開け、門口を通る%UMA%に気づかず、危うく%SEX%と正面衝突しそうになった。
+    - 「영차.」
+    - %YOU%은(는) 땀을 닦고 자신이 꾸민 결과물을 만족스럽게 바라보았다. 새해 장식으로 가득한 사무실이었다.
+    - 「분위기가 나야 명절답지.」
+    - 「그럼 오늘 오후에는 뭘 할까.」
+    - %YOU%은(는) 문득 타이신을 떠올렸다. 특별한 새해 오후이니 %SEX%와 함께 보내면 좋겠다.
+    - 「타이신은 오전 내내 보이지 않네. 어디 있는 거지?」
+    - 타이신이 있을 만한 곳을 생각하며 문을 열었지만 입구를 지나던 %UMA%를 못 보고 자칫 %SEX%와 정면으로 부딪칠 뻔했다.
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「わああ！」
-    - 「ごめんごめん。」
-    - 「チケットじゃないか。」
+        - 「으아아!」
+    - 「미안, 미안.」
+    - 「티켓이잖아.」
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「うわっ、タイシンのトレーナーだ。びっくりした。」
-    - 「タイシン%SEX%がどこにいるか、知らないか？」
+        - 「우왓, 타이신의 트레이너잖아. 깜짝 놀랐어.」
+    - 「타이신 %SEX%가 어디 있는지 알아?」
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「うーん……」
-    - チケットは目を閉じ、しばらく考え込んでから。
+        - 「으음……」
+    - 티켓은 눈을 감고 잠시 생각하더니 말했다.
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「屋上で昼寝してるんじゃない？ タイシン、あそこ超好きなんだ。」
-    - 「助かる！」
+        - 「옥상에서 낮잠 자는 거 아닐까? 타이신은 거기 엄청 좋아하거든.」
+    - 「고마워!」
     - divider: true
-    - 案の定、タイシンは屋上のベンチに横になり、小さな体を丸めて眠っていた。
-    - 警戒心の強い小動物みたいに、%YOU%が数歩も進まないうちに、%SEX%の耳が風で%YOU%の気配を捉える。
+    - 예상대로 타이신은 옥상 벤치에서 몸을 웅크린 채 잠들어 있었다.
+    - 경계심이 강한 작은 동물처럼 %YOU%이(가) 몇 발짝 다가가기도 전에 %SEX%의 귀가 바람을 통해 %YOU%의 기척을 감지했다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「はああ……」
-    - %SEX%は眠そうな目を擦って起き上がり、昼に休みを邪魔する相手を見ようとする。
+        - 「하아암……」
+    - %SEX%는 졸린 눈을 비비며 일어나 한낮의 휴식을 방해한 사람이 누구인지 살펴보았다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「え？ トレーナー？」
+        - 「응? 트레이너?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「アンタ……どうしてここがわかったの。」
-    - 「チケットに聞いた。」
-    - color: %COLOR%
-      content:
-        - fontWeight: bold
-          content: %CHARA%
-        - 「……」
-    - color: %COLOR%
-      content:
-        - fontWeight: bold
-          content: %CHARA%
-        - 「やっぱり。」
-    - 「タイシン、ここで昼寝するのが好きなのか？」
-    - color: %COLOR%
-      content:
-        - fontWeight: bold
-          content: %CHARA%
-        - 「……アンタに関係ある？」
+        - 「너…… 여긴 어떻게 알았어?」
+    - 「티켓한테 들었어.」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -3577,93 +3561,109 @@ ws_new_year_c:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ええ、ええ。ここは人が来ないから、邪魔されない昼寝ができる。」
-    - %SEX%は伸びをして、昼寝の怠さから戻る。
+        - 「역시.」
+    - 「타이신, 여기서 낮잠 자는 걸 좋아하는 거야?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「で？ 用はなに。」
-    - 「新年の午後だから、タイシンと過ごしたくて。」
+        - 「……너랑 무슨 상관인데?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「はあ？」
+        - 「……」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「まあ、いいけど。で、なにをするの。」
+        - 「그래, 그래. 여기는 사람이 안 와서 방해받지 않고 낮잠을 잘 수 있어.」
+    - %SEX%는 기지개를 켜며 낮잠의 나른함을 털어 냈다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「그래서? 무슨 일인데?」
+    - 「새해 오후니까 타이신과 함께 보내고 싶어서.」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「뭐?」
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「뭐, 상관없지만. 그래서 뭘 할 건데?」
     - acc: 1
       key: select
-      content: 「対戦ゲームしよう！」（全能力+10）
+      content: 「대전 게임을 하자!」（전 능력치+10）
       lines:
-        - %SEX%は、かつてない「バカを見る」顔をした。
+        - %SEX%는 전에 없이 한심한 사람을 보는 듯한 표정을 지었다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「じゃあ、来る。」
+            - 「그럼 따라와.」
         - ……
-        - ぐっ！
-        - %YOU%はコントローラーを握り、画面にまた映る LOSE！ を悔しそうに見る。
-        - 五戦五敗！
-        - 「やっぱりタイシンには敵わないな。」
+        - 크윽!
+        - %YOU%은(는) 컨트롤러를 꽉 쥐고 화면에 다시 떠오른 LOSE!라는 글자를 분하다는 듯 바라보았다.
+        - 5전 5패!
+        - 「역시 타이신을 이길 수가 없네.」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「それより、アンタのゲームが下手すぎ。」
+            - 「그보다 네 게임 실력이 너무 형편없어.」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「アイテムのタイミングも、曲がり方も、まだ上げられる。」
-        - 「なるほど。ありがとう、タイシン！」
+            - 「아이템 쓰는 타이밍도, 코너를 도는 방법도 더 나아질 수 있겠는데.」
+        - 「그렇구나. 고마워, 타이신!」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「……私が、礼を言われることした？」
+            - 「……내가 고맙다는 말을 들을 만한 일을 했나?」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「もう、アンタってやつは……」
-        - 新年最初の午後は、楽しいゲーム時間だった。
+            - 「정말, 너라는 녀석은……」
+        - 새해 첫 오후는 즐거운 게임 시간으로 채워졌다.
     - acc: 2
-      content: 「オフィスで映画を見よう！」（体力+200）
+      content: 「사무실에서 영화를 보자!」（체력+200）
       lines:
-        - カーテンを引き、電気を消すと、意外と映画館の雰囲気が出る。
-        - 唯一の欠点は、パソコンの画面の大きさだ。%YOU%とタイシンは肩を寄せて見るしかない。
-        - 「ポテトチップスがあればなあ。」
+        - 커튼을 치고 불을 끄자 의외로 영화관 같은 분위기가 났다.
+        - 유일한 단점은 컴퓨터 화면이 작다는 것이었다. %YOU%와 타이신은 어깨를 맞대고 볼 수밖에 없었다.
+        - 「감자칩이라도 있으면 좋겠는데.」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「元日からジャンク食べるの、太るわよ。」
-        - 新年最初の午後は、雑談と映画で終わった。
+            - 「새해 첫날부터 정크 푸드 먹으면 살찔 텐데.」
+        - 새해 첫 오후는 잡담과 영화 감상으로 끝났다.
     - acc: 3
-      content: 「来年の計画を固めよう！」（スキルPt+50）
+      content: 「내년 계획을 세우자!」（스킬 Pt+50）
       lines:
-        - %YOU%とタイシンは、来年のトレーニングとレースの話をした。
+        - %YOU%와 타이신은 내년의 훈련과 레이스에 대해 이야기를 나눴다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「ねえ、トレーニングの強度、少し上げられないの。」
-        - 「始めたばかりで急ぐな」
+            - 「있잖아, 훈련 강도를 조금만 더 높일 수 없을까?」
+        - 「시작한 지 얼마 되지도 않았잖아. 서두르지 마.」
         - ……
-        - 「この%UMA%たちは、去年のメイクデビュー勝ち馬だ。」
-        - 「大半は先行。逃げや差しは少なく、追込はさらに少ない。」
+        - 「이 %UMA%들은 작년 메이크 데뷔 우승자들이야.」
+        - 「대부분은 선행 각질이야. 도주나 선입은 적고 추입은 더 적지.」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「私の末脚は、%THEY%には負けない。」
+            - 「내 막판 추입은 %THEY%에게도 지지 않을 거야.」
         - ……
-        - こうして、新年最初の午後は、厳密な計画の中で過ぎた。
+        - 그렇게 새해 첫 오후는 치밀한 계획을 세우는 데 쓰였다.
 
 # 三月第三週
 
