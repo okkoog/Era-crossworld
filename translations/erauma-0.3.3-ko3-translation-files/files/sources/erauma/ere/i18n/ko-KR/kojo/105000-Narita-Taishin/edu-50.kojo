@@ -879,76 +879,76 @@ os_new_year_s:
 
 # シニアのバレンタイン
 
-# [번역 대상] sats_sho_lose
+# [번역 완료] sats_sho_lose
 sats_sho_lose:
-  title: 敗れても折れず
+  title: 패배해도 꺾이지 않는 마음
   lines:
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「はあ、はあ……くそ！」
+        - 「하아, 하아…… 젠장!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ここで負けるわけない！」
-    - 後悔し、呪い、不甲斐なさを抱えたまま、ナリタタイシンはコースを離れた。
-    - ？？？「%CHARA_FULL%！ すみません、少しだけ！」
-    - %CHARA% は暗い顔で、目の前の見知らぬ%UMA%を苛立たしげに見る。自分より少し高いが、顔にはまだ幼さが残る。中等部の生徒だろう。
-    - その子はきこちなく手を振り、口を開いては閉じ、緊張で何も出てこない。
-    - %UMA%「ぼ、僕はただ、今の走り、すごくよかったって言いたくて！」
+        - 「여기서 질 리 없는데!」
+    - 후회와 원망, 스스로에 대한 답답함을 안고 나리타 타이신은 코스를 떠났다.
+    - ??? 「%CHARA_FULL%! 죄송한데, 잠깐만요!」
+    - %CHARA%는 어두운 표정으로 눈앞에 선 낯선 %UMA%를 짜증스럽게 쳐다봤다. 자신보다 조금 키가 컸지만 얼굴에는 아직 앳된 티가 남아 있었다. 중등부 학생인 모양이다.
+    - 그 아이는 어색하게 손을 흔들며 입을 열었다 닫았지만 긴장한 탓에 아무 말도 하지 못했다.
+    - %UMA% 「저, 저는 그냥 방금 달리기 정말 멋졌다고 말하고 싶어서요!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「は？」
-    - %UMA%「えっと、とにかく、落ち込まないでほしい！ 次のレース、僕、応援するから！」
-    - 言い終えると、小さな%UMA%は一目散に走っていった。
+        - 「뭐?」
+    - %UMA% 「아무튼 기운 내셨으면 좋겠어요! 다음 레이스에서도 응원할게요!」
+    - 말을 마친 작은 %UMA%는 쏜살같이 달려갔다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「はあ……あの子、個性的ね。」
-    - 見知らぬ応援者を得たのが初めてだったせいか、ナリタタイシンの表情はかなり和らいだ。
+        - 「하아…… 별난 애네.」
+    - 낯선 사람에게 처음 응원을 받아 본 탓인지 나리타 타이신의 표정은 한결 누그러졌다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「見られる感じ……悪くない。」
-    - 「お疲れ、タイシン。」
+        - 「누군가 지켜봐 준다는 것도…… 나쁘지 않네.」
+    - 「수고했어, 타이신.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ん……」
-    - 意外だった。%SEX%の敗北への態度は、予想よりずっと冷静だ。
+        - 「응……」
+    - 의외였다. %SEX%는 패배했는데도 예상보다 훨씬 침착했다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「次のレース、絶対負けない。」
+        - 「다음 레이스에서는 절대로 안 져.」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: ？？？
-        - 「ええ。次の走りも、楽しみにしています。」
-    - 話した%UMA%は、皐月賞の有力馬の一人、ビワハヤヒデだった。
+        - 「네. 다음 레이스도 기대하고 있겠습니다.」
+    - 말을 건 %UMA%는 사츠키상 우승 후보 중 하나인 비와 하야히데였다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「タイシンさん、優勝は逃しましたが、実力は侮れません。」
+        - 「타이신 씨, 우승은 놓쳤지만 실력만큼은 무시할 수 없겠네요.」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「次のダービー、私は全力で臨みます。あなたも、どうか。」
+        - 「다음 더비에서 저는 전력을 다하겠습니다. 당신도 부디 그러시길.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「負けない！」
+        - 「안 져!」
 
 
 # [번역 대상] sats_sho_win
@@ -2570,90 +2570,90 @@ we_frog:
 
 # クラシック十一月第一週
 
-# [번역 대상] we_summer_end_c
+# [번역 완료] we_summer_end_c
 we_summer_end_c:
-  title: 不安の暗流
+  title: 불안의 암류
   lines:
     - color: %COLOR%
-      content: あっという間に、夏季合宿は終わった。
+      content: 눈 깜짝할 사이에 여름 합숙이 끝났다.
     - color: %COLOR%
-      content: 荷物をまとめても、指定の集合時刻まではまだ早い。
+      content: 짐을 다 꾸렸지만 정해진 집합 시간까지는 아직 여유가 있었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「海辺、歩いてくる。」
+        - 「해변 좀 걷고 올게.」
     -
     - color: %COLOR%
-      content: 海辺のトレーニング場は今、誰もいない。二ヶ月の熱のあと、やっと短い静けさを味わえる。
+      content: 바닷가 훈련장에는 지금 아무도 없었다. 두 달간 이어진 열기 끝에 간신히 잠깐의 고요를 누릴 수 있었다.
     - color: %COLOR%
-      content: 波の跡を辿り、海水に洗われた暗い砂を避け、靴が濡れないように歩く。
+      content: 파도가 남긴 흔적을 따라 바닷물에 씻긴 어두운 모래를 피해 신발이 젖지 않도록 걸었다.
     - color: %COLOR%
-      content: 白い波が岸へ打ち、耳にいい潮の音で浮いて、引き潮のざわめきで消える。
+      content: 하얀 파도가 해안으로 밀려와 듣기 좋은 파도 소리를 남겼다가, 썰물의 잔물결 속에 사라졌다.
     - color: %COLOR%
-      content: 普段がうるさいせいだ。静かに潮の音を聞ける時間は、本当に珍しい。
+      content: 평소가 너무 소란스러운 탓이다. 이렇게 조용히 바닷소리를 들을 기회는 정말 드물었다.
     - color: %COLOR%
-      content: 歩き続ける。塩気のある風が顔へ当たる。
+      content: 계속 걷는다. 소금기 어린 바람이 얼굴을 스친다.
     - color: %COLOR%
-      content: 目を閉じ、吸って、吐く。水底にいるみたいだ。
+      content: 눈을 감고 숨을 들이쉰 뒤 내쉰다. 마치 물속에 있는 것 같다.
     -
     - color: %COLOR%
-      content: この感じが、好き。
+      content: 이런 기분이 좋다.
     - color: %COLOR%
-      content: ひとりきり。他人の視線を気にしなくていい。鬱陶しい陰口もない。
+      content: 오롯이 혼자다. 남의 시선을 신경 쓸 필요도 없고 성가신 뒷담화도 들리지 않는다.
     - if: era.get('relation:50:0') >= 300
       lines:
         - color: %COLOR%
-          content: 自然と、頭の中にあいつの顔が浮かぶ。私のトレーナー。
+          content: 자연스레 그 녀석의 얼굴이 머릿속에 떠오른다. 나의 트레이너.
         - color: %COLOR%
-          content: 「タイシン、風邪ひくぞ。」
+          content: 「타이신, 감기 걸린다.」
         - color: %COLOR%
-          content: うるさい。用事が多い。口が多い。
+          content: 시끄러워. 참견도 많고 말도 많아.
         - color: %COLOR%
-          content: ……いつの間にか、このやつに慣れてる。
+          content: ……언제부턴가 그 녀석에게 익숙해져 버렸네.
         - color: %COLOR%
-          content: 想像の中のトレーナーは、まだ何か喋っている。もう、印象の中の%YOU%まで私を放さないの。
+          content: 상상 속 트레이너는 여전히 뭐라고 떠들고 있다. 이제 머릿속의 %YOU%마저 날 가만두지 않는 거야?
         - color: %COLOR%
-          content: でも、こうしてあいつと散歩できるなら、悪くないかも。
+          content: 그래도 그 녀석과 이렇게 산책할 수 있다면 나쁘지 않을지도 몰라.
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ごほっ！」
+        - 「콜록!」
     - color: %COLOR%
-      content: 肺の痛みが、散らかった思考を裂き、目の前の事実を見ろと迫る。
+      content: 폐에서 느껴지는 통증이 산만한 생각을 찢고 눈앞의 현실을 보라고 재촉했다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ごっ、ごほっ！」
+        - 「커, 콜록!」
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「風邪、引いただけ。」
+        - 「그냥 감기 걸린 것뿐이야.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「たいしたことない。」
+        - 「별거 아니야.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「うるさい……余計なこと言わないで。」
+        - 「시끄러워…… 쓸데없는 말 하지 마.」
     - color: %COLOR%
-      content: 毎回こうやってあいつをはぐらかしてる。でもわかってる。騙してきたのは、自分だ。
+      content: 매번 이런 식으로 그 녀석을 얼버무린다. 하지만 알고 있다. 속여 온 상대는 결국 자신이었다.
     - color: %COLOR%
-      content: この体で、菊花賞……どうする……
+      content: 이 몸으로 국화상을…… 어떻게 하지……
     - color: %COLOR%
-      content: 三冠の夢は……ここで終わり……？
+      content: 삼관의 꿈은…… 여기서 끝나는 걸까……?
     - color: %COLOR%
       content: ……
     - color: %COLOR%
-      content: 不安の暗流が、 %CHARA% を静かな海面から引きずり下ろし、未来という渦へ巻き込む……
+      content: 불안의 암류가 %CHARA%를 고요한 바다 표면 아래로 끌어내려 미래라는 소용돌이 속에 휘말리게 한다……
 
 # クラシック九月第一週
 # +肺出血、傷病+1、やる気二段階下降
