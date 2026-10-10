@@ -7,7 +7,7 @@ module.exports = {
 
   // [번역 대상] 25
   25: (() => {
-    const title = 'ほのか';
+    const title = "첫사랑의 설렘";
     /**
      * @param {CharaTalk} kitaru マチカネフクキタル
      * @param {CharaTalk} you プレイヤー
@@ -15,76 +15,76 @@ module.exports = {
      */
     const f = async (kitaru, you, callname) => {
       await era.printAndWait([
-        'ある休日、',
+        "어느 휴일, ",
         kitaru.get_colored_name(),
-        ' は、このところの出来事を考えていた。',
+        "는 최근 일어난 일들에 대해 생각하고 있었다.",
       ]);
       await kitaru.say_and_wait(
         [
-          'ん、',
+          "으음, ",
           callname,
-          ' を思うと心臓が速くなるのは、どんな前兆なんでしょう？',
+          "을 생각하면 심장이 두근거리는 건 무슨 징조일까?",
         ],
         true,
       );
-      await kitaru.say_and_wait('ええ……きっと大吉のしるしですよね！', true);
+      await kitaru.say_and_wait("음…… 분명 대길의 상태인 거겠지!", true);
       await kitaru.say_and_wait(
-        ['そうです！ ', callname, ' は占いのとおり、私の運命の人なんです！'],
+        ["역시나! ", callname, "은 점괘가 말한 대로, 내 운명의 사람이야!"],
         true,
       );
-      await kitaru.say_and_wait('ふふん、私の占いは外れませんから！', true);
+      await kitaru.say_and_wait("흐흥, 내 점괘는 틀리지 않으니까!", true);
       await kitaru.say_and_wait(
-        'このまま従い続ければ、自分の幸せにたどり着ける、はず……？',
+        "그렇다면, 앞으로도 계속 점괘를 따르면 나만의 행복을 찾을 수 있겠지?",
         true,
       );
-      await kitaru.say_and_wait('……そう、ですよね？', true);
+      await kitaru.say_and_wait("정말 그런 걸까……?", true);
       await kitaru.say_and_wait(
         [
-          'なのに ',
+          "분명 ",
           callname,
-          ' の指示は、ときどき占いとまったく違うのに、どうして私はまだ……',
+          "이 내리는 지시는 가끔 점괘 결과와 완전히 일치하지 않을 때도 있는데, 어째서 나는……",
         ],
         true,
       );
-      era.printButton('「マチカネフクキタル？」', 1);
+      era.printButton("「마치카네 후쿠키타루?」", 1);
       await era.input();
       await kitaru.say_and_wait([
-        'あっ！ ',
+        "아! ",
         callname,
-        '、こんなところで会えるなんて！',
+        ", 설마 여기서 만날 줄은 몰랐어요!",
       ]);
-      await kitaru.say_and_wait('え！ 私、ですか？');
+      await kitaru.say_and_wait("에! 저 말인가요?");
       await kitaru.say_and_wait(
-        'ん……振り子占いをしたら、ここは考えるのにぴったりな場所だって出たんです！',
+        "으음…… 펜듈럼 점을 쳐보니, 여기가 생각하기에 아주 좋은 장소라고 나왔거든요!",
       );
       await kitaru.say_and_wait([
         callname,
         ' は、これからどこかへ行くんですか？',
       ]);
-      era.printButton('答える', 1);
+      era.printButton("대답한다", 1);
       await era.input();
-      await kitaru.say_and_wait('おお！ ちょうどいい、一緒に行きましょう！');
-      await kitaru.say_and_wait('え！ どうして、ですか？');
-      await kitaru.say_and_wait('そ……それは……');
+      await kitaru.say_and_wait("오! 마침 잘 됐네요, 그럼 같이 가요!");
+      await kitaru.say_and_wait("네? 왜냐고요?");
+      await kitaru.say_and_wait("그…… 그건……");
       await era.printAndWait([
-        '自分でも、なぜ急にそんなことを言ったのかわからないらしい。焦った',
+        "스스로도 왜 갑자기 그런 말을 했는지 모르는 듯, 당황한 기색의 ",
         kitaru.teen_sex_title,
-        'は、無意識に耳を撫で始めた。',
+        "가 무의식적으로 자신의 귀를 쓰다듬기 시작했다.",
       ]);
-      era.printButton('「占いの結果、か？」', 1);
+      era.printButton("「점괘 결과 때문에?」", 1);
       await era.input();
-      await kitaru.say_and_wait('そうですそうです！');
+      await kitaru.say_and_wait("맞아요, 맞아요!");
       await era.printAndWait([
         you.get_colored_name(),
         ' の、含みのある視線に気づいたのか、',
         kitaru.get_colored_name(),
         ' の頬がほんのり赤くなる。',
       ]);
-      await kitaru.say_and_wait('とにかく、開運になるんです！');
+      await kitaru.say_and_wait("어쨌든 같이 가면 운이 트인다고요!");
       await era.printAndWait([
-        'その後、',
+        "그 후, ",
         kitaru.sex,
-        'の食い下がりに根負けして、日用品の買い出しに付き合うことになった。',
+        "가 끈질기게 매달리는 바람에, 어쩔 수 없이 생필품을 사러 같이 가자는 요구를 들어주게 되었다.",
       ]);
     };
     f.title = title;
@@ -93,7 +93,7 @@ module.exports = {
 
   // [번역 대상] 49
   49: (() => {
-    const title = '愛欲';
+    const title = "애욕";
     /**
      * @param {CharaTalk} kitaru マチカネフクキタル
      * @param {CharaTalk} you プレイヤー
@@ -101,73 +101,73 @@ module.exports = {
      */
     const f = async (kitaru, you, callname) => {
       await kitaru.print_and_wait([
-        'ある夜、ベッドに横になった ',
+        "어느 날 밤, 침대에 누운 ",
         kitaru.get_colored_name(),
-        ' は、今日も占いで同級生の悩みを解いてあげたことを、得意げに思い返していた。',
+        "는 오늘 점술로 어떻게 동급생의 고민을 해결해 주었는지 기분 좋게 떠올리고 있었다.",
       ]);
       await kitaru.say_and_wait(
-        'そういえば、最近のみんなの占い、恋愛が多い気がします。',
+        "그러고 보니, 요즘 다들 연애에 관한 점술을 꽤 많이 해달라 하네.",
         true,
       );
-      await kitaru.say_and_wait('えへへ、私って恋愛の達人、かも。', true);
-      await kitaru.say_and_wait('……恋愛、ですか。', true);
+      await kitaru.say_and_wait("헤헤, 난 정말 연애 달인이라니까.", true);
+      await kitaru.say_and_wait("에…… 연애라?", true);
       await kitaru.say_and_wait(
-        '自分の恋愛運、まだ占ったことないんですよね……',
+        "그러고 보니, 내 연애 운세는 점쳐본 적이 없네……",
         true,
       );
       await kitaru.say_and_wait(['……', you.get_colored_actual_name()], true);
       await kitaru.print_and_wait(
-        'その話題を思っただけで、担当トレーナーの姿が頭に浮かぶ。',
+        "그저 화제를 떠올렸을 뿐인데, 자신의 트레이너의 모습이 뇌리에 스쳐 지나갔다.",
       );
       await kitaru.print_and_wait(
-        'トレーニング中の顔。一緒に占ったときの顔。おみくじを解いてくれたときの顔。',
+        "훈련할 때의 모습, 함께 점을 치던 모습, 그리고 자신의 운세 풀이를 도와주던 모습.",
       );
       await kitaru.print_and_wait(
-        '普段は特別に感じなかったはずなのに、いま思い返すと、一つひとつの細部がやけにはっきりしている。',
+        "평소에는 별다른 느낌이 없었는데, 지금 떠올려 보니 모든 세세한 부분들이 너무나도 선명했다.",
       );
       await kitaru.print_and_wait(
-        '汗を拭くとき首筋を撫でた指。マッサージで足裏に触れた温かい掌。アイアンクローで耳の根を掠めた刺激まで。',
+        "땀을 닦아줄 때 목덜미를 스치던 손가락, 마사지할 때 발바닥에 닿던 따스한 손바닥, 심지어 아이언 클로를 걸 때 귓가를 스치던 자극적인 느낌까지.",
       );
       await kitaru.print_and_wait(
-        'ルームメイトはもう眠っているはずだ。かすかな寝息まで聞こえる。',
+        "룸메이트는 이미 꿈나라에 갔는지, 가벼운 코고는 소리까지 들려왔다.",
       );
       await kitaru.print_and_wait(
-        'なのに自分だけが寝返りを打ち、眠れない。下腹が、ほんのり熱い。',
+        "하지만 그녀는 여전히 잠을 이루지 못하고 뒤척였으며, 하복부는 미열이 감돌아 뜨거워졌다.",
       );
       await kitaru.print_and_wait(
-        '布団をはねると、うっすら汗をかいた両脚が、ねっとりと揃っていて、膝の内側の柔らかい肉が擦れ合っている。',
+        "이불을 걷어내자, 얇게 땀이 밴 두 다리는 이미 끈적하게 맞붙어 무릎 옆의 연한 살점을 서로 문지르고 있었다.",
       );
-      await kitaru.say_and_wait('ふぅ……');
-      await kitaru.say_and_wait('やっぱり、占いましょう。');
-      await kitaru.print_and_wait('枕元のタロットを取り出した。');
-      await kitaru.say_and_wait('一枚だけ、簡単に……');
+      await kitaru.say_and_wait("하아……");
+      await kitaru.say_and_wait("역시 점을 쳐봐야겠어.");
+      await kitaru.print_and_wait("침대 머리맡에 둔 타로 카드를 꺼내 들었다.");
+      await kitaru.say_and_wait("간단하게 한 장만……");
       era.println();
-      era.printButton('星・正位置（関係を進める）', 1);
-      era.printButton('世界・逆位置（まだ進めない）', 2);
+      era.printButton("별 정위치 (관계 진전)", 1);
+      era.printButton("세계 역위치 (관계 진전 중지)", 2);
       const ret = await era.input();
       if (ret === 1) {
-        await kitaru.say_and_wait('心のままに、流れに乗る、ですか？');
-        await kitaru.say_and_wait('えへへ、当然ですよね！');
-        await kitaru.say_and_wait('だって、決めた運命の人なんですから！');
-        await kitaru.say_and_wait('んっ……');
-        await kitaru.print_and_wait('熱が、さらに募る。');
+        await kitaru.say_and_wait("마음이 가는 대로 흐름에 몸을 맡기라는 건가?");
+        await kitaru.say_and_wait("에헤, 역시 당연한 결과네!");
+        await kitaru.say_and_wait("결국 운명으로 정해진 사람이니까!");
+        await kitaru.say_and_wait("으으……");
+        await kitaru.print_and_wait("몸이 더욱 뜨겁게 달아올랐다.");
         await kitaru.print_and_wait(
-          'もともと決まっていた答えを占いが肯定したあと、さっきまでタロットを摘んでいた右手は、いつの間にか寝間着の中へ入り、胸に触れていた。',
+          "이미 정해진 답이 점괘를 통해 긍정되자, 방금까지 타로 카드를 쥐고 있던 오른손은 어느새 잠옷 안으로 들어가 자신의 가슴을 어루만지고 있었다.",
         );
         await kitaru.print_and_wait(
-          '指先が胸の脇を撫で、もう一方の手が下腹をそっと押す。中指と人差し指を揃えて、すでに湿った下着の中へ。',
+          "손가락 끝이 가슴 옆선을 훑고, 다른 한 손은 하복부를 가볍게 압박하며 중지와 검지를 모아 이미 젖어버린 속옷 안으로 파고들었다.",
         );
-        await kitaru.say_and_wait('あっ！');
+        await kitaru.say_and_wait("아앗!");
         await kitaru.print_and_wait(
-          '最初は不慣れさからくる短い鈍い痛み。それから、慣れてくるにつれて広がる、ぞくぞくした快感。',
+          "처음에는 서툰 손짓에 짧은 통증이 느껴졌지만, 이내 익숙해지며 짜릿한 쾌감이 몰려왔다.",
         );
         await kitaru.print_and_wait(
-          '寝ているルームメイトに気づかれないよう唇を噛む。それでも、快感に負けて深く入る指が、抑えきれない吐息を漏らさせる。',
+          "잠든 룸메이트에게 들키지 않으려 입술을 깨물었지만, 쾌감에 취해 깊숙이 삽입된 손가락은 멈출 수 없는 신음소리를 자아냈다.",
         );
-        await kitaru.say_and_wait([you.get_colored_actual_name(), '……っ……']);
+        await kitaru.say_and_wait([you.get_colored_actual_name(), "……으으……"]);
         await kitaru.print_and_wait([
           callname,
-          ' と握手したときの、少しざらついた人差し指を思い出す。あの指が自分の中に入ったら、どれほど容赦なく扱うだろうか、と想像する。',
+          "과 악수했을 때의 조금 거칠었던 검지를 떠올리며, 그 손가락이 자신의 몸 안에 들어왔을 때 얼마나 가차 없이 자신을 다룰지 상상했다.",
         ]);
         await kitaru.print_and_wait([
           '掻いて、擦って、焦らして、最後の痙攣まで。トレーナーに発情してしまう、失格の',
@@ -175,23 +175,23 @@ module.exports = {
           'を、思いきり罰するように。',
         ]);
         await kitaru.say_and_wait([you.get_colored_actual_name(), '！']);
-        await kitaru.say_and_wait('んっ！！！');
+        await kitaru.say_and_wait("으응!!!");
         await kitaru.print_and_wait(
-          '全身が震え止まない。白い下着が、噴き出した愛液でぐしゃぐしゃになった。',
+          "전신이 끊임없이 떨렸고, 순백색의 속옷은 뿜어져 나온 애액으로 엉망진창이 되었다.",
         );
-        await kitaru.say_and_wait('えへへ……好き、です……');
+        await kitaru.say_and_wait("에헤…… 좋아해요……");
       } else {
-        await kitaru.say_and_wait('はあ……');
-        await kitaru.say_and_wait('いったん、止まる、ですか……');
+        await kitaru.say_and_wait("하아……");
+        await kitaru.say_and_wait("잠시 멈추라는 건가……");
         await kitaru.print_and_wait([
-          'ざわつく体をこらえ、',
+          "요동치는 몸을 억지로 참으며, ",
           kitaru.get_colored_name(),
-          ' は布団を頭まで被った。',
+          "는 이불을 머리까지 뒤집어썼다.",
         ]);
         await kitaru.print_and_wait([
-          'それでも翌朝、びしょ濡れの下着と、発情で立った乳首が、',
+          "하지만 다음 날 아침, 이미 푹 젖어버린 속옷과 발정으로 인해 꼿꼿이 선 유두는 ",
           kitaru.get_colored_name(),
-          ' の夢が望んだほど穏やかではなかったことを物語っていた。',
+          "의 꿈이 그녀의 바람만큼 평온하지 않았음을 증명했다.",
         ]);
       }
       return ret;
@@ -202,7 +202,7 @@ module.exports = {
 
   // [번역 대상] 74-1
   '74-1': (() => {
-    const title = '熱恋';
+    const title = "열애";
     /**
      * @param {CharaTalk} kitaru マチカネフクキタル
      * @param {CharaTalk} you プレイヤー
@@ -210,70 +210,70 @@ module.exports = {
      */
     const f = async (kitaru, you, callname) => {
       await kitaru.print_and_wait([
-        'いつものトレーニングを終え、',
+        "일상 훈련을 마치고, ",
         callname,
-        ' と一緒に事務所へ戻った。',
+        "와 함께 사무실로 돌아왔다.",
       ]);
       await kitaru.print_and_wait([
         callname,
-        ' から受け取った水杯。がぶがぶ飲みたかったのに、',
+        "이 건네준 물컵을 받아 한꺼번에 들이키려 했지만, ",
         callname,
-        ' に止められて、ちびちびと喉を通す。',
+        "의 제지에 못 이겨 조금씩 조금씩 나누어 마셨다.",
       ]);
       await kitaru.print_and_wait([
         callname,
-        ' がタオルを取ったとき、合わせて頭を差し出し、さりげなくジャージのファスナーを下げて、汗で透けたシャツの下に見える大きな胸を ',
+        "이 수건을 집어 들자 순순히 머리를 내밀면서도, 무심코 운동복 지퍼를 내려 땀에 젖은 셔츠 아래로 비치는 가슴을 ",
         callname,
-        ' に見せた。',
+        "에게 슬쩍 내보였다.",
       ]);
       await kitaru.print_and_wait([
         callname,
-        ' がきまり悪そうに顔を背けると、わざと腕を掴んで、次のトレーニング計画を尋ねる。',
+        "이 당황하며 고개를 돌리는 것을 보고는, 고의로 팔을 붙잡으며 다음 훈련 계획에 대해 물었다.",
       ]);
       await kitaru.print_and_wait(
-        '甘い空気が、事務所のなかにじわじわ広がっていく。',
+        "사무실 안에는 묘한 기류가 끊임없이 감돌았다.",
       );
       await kitaru.print_and_wait([
-        '最後は、距離感のない動きが過ぎて、',
+        "비록 마지막에는 선을 넘는 행동 때문에 ",
         callname,
-        ' のアイアンクローを食らうのがお決まりだ。',
+        "의 아이언 클로 세례를 받곤 했지만 말이다.",
       ]);
       await kitaru.print_and_wait('……');
       await kitaru.print_and_wait([
-        '最初に ',
+        "처음 ",
         callname,
-        ' と出会ったとき、自分はどんな気持ちだったんだろう。',
+        "을 만났을 때의 나는 어떤 마음이었을까?",
       ]);
       await kitaru.print_and_wait(
-        '死にかけの者が、唯一見える藁にすがったみたいに？',
+        "죽어가는 사람이 유일하게 보이는 구명줄을 붙잡은 심정?",
       );
-      await kitaru.print_and_wait('船の残骸に掴まったオデュッセウス？');
-      await kitaru.print_and_wait('霊芝を食べて死を逃れた神農？');
-      await kitaru.print_and_wait('あるいは、素戔嗚尊に出会った天照大神？');
-      era.printButton('「フクキタル、書類を出してくる。少し休んでて……」', 1);
+      await kitaru.print_and_wait("난파된 배의 잔해를 붙잡은 오디세우스?");
+      await kitaru.print_and_wait("영지버섯을 먹고 죽음을 면한 신농?");
+      await kitaru.print_and_wait("혹은, 스사노오노 미코토를 만난 아마테라스 오미카미?");
+      era.printButton("「후쿠키타루, 자료 좀 제출하고 올 테니까 잠시 쉬고 있어……」", 1);
       await era.input();
       await kitaru.print_and_wait([
-        '甘い空気から引き剥がされ、',
+        "달콤하고 끈적한 분위기에서 갑자기 끌려 나오자, ",
         kitaru.get_colored_name(),
-        ' に残ったのは、ぽっかり空いた虚しさだけだった。',
+        "에게 남은 것은 공허함뿐이었다.",
       ]);
       await kitaru.print_and_wait([
         callname,
-        ' の上着がかかった椅子にどかりと座り、誰もいない事務所をぼんやり見つめる。',
+        "의 외투가 걸린 의자에 멍하니 앉아, 아무도 없는 사무실을 응시했다.",
       ]);
       await kitaru.print_and_wait([
-        '振り子、サイコロ、琥珀。いろいろな口実で ',
+        "펜듈럼, 주사위, 호박…… 온갖 핑계로 ",
         callname,
-        ' に渡した占い道具のなかに、タロットももちろんある。',
+        "에게 선물했던 점술 도구 중에는 타로 카드도 당연히 포함되어 있었다.",
       ]);
       era.println();
-      era.printButton('恋人・正位置（関係を進める）', 1);
-      era.printButton('月・正位置（まだ進めない）', 2);
+      era.printButton("연인 정위치 (관계 진전)", 1);
+      era.printButton("달 정위치 (관계 진전 중지)", 2);
       const ret = await era.input();
       if (ret === 1) {
-        await kitaru.print_and_wait('予想どおり。');
-        await kitaru.say_and_wait('好き……');
-        await kitaru.say_and_wait(['好き、', callname, '……']);
+        await kitaru.print_and_wait("전혀 뜻밖이 아니었다.");
+        await kitaru.say_and_wait("좋아해요……");
+        await kitaru.say_and_wait(["좋아해요, ", callname, '……']);
         await kitaru.print_and_wait([
           '何度も繰り返したあとでも、まだ ',
           you.get_colored_actual_name(),
@@ -282,16 +282,16 @@ module.exports = {
           'が踏み込んできた事実を、自分に言い聞かすように。',
         ]);
         await kitaru.print_and_wait(
-          '好きな人の匂いにつつまれて、トレーニングを終えて冷めるはずの体が、かえって熱を帯びていく。',
+          "사랑하는 사람의 체취에 둘러싸여, 훈련이 끝난 후 서서히 식어갔어야 할 몸은 오히려 더 뜨겁게 달아오르기 시작했다.",
         );
-        await kitaru.say_and_wait('はあっ……ふふっ……');
+        await kitaru.say_and_wait("하아…… 후우……");
         await kitaru.print_and_wait([
-          '椅子の背の上着の袖口を鼻先に当て、片手を、汗かそれ以外かでまた濡れた下着の中へ入れる。',
+          "의자 등받이에 걸린 외투의 소매 끝을 코끝에 가져다 대고, 한쪽 손은 땀 때문인지 다시금 젖어버린 속옷 안으로 미끄러져 들어갔다.",
         ]);
         await kitaru.say_and_wait([you.get_colored_actual_name(), '……']);
         await kitaru.print_and_wait([
           callname,
-          ' の名前を呼びながら、指でぬるぬるの穴の中を掻き回す。',
+          "의 이름을 부르며, 끈적해진 비소 안에서 손가락을 휘저어 내벽을 헤집었다.",
         ]);
         await kitaru.say_and_wait([
           you.get_colored_actual_name(),
@@ -301,28 +301,28 @@ module.exports = {
         ]);
         await kitaru.print_and_wait([
           you.get_colored_actual_name(),
-          ' の匂いが染みた上着を銜え、短い息をつき、口の端から涎が落ちる。',
+          "의 체취가 가득한 외투를 입에 문 채 거칠게 숨을 몰아쉬었고, 입가에서는 타액이 흘러내렸다.",
         ]);
         await kitaru.print_and_wait([
-          '足りないように、指の掻き回しが激しくなる。ある抽送で、とろんとしたオレンジの瞳が微かに膨らみ、体を反らした。',
+          "만족할 수 없다는 듯 손가락의 움직임은 더욱 격렬해졌고, 마침내 어느 순간 흐릿해진 주황빛 눈동자가 커지며 몸을 활처럼 휘게 만들었다.",
         ]);
-        await kitaru.say_and_wait('んっ❤️……ひぃぃっ❤️！！！');
+        await kitaru.say_and_wait("으읏❤️…… 이이익❤️!!!");
         await kitaru.print_and_wait(
-          '吸水用ではないジャージのパンツは、溢れた愛液を止められず、事務所の椅子に濡れた跡を残した。',
+          "애초에 수분을 흡수하도록 설계되지 않은 트레이닝 바지는 쏟아져 나온 애액을 막지 못했고, 그렇게 사무실 의자 위에는 얼룩이 남았다.",
         );
         await kitaru.print_and_wait([
           kitaru.get_colored_name(),
-          ' という下品な',
+          "의 이런 상스러운 ",
           kitaru.uma_sex_title,
-          'の、みっともない匂いが、事務所いっぱいに満ちる。',
+          "다운, 지독한 냄새가 사무실 전체에 가득 퍼졌다.",
         ]);
         await kitaru.print_and_wait([
-          'どうしよう。',
+          "어떻게 해야 할까. ",
           callname,
-          ' は、きっと気づきますよね。',
+          "이 분명 눈치챌 텐데.",
         ]);
         era.drawLine();
-        era.printButton('ドアを開ける', 1);
+        era.printButton("문을 연다", 1);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
@@ -331,35 +331,35 @@ module.exports = {
           ' は落ち着かなさそうに謝ってきた。',
         ]);
         await kitaru.say_and_wait([
-          'あああっ！ ',
+          "아아악! ",
           callname,
-          '！ 本当にすみません！',
+          "! 정말 죄송해요!",
         ]);
-        await kitaru.say_and_wait('コーヒーを淹れようとしただけなんです！');
+        await kitaru.say_and_wait("그냥 커피를 타 드리려고 했을 뿐인데!");
         await era.printAndWait([
           kitaru.get_colored_name(),
-          ' の下半身はほとんどコーヒーまみれで、同じく濡れた椅子と上着も、',
+          "의 거의 커피에 절다시피 한 하반신 옷들은, 마찬가지로 젖어버린 의자 및 외투와 함께 ",
           kitaru.uma_sex_title,
-          'の体温で温められてコーヒーの香りを放っている。',
+          "의 체온으로 가열되어 커피 향기를 풍기고 있었다.",
         ]);
-        era.printButton('「大丈夫か？」', 1);
+        era.printButton("「괜찮아?」", 1);
         await era.input();
-        await kitaru.say_and_wait('……だ……大丈夫です。');
+        await kitaru.say_and_wait("……괘…… 괜찮아요.");
         await era.printAndWait([
-          'あのときコーヒーはもう冷めていてよかった。',
+          "다행히 그때 커피가 이미 식어 있었기에 망정이지, 아니었으면 ",
           kitaru.get_colored_name(),
-          ' が火傷していたら大変だ。',
+          "가 화상을 입을 뻔했다.",
         ]);
       } else {
-        await kitaru.say_and_wait('はあ……');
+        await kitaru.say_and_wait("하아……");
         await kitaru.say_and_wait(
-          '占いで月が出ると、不安や迷い、恐れを示すことが多いんです。未来への迷いだったり、知らない状況への不安だったり。',
+          "점술에서 달이 나오는 건 대개 당사자가 불안, 미혹, 공포를 느끼고 있다는 거지. 미래에 대한 막막함이나 낯선 상황에 대한 불안함 같은 거.",
         );
-        await kitaru.print_and_wait('恐れを抱き、自信がなく、不安で感情的。');
+        await kitaru.print_and_wait("두려움을 품고, 자신감 없이 불안하고 감정적인 상태.");
         await kitaru.print_and_wait([
-          'こんな自分に、',
+          "이런 내가 과연 ",
           callname,
-          ' の愛を受ける資格なんて、あるんでしょうか。',
+          "의 사랑을 받을 자격이 있을까?",
         ]);
       }
       return ret;
@@ -370,24 +370,24 @@ module.exports = {
 
   // [번역 대상] 74-2
   '74-2': (() => {
-    const title = '告白';
+    const title = "고백";
     /**
      * @param {CharaTalk} kitaru マチカネフクキタル
      * @param {CharaTalk} you プレイヤー
      * @param {CharaTalk} callname マチカネフクキタルのプレイヤーへの呼び方
      */
     const f = async (kitaru, you, callname) => {
-      await era.printAndWait('トントン、トントン');
+      await era.printAndWait("똑, 똑, 똑");
       await kitaru.say_and_wait([callname, '！']);
       await era.printAndWait([
-        'いつものように、',
+        "평소와 다름없이, ",
         kitaru.get_colored_name(),
-        ' という少女が、また ',
+        "라는 이름의 소녀가 다시금 ",
         you.get_colored_name(),
-        ' の家の玄関を叩いた。',
+        "의 집 문을 두드렸다.",
       ]);
       await era.printAndWait([
-        'そう、事務所でも、トレセンの寮のドアでもない。',
+        "그렇다, 사무실도, 트레센 학원 기숙사 문도 아니었다.",
       ]);
       await era.printAndWait([
         '最初は、開運道具を預かってもらうついでに、',
@@ -395,126 +395,126 @@ module.exports = {
         ' の住所を知っただけだった。',
       ]);
       await era.printAndWait([
-        'それから開運道具だけでなく、トレーニング計画の相談、遊びに行こうという誘い、「今日は大吉です」という曖昧な理由まで、',
+        "그 이후로는 행운 아이템뿐만 아니라, 단순히 훈련 계획을 묻거나, 놀러 가자고 하거나, 심지어 「오늘은 대길이라서」 같은 막연한 이유만으로 ",
         you.get_colored_name(),
-        ' を訪ねてくるようになった。',
+        "을(를) 찾아오게 되었다.",
       ]);
       await era.printAndWait(
         'スリッパを一足、コップを一つ、箸を一膳、余分に置いた。',
       );
       await era.printAndWait([
         you.get_colored_actual_name(),
-        ' というトレーナーの生活は、もう ',
+        "(이)라는 트레이너의 삶은 이미 ",
         kitaru.get_colored_name(),
-        ' の痕跡でいっぱいだ。',
+        "의 흔적들로 가득했다.",
       ]);
-      await era.printAndWait('トントン、トントン');
-      await kitaru.say_and_wait([callname, '！ いますか？']);
+      await era.printAndWait("똑, 똑, 똑");
+      await kitaru.say_and_wait([callname, "! 안에 있어요?"]);
       await era.printAndWait([
         kitaru.get_colored_name(),
-        ' は、待ちきれなくなってきたらしい。',
+        "가 기다리다 못해 조금 조바심이 난 모양이다.",
       ]);
-      era.printButton('ドアを開ける', 1);
+      era.printButton("문을 연다", 1);
       await era.input();
       await era.printAndWait([
-        '仮に、',
+        "만약 ",
         you.get_colored_name(),
-        ' と血のつながりがない異性を想像してみる。',
+        "과(와) 혈연관계가 없는 이성이 있다고 가정해보자.",
       ]);
       await era.printAndWait([
-        '毎日くっついてきて、',
+        "매일 같이 딱 붙어 있고, 자유롭게 ",
         you.get_colored_name(),
-        ' の家にも自由に出入りできる。平日は学園の寮に住んでいるのに、出かけるときはやけに儀式めいて外で待ち合わせる。その二人は、どんな関係だろう。',
+        "의 집을 드나들며, 평일에는 학원 기숙사에 살면서도 굳이 밖에서 만날 때는 격식을 차려 약속을 잡는다면, 두 사람은 어떤 관계일까?",
       ]);
-      await era.printAndWait([you.get_colored_name(), ' はドアを開けた。']);
+      await era.printAndWait([you.get_colored_name(), "은(는) 문을 열었다."]);
       await kitaru.say_and_wait([callname, '！']);
       await era.printAndWait([
-        '玄関にいたのは、勝負服を着た ',
+        "문앞에는 승부복 차림의 ",
         kitaru.get_colored_name(),
-        ' だった。',
+        "가 서 있었다.",
       ]);
       await era.printAndWait(
-        '青と白のセーラー服が、整った体つきを引き立てている。',
+        "청백색의 세일러복은 그녀의 아름다운 몸매를 잘 드러내 주었다.",
       );
       await era.printAndWait(
-        '走ってきたせいか、露出した両肩に細かい汗が並んでいる。',
+        "뛰어온 탓인지, 노출된 양어깨에는 미세한 땀방울이 맺혀 있었다.",
       );
       await era.printAndWait(
-        'その下はシールだけを貼った誘うような胸が、白い生地に形をはっきり浮かべ、呼吸に合わせて上下している。',
+        "그 아래로 니플 패치만 붙인 매혹적인 가슴이 하얀 옷 위로 뚜렷한 형태를 그리며 호흡에 맞춰 오르내리고 있었다.",
       );
       await era.printAndWait([
-        'トレーナーである ',
+        "트레이너인 ",
         you.get_colored_name(),
-        ' は知っている。',
+        "은(는) 잘 알고 있었다. ",
         kitaru.uma_sex_title,
-        'がこの服を着るのは、ごく大事な場だけだ。',
+        "들은 오직 매우 중요한 자리에서만 이런 복장을 입는다는 것을.",
       ]);
-      await kitaru.say_and_wait('あの……');
-      await kitaru.say_and_wait('中に、入れてくれませんか？');
+      await kitaru.say_and_wait("저기……");
+      await kitaru.say_and_wait("안으로 들여보내 주시겠어요?");
       await era.printAndWait([
-        '彼女は顔を上げて ',
+        "그녀가 ",
         you.get_colored_name(),
-        ' を見た。オレンジの瞳が、湿った霧を帯びている。',
+        "을(를) 올려다보자, 주황빛 눈동자에는 이미 촉촉한 안개가 서려 있었다.",
       ]);
       await era.printAndWait(
-        '食事のときも、わざと顎を上げて飲み込む仕草で、引っ張られて張ったセーラー服の下の重い胸を、さらに目立たせた。',
+        "이어진 식사 시간, 일부러 고개를 젖혀 음식을 삼키는 동작은 팽팽하게 당겨진 세일러복 아래 묵직한 유방을 더욱 돋보이게 했다.",
       );
       await era.printAndWait(
-        '食後の暇つぶしでは、ソファで白いストッキングの脚を重ねて擦り、腰の絵馬が当たって音を立てた。',
+        "식사 후 휴식 시간, 소파에 앉은 그녀가 하얀 스타킹을 신은 두 다리를 꼬고 문지르자 허리춤에 달린 에마가 부딪히며 소리를 냈다.",
       );
       await era.printAndWait([
-        'もう深夜だというのに、',
+        "이미 심야였지만, ",
         kitaru.get_colored_name(),
-        ' は帰る気配を見せず、部屋は気まずい沈黙に沈んだ。',
+        "는 여전히 돌아가겠다는 말을 하지 않았고, 방 안에는 어색한 침묵이 흘렀다.",
       ]);
       await kitaru.say_and_wait([you.get_colored_actual_name(), '……']);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の名前を呼んで、',
+        "의 이름을 부르며, ",
         kitaru.get_colored_name(),
-        ' は傍へ来て座った。',
+        "가 곁으로 다가와 앉았다.",
       ]);
       await kitaru.say_and_wait([
-        'あの、',
+        "저기, ",
         callname,
-        ' には、わかりますよね……好き、です……',
+        "도 알고 계시죠…… 좋아해요……",
       ]);
       await kitaru.say_and_wait(
-        'こんなに迷惑をかけてるのに、それでも運勢を追いかけて走る私に、付き合ってくれる……',
+        "분명 당신께 그렇게나 많은 폐를 끼쳤는데도, 여전히 제 운세를 쫓는 여정에 함께해주셔서……",
       );
-      await kitaru.say_and_wait('温かいんです……たくさん、好運をくれました。');
+      await kitaru.say_and_wait("참 따뜻했어요…… 저에게 많은 행운을 가져다주셨죠.");
       await kitaru.say_and_wait(
-        'だから、よければ、今度は私からもお返しさせてください……',
+        "그러니까, 괜찮으시다면 저도 보답하게 해주세요……",
       );
-      await kitaru.say_and_wait('小福を、あなた専用の開運道具にしてください。');
+      await kitaru.say_and_wait("부디 이 후쿠짱을 당신만의 행운 아이템으로 만들어 주세요.");
       await era.printAndWait([
-        '傍らの ',
+        "곁에 앉은 ",
         kitaru.get_colored_name(),
-        ' が ',
+        "가 ",
         you.get_colored_name(),
-        ' の手を握る。',
+        "의 손을 꽉 쥐었다. ",
         kitaru.uma_sex_title,
-        'の、少し高い体温が掌から伝わってくる。',
+        "의 조금 높은 체온이 그녀의 손바닥을 통해 끊임없이 전해졌다.",
       ]);
-      era.printButton('受け入れる（関係を進める）', 1);
-      era.printButton('断る（まだ進めない）', 2);
+      era.printButton("받아들인다 (관계 진전)", 1);
+      era.printButton("거절한다 (관계 진전 중지)", 2);
       const ret = await era.input();
       if (ret === 1) {
-        await kitaru.say_and_wait('ちゅ……ちゅる……ぷちっ……ぐちゅ……');
+        await kitaru.say_and_wait("츄우…… 츄릅…… 푸하…… 츄릅……");
         await era.printAndWait([
           kitaru.get_colored_name(),
           ' の顎を上げさせ、舌と舌が離れがたく絡み、涎の銀糸が空で切れた。',
         ]);
-        await kitaru.say_and_wait('んっ……ぐ……');
+        await kitaru.say_and_wait("으음…… 응……");
         await era.printAndWait(
-          '少し離れて、また情欲を煽る深いキス。担当の匂いを、好きなだけ吸い込む。',
+          "잠시 떨어졌다가 다시 이어지는 정욕을 부추기는 깊은 입맞춤을 통해 담당의 숨결을 마음껏 느꼈다.",
         );
         await era.printAndWait([
-          '十指を組み、',
+          "손가락을 교차해 깍지를 끼고, ",
           you.get_colored_name(),
-          ' は ',
+          "은(는) ",
           kitaru.get_colored_name(),
-          ' をソファへ押し倒した。',
+          "를 소파 위로 밀어트렸다.",
         ]);
       } else {
         await era.printAndWait([
@@ -530,7 +530,7 @@ module.exports = {
 
   // [번역 대상] 89
   89: (() => {
-    const title = '良縁';
+    const title = "천생연분";
     /**
      * @param {CharaTalk} kitaru マチカネフクキタル
      * @param {CharaTalk} you プレイヤー
@@ -539,105 +539,105 @@ module.exports = {
     const f = async (kitaru, you, callname) => {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は聞いたことがある。耳の大きい',
+        "은(는) 귀가 큰 ",
         kitaru.uma_sex_title,
-        'は性欲が強い、と。',
+        "가 성욕이 강하다는 말을 들은 적이 있다.",
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は聞いたこともある。長距離を走る',
+        "은(는) 장거리를 뛰는 ",
         kitaru.uma_sex_title,
-        'は性欲が強い、と。',
+        "가 성욕이 강하다는 말도 들은 적이 있다.",
       ]);
-      await era.printAndWait('以前は、半信半疑だったかもしれない……');
+      await era.printAndWait("전에는 의구심이 들었을지도 모르지만……");
       await era.printAndWait([
-        'いまの ',
+        "지금의 ",
         kitaru.get_colored_name(),
-        ' は、その言い伝えの見本と言っていい。',
+        "는 의심의 여지 없이 위 가설들의 증거가 되어 있었다.",
       ]);
       await era.printAndWait(
-        '体にはもう精液の跡がつき、使い終わったコンドームが飾りのようにぶら下がり、穴からは濃い精がまだ止まらず溢れている。',
+        "몸에 이미 정액의 흔적이 가득하고, 몇 장의 사용한 콘돔이 장식처럼 몸에 걸쳐져 있으며, 비소에서는 농후한 정액이 쉼 없이 흘러나오고 있었다.",
       );
       await era.printAndWait([
-        'それでもこの妖艶な栗毛は、ちぎれた言葉で、精一杯 ',
+        "그런 상태가 되어서도 이 요염한 밤색 머리카락의 소녀는 토막 난 언어로 ",
         you.get_colored_name(),
-        ' に求愛している。',
+        "에게 구애의 목소리를 내고 있었다.",
       ]);
-      await kitaru.say_and_wait('うっ……');
-      await kitaru.say_and_wait('❤️大吉❤️');
-      era.drawLine({ content: 'しばらくして' });
+      await kitaru.say_and_wait("으으……");
+      await kitaru.say_and_wait("❤️대길이에요❤️");
+      era.drawLine({ content: "잠시 후" });
       await era.printAndWait(
-        'している最中は、あと始末がどれほど大変かなど考えていなかった。体液でべたつく制服とトレーナーの服が、ガタガタ鳴る洗濯機に放り込まれる。',
+        "행위를 할 때는 뒷정리가 얼마나 번거로울지 전혀 고려하지 않았기에, 끈적한 체액이 묻은 교복과 트레이너 제복이 덜컹거리는 세탁기 속에 던져졌다.",
       );
       await era.printAndWait([
         kitaru.get_colored_name(),
-        ' は、着替えを持ってきていただろうか……',
+        "가 갈아입을 옷을 가져왔었겠지……",
       ]);
       await kitaru.say_and_wait([callname, '！']);
       await kitaru.say_and_wait('気分……どうでした？');
       await era.printAndWait([
         kitaru.get_colored_name(),
-        ' は裸足で床を踏み、',
+        "가 맨발로 바닥을 딛고 서 있었고, ",
         you.get_colored_name(),
-        ' のシャツを着ている。',
+        "의 셔츠가 그녀의 몸에 걸쳐져 있었다.",
       ]);
       await era.printAndWait([
-        '湯気をまとって、',
+        "목욕 후의 열기와 함께, 그녀는 ",
         you.get_colored_name(),
-        ' の前で一回転した。',
+        "의 앞에서 한 바퀴 빙그르르 돌았다.",
       ]);
       await era.printAndWait(
-        'サイズは合っていない。袖口を二、三回折ってやっと手が現れ、裾は太ももまで届く。普段は服の下に隠れていた美しい胸の谷間は、言うまでもない。',
+        "맞지 않는 옷…… 소매를 두세 번 접어 올린 뒤에야 손이 드러났고, 셔츠 자락은 허벅지까지 내려왔으며, 평소 옷에 가려져 있던 가슴이 만든 깊은 골은 말할 것도 없었다.",
       );
       await era.printAndWait(
-        'だからこそ、尻尾が少し動くだけで、その下の大事な場所が見えてしまう。',
+        "하지만 그렇기에 꼬리를 살짝 흔들기만 해도 그 아래 가려진 중요한 부위가 쉽게 보였다.",
       );
-      era.printButton('「風邪をひくなよ。」', 1);
-      era.printButton('「よく似合ってる……」', 2);
+      era.printButton("「감기 조심해.」", 1);
+      era.printButton("「잘 어울려……」", 2);
       await era.input();
       await era.printAndWait([
-        'そう言われた ',
+        "그런 평가를 들은 ",
         kitaru.get_colored_name(),
-        ' は、尻尾をさらに激しく振る。',
+        "의 꼬리가 더욱 격렬하게 흔들렸고, ",
         kitaru.uma_sex_title,
-        '用ではない裾が、とうとう捲れ上がった。',
+        "를 위해 설계되지 않은 옷자락이 위로 들려 올라갔다.",
       ]);
-      await era.printAndWait('さっきの激しい情事の跡が、はっきり残っている。');
+      await era.printAndWait("방금 전 격렬한 정사로 인해 남겨진 흔적들이 선명하게 보였다.");
       await era.printAndWait(
-        'いつの間に、こんなことに慣れてしまったのだろう。',
+        "……언제부터 이런 것에 익숙해진 걸까.",
       );
       await era.printAndWait(
-        'セックスはどんどん激しくなり、さっきの最後など、フクキタルの気持ちなど構わず、オナホのように突いただけだった。',
+        "우마뾰이는 갈수록 격렬해졌고, 방금 전 마지막에는 후쿠키타루의 기분은 전혀 배려하지 않은 채 그저 오나홀처럼 취급하며 삽입을 반복했다.",
       );
-      era.printButton('「さっきの感触はどうだった？」', 1);
-      era.printButton('「次は優しくしたほうがいいか？」', 2);
+      era.printButton("「방금 느낌은 어땠어?」", 1);
+      era.printButton("「다음에는 좀 더 부드럽게 해줄까?」", 2);
       await era.input();
       await kitaru.say_and_wait([
-        'え……どうして ',
+        "에…… 왜 ",
         callname,
-        ' が、そんなことを？',
+        "이 그런 걸 물으시나요?",
       ]);
-      await kitaru.say_and_wait('ん、嫌い、じゃないです……');
-      await kitaru.say_and_wait('むしろ、好き、です……');
+      await kitaru.say_and_wait("음, 싫지는 않았어요……");
+      await kitaru.say_and_wait("오히려 아주 좋았달까……");
       await era.printAndWait([
         kitaru.get_colored_name(),
-        ' にとっては、こうした乱暴で、強制が混じり、いくらか辱めさえ含む営みのほうが、より強い安心と充足を得られるのかもしれない。',
+        "에게는 이런 거칠고, 강압적이며 심지어 어느 정도 굴욕적인 성애의 과정에서 더 강렬한 안도감과 만족감을 얻는 모양이었다.",
       ]);
       await kitaru.say_and_wait([
-        'だから……',
+        "그러니까…… ",
         callname,
-        '、これからも、小福を好きなだけ使ってください。',
+        ", 앞으로도 마음껏 후쿠를 사용해 주세요.",
       ]);
       era.println();
       if (era.get('talent:56:淫身') !== 2) {
         era.print([
           kitaru.get_colored_name(),
-          ' は ',
+          "가 ",
           {
             color: buff_colors[2],
-            content: '[淫身]',
+            content: "[음란한몸]",
           },
-          ' になった！',
+          "이 되었다!",
         ]);
       }
     };
@@ -647,7 +647,7 @@ module.exports = {
 
   // [번역 대상] 99
   99: (() => {
-    const title = '依存';
+    const title = "의존";
     /**
      * @param {CharaTalk} kitaru マチカネフクキタル
      * @param {CharaTalk} you プレイヤー
@@ -655,9 +655,9 @@ module.exports = {
      */
     const f = async (kitaru, you, callname) => {
       await kitaru.print_and_wait([
-        '今日はほとんど一日中、',
+        "오늘은 거의 하루 종일 ",
         callname,
-        ' と神社で忙しかった。',
+        "과 함께 신사에서 바쁘게 보냈다.",
       ]);
       await kitaru.print_and_wait([
         '普段は何でもできてしまう ',
@@ -665,161 +665,161 @@ module.exports = {
         ' が、初めてで不器用な顔をしていたのを思い出して、つい笑ってしまった。',
       ]);
       await kitaru.print_and_wait([
-        'その笑い声が、当然のように ',
+        "웃음소리는 당연히 ",
         callname,
-        ' の視線を集めた。',
+        "의 시선을 끌었다.",
       ]);
-      await kitaru.say_and_wait('ぐっ……');
-      era.drawLine({ content: '数分後' });
-      era.printButton('手を伸ばす', 1);
+      await kitaru.say_and_wait("응……");
+      era.drawLine({ content: "몇 분 후" });
+      era.printButton("손을 뻗는다", 1);
       await era.input();
       await kitaru.print_and_wait([
         callname,
-        ' の手が腰、尻、そして膝の裏まで撫でていく。',
+        "의 손이 허리와 엉덩이를 훑고 지나가 내 오금까지 닿았다.",
       ]);
-      await kitaru.say_and_wait('はあっ……');
+      await kitaru.say_and_wait("하아……");
       await kitaru.print_and_wait([
-        '両脚が緩み、',
+        "다리에 힘이 풀려, 나는 ",
         callname,
-        ' の合図どおり、尻を突き出して本殿の壁に伏せた。',
+        "의 신호에 따라 엉덩이를 치켜든 채 본전 안의 벽에 엎드렸다.",
       ]);
-      era.printButton('衣服をほどく', 1);
+      era.printButton("옷을 벗긴다", 1);
       await era.input();
       await kitaru.print_and_wait(
-        '巫女である自分を示す緋袴が床へ滑り落ちるのを、ただ見ている。尻に、熱いものが当たる。',
+        "이윽고 무녀의 상징인 하카마가 바닥에 떨어지는 것을 지켜보며, 둔부에 닿는 뜨거운 물건을 느꼈다.",
       );
       await kitaru.print_and_wait(
-        '脚を閉じると、ぬるい液体が太ももを伝う。下腹の疼きは、ますます強くなる。',
+        "다리를 오므리자 끈적한 액체가 허벅지를 타고 흘러내리는 것이 느껴졌고, 하복부의 짜릿함은 더욱 심해졌다.",
       );
-      era.printButton('挿入する', 1);
+      era.printButton("삽입", 1);
       await era.input();
-      await kitaru.print_and_wait('二人の相性を占う、肉棒占いが始まった。');
+      await kitaru.print_and_wait("두 사람의 궁합을 맞추는 육봉 점치기가 시작되었다.");
       era.drawLine();
-      await kitaru.say_and_wait('はあっ……');
+      await kitaru.say_and_wait("하아아……");
       await era.printAndWait([
-        '今日の ',
+        "오늘, ",
         kitaru.get_colored_name(),
-        ' はいつもと違い、自分から ',
+        "는 평소와는 다르게 먼저 ",
         you.get_colored_name(),
-        ' に求めてきた。',
+        "에게 구애해왔다.",
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が入れただけで、担当の',
+        "이(가) 그저 삽입했을 뿐인데도, 담당 ",
         kitaru.uma_sex_title,
-        'の敏感な体はほとんど絶頂に届きそうだ。焦点の合わない瞳が、何を考えているのかわからない。',
+        "의 민감한 몸은 거의 절정에 달할 듯 떨렸고, 초점이 풀린 눈은 무엇을 생각하는지 알 수 없었다.",
       ]);
       era.println();
       await kitaru.say_and_wait(
-        '占いには二通りあります。ひとつは局に入ること。もうひとつは、局の外にいること。',
+        "점술에는 두 가지가 있어. 하나는 판에 들어가는 것이고, 다른 하나는 판 밖에 있는 것.",
         true,
       );
       era.println();
-      await kitaru.say_and_wait('すごい……頭が、ぼんやり……');
+      await kitaru.say_and_wait("대단해…… 정신이 혼미해질 것 같아요……");
       era.println();
       await kitaru.say_and_wait(
-        '占いは運命を覗き、天道に手を出す遊びです。占う者も占われる者も、局に入らなくてはいけない。',
+        "점술은 운명을 훔쳐보고 천도를 간섭하는 놀이이니, 점치는 자와 받는 자 모두 판에 들어와야 해.",
         true,
       );
       era.println();
       await era.printAndWait(
-        'オレンジ髪の少女は、抑えもせずに甘い声を上げる。普段は澄んだ柔らかい声が、ここではひどく淫らに響く。',
+        "오렌지색 머리의 소녀는 절제 없이 교성을 내질렀다. 평소의 달콤하고 부드러운 목소리는 지금 이 순간 지극히 음란하게 울려 퍼졌다.",
       );
-      await kitaru.say_and_wait('ひゃあっ……あっ……');
+      await kitaru.say_and_wait("이아앗…… 아앙……");
       era.println();
       await kitaru.say_and_wait(
         [
-          '自分は優秀な占い師とは言えない。あのとき ',
+          "스스로 훌륭한 점술가라고 생각하진 않아. 처음에 ",
           callname,
-          ' にぶつかったのも、ただの運かもしれない。',
+          "과 만난 것도 순전히 운이었을지도 모르지.",
         ],
         true,
       );
-      era.printButton('尻を叩く', 1);
+      era.printButton("엉덩이를 때린다", 1);
       await era.input();
       await era.printAndWait(
-        '片手を離し、フクキタルの尻を強く叩く。少し被虐の気がある巫女は、さらに誘うような声を上げた。',
+        "한쪽 손을 떼어 후쿠키타루의 엉덩이를 세게 내리치자, 약간의 피학 성향이 있는 무녀는 더욱 유혹적인 신음을 내뱉었다.",
       );
-      await kitaru.say_and_wait('……んあっ～');
+      await kitaru.say_and_wait("……으응~");
       era.println();
       await kitaru.say_and_wait(
-        'でも当時、占う側でも占われる側でもあった私は、間違いなく局に入っていました。',
+        "하지만 그때 점치는 자이자 점쳐지는 자였던 나는, 의심할 여지 없이 판에 들어와 있었어.",
         true,
       );
-      era.printButton('胸を弄る', 1);
+      era.printButton("가슴을 주무른다", 1);
       await era.input();
       era.println();
       await kitaru.say_and_wait(
         [
-          'だから、そうです、',
+          "그러니까, 맞아. ",
           you.get_colored_actual_name(),
-          ' が私の運命の人なんです！',
+          "이야말로 내 운명의 사람이야!",
         ],
         true,
       );
       era.println();
       await era.printAndWait(
-        '両手でフクキタルの胸に登り、好きな形に揉み潰す。',
+        "두 손이 후쿠키타루의 가슴을 감싸 쥐고 마음껏 유린했다.",
       );
-      await kitaru.say_and_wait('あっ……あっ……');
-      era.printButton('尻尾を引く', 1);
+      await kitaru.say_and_wait("아…… 아아……");
+      era.printButton("꼬리를 잡아당긴다", 1);
       await era.input();
       await era.printAndWait(
-        '柔らかい栗色の尻尾には、ピストンで引き出した体液が、もう少し付いている。',
+        "부드러운 밤색 꼬리는 이미 피스톤 운동으로 튀어 나온 체액이 묻어 있었다.",
       );
       await era.printAndWait([
-        '尻尾の根の感触と、胸を揉まれる快感が重なり、',
+        "꼬리 뿌리에서 전해지는 촉감과 가슴이 비벼지는 쾌감에, ",
         kitaru.get_colored_name(),
-        ' は今日いちばん高い声を上げた。',
+        "는 순간 오늘 중 가장 높은 신음을 내질렀다.",
       ]);
       await era.printAndWait(
-        '本殿の御神体である鏡が、巫女のいまの幸せな顔を、はっきり映している。',
+        "본전의 신체로 모셔진 거울은 무녀의 지금 이 행복한 표정을 선명하게 비추고 있었다.",
       );
-      await kitaru.say_and_wait('これ……私？', true);
+      await kitaru.say_and_wait("이게…… 나?", true);
       await kitaru.print_and_wait(
-        '情欲で赤く染まった顔。途切れ途切れに嗚咽する桜色の唇。とろんと半眼の、狐のような瞳。',
+        "욕망으로 붉게 물든 얼굴, 끊임없이 신음을 흘려보내는 입술, 몽롱하게 반쯤 뜨여 여우처럼 매혹적인 눈동자.",
       );
       await kitaru.print_and_wait([
         you.phy_sex_title,
-        'に壁へ押し付けられ、半脱ぎの巫女装束の下、桜色を帯びた体が抽送に合わせて上下している。',
+        "에게 벽으로 밀려난 채, 반쯤 벗겨진 무녀복 아래 벚꽃색으로 달아오른 몸이 삽입의 반동에 따라 위아래로 흔들리고 있었다.",
       ]);
       await kitaru.say_and_wait(
-        'うっ……白興様の前で、自分がこんなになるなんて……',
+        "으으…… 내가 감히 시라오키 님 앞에서 이런 모습이 되다니……",
         true,
       );
       await kitaru.say_and_wait(
-        '運命の人……運命の人は、責任を取ってくださいね！',
+        "운명의 사람…… 운명의 사람이 책임져야 해!",
         true,
       );
-      await kitaru.say_and_wait('うひぃぃぃぃ！！！！！');
-      await era.printAndWait('ぽんっ！');
+      await kitaru.say_and_wait("으이이이이이익!!!!!");
+      await era.printAndWait("뽁!");
       await era.printAndWait([
-        '抜いた瞬間、濃く粘る精液が巫女の穴口から溢れ、淫らな匂いが本殿に広がった。',
+        "걸쭉하고 끈적한 정액이, 육봉이 빠져나가는 순간 무녀의 입구에서 쏟아져 나와 본전 안에 음란한 냄새를 채웠다.",
       ]);
-      era.drawLine({ content: 'しばらくして' });
+      era.drawLine({ content: "잠시 후" });
       await kitaru.say_and_wait('激しすぎました……');
       await era.printAndWait([
-        '落ち着いているつもりでも、巫女装束に乾いた液体の跡が、さっきの淫らな',
+        "억지로 태연한 척하고 있었지만, 무녀복에 마른 액체 흔적은 방금 그 음란한 ",
         kitaru.uma_sex_title,
-        'が本人だと物語っている。',
+        "가 바로 그녀였음을 증명하고 있었다.",
       ]);
-      era.printButton('「白興様は怒らないのか？」', 1);
+      era.printButton("「시라오키 님이 노하시지 않을까?」", 1);
       await era.input();
-      await kitaru.say_and_wait('え……');
+      await kitaru.say_and_wait("에……");
       await kitaru.say_and_wait(
-        'あの、白興様も、私が幸せになったのを見たら、喜んでくださると思います。',
+        "그게, 시라오키 님도 제가 행복해하는 걸 보시면 기뻐해 주실 거예요.",
       );
-      await kitaru.say_and_wait('……たぶん、です。');
-      await kitaru.say_and_wait('うっ……頭が熱くなって、つい……');
+      await kitaru.say_and_wait("아마도요……");
+      await kitaru.say_and_wait("으으…… 그냥 머리가 뜨거워져서 저질러 버렸지만……");
       await kitaru.say_and_wait([
-        'でも、',
+        "그래도 오직 ",
         you.get_colored_actual_name(),
-        ' に対してだけ、ですからね！',
+        "에게만 이런다구요!",
       ]);
       await kitaru.say_and_wait([
-        'だって、',
+        "결국 ",
         you.get_colored_actual_name(),
-        ' は、私の運命の人なんですから！',
+        "은 제 운명의 사람이니까요!",
       ]);
     };
     f.title = title;
