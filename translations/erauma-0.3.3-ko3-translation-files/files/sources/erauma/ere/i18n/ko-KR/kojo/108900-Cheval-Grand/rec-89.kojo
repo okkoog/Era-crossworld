@@ -258,24 +258,24 @@ rec1:
       content: '「훈련장으로 돌아가야 해. 열쇠를 주운 이상 끝까지 책임을 져야지.」'
       # この選択肢で募集イベント第三段がトリガーされる。
 
-# [번역 대상] rec2
+# [번역 완료] rec2
 rec2:
-  title: シュヴァルグラン登場！：「入海」
+  title: 슈발 그랑 등장!: 「바다로」
   lines:
     # 募集イベント第二段のあと、訓練場へ行くとトリガー。
     - %YOU%이(가) 훈련장으로 돌아왔을 때 하늘에는 이미 땅거미가 지고 있었다. 훈련장 양옆의 가로등이 하나둘 켜지기 시작하며, 마치 밤하늘의 별빛이 내려앉은 듯했다.
     - 얼마 전까지만 해도 온갖 욕망과 야심으로 가득 찼던 마경은, 지금 이 별빛 아래 고요히 잠들어 있었다.
-    - 今日の募集戦に出た%UMA%以外、生徒の訓練場使用は禁じられている。まばらな場内を見渡せば、あの白い海軍帽はすぐ見つかった——ベンチのそばではなく、コースの上だ。
+    - 오늘 선발 레이스에 출전한 %UMA%를 제외하면 학생들의 훈련장 이용은 금지되어 있다. 한산한 경기장을 둘러보니 그 하얀 해군 모자가 금세 눈에 띄었다——벤치 옆이 아니라 코스 위에 있었다.
     -
     - color: '%COLOR%'
       content: '%CHARA% 「하아…… 하아아……!」'
     -
-    - 短髪の%UMA%の額から大粒の汗が落ち、数滴が薄く赤らんだ頬を伝い、顎で水の粒になる。汗に濡れた栗色の短髪が首筋に貼りついている。
+    - 짧은 머리의 %UMA% 이마에서 굵은 땀방울이 떨어져, 그중 몇 방울이 희미하게 붉어진 뺨을 타고 턱에서 맺혔다. 땀에 젖은 밤색 단발머리가 목덜미에 달라붙어 있었다.
     - 스타트→가속→스퍼트→급정지→턴→다시 스타트…… %SEX%는 지칠 줄 모르는 듯, 같은 직선 코스를 몇 번이나 왕복하며 달리고 있었다.
     -
     - '（이 거리는……）'
     -
-    - 募集戦での%SEX%の走りを思い出す。案の定、いま往復しているのは、位置取りで負けたあの区間だ。
+    - 선발 레이스에서 보여 준 %SEX%의 달리기가 떠올랐다. 역시나 지금 왕복하고 있는 곳은 자리싸움에서 밀렸던 바로 그 구간이었다.
     - 체력 안배 실수도 아니고, 흔히 있는 위치 선정 실패와도 달랐다——눈이 마주친 찰나, 그 눈동자 속에 스쳐 지나간 것은 분명 어떤 망설임이었다.
     -
     - color: '%COLOR%'
@@ -289,8 +289,8 @@ rec2:
       content: '「……이대로 가다간 다치겠어.」'
     -
     - %YOU%은(는) 이 어린 노력가를 유심히 지켜보며, 마치 홀린 듯 시선을 떼지 못했다.
-    - 負けず嫌いな姿には心を動かされる。だが、こんな報復じみたトレーニングは、自分を傷つけるだけだ。
-    - 止めに入ろうとした、そのとき——
+    - 지기 싫어하는 그 모습에 마음이 움직였다. 하지만 이런 보복 같은 훈련으로는 자기 몸만 다치게 할 뿐이다.
+    - 막아서려던 바로 그때——
     -
     - color: '%COLOR_91%'
       content:
@@ -382,7 +382,7 @@ rec2:
         - 「게다가, 나 같은 건 없어도 상관없잖아… 너희 둘만 있으면 충분하잖아……」
     -
     - 「상관없다」는 말이 입 밖으로 나오는 순간, %TEEN%는 자신의 말에 찔리기라도 한 듯 아랫입술을 꾹 깨물었고, 마지막 음절은 거의 이 악물고 쥐어짜듯 뱉어냈다.
-    - その様子を見て、%VIVLOS%は急いで寄り、今度は直接%SEX%の腕に抱きついた。
+    - 그 모습을 본 %VIVLOS%는 황급히 다가와 이번에는 직접 %SEX%의 팔을 끌어안았다.
     -
     - color: '%COLOR_91%'
       content:
@@ -408,7 +408,7 @@ rec2:
       content:
         - fontWeight: bold
           content: %VIVLOS%
-        - 「なんでよ～～！ あたし、シュヴァお姉ちゃんの学園の話も聞きたかったのに～ %91_CALL_90%！ お姉ちゃんも説得してよ～！」
+        - 「왜 그래~~! 나도 슈발 언니의 학원 이야기를 듣고 싶었단 말이야~ %91_CALL_90%! 언니도 좀 설득해 줘~!」
     - color: '%COLOR_90%'
       content:
         - fontWeight: bold
@@ -425,15 +425,15 @@ rec2:
           content: %VERXINA%
         - 「가자, %VIVLOS%. 가끔은 슈발에게도 혼자만의 시간이 필요한 거야. 엄마 아빠한테는…… 내가 잘 말씀드릴게.」
     -
-    - 何か飲み込み、%VERXINA%は%VIVLOS%の肩を抱いて向きを変え、%CHARA%の肩を慰めるように叩いた。
+    - 무언가를 삼킨 듯, %VERXINA%는 %VIVLOS%의 어깨를 감싸 방향을 돌리고는 %CHARA%의 어깨를 위로하듯 두드렸다.
     -
     - color: '%COLOR_91%'
       content:
         - fontWeight: bold
           content: %VIVLOS%
-        - 「ん……%91_CALL_90%もうちょっと粘ってよ。ねえ、シュヴァお姉ちゃん、次は絶対来てね。無理しちゃだめだよ……？」
+        - 「응…… %91_CALL_90%도 조금만 더 붙잡아 줘. 있지, 슈발 언니, 다음에는 꼭 와 줘. 무리하면 안 돼…… 알았지?」
     -
-    - 言い終えると、%VIVLOS%は心配そうではあったが、笑って%CHARA%に手を振り、小走りに%VERXINA%の背を追った。
+    - 말을 마친 %VIVLOS%는 여전히 걱정스러워 보였지만, 웃으며 %CHARA%에게 손을 흔들고는 종종걸음으로 %VERXINA%의 뒤를 따라갔다.
     -
     - color: '%COLOR%'
       content:
@@ -472,21 +472,21 @@ rec2:
           position: center
         -
         - color: '%COLOR%'
-          content: 私には%CALL_90%と%YOUNGER_SISTER%がいる。
+          content: 나에게는 %CALL_90%와 %YOUNGER_SISTER%가 있다.
         - color: '%COLOR%'
-          content: %CALL_90%の名前は%VERXINA%、%YOUNGER_SISTER%の名前は%VIVLOS%。
+          content: %CALL_90%의 이름은 %VERXINA%, %YOUNGER_SISTER%의 이름은 %VIVLOS%다.
         - color: '%COLOR%'
-          content: %THEY%は母みたいに……明るくて華やかで、人と話すのが上手。
+          content: %THEY%는 엄마처럼…… 밝고 화려하며 다른 사람과 대화하는 데 능숙하다.
         - color: '%COLOR%'
-          content: %THEY%二人は……私と正反対。
+          content: %THEY% 둘은…… 나와 정반대다.
         -
         - color: '%COLOR%'
-          content: （女性の親戚「あらあら、%VERXINA%と%VIVLOS%じゃない。今日も華やかで可愛いわね！」）
+          content: （여자 친척「어머나, %VERXINA%와 %VIVLOS%잖니. 오늘도 정말 화사하고 귀엽구나!」）
         - color: '%COLOR_90%'
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%VERXINA%
+              content: 어릴 적의 %VERXINA%
             - 「후훗…… 칭찬해 주셔서 감사합니다! 엄마가 사주신 옷이에요. 이따가 저희 같이 춤도 출 거예요! 꼭 보러 오세요♪」）
         - color: '%COLOR%'
           content: （여성 친척 「어머, 춤을 춰? 정말 우아한 취미네. 아, 슈발짱도 같이 할 거니?」）
@@ -494,7 +494,7 @@ rec2:
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%CHARA%
+              content: 어릴 적의 %CHARA%
             - 「……아, 아니요…… 전 이런 건… 잘 못해서…」）
         -
         - color: '%COLOR%'
@@ -504,45 +504,45 @@ rec2:
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%VERXINA%
+              content: 어릴 적의 %VERXINA%
             - 「……좋아——! 오늘은 한 세트 더 뛰자!」）
         - color: '%COLOR_91%'
           content:
             - （
             - fontWeight: bold
               content: 어린 %VIVLOS%
-            - 「……あたしもあたしも！ %91_CALL_90%待ってよ～」）
+            - 「……나도, 나도! %91_CALL_90%, 기다려~!」）
         - color: '%COLOR%'
           content: （주니어 클럽 코치 「……하하하! 오늘도 활기가 넘치네! 주변 아이들까지 덩달아 의욕이 샘솟고 있잖아!」）
         - color: '%COLOR%'
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%CHARA%
+              content: 어릴 적의 %CHARA%
             - 「……푸아—— 하아—— 헤헤……」）
         - color: '%COLOR%'
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%CHARA%
+              content: 어릴 적의 %CHARA%
             - 「……레이스, 정말 재밌어…… 세상에 이렇게 즐거운 일이 있는 줄은 몰랐어……! 나도 꼭… 더 강해질 거야!」）
         - color: '%COLOR%'
-          content: （ジュニアクラブのコーチ「……あっちの姉妹は才能があるな！ %VERXINA%は将来有望、%VIVLOS%も伸びしろだらけの原石だ！」）
+          content: （주니어 클럽 코치「……저쪽 자매는 재능이 있군! %VERXINA%는 장래가 촉망되고, %VIVLOS%도 성장 가능성이 무궁무진한 원석이야!」）
         - color: '%COLOR%'
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%CHARA%
+              content: 어릴 적의 %CHARA%
             - 「……아……」）
         - color: '%COLOR%'
           content:
             - （
             - fontWeight: bold
-              content: 幼いころの%CHARA%
+              content: 어릴 적의 %CHARA%
             - 「……그렇지…… 레이스도…… 포기하는 게 낫겠어……」）
         -
         - color: '%COLOR%'
-          content: ……中央に立つ%THEY%と、端に立つ私。
+          content: ……한가운데 서 있는 %THEY%와, 가장자리에 서 있는 나.
         - color: '%COLOR%'
           content: 나와 그 두 사람 사이에는 근본적인 차이가 있다…… 나는…… 아무런 매력도 없는, 이건 너무나도 당연하고 절대 변하지 않는 사실……
         -
@@ -588,12 +588,12 @@ rec2:
           content:
             - fontWeight: bold
               content: '%CHARA%'
-            - '（……%CALL_90%%THEY%や、キタサンさん%THEY%なら、すぐ馴染んで、うまくやるんだろうな。）'
+            - '（……%CALL_90%%THEY%나 키타산 씨 %THEY%라면 금방 적응해서 잘할 텐데.）'
         -
         - color: '%COLOR%'
-          content: '%CALL_90%なら……絶対に勝つ。%VIVLOS%なら、自分から動けるはず。'
+          content: '%CALL_90%라면…… 틀림없이 이길 거야. %VIVLOS%라면 스스로 움직일 수 있을 텐데.'
         - color: '%COLOR%'
-          content: 'どうして%THEY%はあんなに強くて、勇敢なのに……私はいつもこんなに臆病なの。不思議で、全然分からない。'
+          content: '어째서 %THEY%는 그렇게 강하고 용감한데…… 나는 언제나 이렇게 겁이 많을까. 이상해. 아무리 생각해도 모르겠어.'
         - color: '%COLOR%'
           content: '……무엇보다, 너무 부럽다.'
         - color: '%COLOR%'
@@ -627,7 +627,7 @@ rec2:
         - color: '%COLOR%'
           content: '그 트레이너는 나를 위아래로 훑어보더니, 마지막엔 가슴 쪽에 시선을 멈췄다. 우울함에 수치심까지 겹쳐, 나는 참지 못하고 도망쳐버렸다.'
         - color: '%COLOR%'
-          content: 'でも見方を変えれば……あのとき隠さず、知らないふりして胸を%YOURSEX%に見せていたら……契約できてた……？'
+          content: '하지만 다르게 생각하면…… 그때 숨기지 않고, 모르는 척 %YOURSEX%에게 가슴을 보여 줬다면…… 계약할 수 있었을까……?'
         -
         - color: '%COLOR%'
           content:
@@ -651,7 +651,7 @@ rec2:
           content:
             - fontWeight: bold
               content: '%CHARA%'
-            - '（でも、こんな私にとって……あれが人生で唯一の募集の機会だったのかも……）'
+            - '（하지만 이런 나에게는…… 그게 인생에서 유일한 스카우트 기회였을지도 몰라……）'
         -
         - color: '%COLOR%'
           content: '그래도 다시 생각해 보면, 가슴 말고 여자로서의 매력이 하나도 없는 나는, 금방 질려서 버림받고 결국 다시 혼자가 되겠지……'
@@ -869,7 +869,7 @@ rec2:
         - color: '%COLOR%'
           content: '……맞아, 분명 그럴 거야. 안 그러면 고작 %YOURPHY%의 손에 닿았다는 이유만으로 이렇게 얼굴이 뜨거워질 리가 없잖아!'
         - color: '%COLOR%'
-          content: 'こんなに用意してるなんて……最悪の場合……少なくとも%CALL_90%と%VIVLOS%は守らないと。'
+          content: '이렇게까지 준비하다니…… 최악의 상황이 오더라도…… 적어도 %CALL_90%와 %VIVLOS%는 지켜야 해.'
         -
         - acc: 1
           content: '「아, 맞다. 하마터면 이걸 잊을 뻔했네.」'
@@ -999,7 +999,7 @@ rec2:
           content:
             - fontWeight: bold
               content: '%CHARA%'
-            - '（だめだめ、そんな謙遜、%YOURSEX%の認めを否定してるだけ……）'
+            - '（안 돼, 안 돼. 그런 겸손은 %YOURSEX%가 인정해 준 걸 부정하는 것뿐이잖아……）'
         - color: '%COLOR%'
           content:
             - fontWeight: bold
@@ -1009,7 +1009,7 @@ rec2:
         - color: '%COLOR%'
           content: '이것이 그의 호의를 거절하는 일이라는 걸 머리로는 알면서도, 자기 비하의 말은 도무지 멈출 기미가 보이지 않았다.'
         - color: '%COLOR%'
-          content: '%YOURSEX%の瞳がわずかに見開かれ、口元の笑みが潮のように引く。顔を逸らしたとき、喉が一度動いて、顎を撫でて黙った。'
+          content: '%YOURSEX%의 눈이 조금 커지더니 입가의 미소가 썰물처럼 사라졌다. 얼굴을 돌릴 때 목울대가 한 번 움직였고, 턱을 쓰다듬으며 말없이 있었다.'
         -
         - color: '%COLOR%'
           content:
@@ -1029,7 +1029,7 @@ rec2:
         - color: '%COLOR%'
           content: '어느새 손톱이 손바닥을 파고들었지만, 그깟 통증은 가슴속의 먹먹함에 비하면 아무것도 아니었다. 지금쯤 %YOURSEX%도 눈앞의 우마무스메가 사실은 전혀 사랑스럽지 않은 귀찮은 녀석이라는 걸 알아차렸겠지?'
         - color: '%COLOR%'
-          content: '基本の返事すらできない%UMA%なのに……相手は私の気持ちを慮って、すぐには去らず、傷つけない言い方を探している……%YOURSEX%は、本当に優しい人だ。'
+          content: '기본적인 대답조차 제대로 못 하는 %UMA%인데도…… 상대는 내 마음을 헤아려 바로 떠나지 않고, 상처 주지 않을 말을 찾고 있어…… %YOURSEX%는 정말 상냥한 사람이야.'
         - color: '%COLOR%'
           content: '하지만…… 더 이상 %YOURSEX%의 시간을 낭비할 필요는 없어…… 선생님이 더 곤란해지기 전에, 내가 먼저 끝내자.'
         -
@@ -1072,9 +1072,9 @@ rec2:
         - color: '%COLOR%'
           content: '자, 잠깐만?'
         - color: '%COLOR%'
-          content: '%YOURSEX%は、今、何て言った？'
+          content: '%YOURSEX%는 방금 뭐라고 했지?'
         - color: '%COLOR%'
-          content: '%YOURSEX%は……%CHARA%を募集する、って！？'
+          content: '%YOURSEX%가…… %CHARA%를 스카우트하겠다고!?'
         -
         - color: '%COLOR%'
           content:
@@ -1194,9 +1194,9 @@ rec2:
         - color: '%COLOR%'
           content: '믿고 싶어졌다.'
         - color: '%COLOR%'
-          content: 'あの人がここまで信じてくれるなら、少しでも応えたい……それが本音だ。'
+          content: '그 사람이 이토록 나를 믿어 준다면, 나도 조금이나마 보답하고 싶어…… 그게 내 진심이야.'
         - color: '%COLOR%'
-          content: '頬の熱が溢れる寸前で、%YOURSEX%の褒めを遮るように、少し焦って誘いへ応えた。'
+          content: '뺨에 열기가 넘치기 직전, %YOURSEX%의 칭찬을 가로막듯 다소 다급하게 제의에 대답했다.'
         -
         - color: '%COLOR%'
           content:
