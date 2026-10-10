@@ -122,42 +122,42 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] 74-1
+  // [번역 완료] 74-1
   async '74-1'(nature, you, callname) {
     const ret = [];
     await nature.print_and_wait([
-      'ある夜、',
+      '어느 날 밤, ',
       nature.get_colored_name(),
-      ' は、自分の ',
+      '은(는) 자신의 ',
       you.get_colored_actual_name(),
-      ' への想いが、恋だと気づきはじめていた。',
+      '을(를) 향한 감정이 사랑이라는 사실을 깨닫기 시작했다.',
     ]);
     await nature.print_and_wait(
-      '窓にうつぶせ、通りを隔ててまだ明かりのついたトレーナー室を眺めていると、温もりが胸を包んでいく。',
+      '창가에 엎드려 길 건너편에 아직 불이 켜진 트레이너실을 바라보자 따스한 감정이 가슴을 감쌌다.',
     );
     await nature.print_and_wait([
       you.get_colored_actual_name(),
-      ' の行き届いた世話を思い浮かべ、',
+      '의 세심한 보살핌을 떠올리며 ',
       nature.get_colored_name(),
-      ' は、胸の内にある感情の名前を理解したようだった。',
+      '은(는) 가슴속 감정의 이름을 이해한 듯했다.',
     ]);
     era.println();
 
-    era.printButton(`「あたし……${callname} が好き！」（関係を進める）`, 1);
+    era.printButton(`「나…… ${callname}을(를) 좋아해!」 (관계를 발전시킨다)`, 1);
     era.printButton(
-      `「いやいやいや、あたしたちは${nature.uma_sex_title}と担当トレーナーの関係でしょ！ 夜になるとセンチメンタルになるよね、ほんと。早く寝よ！」（まだ進めない）`,
+      `「아니, 아니! 우린 ${nature.uma_sex_title}와 담당 트레이너 사이잖아! 밤만 되면 왜 이렇게 감상적이 되는 거야. 어서 자자!」 (아직 발전시키지 않는다)`,
       2,
     );
     ret.push((ret.update = await era.input()));
     if (ret.update === 1) {
       await nature.print_and_wait([
-        '声はか細いが、',
+        '목소리는 가늘게 떨렸지만 ',
         nature.teen_sex_title,
-        'の覚悟ははっきりしていた。',
+        '의 결심은 확고했다.',
       ]);
       await nature.print_and_wait([
         nature.get_colored_name(),
-        'は自分の気持ちを受け入れ、何を望んでいるかもわかった。残るのは、最後のひとつ……',
+        '은(는) 자신의 마음을 받아들였고 무엇을 원하는지도 알게 되었다. 남은 건 마지막 한 가지……',
       ]);
     }
     return ret;
@@ -439,22 +439,22 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] 89
+  // [번역 완료] 89
   async 89(nature, you) {
     await nature.print_and_wait([
-      '夜、',
+      '밤이 되자 ',
       nature.get_colored_name(),
-      ' は押し入れから、少し年季の入ったクッキー缶を取り出し、大切に卓へ置く。',
+      '은(는) 벽장에서 조금 낡은 쿠키 통을 꺼내 소중히 탁자 위에 올려놓았다.',
     ]);
     await nature.print_and_wait([
-      '缶のなかには折り紙のトロフィーが整然と重なっている。どれも ',
+      '통 안에는 종이로 접은 트로피들이 가지런히 쌓여 있었다. 하나하나 모두 ',
       you.get_colored_actual_name(),
-      ' との軌跡で、どれもかけがえのない思い出だ。走ってきたレースだけでなく、ふたりで過ごした幸せな時間まで、そこにしまわれている。',
+      '와 함께해 온 발자취이자 둘도 없는 추억이었다. 달려온 레이스뿐 아니라 두 사람이 함께 보낸 행복한 시간까지 그 안에 담겨 있었다.',
     ]);
     await nature.print_and_wait([
-      'このコレクションがこれからもっと増えていくと思うと、笑みが自然に',
+      '앞으로 이 수집품이 더 늘어날 거라고 생각하자 저절로 미소가 ',
       nature.sex,
-      'の頬へ浮かぶ。',
+      '의 뺨에 떠올랐다.',
     ]);
   },
 };
