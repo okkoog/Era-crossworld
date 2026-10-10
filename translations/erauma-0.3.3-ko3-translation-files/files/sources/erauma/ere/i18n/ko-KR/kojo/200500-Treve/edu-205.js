@@ -5,9 +5,9 @@ const get_random_entry = require('#/utils/list-utils')["get_random_entry"];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/200500-Treve/edu-205"),
 
-  // [번역 대상] before_prix_lat_classical
+  // [번역 완료] before_prix_lat_classical
   before_prix_lat_classical: (() => {
-    const title = '『暴君』すら砕く……';
+    const title = '『폭군』마저 꺾다……';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
@@ -15,75 +15,75 @@ module.exports = {
      */
     const f = async (treve, you, callname) => {
       await era.printAndWait(
-        `${you.name} は、${treve.name} が勝負服の意匠を決めたときのことをはっきり覚えている。`,
+        `${you.name}은(는) ${treve.name}가 승부복 디자인을 결정하던 때를 선명하게 기억하고 있다.`,
       );
       await era.printAndWait(
-        `${treve.sex}のG1出走は他の${treve.uma_sex_title}より早く、勝負服もすぐ仕立てることになったが、一点だけ${treve.sex}は絶対に譲らなかった。`,
+        `${treve.sex}의 G1 출전은 다른 ${treve.uma_sex_title}보다 빨랐기에 승부복도 서둘러 제작해야 했지만, ${treve.sex}는 단 한 가지 조건만큼은 절대 양보하지 않았다.`,
       );
-      era.printButton(`「本当に、これでいいのか？」`, 1);
+      era.printButton(`「정말 이걸로 괜찮겠어?」`, 1);
       await era.input();
-      await treve.say_and_wait(`これでいい！`);
+      await treve.say_and_wait(`이걸로 좋아!`);
       await era.printAndWait(
-        `胸を張る${treve.sex}の前で、${you.name} は書類から目を離せない。`,
+        `가슴을 당당히 편 ${treve.sex} 앞에서 ${you.name}은(는) 서류에서 눈을 떼지 못했다.`,
       );
       await era.printAndWait(
-        `${treve.sex}の言葉は、デザイナーの案のいくつかを力強く消させる。`,
+        `${treve.sex}의 확고한 말에 디자이너는 몇 가지 시안을 과감히 지웠다.`,
       );
-      await era.printAndWait(`青、白、赤の三色。`);
-      await era.printAndWait(`周知の、フランス国旗の三色だ。`);
-      await era.printAndWait(`それを勝負服の地色にする。`);
-      await era.printAndWait(`その提案に頷いたのは、まさに……`);
-      await era.printAndWait(`${treve.sex}なら、何を背負ってもいけるだろう。`);
+      await era.printAndWait(`파랑, 하양, 빨강의 세 가지 색.`);
+      await era.printAndWait(`누구나 아는 프랑스 국기의 삼색이다.`);
+      await era.printAndWait(`그 색들을 승부복의 바탕색으로 삼겠다는 것이다.`);
+      await era.printAndWait(`그 제안에 고개를 끄덕인 사람은 바로……`);
+      await era.printAndWait(`${treve.sex}라면 무엇을 짊어지더라도 해낼 것이다.`);
       await era.printAndWait(
-        `控え室で最後の確認をする ${treve.name} は、一点の綻びもない勝負服を確かめ、鏡の前で自分の姿を真剣に見ている。`,
-      );
-      await era.printAndWait(
-        `今日の凱旋門賞には英独だけでなく、日本の${treve.uma_sex_title}も出走している。`,
+        `대기실에서 마지막 점검을 하던 ${treve.name}는 흠잡을 데 없는 승부복을 살피고, 거울 앞에서 자신의 모습을 진지하게 바라보았다.`,
       );
       await era.printAndWait(
-        `国際の注目を集めるこのレースで、${treve.sex}は国旗のような色の勝負服を着る。だが${treve.sex}に緊張はない。`,
+        `오늘 개선문상에는 영국과 독일뿐 아니라 일본의 ${treve.uma_sex_title}도 출전한다.`,
       );
       await era.printAndWait(
-        `椅子に座り、${treve.sex}の支度を見つめる ${you.name} へ、${treve.name} が振り返る。`,
+        `전 세계가 주목하는 이 레이스에서 ${treve.sex}는 국기를 닮은 색의 승부복을 입었다. 하지만 ${treve.sex}에게 긴장한 기색은 없다.`,
       );
       await era.printAndWait(
-        `あの日と同じコートを着た ${you.name} には、勝負服の ${treve.name} は当時想像もできなかった。`,
+        `의자에 앉아 ${treve.sex}가 준비하는 모습을 지켜보던 ${you.name}을(를) 향해 ${treve.name}가 돌아섰다.`,
+      );
+      await era.printAndWait(
+        `그날과 똑같은 코트를 입은 ${you.name}은(는), 승부복을 입은 ${treve.name}의 모습을 당시에는 상상조차 하지 못했다.`,
       );
       await treve.say_and_wait(`${callname}。`);
-      era.printButton(`「うん。」`, 1);
+      era.printButton(`「응.」`, 1);
       await era.input();
       await treve.say_and_wait(
-        `ここまで連れてきてくれてありがとう。いくつもG1に出させて、誰より真剣に見てくれた。こんな大きな目標、凱旋門賞の前でも。`,
+        `여기까지 데려와 줘서 고마워. 여러 G1에 출전하게 해 주고, 누구보다 진지하게 지켜봐 줬잖아. 이렇게 큰 목표인 개선문상 앞에서도.`,
       );
-      era.printButton(`「終わってから言ってくれ。」`, 1);
+      era.printButton(`「그런 말은 끝나고 해 줘.」`, 1);
       await era.input();
       await era.printAndWait(
-        `「そうね」と笑う ${treve.name} に、窮した色はない。`,
+        `『그러네』라며 웃는 ${treve.name}에게는 위축된 기색이 없었다.`,
       );
       await era.printAndWait(
-        `この凱旋門賞の舞台の前で、${you.name} は${treve.sex}の特異な才能を理解した。`,
+        `개선문상 무대를 앞두고 ${you.name}은(는) ${treve.sex}가 지닌 특이한 재능을 깨달았다.`,
       );
-      await era.printAndWait(`それは身体の能力でも、精神の安定でもない。`);
-      await era.printAndWait(`調教のあとで掴めるものとは違う、天与の才だ。`);
-      await era.printAndWait(`他人の期待を背負うことに、まったく圧がない。`);
+      await era.printAndWait(`그것은 신체 능력도, 정신적인 안정감도 아니었다.`);
+      await era.printAndWait(`훈련을 통해 얻을 수 있는 것과는 다른, 타고난 재능이다.`);
+      await era.printAndWait(`타인의 기대를 짊어지는 데 아무런 부담을 느끼지 않는다.`);
       await era.printAndWait(
-        `巨大な器のように、人の信頼と希望を無限に力へ変えられる。`,
-      );
-      await era.printAndWait(
-        `稀な完成度と高さから生まれたそれが、あらゆる消極を断ち、${treve.name} を前へ進ませる。`,
+        `거대한 그릇처럼 다른 이들의 신뢰와 희망을 끝없이 자신의 힘으로 바꿀 수 있다.`,
       );
       await era.printAndWait(
-        `${you.name} は、もう一度自分に問わねばならない。`,
+        `보기 드문 완성도와 드높은 경지에서 비롯된 그 재능은 모든 주저함을 끊어 내고 ${treve.name}를 앞으로 나아가게 한다.`,
       );
-      await era.printAndWait(`なぜ自分は${treve.sex}のトレーナーなのか。`);
       await era.printAndWait(
-        `ドアノブに手を置いた${treve.sex}が、もう一度 ${you.name} を振り返り、あの言葉を言う。`,
+        `${you.name}은(는) 다시 한번 스스로에게 물어야 했다.`,
       );
-      await era.printAndWait(`願いか、呪いか。`);
-      await era.printAndWait(`すべてが躍動するように。`);
-      await treve.say_and_wait(`勝つわ。あなたの ${treve.name} として。`);
-      era.printButton(`黙って見送る（好感+5）`, 1);
-      era.printButton(`「君は勝つ。」（好感+15）`, 2);
+      await era.printAndWait(`나는 왜 ${treve.sex}의 트레이너인 걸까.`);
+      await era.printAndWait(
+        `문손잡이에 손을 얹은 ${treve.sex}가 다시 ${you.name}을(를) 돌아보며 그 말을 꺼냈다.`,
+      );
+      await era.printAndWait(`소원일까, 저주일까.`);
+      await era.printAndWait(`모든 것이 약동하도록.`);
+      await treve.say_and_wait(`이길게. 당신의 ${treve.name}로서.`);
+      era.printButton(`말없이 배웅한다 (호감도 +5)`, 1);
+      era.printButton(`「넌 이길 거야.」（好感+15）`, 2);
       return [await era.input()];
     };
     f.title = title;
