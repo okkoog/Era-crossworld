@@ -4,6 +4,672 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/108500-Daiichi-Ruby/love-85"),
 
+  // [번역 완료] 49
+  49: (() => {
+    const title = "애욕";
+    const f = async (ruby, you, callname) => {
+      await ruby.print_and_wait(
+        "어느덧 밤의 장막이 널리 내렸음에도, 가슴을 고동치게 만드는 그 사랑스러운 존재는 좀처럼 머릿속에서 떠나지 않았다.",
+      );
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "는 울먹이며 불만을 표했다. 스스로도 이렇게 집착해서는 안 된다는 것을 잘 알고 있었다.",
+      ]);
+      await ruby.print_and_wait(
+        "매끄러운 허벅지를 타고 흘러내리는 점액, 그 음란한 흔적에 커다란 수치심을 느낀 그녀는 두 다리를 꼬옥 맞잡았다.",
+      );
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "는 입고 있던 잠옷 속으로 손을 밀어 넣어, 은밀한 음부를 어루만졌다.",
+      ]);
+      await ruby.print_and_wait("마치 아침이슬처럼, 새로이 배어 나온 투명한 점액이 손가락 끝에 진득하게 묻어났다.");
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "는 너무나 잘 알고 있었다. 이것이 본래 ",
+        callname,
+        "을 자신의 몸 안으로 받아들이기 위한 윤활제가 되어야 마땅하다는 것을.",
+      ]);
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "의 손길이 자연스럽게 가랑이 사이를 문지르고 애무하자, 짜릿한 쾌감이 온 뇌리를 관통했다.",
+      ]);
+      await ruby.print_and_wait([
+        "——신체도, 마음도, 전부 ",
+        callname,
+        "에 의해 길들여지고, 완전히 바뀌어 버렸다.",
+      ]);
+      await ruby.say_and_wait([
+        "어째서, 그저 ",
+        callname,
+        "을 떠올리는 것만으로도, 이렇게……",
+      ]);
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "는 고개를 뒤로 젖히며, ",
+        callname,
+        "의 그 거대하고 웅장한 물건이 코앞에 박두해 있는 듯한 망상에 사로잡혔다.",
+      ]);
+      await ruby.say_and_wait(
+        "이렇게 굵고…… 이렇게 크다니…… 게다가 향취가 무척 짙군요!",
+      );
+      await ruby.print_and_wait(
+        "아름답고 커다란 눈동자 속에는 마치 정말로 그 거대한 남근이 존재하는 듯한 착각마저 일었다.",
+      );
+      await ruby.print_and_wait([
+        "우마무스메로서, 그리고 고귀한 화려한 일족으로서, 자신이 ",
+        callname,
+        "에게 바닥에 짓눌린 채 바스라지도록 유린당해 쾌락의 끝으로 치닫는 모습을 상상했다.",
+      ]);
+      await ruby.say_and_wait("아윽……");
+      await ruby.print_and_wait([
+        "지독한 배덕감이 심장 깊은 곳으로부터 흘러넘쳤고, ",
+        ruby.get_colored_name(),
+        "는 온몸을 파르르 떨며 붉은 혀를 살짝 내밀었다.",
+      ]);
+      await ruby.say_and_wait(
+        "정말로, 형용할 수 없을 만큼 거대해…… 평소의 모습과는 다르게, 자신이 가장 강인한 수컷임을 과시하듯이……",
+      );
+      await ruby.print_and_wait(
+        "그녀는 몽롱하면서도 한 가닥 애원 어린 눈빛으로 허공을 핥아 올렸다.",
+      );
+      await ruby.print_and_wait(
+        "자신의 긍지를 무참히 부수어 버렸던 그 우람한 성기를 향해, 부드러운 혀끝으로 섬세하게 탐닉하듯 손길을 대신했다.",
+      );
+      await ruby.print_and_wait([
+        callname,
+        "의 웅장한 육봉을 극진히 모시는 일이야말로, 지금의 ",
+        ruby.get_colored_name(),
+        "에게 있어 가장 중요한 사명이었기 때문이다.",
+      ]);
+      await ruby.say_and_wait("하아……! 싫어, 안쪽이…… 읏, 너무 기이한 감각이에요……");
+      await ruby.print_and_wait(
+        "밀려오는 쾌감과 함께, 축축하게 젖어 든 질 안쪽에서 끊임없이 비액이 넘쳐흘렀다. 음순 입구로부터 흘러내린 애액이 엉덩이 골을 따라 부드럽게 타고 내려갔다.",
+      );
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "는 마침내 깨달았다. 그것은 화려 일족의 고귀한 혈통조차 단숨에 압도해 버릴 만큼 강력한 지배력이라는 것을.",
+      ]);
+      await ruby.print_and_wait([
+        "하복부, 특히 자궁 깊은 곳이 근질거리는 감각은, ",
+        ruby.get_colored_name(),
+        "로 하여금 자신 역시 그저 한 명의 나약한 암컷에 불과하다는 사실을 뼈저리게 실감케 했다.",
+      ]);
+      await ruby.say_and_wait([
+        "아!…… 원해요, ",
+        callname,
+        "과 저의 아이를…… 아아아……",
+      ]);
+      await ruby.print_and_wait("의식이 아득하게 흐려지며, 가느다란 이성마저 점차 상실되어 갔다.");
+      await ruby.print_and_wait(
+        "질 내부의 압력으로 인해 음순이 활짝 벌어졌고, 완전한 절정과는 또 다른 묘한 쾌감에 휩싸여 음도구가 끊임없이 실룩거렸으며, 얕은 오르가슴이 멈추지 않고 밀려들었다.",
+      );
+      await ruby.print_and_wait("아랫배를 쓰다듬던 손길의 속도가 한층 빨라졌고, 힘이 더해졌다.");
+      await ruby.print_and_wait([
+        "손가락질은 멈출 줄 몰랐다. ",
+        ruby.get_colored_name(),
+        "는 ",
+        callname,
+        "에게 거칠고 난폭하게 다루어지기를 갈망했다. 머릿속으로 ",
+        callname,
+        "의 강인하고 다부진 남성기, 단단하게 솟구친 육간과 형태가 수려한 귀두를 끊임없이 그렸다.",
+      ]);
+      await ruby.print_and_wait([
+        callname,
+        "에게 관통당한다면, 질 내부가 찢어질 듯 강제로 확장될 것이다.",
+      ]);
+      await ruby.print_and_wait([
+        callname,
+        "의 육봉이 가장 깊은 곳까지 내질러져, 정액이 내뿜어지는 사출구가 아기가 자라는 방의 문을 빈틈없이 짓누르는 상상.",
+      ]);
+      era.println();
+      await ruby.print_and_wait(
+        "마치 레이스에서 승리했을 때의 환호성처럼, 맑은 애액이 세차게 분출되었다.",
+      );
+      await ruby.print_and_wait(
+        "맹렬한 극치감이 휩쓸고 지나간 뒤, 마치 혹독한 오르막길 언덕 훈련을 마친 것처럼 두 다리가 사시나무 떨듯 흐느적거렸다.",
+      );
+      await ruby.print_and_wait([
+        "기분 좋은 나른한 피로감이 ",
+        ruby.get_colored_name(),
+        "의 온몸을 포근하게 감싸 안았다.",
+      ]);
+      await ruby.print_and_wait("밤의 장막이 도시를 완벽하게 뒤덮었다.");
+      await ruby.print_and_wait(
+        "천상의 소리와도 같은 감미로운 교성이 잦아들자, 이윽고 잔잔한 물소리만이 방 안에서 맴돌았다.",
+      );
+      era.drawLine();
+      await era.printAndWait([
+        "얼마나 깊은 잠에 빠져 있었을까, ",
+        you.get_colored_name(),
+        "은(는) 문득 기묘한 꿈을 꾸는 듯한 기분이 들었다.",
+      ]);
+      await era.printAndWait(
+        "꿈결 속에서 여인의 가느다란 신음 소리가 은밀하게 들려오는 듯했으나, 그것은 너무나도 아득하고 아스라했다.",
+      );
+      await era.printAndWait([
+        you.get_colored_name(),
+        "은(는) 필사적으로 눈을 뜨려 노력해 보았지만, 눈꺼풀이 무거워 도무지 마음대로 되지 않았다.",
+      ]);
+    };
+    f.title = title;
+    return f;
+  })(),
+
+  // [번역 완료] 74
+  74: (() => {
+    const title = "어머니의 소식";
+    const f = async (ruby, mother, you, callname) => {
+      const ret = [];
+      await ruby.print_and_wait([
+        "그것은 어느 휴일에 일어난 이야기였다. ",
+        ruby.get_colored_name(),
+        "의 어머님께서 그녀에게 중대한 소식이 있다고 전해왔다.",
+      ]);
+      await ruby.print_and_wait(
+        "화려한 일족의 우마무스메는 레이스 성적 외에도, 요구받는 또 다른 중책이 있었다.",
+      );
+      await ruby.print_and_wait("이를테면……");
+      await ruby.print_and_wait(
+        "가능한 한 많은 우마무스메를 낳고 길러내어, 그 혈통을 후세로 이어 나가는 것.",
+      );
+      await ruby.print_and_wait(
+        "그러기 위해서는 하루라도 빨리 결혼해야만 했다. 아이를 갖도록 장려받는 것 또한 일족으로서는 지극히 당연한 도리였다.",
+      );
+      await ruby.print_and_wait(
+        "설령 그것이 이른바 정략결혼이라 할지라도, 심지어 상대의 용모나 인품조차 미처 알지 못하는 상황일지라도.",
+      );
+      await ruby.print_and_wait([
+        ruby.get_colored_name(),
+        "에게 있어 일족이 엄선하여 정한 상대란, 애초부터 거절할 수 있는 선택지가 아니었다.",
+      ]);
+      await ruby.say_and_wait("어떤 남성인가요?");
+      await ruby.print_and_wait(
+        "마음속 깊은 곳에 아직 저항감이 남아있어서였을까, 그녀는 자연스레 질문을 던졌다.",
+      );
+      await mother.say_and_wait(
+        "무척이나 훌륭한 분이란다? 내가 독단으로 신청을 넣었는데, 상대 측에서도 꽤 고심하는 모양이더구나.",
+      );
+      await mother.say_and_wait(
+        "하지만 일족의 당주이자 너의 어머니로서, 나는 이것이 아주 훌륭한 혼인이 될 것이라 생각한단다.",
+      );
+      await ruby.print_and_wait(
+        "혼인 생활은 필시 행복과는 거리가 멀 터였기에, 그토록 자부해 마지않던 일족의 피가 이 순간만큼은 더없이 원망스럽게 느껴졌다.",
+      );
+      await ruby.print_and_wait(
+        "아름다운 결혼 생활을 동경해 본 적이 없다고 한다면 거짓말이리라. 수려하지 않아도 좋으니 다정하고 성실하며, 서로를 존중해 줄 수 있는 그런 남성……",
+      );
+      await ruby.print_and_wait([
+        "문득, ",
+        ruby.get_colored_name(),
+        "의 머릿속에 ",
+        callname,
+        "의 얼굴이 스치고 지나갔다.",
+      ]);
+      await ruby.print_and_wait(
+        "비록 처음에는 다소 미덥지 못한 구석도 있었으나, 결국은 자신의 지팡이가 되어주고, 자신을 이끌어주는 인도자의 등불이 되어준 사람.",
+      );
+      await ruby.print_and_wait([
+        "자신이라는 원석이 가장 눈부신 광채를 발할 수 있도록 끊임없이 연마해 준 소중한 ",
+        callname,
+        "……",
+      ]);
+      await ruby.print_and_wait(["마음 깊이 사랑하는 ", callname, "."]);
+      await ruby.print_and_wait([
+        callname,
+        "과 함께 보내온 시간은 이미 ",
+        ruby.get_colored_name(),
+        "에게 있어 가장 고귀한 기억으로 자리 잡고 있었다.",
+      ]);
+      await ruby.print_and_wait([
+        "만약 선택의 자유가 허락된다면, ",
+        ruby.get_colored_name(),
+        "은(는) 반드시 ",
+        callname,
+        "의 곁에 머물고 싶었다.",
+      ]);
+      await ruby.print_and_wait(
+        "하지만, 가문의 명예를 더럽히는 불충한 행위는 결코 용납될 리 만무했다.",
+      );
+      await ruby.print_and_wait([
+        "그리고 정신을 차렸을 때, ",
+        ruby.get_colored_name(),
+        "는 이미 ",
+        callname,
+        "의 곁으로 발걸음을 옮긴 뒤였다.",
+      ]);
+      era.drawLine();
+      await ruby.say_and_wait(
+        "단도직입적으로 말씀드리자면, 저, 다른 분과 결혼하게 되었어요.",
+      );
+      await era.printAndWait([
+        you.get_colored_name(),
+        "이(가) 미처 입을 열기도 전에, ",
+        ruby.get_colored_name(),
+        "는 말을 이어 나갔다.",
+      ]);
+      await ruby.say_and_wait(
+        "조금 전 어머님께 제 혼사에 관한 이야기를 들었고, 받아들이기로 결정했습니다.",
+      );
+      await ruby.say_and_wait(
+        "화려한 일족의 우마무스메로서, 이 몸속에 가능한 한 많은 새로운 생명을 잉태하여 길러내야만 하니까요.",
+      );
+      await ruby.say_and_wait("하지만……");
+      await ruby.say_and_wait(
+        "그저 아주 잠깐, 아주 잠시만이라도 좋으니…… 당신의 소유가 되고 싶어요……",
+      );
+      await era.printAndWait("내내 억눌러왔던 애절한 마음이 끝내 흘러넘쳐, 눈물이 되어 툭툭 떨어졌다.");
+      await era.printAndWait([you.get_colored_name(), "은(는)……"]);
+      era.printButton("「미안해, 그런 무책임한 짓은 내가 용납할 수 없어.」", 1);
+      era.print(
+        "（피 묻은 쪽지 「아아아…… 루비…… 만약 내가 널 밀어내지 않았더라면……」）",
+        {
+          color: buff_colors[3],
+          offset: 1,
+          width: 23,
+        },
+      );
+      era.printButton("입을 맞춘다 (관계 진전)", 2);
+      ret.push(await era.input());
+      if (ret.at(-1) === 1) {
+        await era.printAndWait(
+          "예상했던 답변이었음에도, 머리로 이해하는 것과 달리 가슴은 끊임없이 미어졌다.",
+        );
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "는 비통한 표정을 지으며 고개를 푹 숙였다.",
+        ]);
+        await ruby.say_and_wait(
+          "당신께 이런 무리한 청을 드려 정말 송구합니다. 방금 한 말은 부디 잊어주세요.",
+        );
+        await era.printAndWait([
+          "그녀는 그대로 ",
+          you.get_colored_name(),
+          "의 트레이닝실을 빠져나갔다.",
+        ]);
+        await era.printAndWait([
+          "집으로 돌아가는 차 안에서, ",
+          ruby.get_colored_name(),
+          "는 아주 오랜만에 어린아이처럼 서럽게 흐느껴 울었다.",
+        ]);
+        era.drawLine();
+        await era.printAndWait([
+          you.get_colored_name(),
+          "은(는) 당연히 알아채고 있었다. 담당이 그야말로 「제발 구해줘」라고 얼굴에 써 붙인 듯한 표정을 짓고 있었다는 것을.",
+        ]);
+        await era.printAndWait([
+          you.get_colored_name(),
+          "은(는) ",
+          ruby.get_colored_name(),
+          "의 집사로부터 개인적인 메시지를 한 통 받았다.",
+        ]);
+        await era.printAndWait("메시지를 확인하겠습니까?");
+        era.printButton("삭제한다 (관계 거부)", 1);
+        era.print(
+          "【이 항목을 선택하면 모든 상황을 돌이킬 수 없게 됩니다! 세이브 데이터가 있는지 반드시 확인해 주십시오!】",
+          {
+            offset: 1,
+            width: 23,
+            color: buff_colors[3],
+          },
+        );
+        era.printButton("확인한다 (관계 진전)", 2);
+        ret.push(await era.input());
+        if (ret.at(-1) === 1) {
+          return ret;
+        } else {
+          await ruby.used_to_say_and_wait(
+            "우리…… 약속했었죠…… 함께……",
+          );
+          await ruby.used_to_say_and_wait("그러니까……");
+          await ruby.used_to_say_and_wait("흑, 으윽……!");
+          await ruby.used_to_say_and_wait("저의…… 소중한……");
+          await ruby.used_to_say_and_wait("아아아……");
+          await era.printAndWait("해야 할 일은 이미 마음 깊이 정해져 있었다.");
+          era.printButton("「하기노 탑 레이디(루비의 어머니) 여사에게 전화를 건다.」", 1);
+          await era.input();
+          era.printButton("「따님을 제게 주십시오.」", 1);
+          await era.input();
+          await mother.say_and_wait("……어머나 세상에, 텔레파시라도 통한 걸까요?");
+          await mother.say_and_wait("아니면…… 그 아이가 당신에게 무슨 말이라도 남긴 건가요?");
+          await mother.say_and_wait("하아……");
+          await mother.say_and_wait(
+            "저희 저택으로 한 번 와주셔야겠군요. 마중 나갈 다른 집사를 수배해 두겠습니다.",
+          );
+          era.drawLine();
+          await era.printAndWait([
+            ruby.get_colored_name(),
+            "의 방으로 향하던 도중, ",
+            you.get_colored_name(),
+            "은(는) 그녀를 보살피던 전속 집사와 정면으로 마주쳤다.",
+          ]);
+          await you.say_as_passer_by_and_wait(
+            "집사",
+            "아가씨를 잘 부탁드립니다.",
+          );
+          await era.printAndWait([you.get_colored_name(), "은(는) 묵묵히 고개를 끄덕였다."]);
+          await era.printAndWait([
+            ruby.get_colored_name(),
+            "는 자신의 방 문턱에 나타난 ",
+            you.get_colored_name(),
+            "을(를) 보고는 도무지 믿기지 않는다는 눈빛을 보냈다.",
+          ]);
+          era.printButton("「들어가서 이야기해도 될까?」", 1);
+          await era.input();
+          await era.printAndWait([
+            you.get_colored_name(),
+            "의 담당은 고개를 푹 숙였지만, 아주 미세하게 고개를 끄덕인 것은 알아챌 수 있었다.",
+          ]);
+          await era.printAndWait([
+            "방 안으로 들어섬과 동시에, ",
+            you.get_colored_name(),
+            "은(는) ",
+            ruby.get_colored_name(),
+            "의 가냘픈 손을 꼬옥 쥐었다.",
+          ]);
+          await era.printAndWait(["은 화려하고 커다란 침대 가장자리에 나란히 걸터앉았다."]);
+          await era.printAndWait([
+            "곁에서 잔뜩 긴장한 채 전전긍긍하고 있는 ",
+            ruby.get_colored_name(),
+            "를 보며, ",
+            you.get_colored_name(),
+            "은(는) 어쩔 수 없다는 듯 그녀를 품속으로 부드럽게 끌어안았다.",
+          ]);
+        }
+      } else {
+        await era.printAndWait([
+          "트레이닝실은 오늘 땀을 흘리며 몸을 단련하는 장소가 되었다.",
+        ]);
+      }
+      await era.printAndWait([
+        "거실 소파에서, ",
+        you.get_colored_name(),
+        "과(와) ",
+        ruby.get_colored_name(),
+        "는 뜨거운 전희를 시작했다.",
+      ]);
+      await era.printAndWait(
+        "용모가 수려하고 고결한 소녀의 머리칼이 헝클어지니, 오히려 자극적이고 유혹적인 정취가 묻어났다.",
+      );
+      await era.printAndWait([
+        "교복이 ",
+        you.get_colored_name(),
+        "에 의해 하나둘 풀어헤쳐졌고, 그 아래로 드넓은 백옥 같은 살결이 여과 없이 노출되었다.",
+      ]);
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        "의 피부는 무척이나 가냘프고 부드러워서, 마치 갓 내려앉은 순백의 첫눈을 연상케 했다.",
+      ]);
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        "의 체구는 작았지만, ",
+        you.get_colored_name(),
+        "에게 나약하다는 인상을 주지는 않았다.",
+      ]);
+      await era.printAndWait(
+        "상체에 걸친 레이스 브래지어는 훌륭하게 발육한 유방에 의해 터질 듯 팽팽하게 부풀어 올라 있었다.",
+      );
+      await era.printAndWait(
+        "드러난 부드러운 아랫배와 매끄러운 허리선 위에는 훈련의 산물인 선명한 11자 복근이 새겨져 있었다.",
+      );
+      await era.printAndWait([
+        "그녀의 팔뚝은 가냘펐지만, ",
+        you.get_colored_name(),
+        "의 체계적인 지도 덕분에 유려하면서도 탄력 있는 근육미가 서려 있었다.",
+      ]);
+      await era.printAndWait([
+        "그녀의 신체 부위 중에서도 ",
+        you.get_colored_name(),
+        "을(를) 가장 매료시킨 것은 바로 튼실한 허벅지였으며, 건강미 넘치는 힘 있는 곡선을 자아내고 있었다.",
+      ]);
+      await ruby.say_and_wait("으음…… 잠시만요. 문…… 안 잠겼어요.");
+      era.printButton("「내 담당이 이렇게 사랑스러운데 어떻게 참겠어, 괜찮아.」", 1);
+      await era.input();
+      await ruby.say_and_wait(
+        "그렇게나 짜릿한 자극이 좋으신가요, 애·기·아·빠?",
+      );
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        "는 ",
+        you.get_colored_name(),
+        "의 성기를 손으로 부드럽게 감싸 쥔 채, ",
+        you.get_colored_name(),
+        "의 귀두를 정면으로 바라보며 속삭였다.",
+      ]);
+      await era.printAndWait([
+        "소녀의 뜨거운 숨결이 ",
+        you.get_colored_name(),
+        "의 남근에 고스란히 불어닥치며, ",
+        you.get_colored_name(),
+        "에게 찌릿찌릿하고 노근한 쾌감을 안겨주었다.",
+      ]);
+      await era.printAndWait([
+        "무엇보다 ",
+        you.get_colored_name(),
+        "의 심장을 세차게 뒤흔든 것은, 다름 아닌 담당의 입에서 흘러나온 「애기아빠」라는 그 한마디였다.",
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        "의 성기가 부드럽고 촉촉하게 젖은 그녀의 향기로운 입술 속으로 부드럽게 삼켜졌다.",
+      ]);
+      await era.printAndWait([
+        "자신에게 완전히 도취해 있는 ",
+        ruby.get_colored_name(),
+        "의 가련한 자태를 내려다보며, ",
+        you.get_colored_name(),
+        "은(는) 순간 아득한 황홀경에 사로잡혔다.",
+      ]);
+      await era.printAndWait([
+        "그녀는 이제 오직 ",
+        you.get_colored_name(),
+        "만의 소유였으며, 오직 ",
+        you.get_colored_name(),
+        " 한 사람만이 이 아름다운 아내의 다채로운 색기를 독점할 특권을 누릴 수 있었다.",
+      ]);
+      if (era.get('talent:85:处女') > vp_status_enum.no) {
+        era.drawLine();
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "는 ",
+          you.get_colored_name(),
+          "의 하반신에서 풍겨오는 짙은 수컷의 체취를 연거푸 깊숙이 들이마셨다.",
+        ]);
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "는 승부복 스커트 자락을 높이 걷어 올린 채, 입술로 꼬옥 물어 고정했다.",
+        ]);
+        await era.printAndWait(
+          "그녀는 양손을 치마 밑 허벅지 사이로 뻗어, 흠뻑 젖어 든 봉긋한 음부 위로 하얀 실크 스타킹의 가랑이 부위를 거칠게 찢어내어 입구를 만들어냈다.",
+        );
+        await era.printAndWait(
+          "비액으로 얼룩진 레이스 끈 팬티를 그대로 옆으로 걷어치우자, 미성숙한 비소가 여과 없이 실체를 드러냈다.",
+        );
+        await era.printAndWait(
+          "백옥처럼 한 점 티 없는 음포와 도톰한 음순은 너무나 뽀얗고 연약해서, 마치 손가락으로 살짝 찌르기만 해도 푹 가라앉아 버릴 것만 같았다.",
+        );
+        await era.printAndWait(
+          "그 중심부에는 자극을 받아 발기하여 고개를 내민 주홍빛 음핵과, 처녀 특유의 앵두 빛깔을 띤 선홍색 육봉선이 자리하고 있었다.",
+        );
+        await era.printAndWait(
+          "비소는 촉촉하게 젖어 든 비액을 서서히 밖으로 흘려보내고 있었다.",
+        );
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "는 ",
+          you.get_colored_name(),
+          "의 가랑이 사이에 반쯤 무릎을 꿇은 채, 하얀 스타킹에 감싸인 둥글고 풍만한 엉덩이를 한껏 치켜 올렸다.",
+        ]);
+        await era.printAndWait([
+          "왼손으로 소녀의 긴밀한 육순을 최대한 벌려 젖혔고, 오른손으로는 ",
+          you.get_colored_name(),
+          "의 핏줄이 흉포하게 불거진 육봉을 단단히 붙잡았다.",
+        ]);
+        await era.printAndWait(
+          "귀두를 정확한 위치에 조준한 채, 비좁은 고기 동굴을 서서히 확장하며 정복의 여정을 개시했다.",
+        );
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "는 몽롱한 신음을 흘리며, ",
+          you.get_colored_name(),
+          "이(가) 자신의 처녀를 빼앗아 가는 그 모든 과정을 한눈에 똑똑히 지켜보아 주기를 갈망했다. 이것이야말로 그녀가 태어나서 맞이할 가장 황홀한 기억이기 때문이었다.",
+        ]);
+        era.printButton("머리를 쓰다듬으며 위로한다.", 1);
+        era.printButton("그녀를 꼬옥 끌어안는다.", 2);
+        await era.input();
+        await era.printAndWait(
+          "허리를 내리누름과 동시에, 민감한 귀두는 이미 극치로 비좁고 뜨겁게 달아오른 질 내부로 힘겹게 진입하기 시작했다.",
+        );
+        await era.printAndWait(
+          "강도 내부의 세밀하고 촘촘한 고기 주름들이 불규칙하게 꿈틀거렸고, 삽입이 진행됨에 따라 한 바퀴씩 조여들며 성기를 둥글게 집결시켰다.",
+        );
+        await era.printAndWait([
+          "귀두가 겹겹이 맷돌질 당하듯 짓눌렸고, 비할 데 없는 압착과 착유감으로 인해 ",
+          you.get_colored_name(),
+          "은(는) 하마터면 그 자리에서 바로 사정해 버릴 뻔했다.",
+        ]);
+        await era.printAndWait([
+          you.get_colored_name(),
+          "은(는) 자신도 모르게 허리를 움직이던 동작을 뚝 멈추었다.",
+        ]);
+        await era.printAndWait(
+          "육봉이 소녀의 하반신을 잔인하게 가르며 짓이기고, 이윽고 작은 구멍 속으로 서서히 집어삼켜지는 광경을 묵묵히 응시했다.",
+        );
+        await era.printAndWait([
+          "얼마 지나지 않아, ",
+          you.get_colored_name(),
+          "은(는) 무언가 가느다랗고 탄력 있는 부드러운 장벽에 가로막히는 감각을 느꼈다.",
+        ]);
+        await era.printAndWait([
+          "지금 이 순간, ",
+          ruby.get_colored_name(),
+          "의 비소에서 성기를 그대로 빼낸다면, ",
+          you.get_colored_name(),
+          "과(와) ",
+          ruby.get_colored_name(),
+          "의 관계는 예전의 평범한 관계로 되돌아갈 수 있을 터였다.",
+        ]);
+        await era.printAndWait("세속적인 윤리적 도덕관.");
+        await era.printAndWait("음습한 정조 속에서 피어오르는 기묘한 희열.");
+        await era.printAndWait("담당을 향한 극진한 애정.");
+        await era.printAndWait("차라리 될 대로 되라는 식의 자포자기한 심정.");
+        await era.printAndWait("이미 머리끝까지 차오른 성욕에 의해 완전히 박살 나 버린 이성.");
+        era.printButton("「루비, 사랑해.」", 1);
+        era.printButton("「내가 평생 네 곁을 지켜줄게.」", 2);
+        await era.input();
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "의 화사하게 피어난 미간 사이로 순간 형용할 수 없는 행복의 색이 가득 번졌고, 가녀린 나체가 아래로 푹 내려앉았다.",
+        ]);
+        await era.printAndWait([
+          you.get_colored_name(),
+          "의 성기는 중학생 소녀의 처녀막을 가차 없이 찢어발겼고, ",
+          you.get_colored_name(),
+          "을(를) 모질게 옥죄어 오던 겹겹의 고기 고리들을 돌파하여, 마침내 비밀의 화원을 굳건히 수호하던 자궁구에 육중하게 맞부딪쳤다.",
+        ]);
+        await ruby.say_and_wait([
+          "드디어…… ",
+          callname,
+          "과…… 너무 행복해요, 하으으……",
+        ]);
+        await era.printAndWait([
+          "정신적인 충족감도 처녀가 파괴되는 극심한 고통만큼은 완전히 가려내지 못했기에, ",
+          ruby.get_colored_name(),
+          "의 아직 앳된 얼굴이 통증으로 인해 처절하게 일그러졌다.",
+        ]);
+        await era.printAndWait([
+          "아름다운 ",
+          ruby.get_colored_name(),
+          "의 탁한 눈동자는 주체하지 못하고 위로 완전히 뒤집혀 흰자위만을 고스란히 드러냈고, 눈가에서는 눈물이 왈칵 배어 나왔다.",
+        ]);
+        await era.printAndWait(
+          "유려한 속눈썹은 눈물로 흠뻑 젖어 들었고, 콧물과 타액이 본능적으로 흘러내려 도무지 제어가 되지 않았다.",
+        );
+        await era.printAndWait(
+          "하얀 스타킹을 신은 두 발의 앙증맞은 발가락들이 끊임없이 말려 들어갔다 풀리기를 반복했으나, 통증은 조금도 가라앉지 않았다.",
+        );
+        await era.printAndWait(
+          "처녀혈이 진득하게 섞여 든 비액이 하얀 실크 스타킹과 레이스 팬티를 옅은 벚꽃색으로 물들여 갔다.",
+        );
+        await era.printAndWait([
+          you.get_colored_name(),
+          "은(는) 가학적이고 변태적인 정복감에 휩싸였다.",
+        ]);
+        await era.printAndWait("찰나의 순간, 심신이 세차게 뒤흔들리는 와중에.");
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "의 지극히 좁은 소혈이 무시무시한 압력으로 성기를 꽉 물어왔고, 뒤이어 자궁구마저 성기를 빨아 당기듯 진득하게 흡착해 왔다.",
+        ]);
+        await era.printAndWait([
+          you.get_colored_name(),
+          "은(는) 척수가 짜릿하게 마비되는 것을 느꼈고, 산사태와도 같은 맹렬한 사정감이 척추를 타고 뇌수까지 단숨에 치받았다.",
+        ]);
+        await era.printAndWait(
+          "막대한 양의 뜨거운 정액이 자궁구를 정면으로 강타하며 담당의 앳된 자궁 내부로 사정없이 뿜어져 들어갔다.",
+        );
+        await era.printAndWait([
+          "후손을 품어야 할 신성한 장소가 지금, ",
+          you.get_colored_name(),
+          "에게 철저히 더럽혀졌다.",
+        ]);
+        await ruby.say_and_wait("으응, 으으으으응————!!!");
+        await era.printAndWait([
+          "청초한 어린 암컷의 자궁은 상상을 초월할 만큼 민감했기에, ",
+          you.get_colored_name(),
+          "의 비린내 나는 정액이 정면으로 쏟아질 때마다, ",
+          ruby.get_colored_name(),
+          "는 눈을 완전히 뒤집은 채 스커트 자락을 이빨로 바득바득 깨물었다.",
+        ]);
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "의 비강에서 길고 애달픈 신음이 터져 나왔고, 허리가 활처럼 극한까지 휘어졌다.",
+        ]);
+        await era.printAndWait([
+          "승부복 속에 감춰진 가냘픈 나체가 격렬하게 경련하고 발작하며, ",
+          you.get_colored_name(),
+          "과(와) 함께 동시에 격정적인 절정에 도달했다.",
+        ]);
+        await era.printAndWait([
+          "따스하게 데워진 처녀의 애액이 폭포수처럼 쏟아지며 ",
+          you.get_colored_name(),
+          "의 고단한 남근을 세차게 씻어 내렸다.",
+        ]);
+        await era.printAndWait([
+          "수십 초 뒤, 루비는 ",
+          you.get_colored_name(),
+          "의 가슴 위로 힘없이 쓰러졌다.",
+        ]);
+        await era.printAndWait([
+          ruby.get_colored_name(),
+          "의 눈물과 콧물로 범벅이 된 수려한 얼굴 위에는, 멍하니 황홀감에 젖은 색기 어린 미소가 어려 있었다.",
+        ]);
+        await era.printAndWait([
+          you.get_colored_name(),
+          "의 사정 후에도 전혀 시들지 않은 거대한 성기는 여전히 팽팽한 소혈 내부를 빈틈없이 가득 메우고 있었다.",
+        ]);
+        await era.printAndWait([
+          "부드러운 자궁경부의 살고리가 두 사람의 호흡에 맞춰 ",
+          you.get_colored_name(),
+          "의 귀두를 문지르며, ",
+          you.get_colored_name(),
+          "에게 전기처럼 짜릿한 감각을 안겼다.",
+        ]);
+        await ruby.say_and_wait([callname, "…… 저에게 환멸하셨나요?"]);
+        await era.printAndWait([
+          you.get_colored_name(),
+          "도 막 처녀성을 잃은 여성이 예민해진다는 것은 알고 있었다.",
+        ]);
+        era.printButton(
+          "「그럴 리가 없어. 평소의 루비도, 색기 있는 루비도 가장 좋아해.」",
+          1,
+        );
+        era.printButton("「우리 함께 지옥까지 떨어지자.」", 2);
+        await era.input();
+      }
+      return ret;
+    };
+    f.title = title;
+    return f;
+  })(),
+
   // [번역 완료] 74-after
   async '74-after'(ruby, mother, you, callname) {
     era.drawLine();
@@ -2782,6 +3448,168 @@ module.exports = {
         ]);
       }
       return [ret];
+    };
+    f.title = title;
+    return f;
+  })(),
+
+  // [번역 완료] milking
+  milking: (() => {
+    const title = "수유";
+    const f = async (ruby, you, callname) => {
+      await ruby.say_and_wait(
+        "오늘 실수로 예전에 입던 브래지어를 착용하는 바람에, 너무 꽉 끼어서 고생했어요.",
+      );
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        "는 그렇게 말하며 양손을 등 뒤로 돌린 채 몸을 이리저리 흔들었다.",
+      ]);
+      await era.printAndWait(
+        "금속 버클이 풀리는 소리와 함께, 그녀의 풍만한 유방이 밖으로 팅겨 나왔다.",
+      );
+      await ruby.say_and_wait([
+        callname,
+        ", 제 가슴…… 빨아주지 않으실 건가요? 부풀어 오른 꽃봉오리에 얼굴을 묻어주세요.",
+      ]);
+      await ruby.say_and_wait(
+        "후훗, 이리 오세요. 이 엄마의 품에 안겨 어리광을 부리며 행복해지자고요.",
+      );
+      await era.printAndWait(
+        "이토록 노골적으로 유혹해 오니, 도저히 거절할 방도가 없었다.",
+      );
+      await era.printAndWait([
+        you.get_colored_name(),
+        "의 머리 위로 ",
+        ruby.get_colored_name(),
+        "가 부드럽게 쓰다듬는 촉감이 전해졌다.",
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        "은(는) 눈앞에 놓인 소녀의 마성적인 유방을 향해 다가가, 입술로 가슴 끝의 부푼 돌기를 감싸 안았다.",
+      ]);
+      await ruby.say_and_wait(
+        "어려운 생각은 전부 지워버리고, 엄마의 젖꼭지를 빨며 행복에 빠져보세요.",
+      );
+      await era.printAndWait([
+        "뒷머리를 쓰다듬는 ",
+        ruby.get_colored_name(),
+        "의 손길에 재촉당하듯, ",
+        you.get_colored_name(),
+        "은(는) 그녀의 유두를 조심스레 빨아 당겨 보았다.",
+      ]);
+      era.printButton("（아아…! 너무 행복해, 머릿속이 텅 비어버릴 것 같아……）", 1);
+      await era.input();
+      await era.printAndWait(
+        "눈앞에 맞닿은 따스한 가슴은 말할 수 없는 행복감과 만족감을 안겨주었다.",
+      );
+      await era.printAndWait([
+        "멀쩡한 어른이 자신보다 훨씬 어린 여자아이에게 아기처럼 매달려 어리광을 부리는 이 수치심을, ",
+        you.get_colored_name(),
+        "은(는) 입술 끝으로 전해지는 부풀어 오른 유두의 감각에 의지해 간신히 달래야만 했다.",
+      ]);
+      await ruby.say_and_wait(
+        "어린아이처럼, 갓난아기처럼…… 엄마 가슴을 빨면서 행복해지렴~",
+      );
+      await ruby.say_and_wait([
+        "자아, ",
+        callname,
+        ". 멍하니 계시지 말고, 제 젖을 더 많이 달게 빨아 마셔 주세요.",
+      ]);
+      await era.printAndWait("……츕…… 쮸웁.");
+      await ruby.say_and_wait([
+        "참 잘했어요, ",
+        callname,
+        ". 엄마 가슴을 이렇게나 잘 빨다니 정말 기특한 아이네요.",
+      ]);
+      await ruby.say_and_wait("착하지, 착해……");
+      await era.printAndWait([
+        you.get_colored_name(),
+        "은(는) ",
+        ruby.get_colored_name(),
+        "가 시키는 대로 가슴을 빨았을 뿐인데, ",
+        ruby.get_colored_name(),
+        "는 계속 ",
+        you.get_colored_name(),
+        "의 머리를 쓰다듬으며 칭찬했다.",
+      ]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        "은(는) 무언가 잘못되어 간다고 느꼈지만, 아무런 조건 없이 자신을 긍정해 주는 포근함에 이성마저 느슨하게 풀려버렸다.",
+      ]);
+      await era.printAndWait("더 많이 칭찬받고 싶다, 더 많이 쓰다듬어지고 싶다.");
+      await era.printAndWait([
+        ruby.get_colored_name(),
+        "의 품속에 완전히 매료되어 버렸다.",
+      ]);
+      await era.printAndWait("쫍, 쯉…… 츕……");
+      await ruby.say_and_wait("가슴에 매달려 젖을 빠는 몸만 큰 아기가 되시는 거예요.");
+      await era.printAndWait([
+        "행복감에 흠뻑 젖어 있던 ",
+        you.get_colored_name(),
+        "의 머릿속에 기묘한 위기감이 스쳤다.",
+      ]);
+      await you.say_and_wait("이길 수 없어. 루비의 가슴조차 이길 수 없다.", true);
+      await ruby.say_and_wait([callname, ", 벌써 자신의 꿈을 잊어버리신 건가요?"]);
+      await era.printAndWait([
+        you.get_colored_name(),
+        "은(는) 대답 대신 더 격렬하게 젖을 빠는 것으로 응수했다.",
+      ]);
+      await ruby.say_and_wait("우후후, 완전히 타락해 버리셨네요. 그럼 상으로……");
+      await ruby.say_and_wait("가슴을 빠는 동시에, 그대로 하얀 오줌을 지려버리세요.");
+      await ruby.say_and_wait([
+        "아앗! ",
+        callname,
+        "의 고추는 정말로 무척이나 거대해서, 그동안 저를 몇 번이나 괴롭혔었죠.",
+      ]);
+      await ruby.say_and_wait([
+        "이빨을 세워 깨물면 안 돼요, ",
+        callname,
+        "。",
+        callname,
+        "은 루비의 착한 아이니까요.",
+      ]);
+      await era.printAndWait("손길이 빨라진다.");
+      await ruby.say_and_wait(
+        "속도를 조금 높였다고 벌써 가슴을 빨 여유조차 없으신 건가요?",
+      );
+      await ruby.say_and_wait(
+        "좋아요, 만약 입을 때고 싶으시다면 부디 저를 엄마라고 불러주세요.",
+      );
+      await ruby.say_and_wait(
+        "자신보다 한참 어린 여자아이에게 아기처럼 매달려 칭얼대며, 어른으로서의 존엄 따윈 내던져버리고 온몸으로 쾌락을 만끽하는 거예요.",
+      );
+      await ruby.say_and_wait(["훌륭해요, ", callname, ". 바로 그 모습이랍니다."]);
+      await ruby.say_and_wait(
+        "덩치 큰 어른이면서 어린아이에게 농락당하며, 엄마를 부르짖고 기분 좋아지다니.",
+      );
+      await ruby.say_and_wait(
+        "이렇게나 멋진 고추를 달고 계시면서, 가슴을 좀 빨았다고 이 모양이 되시다니 정말이지……",
+      );
+      await ruby.say_and_wait(
+        "슬슬 사정할 것 같나요? 잠시만 기다려 주세요, 제가 휴지를 준비할 테니. 방을 더럽히면 안 되니까요.",
+      );
+      await ruby.say_and_wait("자, 겹쳐 접은 휴지를 고추 끝부분에 대어 놓을게요.");
+      await ruby.say_and_wait("언제든지 사정하셔도 괜찮답니다?");
+      await ruby.say_and_wait(["죄송해요, ", callname, "."]);
+      await ruby.say_and_wait(
+        "원래는 기분 좋게 사정하게 해 드릴 생각이었는데, 이 못된 녀석이 항상 저를 너무 괴롭혔잖아요.",
+      );
+      await ruby.say_and_wait(
+        "그러니까 계획을 바꾸어서 심술궂은 사정 관리로 변경할게요. 그리고 엄마 노릇도 이제 그만둘래요.",
+      );
+      await ruby.say_and_wait(
+        "어라? 분명 엄마 안 하겠다고 말씀드렸는데, 왜 자꾸 저를 엄마라고 부르시는 거죠?",
+      );
+      await ruby.say_and_wait([
+        "전 ",
+        callname,
+        "의 엄마가 아니에요. 자꾸 엄마라고 부르시면 징그러우니까 그만두세요.",
+      ]);
+      await ruby.say_and_wait("슬슬 찍 쌀 때가 되었죠? 손에 전해지는 느낌만 봐도 다 알 수 있어요.");
+      await ruby.say_and_wait("아아! 표정이 정말 사랑스러우셔라.");
+      await ruby.say_and_wait(
+        "착한 아이, 착한 아이…… 마지막으로 가슴을 달게 빨면서 싸 버리렴, 찍…… 찌이익……",
+      );
     };
     f.title = title;
     return f;
