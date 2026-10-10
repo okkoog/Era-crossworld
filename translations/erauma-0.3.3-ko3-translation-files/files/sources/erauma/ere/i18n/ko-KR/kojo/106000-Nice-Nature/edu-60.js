@@ -874,7 +874,7 @@ module.exports = {
       era.printButton('「それはそうだね……」', 1);
       await era.input();
       await era.printAndWait(
-        `……そのとおり。作ったはいいが、子供扱いみたいで、${you.name} は渡すべきか迷っていた……`,
+        `……맞는 말이었다. 만들기는 했지만 어린애 취급하는 것 같아 ${you.name}은(는) 건네줘야 할지 망설이고 있었다……`,
       );
       await nature.say_and_wait('……ふふ。');
       await nature.say_and_wait(
@@ -1363,7 +1363,7 @@ module.exports = {
       await nature.say_and_wait('走りたくない！ 怖い……！');
       await nature.say_and_wait('うわあああ……！');
       await era.printAndWait(
-        'そのあとナイスネイチャは、子供のように隠さず泣き続けた。そして──',
+        '그 뒤 나이스 네이처는 어린아이처럼 감정을 숨기지 않고 계속 울었다. 그리고──',
       );
       await era.printAndWait(
         `落ち着いてから、${nature.sex}は ${you.name} に気持ちを話した……`,
