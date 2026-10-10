@@ -3917,95 +3917,95 @@ module.exports = {
     );
   },
 
-  // [번역 대상] ws_cook23
+  // [번역 완료] ws_cook23
   async ws_cook23(tachyon, you, callname) {
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は二週間、',
+      '은(는) 2주 동안 ',
       you.get_colored_name(),
-      ' に実験をしていない',
+      '에게 실험을 하지 않았다.',
     ]);
     await era.printAndWait([
-      '最初の一週間は正直、',
+      '처음 일주일 동안은 솔직히 ',
       you.get_colored_name(),
-      ' に未練はなく、むしろ喜んでいた、',
+      '에게 미련도 없었고, 오히려 기뻤다.',
     ]);
     await era.printAndWait([
       '毎日 ',
       tachyon.get_colored_name(),
-      ' の姿は見られるし、日常は普通だ。ただ',
+      '의 얼굴은 여전히 볼 수 있었고 일상도 평소와 같았다. 다만 ',
       tachyon.sex,
-      'が ',
+      '이(가) ',
       you.get_colored_name(),
-      ' に実験をしなくなっただけなのだから',
+      '에게 실험을 하지 않게 되었을 뿐이다.',
     ]);
     await era.printAndWait([
-      'だが二週目、',
+      '하지만 둘째 주가 되자 ',
       you.get_colored_name(),
-      ' はおかしいと感じ始めた。ストックホルム症候群……',
+      '은(는) 이상하다는 생각을 하기 시작했다. 스톡홀름 증후군인가……',
     ]);
     await era.printAndWait([
-      'そうではない。ただ',
+      '그건 아니다. 그저 ',
       tachyon.sex,
-      'の様子が心配で、不吉な予感もある',
+      '의 상태가 걱정됐고 불길한 예감도 들었다.',
     ]);
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は',
+      '은(는) ',
       tachyon.sex,
-      'の実験室の前まで行き、ノックした。中から返事はない',
+      '의 실험실 앞까지 가서 문을 두드렸다. 안에서는 대답이 없었다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' はまずいと感じ、そのまま押し入った',
+      '은(는) 뭔가 잘못됐다고 느끼고 그대로 문을 밀고 들어갔다.',
     ]);
     era.println();
     await era.printAndWait([
-      '見た目は ',
+      '생김새는 ',
       tachyon.get_colored_name(),
-      ' なのに、なぜか二頭身の、どこか愛らしい生き物になっていた、',
+      '인데 어째서인지 2등신의 귀여운 생명체가 되어 있었다.',
     ]);
-    await era.printAndWait('後ろの尻尾は丸く太く、まるで……タヌキの尻尾？');
+    await era.printAndWait('뒤에 달린 꼬리는 둥글고 굵었다. 마치…… 너구리 꼬리처럼?');
     await era.printAndWait([
-      'ええ？？ 何が起きている？？ これが ',
+      '뭐라고?? 대체 어떻게 된 거지?? 이게 ',
       tachyon.get_colored_name(),
-      ' なのか？？？',
+      '이라고???',
     ]);
     era.println();
-    await era.printAndWait('…………なるほど');
-    await era.printAndWait([you.get_colored_name(), ' はすべてを理解した']);
+    await era.printAndWait('…………아하.');
+    await era.printAndWait([you.get_colored_name(), '은(는) 모든 걸 이해했다.']);
     await era.printAndWait(
-      '間違いない。来歴不明の薬、実験体を人として見ない態度、そして今ようやく現れた尻尾',
+      '틀림없다. 출처 불명의 약, 실험체를 인간으로 여기지 않는 태도, 그리고 이제야 드러난 꼬리.',
     );
     await era.printAndWait([
-      'そう、',
+      '그래, ',
       tachyon.get_colored_name(),
-      ' は最初からタヌキの化けたものだった！',
+      '은(는) 처음부터 너구리가 둔갑한 존재였던 것이다!',
     ]);
     era.println();
-    await era.printAndWait('…………いや、この錯乱した妄想は一旦横へ置こう');
+    await era.printAndWait('…………아니, 이 혼란스러운 망상은 일단 접어 두자.');
     await era.printAndWait(
-      'なぜか周囲に奇妙なBGMが流れ始めた。アメリアの遺言らしい。美しい曲だが、この侘びた光景との対比が鮮やかすぎる',
+      '어디선가 기묘한 배경음악이 울려 퍼지기 시작했다. 아멜리아의 유언이라는 곡인 듯하다. 아름다운 곡이지만 이 쓸쓸한 풍경과의 대비가 지나치게 선명하다.',
     );
     await era.printAndWait([
-      '慌てた ',
+      '당황한 ',
       you.get_colored_name(),
-      ' は、以前 ',
+      '은(는) 전에 ',
       tachyon.get_colored_name(),
-      ' が弁当について言っていたことを思い出し、自分用に残していた弁当を取り出した',
+      '이(가) 도시락에 관해 했던 말을 떠올리고 자기 몫으로 남겨 둔 도시락을 꺼냈다.',
     ]);
     era.drawLine();
-    await tachyon.say_and_wait([callname, '？ 何をしていますの？']);
+    await tachyon.say_and_wait([callname, '? 뭘 하는 건가?']);
     await era.printAndWait([
-      '正気に戻った ',
+      '제정신으로 돌아온 ',
       tachyon.get_colored_name(),
-      ' は一瞬で元の姿に戻った。空の弁当箱だけが、今しがたの出来事を証明している',
+      '은(는) 순식간에 원래 모습으로 돌아왔다. 빈 도시락 통만이 방금 일이 실제로 벌어졌다는 증거였다.',
     ]);
     await era.printAndWait([
-      '夢ではなかった……とにかく、これからは ',
+      '꿈이 아니었구나…… 어쨌든 앞으로는 ',
       tachyon.get_colored_name(),
-      ' の弁当を忘れないようにしよう',
+      '의 도시락을 잊지 말아야겠다.',
     ]);
   },
 
