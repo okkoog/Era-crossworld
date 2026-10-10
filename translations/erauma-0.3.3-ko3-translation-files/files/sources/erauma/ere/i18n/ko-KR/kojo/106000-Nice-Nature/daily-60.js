@@ -157,62 +157,62 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] good_morning
+  // [번역 완료] good_morning
   good_morning(nature, callname, self_call) {
     const buffer = [
-      () => nature.say(`今日のトレーニング予定はなに？ リスト見せてよ`),
+      () => nature.say(`오늘 훈련 스케줄은 뭐야? 나도 리스트 좀 보여 줘~`),
       () =>
         nature.say(
-          `昨日、焼肉屋のおじさんが新メニュー出したって。あとで一緒に行かない？ おごるよ～`,
+          `어제 고깃집 아저씨가 신메뉴가 나왔다고 하시던데, 나중에 같이 가 볼래? 내가 쏠게!`,
         ),
       () =>
         nature.say(
-          `しーっ！ 声小さく！ 見て、あそこに猫が寝てる。場所変えよっか？`,
+          `쉿! 조용히! 봐 봐, 저기 고양이가 자고 있어. 우리 다른 데로 돌아갈까?`,
         ),
       () =>
-        nature.say(`おっ！ ${callname}、なんだか嬉しそう。いいことあった？`),
+        nature.say(`오! ${callname}, 기분이 좋아 보이네. 뭐 좋은 일이라도 있었어?`),
       () =>
         nature.say(
-          `そういえば、夕飯なににするか決めた？ まだなら ${self_call} が腕を振るっちゃうよ！`,
+          `그러고 보니 저녁 메뉴는 정했어? 아직이면 이 ${self_call}가 실력 발휘 좀 해 볼까!`,
         ),
     ];
     if (era.get('status:60:熬夜') > 0) {
       buffer.push(() => {
-        nature.say(`んはぁ——あ……${callname}？ なんで欠伸してるの？ あははは……`);
+        nature.say(`으하암…… ${callname}? 왜 하품을 하고 그래? 아하하……`);
         nature.say(
-          `もう隠せないね。実は、${self_call}、漫才の動画ひとつ見て寝ようと思ってたのに、面白すぎて気づいたら……`,
+          `결국 들켜 버렸네. 사실 ${self_call}, 만담 영상 하나만 보고 자려고 했는데 너무 재미있어서 정신을 차려 보니……`,
         );
         nature.say(
-          `我に返ったらもう明け方。でもほんと面白かったよ？ ${callname}も見る？`,
+          `벌써 새벽이더라고. 근데 진짜 재미있었어! ${callname}도 한번 볼래?`,
         );
       });
     } else if (era.get('base:60:体力') === era.get('maxbase:60:体力')) {
       buffer.push(() => {
         nature.say(
-          `おっ～${callname}、おはよう！ おかげさまで ${self_call}、よく休めたよ！ 美味しいものいっぱい食べて、ぐっすり眠って、今は元気いっぱい？`,
+          `오~ ${callname}, 안녕! 덕분에 ${self_call}는 아주 푹 쉬었어! 맛있는 것도 잔뜩 먹고 잠도 푹 자서 지금은 기운이 넘쳐!`,
         );
         nature.say(
-          `なんだか若返った気がする！ 唯一ちょっと残念なのは……あ、なんでもない。とにかく次の予定教えて？`,
+          `왠지 더 젊어진 기분이야! 조금 아쉬운 건…… 아, 아니야. 아무튼 다음 일정을 알려 줘!`,
         );
       });
     } else {
       buffer.push(() =>
         nature.say(
-          `あ、${callname}、おはよう～ よく寝たら疲れもすっきり。誰かにマッサージしてもらえたらもっと最高なんだけど～ まあ、それは置いといて、次の予定は？`,
+          `아, ${callname}, 좋은 아침~ 푹 잤더니 피로가 싹 가신 느낌이야. 누가 마사지까지 해 주면 최고겠지만~ 뭐, 그건 그렇고 다음 일정은 뭐야?`,
         ),
       );
     }
     get_random_entry(buffer)();
   },
 
-  // [번역 대상] good_night_normal
+  // [번역 완료] good_night_normal
   good_night_normal(nature, you, callname) {
     era.print(
-      `忙しい一日が終わり、${you.name} は ${nature.name} を学生寮の前まで送る。`,
+      `바쁜 하루가 끝나고 ${you.name}은(는) ${nature.name}를 학생 기숙사 앞까지 배웅했다.`,
     );
-    nature.say(`今日もお疲れさま！ また明日、${callname}！`);
+    nature.say(`오늘도 고생 많았어! 내일 봐, ${callname}!`);
     era.print(
-      `手を振りながら ${nature.name} の背中を見送ったあと、${you.name} も踵を返し、自室へ戻って休む。`,
+      `손을 흔들며 멀어지는 ${nature.name}의 뒷모습을 지켜본 뒤 ${you.name}도 자신의 숙소로 돌아가 휴식을 취했다.`,
     );
   },
 
@@ -274,30 +274,30 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] load_talk_normal
+  // [번역 완료] load_talk_normal
   async load_talk_normal(nature, callname, self_call) {
     await nature.say_and_wait([
       callname,
-      ' なら、きっといいルートを見つけるよ……',
+      '이라면 분명 더 나은 길을 찾아낼 수 있을 거야……',
       self_call,
-      ' は信じてるから。今も、前も、これから先も……',
+      '는 믿고 있으니까. 지금도, 예전에도, 앞으로도……',
     ]);
   },
 
-  // [번역 대상] load_talk_pregnant
+  // [번역 완료] load_talk_pregnant
   async load_talk_pregnant(nature, callname) {
     await nature.say_and_wait([
-      'あは、そっか、やっぱりネイチャさんは……でも待って、だめ、',
+      '아하하, 역시 그런가. 결국 네이처 씨는…… 하지만 잠깐, 안 돼,',
       callname,
-      '、あたしたちの子に、せめて、せめて名前だけは……',
+      '우리 아이만큼은, 적어도, 적어도 이름만이라도……',
     ]);
     await nature.say_and_wait(
-      'この子はパパがいなくてもいい、あたしひとりで育てる。でもせめて、お願い、名前をひとつ……',
+      '이 아이에게 아빠가 없어도 상관없어. 나 혼자서라도 키울 수 있어. 하지만 제발, 부탁이야. 이름 하나만이라도……',
     );
     await nature.say_and_wait([
-      '『ハナツキ・ネイチャー』？ 『エレガンス・ネイチャ』？ そういう、名前。ネイチャさんが頼む最後のこと、',
+      '『하나츠키 네이처』? 『엘레강스 네이처』? 그런 이름이라도 좋아. 네이처 씨의 마지막 부탁이야,',
       callname,
-      '、名前をちょうだい……',
+      '이름을 지어 줘……',
     ]);
     await era.printAndWait(
       [nature.get_colored_name(), '「', callname, '————！！」'],
@@ -305,41 +305,41 @@ module.exports = {
     );
   },
 
-  // [번역 대상] o_c_pray
+  // [번역 완료] o_c_pray
   async o_c_pray(nature, self_call, dice) {
-    await nature.say_and_wait(`どれどれ、${self_call} の今日の運勢は——`);
+    await nature.say_and_wait(`어디 보자, ${self_call}의 오늘 운세는——`);
     await era.printAndWait(
-      `${nature.name} が筒を軽く振ると、しばらくして紙籤が落ちてきた。`,
+      `${nature.name}가 가볍게 점괘 통을 흔들자 잠시 후 종이 한 장이 툭 떨어졌다.`,
     );
     if (dice < 0.1) {
       await nature.say_and_wait(
-        `おっ～大吉！ ${self_call} も輝けちゃう……なんてね。でもこの運、レースに残しておけたらいいのに！`,
+        `오~ 대길! 이 ${self_call}에게도 빛날 날이 오는 건가…… 농담이야. 그래도 이런 행운이 레이스까지 이어졌으면 좋겠네!`,
       );
     } else if (dice < 0.25) {
-      await nature.say_and_wait('中吉——悪くないね。最近、いいことあるかも？');
+      await nature.say_and_wait('중길—— 괜찮은걸? 어쩌면 조만간 좋은 일이 생길지도 몰라.');
     } else if (dice < 0.6) {
       await nature.say_and_wait(
-        'うーん、小吉。まあ及第点。上から数えると……これも3番目？',
+        '음, 소길이네. 뭐 나쁘지 않은 결과지. 근데 위에서부터 세면…… 이것도 결국 3위인가?',
       );
     } else {
       await nature.say_and_wait(
-        'うわ……まさかこれが……ま、まあ、籤運が悪いだけ、気にしない気にしない！……変なこと起きない……よね……',
+        '으와아…… 설마 이런 점괘가 나오다니…… 뭐, 운이 좀 나쁜 것뿐이니까 신경 쓰지 마! 이상한 일 같은 건 안 생기겠……지……?',
       );
     }
   },
 
-  // [번역 대상] o_r_fishing
+  // [번역 완료] o_r_fishing
   async o_r_fishing(nature, callname, self_call, call_20) {
     await nature.say_and_wait([
-      'そういえば、前に ',
+      '그러고 보니 예전에 ',
       call_20,
-      ' と何回か釣りに出て、',
+      '와 몇 번 낚시하러 온 적이 있거든,',
       nature.sex,
-      'からコツたくさん教わったんだ！ どう、',
+      '에게 요령을 잔뜩 배웠지! 어때,',
       callname,
       '？ ',
       self_call,
-      ' が教えてあげよっか？',
+      '가 한 수 가르쳐 줄까?',
     ]);
   },
 
@@ -350,28 +350,28 @@ module.exports = {
     );
   },
 
-  // [번역 대상] o_s_arcade
+  // [번역 완료] o_s_arcade
   async o_s_arcade(nature, callname, self_call) {
     if (Math.random() < 0.5) {
       await nature.say_and_wait(
-        `この爪、力なさそうだけど、本当に掴めるの？……なに？ 昔特訓した秘技？ ${callname} にもそんな青春があったんだ。じゃあ ${self_call} に見せてよ？`,
+        `이 집게 힘이 너무 없어 보이는데 정말 뽑히긴 하는 거야? 뭐? 예전에 특훈으로 익힌 비기라고? ${callname}에게도 그런 청춘이 있었구나. 그럼 ${self_call}에게 보여 줘!`,
       );
     } else {
       await nature.say_and_wait(
-        `ゲームセンターか……若い子がよく来てるよね。あたし？ あたしはよく来る役じゃないって！ ${self_call} は家事派だよ？ まあ、たまに一緒に遊ぶのは悪くない、たまになら。`,
+        `오락실인가…… 어린애들이 자주 놀러 오는 곳이네. 나? 난 자주 오는 타입은 아니야! ${self_call}는 가사 전담파거든. 뭐, 가끔 같이 노는 건 나쁘지 않지. 아주 가끔이라면.`,
       );
     }
   },
 
-  // [번역 대상] o_s_dating
+  // [번역 완료] o_s_dating
   async o_s_dating(nature, callname, self_call) {
     if (Math.random() < 0.5) {
       await nature.say_and_wait(
-        `あの……手、つながない？ ほら……そのほうがデートっぽいじゃない？ いい！？ えへへ……${callname} の手、あったかいね——`,
+        `저기…… 손, 잡아도 될까? 봐 봐…… 이러는 게 더 데이트 느낌 나지 않아? 정말? 에헤헤…… ${callname}의 손은 따뜻하네——`,
       );
     } else {
       await nature.say_and_wait(
-        `疲れた？ じゃあ……${self_call} の膝枕、試す？ あ、顔こっち向けないで！ はず、恥ずかしい……`,
+        `피곤해? 그럼…… ${self_call}의 무릎베개라도 해 볼래? 아, 얼굴 이쪽으로 돌리지 마! 부, 부끄럽잖아……`,
       );
     }
   },
@@ -383,69 +383,69 @@ module.exports = {
     );
   },
 
-  // [번역 대상] o_s_ktv
+  // [번역 완료] o_s_ktv
   async o_s_ktv(nature, callname, self_call) {
-    await era.printAndWait(`${nature.name} とカラオケへ……`);
-    await nature.say_and_wait('——ど、どうだった、あたしの歌？');
+    await era.printAndWait(`${nature.name}와 함께 노래방에 갔다……`);
+    await nature.say_and_wait('——어, 어땠어? 내가 부른 노래?');
     await era.printAndWait(
-      `曲が終わり、${nature.name} は少し緊張して評価を待つ`,
+      `노래가 끝나고 ${nature.name}는 조금 긴장한 채 감상을 기다렸다.`,
     );
     await nature.say_and_wait(
-      `天の声とか……大げさすぎ！ ${callname}、${self_call} に甘いこと言っても得しないよ？` +
-        `はい！ 次は ${callname} の番！`,
+      `천상의 목소리라니…… 너무 과장하잖아! ${callname}, ${self_call}에게 달콤한 말 해 봤자 얻을 건 없어!` +
+        `자! 다음은 ${callname} 차례야!`,
     );
-    await era.printAndWait(`${nature.name} と、楽しい時間を過ごした。`);
+    await era.printAndWait(`${nature.name}와 즐거운 시간을 보냈다.`);
   },
 
-  // [번역 대상] o_s_movie
+  // [번역 완료] o_s_movie
   async o_s_movie(nature, callname) {
     if (Math.random() < 0.5) {
       await nature.say_and_wait(
-        `恋愛映画？ ${callname}、意外と乙女？ あたしが好きそう？ ははは——`,
+        `연애 영화? ${callname}은(는) 의외로 소녀 감성이네? 내가 좋아할 것 같다고? 하하하——`,
       );
       await nature.say_and_wait(
-        `そういうのは若い子とかイチャイチャしてるカップル向きだよ。でも ${callname} が見たいなら付き合うけど。`,
+        `이런 소재는 어린 학생들이나 꽁냥거리는 커플들에게 어울리지. 그래도 ${callname}이(가) 보고 싶다면 같이 봐 줄게.`,
       );
-      await nature.say_and_wait(`${callname} と一緒に見られるなら……`, true);
+      await nature.say_and_wait(`${callname}과(와) 함께 볼 수 있다면……`, true);
     } else {
       await nature.say_and_wait(
-        'うわ……このポスター、迫力あるね。巨大ロボットと鶏型怪獣の大決戦。設定はわからないけど面白そう。今日はこれにしない？',
+        '와…… 이 포스터 진짜 박력 넘치네. 거대 로봇이랑 닭 모양 괴수의 대결이라니, 설정은 잘 모르겠지만 꽤 재미있어 보여. 오늘은 이걸로 할까?',
       );
     }
   },
 
-  // [번역 대상] o_s_restaurant
+  // [번역 완료] o_s_restaurant
   async o_s_restaurant(nature, callname) {
     if (Math.random() < 0.5) {
       await nature.say_and_wait(
-        `こっちも食べものいっぱいだね、${callname} はなに食べたい？ ここ？ よし、行こ！`,
+        `이쪽에도 맛있는 게 잔뜩 있네. ${callname}은(는) 뭐 먹고 싶어? 여기? 좋아, 가자!`,
       );
       await nature.say_and_wait(
-        'とりあえずトレーナーの好み、メモっとこ……',
+        '일단 트레이너가 좋아하는 음식을 메모해 두고……',
         true,
       );
     } else {
       await nature.say_and_wait(
-        'うーん……ちょっとお腹空いた。このあたりで何か食べない？',
+        '음…… 배가 좀 고파졌는데, 이 근처에서 뭐라도 먹고 갈까?',
       );
     }
   },
 
-  // [번역 대상] o_s_shopping
+  // [번역 완료] o_s_shopping
   async o_s_shopping(nature, callname, self_call) {
-    await era.printAndWait(`${nature.name} とお店を見て回る……`);
-    await nature.say_and_wait('おっ～この服、かわいい感じ——');
+    await era.printAndWait(`${nature.name}와 함께 쇼핑몰을 구경했다……`);
+    await nature.say_and_wait('오~ 이 옷 꽤 귀여운걸——');
     await era.printAndWait(
-      `${nature.name} はショーウィンドウの服を見て感嘆する`,
+      `${nature.name}는 쇼윈도에 전시된 옷을 보며 감탄했다.`,
     );
     await nature.say_and_wait(
-      `でしょ？ ${callname} もそう思うよね？……ま、待って、着てみたいとは言ってないよ？`,
+      `그치? ${callname}도 그렇게 생각하지? ……자, 잠깐! 내가 입어 보고 싶다는 뜻은 아니야!`,
     );
     await nature.say_and_wait(
-      `ほら、こういうふわふわは若い子向きでしょ？ ${self_call} には似合わないって！`,
+      `봐 봐, 이런 샤랄라한 스타일은 젊은 애들한테 어울리지. ${self_call}한테는 안 어울린다니까!`,
     );
     await era.printAndWait(
-      `勧められても ${nature.name} は何度も断り、結局逃げ出した。`,
+      `계속된 권유에도 ${nature.name}는 몇 번이고 거절하다가 결국 도망치듯 자리를 피했다.`,
     );
   },
 
@@ -463,15 +463,15 @@ module.exports = {
     );
   },
 
-  // [번역 대상] office_gift
+  // [번역 완료] office_gift
   async office_gift(nature, callname) {
     if (Math.random() < 0.5) {
       await nature.say_and_wait(
-        `えっ？ あたしに？ ありがとう、${callname}！ 好みわからない？ 大丈夫、${callname} の気持ちだけで十分嬉しいよ！`,
+        `에? 이거 나 주는 거야? 고마워, ${callname}! 내 취향을 잘 모르겠다고? 괜찮아, ${callname}이(가) 나를 생각해서 챙겨 줬다는 것만으로도 충분히 기쁘니까!`,
       );
     } else {
       await nature.say_and_wait(
-        `なになに？ プレゼント？ わ！ ありがとう ${callname}！ 今開けていい？`,
+        `뭐야 뭐야? 선물? 와아! 고마워, ${callname}! 지금 바로 열어 봐도 돼?`,
       );
     }
   },
@@ -490,18 +490,18 @@ module.exports = {
     );
   },
 
-  // [번역 대상] out_river_talk
+  // [번역 완료] out_river_talk
   async out_river_talk(nature, callname) {
-    await nature.say_and_wait('……それで、八百屋のおばさんがまた……');
+    await nature.say_and_wait('……그래서 야채가게 아주머니가 또……');
     await era.printAndWait(
-      `川風の爽やかさを感じながら、${nature.name} の商店街の世間話に耳を傾ける`,
+      `시원하게 불어오는 강바람을 느끼며 ${nature.name}가 들려주는 상점가의 시시콜콜한 이야기를 듣고 있었다.`,
     );
-    await nature.say_and_wait(`……${callname}？ 聞いてる？`);
+    await nature.say_and_wait(`……${callname}? 듣고 있어?`);
     await era.printAndWait(
-      `返事がなかったのが気に入らなかったのか、${nature.name} が拗ねた声を出す`,
+      `반응이 없는 게 서운했는지 ${nature.name}가 삐친 목소리로 투정을 부렸다.`,
     );
     await era.printAndWait(
-      `返事となだめのあと、${nature.name} はまたさっきの勢いに戻った……`,
+      `적절히 대답하며 달래 주자 ${nature.name}는 다시 아까처럼 신나서 이야기를 이어 갔다……`,
     );
   },
 
