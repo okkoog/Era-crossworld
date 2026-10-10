@@ -4330,9 +4330,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] toky_yus_win
+  // [번역 완료] toky_yus_win
   toky_yus_win: (() => {
-    const title = '実験目的の調整';
+    const title = '실험 목적의 조정';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -4340,59 +4340,59 @@ module.exports = {
      * @param {PrintedSpan} t_call_p アグネスタキオンがダンツフレームを呼ぶ名
      */
     const f = async (tachyon, you, t_call_c, t_call_p) => {
-      era.printButton('「タキオン！ かっこよかった！」', 1);
+      era.printButton('「타키온! 정말 멋졌어!」', 1);
       await era.input();
-      await tachyon.say_and_wait('む……');
+      await tachyon.say_and_wait('으음……');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はいつものように ',
+        '은(는) 평소처럼 ',
         tachyon.get_colored_name(),
-        ' の走りを褒めようとした。だが',
+        '의 달리기를 칭찬하려 했다. 하지만 ',
       ]);
       era.println();
-      await tachyon.say_and_wait('……実験は、成功しませんでしたわ');
+      await tachyon.say_and_wait('……실험은 성공하지 못했네.');
       era.println();
-      await era.printAndWait('ん？');
-      await era.printAndWait('あれほど見事に走ったのに、実験は失敗なのか');
+      await era.printAndWait('응?');
+      await era.printAndWait('그렇게 훌륭하게 달렸는데 실험이 실패라고?');
       era.println();
       await tachyon.say_and_wait([
         t_call_p,
-        '……期待はしていましたが、',
+        '……기대는 했지만 ',
         tachyon.sex,
-        'の可能性は、私が探しているものと合いません……やはり、',
+        '의 가능성은 내가 찾던 것과 맞지 않는군…… 역시 ',
         t_call_c,
         '……',
       ]);
       era.println();
       await era.printAndWait([
-        'なぜか、',
+        '어째서인지 ',
         tachyon.get_colored_name(),
-        ' は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' にはよくわからない言葉を呟いた',
+        '에게 이해하기 힘든 말을 중얼거렸다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……とにかく、今はいいですわ。これから、実験の要所に入ります',
+        '……아무튼 지금은 됐네. 이제부터 실험의 핵심에 들어갈 테니.',
       );
       era.println();
       await era.printAndWait([
-        'よくわからないが、',
+        '무슨 뜻인지 알 수 없었지만 ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の厳しい顔を見て、思わず姿勢を正した',
+        '의 엄격한 표정을 보고 저도 모르게 자세를 바로잡았다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '次のレースは……しばらく……決められません……考えねばならないことがありますの',
+        '다음 레이스는…… 당분간…… 정할 수 없네…… 생각할 일이 있어서.',
       );
       era.println();
       await era.printAndWait([
-        '不確かな言葉に、',
+        '모호한 말에 ',
         you.get_colored_name(),
-        ' のレース後の喜びは、一瞬で不安に変わった',
+        '의 레이스 승리를 기뻐하던 마음은 순식간에 불안으로 바뀌었다.',
       ]);
     };
     f.title = title;
