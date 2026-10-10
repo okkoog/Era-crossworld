@@ -2047,9 +2047,9 @@ module.exports = {
     );
   },
 
-  // [번역 대상] ws_47_24
+  // [번역 완료] ws_47_24
   ws_47_24: (() => {
-    const title = '青空の上を翔ける';
+    const title = '푸른 하늘 위를 날아오르다';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
@@ -2059,32 +2059,32 @@ module.exports = {
     const f = async (treve, you, prix_prb, prix_dia) => {
       await era.printAndWait([
         treve.name,
-        ' は年明け後、春の過ぎた五月、メイクデビューと同じく 1600 メートルの ',
+        '는 새해를 보내고 봄이 조금 지난 5월, 데뷔전과 마찬가지로 1600m의 ',
         prix_prb,
-        ' を大勝した。',
+        '에서 대승을 거두었다.',
       ]);
       await era.printAndWait([
-        '本人の強い希望もあり、',
+        '본인의 강력한 희망에 힘입어, ',
         treve.sex,
-        'は距離を 500 メートルほど延ばした ',
+        '는 거리가 500m가량 늘어난 ',
         prix_dia,
-        ' にも出走した。',
+        '에도 출주했다.',
       ]);
       await era.printAndWait(
-        `${you.name} を含む多くの観客の予想に反し、三冠級のレースで圧倒的な勝利を収めた。`,
+        `${you.name}을(를) 포함한 수많은 관객의 예상을 뒤엎고, 삼관 레이스에서 압도적인 승리를 거두었다.`,
       );
-      await era.printAndWait(`${treve.name} は着実に実力を上げている。`);
+      await era.printAndWait(`${treve.name}는 착실하게 실력을 키워나갔다.`);
       await era.printAndWait(
-        `その過程で、${you.name} が教えられることは減っていった。`,
-      );
-      await era.printAndWait(
-        `一を聞いて十を知る ${treve.name} は、教えなくても正しい答えに自然と辿り着くことがある。`,
+        `그리고 그 과정에서 ${you.name}이(가) 가르칠 수 있는 것은 점차 줄어들었다.`,
       );
       await era.printAndWait(
-        'シニアのトレーナーでも気づかない点を、自分で直してしまう。',
+        `하나를 들으면 열을 아는 ${treve.name}는, 때로는 가르쳐주지 않아도 자연스럽게 정답을 찾아냈다.`,
       );
       await era.printAndWait(
-        `放任主義だと他のトレーナーに責められることもあるが、${you.name} は${treve.sex}にはこれが正しいと思っている。`,
+        '베테랑 트레이너조차 눈치채지 못할 만한 점을 스스로 개선하곤 했다.',
+      );
+      await era.printAndWait(
+        `다른 트레이너들에게 방임주의라는 지적을 받을 때도 있었지만, ${you.name}은(는) 이것이 ${treve.sex}에게 맞는 올바른 방식이라고 생각했다.`,
       );
     };
     f.title = title;
@@ -2255,7 +2255,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_29
+  // [번역 완료] ws_95_29
   ws_95_29: (() => {
     const title = 'Fly Away';
     /**
@@ -2265,38 +2265,38 @@ module.exports = {
      */
     const f = async (treve, montjeu, you) => {
       await era.printAndWait(
-        `${you.name} はトレーナー室で、約束の ${treve.name} を待っている。`,
+        `${you.name}은(는) 트레이닝실에서 만나기로 약속한 ${treve.name}를 기다리고 있었다.`,
       );
       await era.printAndWait(
-        `${treve.sex}が来るまでのあいだ、これまでのレース映像を見直す。`,
+        `${treve.sex}가 오기 전까지 남는 시간 동안 지난 레이스의 영상들을 다시 한번 검토했다.`,
       );
       await era.printAndWait(
-        `${treve.name} がうまくいかない理由を一つずつ並べる。だが、ほかにも問題がある。`,
+        `${treve.name}가 슬럼프에 빠진 이유를 하나씩 차례대로 짚어보았다. 하지만 문제는 그뿐만이 아니었다.`,
       );
-      await era.printAndWait(`${you.name} は最近のレースの最終直線を見直す。`);
+      await era.printAndWait(`${you.name}은(는) 최근 레이스의 최종 직선 주로를 다시 확인했다.`);
       await era.printAndWait(
-        `${treve.name} は以前と同じく、第一集団から前方へ抜け出そうと躍起になっている。`,
-      );
-      await era.printAndWait(
-        `だがこのレースでは包囲網を破れず、得意の末脚は何も残さず終わった。`,
+        `${treve.name}는 이전과 다름없이 선두 그룹을 뚫고 앞으로 치고 나가기 위해 호시탐탐 기회를 노리고 있었다.`,
       );
       await era.printAndWait(
-        `もともと ${treve.name} は、高い部類とは言えない${treve.uma_sex_title}だ。`,
+        `그러나 상대의 포위망을 미처 빠져나오지 못했고, 장기인 막판 스퍼트를 제대로 발휘하지도 못한 채 레이스가 끝나버렸다.`,
       );
       await era.printAndWait(
-        `それに戦術が知られれば、${treve.sex}を前へ出さないよう結託する集団が出ても不思議ではない。`,
+        `애초에 ${treve.name}는 체구가 그리 크지 않은 ${treve.uma_sex_title}였다.`,
       );
       await era.printAndWait(
-        `何より、${treve.sex}のやり方は読みやすい——${treve.name} の走りは ${montjeu.name} に似ている。`,
+        `게다가 작전마저 간파당한다면, 서로 연대하여 ${treve.sex}가 앞으로 나가지 못하도록 가로막는 무리가 생겨나도 이상할 게 없었다.`,
       );
       await era.printAndWait(
-        `あのときトレーナーたちは ${montjeu.name} への対策に力を入れた。それが ${treve.name} にも、そのまま通ってしまう。`,
+        `무엇보다도 ${treve.sex}의 달리기 방식은 너무나 예측하기 쉬웠다. ${treve.name}의 주법은 ${montjeu.name}를 쏙 빼닮아 있었으니까.`,
       );
       await era.printAndWait(
-        `${you.name} は伝説の後継に勝ち続けさせねばならない。何を与えられる。`,
+        `당시 트레이너들이 ${montjeu.name}를 저지하기 위해 고심해서 짜냈던 전략들이, 지금 ${treve.name}에게 그대로 통하고 있는 것이다.`,
       );
       await era.printAndWait(
-        `そう悩むうち、約束の時間は一時間ほど過ぎていた。だが ${treve.name} は来る気配がない。`,
+        `전설의 후계자를 계속 승리로 이끌기 위해, ${you.name}은(는) 과연 무엇을 전해줄 수 있을까.`,
+      );
+      await era.printAndWait(
+        `그렇게 고뇌하는 사이 약속 시간으로부터 벌써 한 시간 남짓이 흘렀다. 하지만 ${treve.name}는 올 기미가 보이지 않았다.`,
       );
     };
     f.title = title;
