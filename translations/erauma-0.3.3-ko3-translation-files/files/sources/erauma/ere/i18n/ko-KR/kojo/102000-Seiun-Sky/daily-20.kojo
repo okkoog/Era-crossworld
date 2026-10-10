@@ -2549,6 +2549,356 @@ office_study:
 
 
 # [번역 대상] orf_lake
+# [번역 완료] orf_creek
+orf_creek:
+  - %YOU%와 세이운 스카이는 근처의 작은 개울로 향했다.
+  - color: %COLOR%
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - 「여기예요! 트레이너 씨, 힘내자고요.」
+  - color: %COLOR%
+    content:
+      - fontWeight: bold
+        content: %CHARA%
+      - 「오늘 저녁밥은 우리 둘의 실력에 달렸으니까요!」
+  - %YOU%와 세이운 스카이는 느긋하게 낚시를 시작했다.
+  - ………
+  - ……
+  - …
+  - 잠시 후
+  -
+  - if: d.fish === 1
+    lines: # 꽝 20% 의욕-1
+      - 세이운 스카이는 텅 빈 양동이를 바라보았다.
+      - 「……오늘은 방생하기 좋은 날인가 보네요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「가죠! 마트에서 한 마리 사 와요!」
+      - 세이운 스카이는 양동이를 들고 단호하고 힘찬 걸음으로 돌아가기 시작했다.
+      - ——숙련된 낚시꾼에게 꽝이란 없다!
+  - if: d.fish === 2
+    lines: # 잔챙이 8% 체력·정력 5% 회복 스킬 포인트+5
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - （양동이 안의 5센티미터도 안 되는 잔챙이 떼를 보며 생각에 잠긴다）
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「……튀김으로 할까요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「김가루도 좀 뿌리면 꽤 맛있겠네요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「아니면 매운탕…… 정 안 되면 고양이 밥으로라도……」
+      - 「어…… 그냥 놓아주는 게 낫지 않을까……」
+  - if: d.fish === 3
+    lines: # 황어 8% 체력·정력 10% 회복 스킬 포인트+5
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「오늘은 황어네요. 트레이너 씨, 구워 먹을래요?」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「스카이는 이런 생선 굽는 데 꽤 자신 있다고요～」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「먼저 소금으로 문질러 흙내를 없애고, 꼬치에 꿰어 소금을 뿌린 다음 숯불에 구우면 껍질은 바삭하고 살은 부드럽게——」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「으음～～ 생각만 해도 군침이 도네요. 결정했어요, 소금구이!」
+  - if: d.fish === 4
+    lines: # 피라미 8% 체력·정력 15% 회복 스킬 포인트+5
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「전부 작은 피라미네요. 이번엔 간단하게 해 먹죠.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「손질한 뒤 밑간해서 비린내를 잡고, 밀가루를 묻혀 튀기기만 하면 돼요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「트레이너 씨, 오늘 요리는 맡길게요——」
+  - if: d.fish === 5
+    lines: # 끄리 8% 의욕+1 스킬 포인트+5
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「대풍어예요! 전부 끄리네요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「이 녀석들은 먹이 경쟁이 엄청 거칠어서, 루어를 던지기만 해도 덥석 물고 숫자도 많아요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「이렇게 많으면 한 번에 다 못 먹으니까, 돌아가서 다들 나눠주고 남은 건 감로조림으로 만들죠.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「끄리는 살이 단단해서 감로조림으로 만들면 밥도둑일 거예요!」
+  - if: d.fish === 6
+    lines: # 망둑어 8% 의욕+1 스킬 포인트+10
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「우와! 죄다 작은 망둑어잖아요! 오늘 빈 바늘이 왜 이렇게 많나 했더니!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「이 조그만 녀석들, 몸집은 작으면서 미끼는 전부 훔쳐 갔네요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「그냥 보내줄 순 없죠, 트레이너 씨! 오늘 저녁은 생선튀김이에요!」
+  - if: d.fish === 7
+    lines: # 갈겨니 8% 피로 1단계 감소 스킬 포인트+5
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「오늘은 갈겨니가 많네요. 꽤 많이 잡혔어요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「트레이너 씨, 알고 있어요? 갈겨니는 번식기가 되면 색깔이 무척 예뻐져요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「맛은 끄리랑 비슷하니까 이것도 감로조림으로 해볼까요.」
+  - if: d.fish === 8
+    lines: # 민물 쏘가리류 8% 피로 1단계 감소 스킬 포인트+10
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「흐흥～ 어때요, 스카이 대단하죠? 이런 개울의 녀석들은 바위틈에 숨어 있어서 보통은 잡기 쉽지 않다고요.」
+      - 「바다의 바리류는 꽤 크지 않나?」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「음…… 그렇긴 하죠. 민물 쪽은 아주 작아서 바다 녀석들과는 비교가 안 돼요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「살은 단단하고 담백하면서 달큰한데, 가시가 많아서 회로 뜨기엔 너무 번거롭네요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「그냥 조림으로 만들어서 두고두고 먹죠.」
+  - if: d.fish === 9
+    lines: # 은어 7% 상쾌함(약물 잔류 제거) 스킬 포인트+10
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「트레이너 씨, 봐요! 이게 바로 민물고기의 왕—— 은어예요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「역시 오늘 이 물은 정말 좋네요. 은어는 수질에 굉장히 까다롭거든요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「무조건 소금구이예요! 이건 양보할 수 없는 문제라고요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「내장은 빼지 않고 통째로 꼬치에 꿰어, 소금만 뿌리고 숯불에 굽는 거예요.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「껍질은 고소하고 바삭하게, 살은 부드럽고 촉촉하게. 내장의 은은한 쌉쌀함과 살의 담백한 단맛이 절묘하게 어우러지는 것, 그게 은어 요리의 최고봉이에요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「살짝 알려드리자면, 스카이는 은어를 정말 좋아한답니다～」
+  - if: d.fish === 10
+    lines: # 무지개송어 7% 의욕 최고로 회복 스킬 포인트+10
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「무지개송어! 야생 무지개송어예요! 트레이너 씨, 봐요! 이렇게 큰 녀석이! 오늘 저녁은 진수성찬이에요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「소금구이! 아니—— 버터구이! 그것도 아니면—— 회! 잠깐만——」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「우와～ 뭘 골라야 할지 모르겠어요～」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「아니! 어린애나 하나만 고르는 거죠. 전부 해 먹을래요!」
+  - if: d.fish === 11
+    lines: # 홍점곤들매기 7% 체력·정력 20% 회복 스킬 포인트+10
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「설마! 설마! 전설의 냉수성 어종의 왕—— 홍점곤들매기?!」
+      - 「그렇게 대단해? 어디 보자.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「잠깐잠깐! 이 물고기는 굉장히 예민하다고요! 살살 들어요.」
+      - 「너무 깐깐하네……」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「당연하죠! 계류 낚시의 최종 목표 중 하나라고요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「게다가 최고급 식재료 중 하나이기도 하고요.」
+      - 「이건 어떻게 먹어?」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「당연히 최고급 방식으로—— 초밥이죠.」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「이 진수성찬은 꼭 다 같이 맛봐야겠어요.」
+  - if: d.fish === 12
+    lines: # 산천어 3% 정신이 맑아짐(편두통·약물 잔류 제거) 의욕 최고로 회복 스킬 포인트+20
+      - 세이운 스카이의 찌가 살짝 움직였다. 한 번, 또 한 번. 그러더니 갑자기 물속으로 쑥 가라앉았다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「응?! 물었어요!」
+      - 세이운 스카이는 손목을 홱 움직여 물속의 녀석과 힘겨루기를 시작했다.
+      - 낚싯줄이 조금씩 풀려 나갔다. 녀석은 서두르지도 않고 묵직하게 물밑으로 파고들었다.
+      - 한동안 실랑이를 벌인 끝에 물고기는 천천히 상류 쪽으로 끌려왔다.
+      - 그때 수면에 작은 물보라가 일며 황갈색 그림자가 물속에서 번뜩였다——
+      - 물고기의 몸선은 매끈하고 우아했다. 몸의 무늬는 가지런했고, 옆줄에는 아주 옅은 분홍빛 광택이 감돌았다. 마치 연한 연지를 한 겹 바른 듯했고, 등은 차분한 황갈색, 배는 눈처럼 희었다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「산천어……」
+      - 세이운 스카이는 넋을 잃었다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「산천어! 산천어예요! 트레이너 씨! 산천어라고요!」
+      - %SEX%는 갑자기 비명을 지르듯 외쳤고, 꼬리를 미친 듯이 흔드는 바람에 옆의 양동이까지 엎어져 물이 %YOU%에게 튀었다.
+      - 「살살해, 살살! 낚싯대 부러지겠어!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「알아요, 알아요, 안다고요——」
+      - %SEX%는 깊이 숨을 들이쉬며 필사적으로 진정하려 했지만, 낚싯대를 쥔 손도 입술도 떨리고 있었다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「산천어예요, 트레이너 씨…… 산천어가 어떤 의미인지 알아요……?」
+      - 세이운 스카이는 녀석의 움직임에 맞춰 줄을 조금 풀고, 조금 감으며 개울가를 따라 십여 걸음이나 오갔다. 신발 안은 물투성이가 되었고 바짓단은 허벅지까지 젖었지만, %SEX%는 전혀 신경 쓰지 않았다.
+      - 마침내 물고기의 힘이 빠지기 시작했다. 계류의 귀족이 천천히 강가로 끌려오자 세이운 스카이는 몸을 낮추고 뜰채로 조심스레 건져 올렸다.
+      - 석양빛이 나뭇가지 사이로 새어 들어와 산천어의 몸 위에 내려앉았다.
+      - 길이는 30센티미터를 조금 넘었고, 몸은 길고 유려했다. 몸에는 짙은 청색의 큼직한 반점들이 훈장처럼 줄지어 있었고, 옆구리의 옅은 분홍빛 띠가 빛을 받을 때마다 어렴풋이 드러났다.
+      - 비늘은 작고 촘촘하며 가지런했고, 하나하나가 석양 아래에서 부드러운 광채를 반사했다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「이게 바로, 계류의 여왕……」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「정말 예뻐……」
+      - 눈물이 자신도 모르게 양쪽 뺨을 타고 흘렀다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「트레이너 씨…… 숨 쉬는 것도 아까울 정도예요……」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「……평생 이렇게 보고만 있고 싶네요.」
+      - %YOU%는 휴대폰으로 사진을 찍어 기념으로 남긴 뒤 물었다.
+      - 「그래서……」
+      - 「이건 어떻게 먹을 거야?」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「먹긴 뭘 먹어요!」
+      - 세이운 스카이는 눈을 흘겼다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「이 물고기는 저보다도 귀하다고요!」
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「당연히 놓아줘야죠.」
+      - %YOU%를 한바탕 나무란 뒤, 세이운 스카이는 황홀한 표정으로 양동이 속 산천어를 바라보았다.
+      - color: %COLOR%
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「조금만 더 봐요. 조금만 더 보고 놓아줄게요……」
+
+
 orf_lake:
   - %YOU%和青云天空来到了一片天然湖泊。
   - 「哇哦，这片湖真漂亮啊」
