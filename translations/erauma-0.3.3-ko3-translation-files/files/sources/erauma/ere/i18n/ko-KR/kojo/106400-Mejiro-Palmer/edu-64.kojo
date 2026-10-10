@@ -2740,7 +2740,7 @@ classical_arim_kin:
 
 # クラシック級有馬勝利
 # スキル「大逃げ」習得
-# [번역 대상] c_arim_kin_win
+# [번역 완료] c_arim_kin_win
 c_arim_kin_win:
   title: 아리마 기념 슈퍼 도망자!
   lines:
@@ -2761,8 +2761,8 @@ c_arim_kin_win:
           content: %CHARA%
         - 「으와악! 트레이너! 듣고 있었어?!」
     - 갑작스러운 %YOU%의 목소리에 깜짝 놀란 메지로 파머가 과장된 몸짓으로 뒤로 껑충 뛰었다.
-    - 声も大げさで、%YOU%の鼓膜を破りそうだ
-    - でもパーマーは嬉しそうだから、まあいいか
+    - 목소리마저 요란해서 %YOU%의 고막이 터질 것 같았다
+    - 하지만 파머가 저렇게 기뻐하니 뭐, 괜찮겠지
     - acc: 1
       content: 「솔직히 말해서…… 메지로가 아니어도 상관없잖아.」
     - color: %COLOR%
@@ -2777,7 +2777,7 @@ c_arim_kin_win:
         - fontWeight: bold
           content: %CHARA%
         - 「응응, 알았어! 그럼……」
-    - 深く息を吸って、もっとパーマーらしい顔に戻す
+    - 파머는 깊이 숨을 들이쉬고 한층 자신다운 표정을 되찾았다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2790,13 +2790,13 @@ c_arim_kin_win:
         - 「오늘은 %SELF_CALL%의 승리! 어때?」
 
 # クラシック級有馬敗北
-# [번역 대상] c_arim_kin_lose
+# [번역 완료] c_arim_kin_lose
 c_arim_kin_lose:
   title: 아쉬움 남는 도주극
   lines:
     - 자신만의 방식으로 아리마 기념을 제패하여, 모든 관중의 머릿속에 파머의 이름을 각인시키는 것.
     - 메지로 가문의 메지로 파머가 아닌, 아리마 기념의 승자 메지로 파머로서.
-    - そう思っていたのに、現実はパーマーにそのまま勝たせてくれなかった
+    - 그렇게 생각했지만 현실은 파머가 순순히 승리하도록 내버려 두지 않았다
     - 1착을 한 %UMA%가 기뻐하는 모습을 보며 마음 한구석에 지울 수 없는 아쉬움이 남았다.
     - 전광판에서 시선을 거둬 관객석으로 향했다.
     - 자신을 끝까지 믿어준 파트너가 분명히 지켜보고 있을 것이다.
@@ -2817,7 +2817,7 @@ c_arim_kin_lose:
     - acc: 1
       content: 「파머……」
     - %YOU%의 목소리에 울음소리가 멎었다.
-    - %YOU%の手をさらに強く掴み、離そうとしない
+    - 파머는 %YOU%의 손을 더욱 세게 붙잡고 놓으려 하지 않았다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -3118,14 +3118,14 @@ new_year_2:
         - 파머는 이 당구의 신에게서 다양한 기술을 배웠다…… 정말일까?
 
 # 日経新春杯
-# [번역 대상] nikk_hai
+# [번역 완료] nikk_hai
 nikk_hai:
   title: 기분 전환!
   lines:
     - 새로운 해, 새로운 마음가짐!
     - 작년 상태가 어떠했든, 올해가 어떻게 흘러가든, 일단 자신만의 리듬을 찾는 게 우선이다!
     - 그렇게 다짐한 메지로 파머는 망설임 없이 코스 위에 섰다.
-    - 観客席のいちばん前に貼りつくように立って、元気いっぱいのパーマーを見る
+    - 관중석 맨 앞에 바짝 붙어 서서 활기찬 파머의 모습을 바라보았다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -3136,7 +3136,7 @@ nikk_hai:
         - fontWeight: bold
           content: %CHARA%
         - 「그냥 평범한 레이스라면 지루하잖아? 그러니까 %SELF_CALL%가 오늘 레이스를 아주 커다란 파티로 만들어버리겠어!」
-    - 観客席のファンは、パーマーの発言に一瞬ぼんやりして、すぐ反応する
+    - 관중석의 팬들은 파머의 말에 순간 멍해졌다가 이내 반응했다
     - 처음에는 메지로 가문의 낙오자 취급을 받았지만, 지금은 당당하게 이름을 알린 %UMA%다.
     - 열광하는 팬들 사이에 숨어, 무대 위 열정적인 메지로 파머에게 조용히 응원을 보냈다.
     - acc: 1
@@ -3165,7 +3165,7 @@ nikk_hai:
         - 말 자체는 평범했지만, 왠지 그 눈빛에는 다른 의미가 담긴 듯했다.
         - acc: 1
           content: （분명 들켰겠지……）
-        - %YOU%の視線を読んだのだろう。ほかの人が気にしていない隙に、%YOU%へ小さく手を振る
+        - %YOU%의 시선을 알아챈 모양이다. 다른 이들이 신경 쓰지 않는 틈을 타 파머가 %YOU%에게 작게 손을 흔들었다
         - ……다른 뜻이 있는 건 아니겠지.
 
 # 日経新春杯勝利
@@ -3261,7 +3261,7 @@ tenn_spr:
     - 몸을 돌려 지하 통로를 빠져나와 경기장으로 향했다.
 
 # 天皇賞（春）勝利
-# [번역 대상] tenn_spr_win
+# [번역 완료] tenn_spr_win
 tenn_spr_win:
   title: 도주의 승리!
   lines:
@@ -3287,8 +3287,8 @@ tenn_spr_win:
       content: 「어이, 어이! 파머!」
     - %YOU%이(가) 큰 소리로 불렀지만 파머는 들리지 않는 듯 가만히 안겨 있었다.
     - %YOU%의 숨이 막힐 정도로 세게 껴안았던 두 팔은 한참 뒤에야 뒤늦게 풀렸다.
-    - 緩めたのはそのせいだが、意外そうな顔はしていない
-    - 言うなら、わざとだ
+    - 그래서 긴장을 풀었지만 놀란 표정은 아니었다
+    - 굳이 말하자면 일부러 그랬다
     - ……하지만 이겼으니까, 조금 더 안겨 있게 해줘도 상관없겠지.
     - if: era.get('love:64') >= 75
       lines:
@@ -3323,7 +3323,7 @@ tenn_spr_win:
         - 시선을 직접 맞추지는 못했지만, 붉어진 얼굴 너머로 맑은 미소가 보였다.
 
 # 天皇賞（春）敗北
-# [번역 대상] tenn_spr_lose
+# [번역 완료] tenn_spr_lose
 tenn_spr_lose:
   title: 주인공이 아니어도 상관없어!
   lines:
@@ -3402,7 +3402,7 @@ tenn_spr_lose:
             - fontWeight: bold
               content: %CHARA%
             - 「분하긴 하지만 속이 뒤틀리거나 하진 않아…… 이것도 다 트레이너 덕분이야!」
-        - パーマーの笑いは軽い。%SEX%の言葉そのままだ
+        - 파머의 웃음소리는 가벼웠다. %SEX%가 말한 그대로였다
         - 청아한 웃음소리가 잦아들고 묘한 침묵이 흐르자, 파머도 등 뒤로 짚었던 손을 슬며시 거두었다.
         - 벤치를 따라 조금씩 옆으로 옮겨오더니 %YOU%의 허벅지에 몸을 밀착시켰다.
         - acc: 1
@@ -3540,7 +3540,7 @@ takz_kin_win:
           content: %CHARA%
         - 「게다가 중요한 건 내가 해냈다는 사실이니까!」
 
-# [번역 대상] summer_start_2
+# [번역 완료] summer_start_2
 summer_start_2:
   title: 여름 합숙（시니어 시즌）시작
   lines:
@@ -3642,7 +3642,7 @@ summer_start_2:
         - fontWeight: bold
           content: %CHARA%
         - 「토카이 테이오…… 맥퀸의 숙적이구나」
-    - メジロマックイーン、トウカイテイオー……この二人のスターが出れば、話題の大半は%THEY%に持っていかれるだろう
+    - 메지로 맥퀸, 토카이 테이오…… 두 스타가 출전하면 화제의 대부분은 %THEY%에게 쏠릴 것이다
     - 스타들이 운집한 텐노상(가을)에서 파머에게 조명이 비치지 않는다면, 그것이 %SEX%의 실력 발휘에 영향을 줄지도 몰랐다……
     - color: %COLOR%
       content:
@@ -3675,7 +3675,7 @@ summer_start_2:
     - 오직 화끈하게 달아오를 여름만이 기다리고 있을 뿐이었다!
 
 # 恋慕＞74
-# [번역 대상] summer_middle_2
+# [번역 완료] summer_middle_2
 summer_middle_2:
   title: 여름의 작은 소동
   lines:
@@ -3684,12 +3684,12 @@ summer_middle_2:
         - fontWeight: bold
           content: %CHARA%
         - 「%CALLNAME%! 나 선탠오일 바르는 것 좀 도와줄 수 있어?」
-    - 「取れるけど、なんでヘリオス%THEY%に頼まないんだ？」
+    - 「따 줄 수는 있는데, 왜 헬리오스 %THEY%에게 부탁하지 않는 거야?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ヘリオス%THEY%、もう下に行っちゃったし、今呼び出しても悪いよ」
+        - 「헬리오스 %THEY%는 벌써 아래로 내려갔고, 지금 부르기도 미안하잖아.」
     - color: %COLOR%
       content: 파머는 매트 위에 엎드렸고, 꼬리는 흥분한 듯 좌우로 살랑살랑 흔들리고 있었다.
     - color: %COLOR%
@@ -4079,7 +4079,7 @@ walk:
         - 「예전에 네가 말했던 것처럼, 계속 나만 바라봐주면서 말이야」
     - 메지로 파머는 밝은 태양을 등진 채 %YOU%을(를) 향해 찬란하게 미소 지었다.
 
-# [번역 대상] summer_end_2
+# [번역 완료] summer_end_2
 summer_end_2:
   title: 여름 합숙（시니어 시즌）종료
   lines:
@@ -4154,7 +4154,7 @@ summer_end_2:
         - fontWeight: bold
           content: %HELIOS%
         - 「둘이서 완전 하이텐션으로 가보자고～ 웨이 웨이～!」
-    - 二人で高く歓声を上げる。傍らで見ている%YOU%だけ少し気まずい。視線を、同じく%THEY%を見ているもう一人へ移す
+    - 두 사람은 크게 환호성을 질렀다. 곁에서 지켜보던 %YOU%은(는) 조금 어색해하며, 마찬가지로 %THEY%를 바라보던 다른 한 사람에게 시선을 돌렸다
     - color: %COLOR_63%
       content:
         - fontWeight: bold
@@ -4166,7 +4166,7 @@ summer_end_2:
       content:
         - fontWeight: bold
           content: %DICTUS%
-        - 「……いえ。少し気になっただけで、%THEY%が走りながら言っていた……」
+        - 「……아니요. 조금 신경 쓰였을 뿐이에요. %THEY%가 달리면서 했던 말이……」
     - color: %COLOR_63%
       content:
         - fontWeight: bold
@@ -4185,7 +4185,7 @@ summer_end_2:
           content: %DICTUS%
         - 「마음이나 몸을 무리하게 혹사시키면, 언젠가는 반드시 달리는 데 영향을 주게 됩니다」
     - acc: 1
-      content: 「%THEY%が心配なのか」
+      content: 「%THEY%가 걱정되는 거야?」
     - color: %COLOR_63%
       content:
         - fontWeight: bold
@@ -4235,7 +4235,7 @@ tenn_sho:
         - 「어떤 경기장이든 내 주법에는 아무런 영향도 주지 못하거든!」
 
 #依存持ちの天皇賞（秋）
-# [번역 대상] tenn_sho_yandere
+# [번역 완료] tenn_sho_yandere
 tenn_sho_yandere:
   title: 나만의 주법과 나만의……
   lines:
@@ -4269,9 +4269,9 @@ tenn_sho_yandere:
           content: %CHARA%
         - 「……어라?」
     - color: %COLOR%
-      content: 視界の端に、遅れて来た%CALLNAME%が%SEX%を応援している姿がある
+      content: 시야 끝에 뒤늦게 도착한 %CALLNAME%이(가) %SEX%를 응원하는 모습이 보였다
     - color: %COLOR%
-      content: 場の風が%CALLNAME%の声援を運び、パーマーの立った耳へ入る。沈んでいた目に光が戻る
+      content: 경기장의 바람이 %CALLNAME%의 응원 소리를 파머의 쫑긋 선 귀에 실어 날랐다. 가라앉았던 눈동자에 빛이 돌아왔다
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -4290,7 +4290,7 @@ tenn_sho_yandere:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - （トレーナー%YOURSEX%……ずっと、いたんだ！）
+        - (트레이너 %YOURSEX%…… 계속 거기에 있었구나!)
 
 # 天皇賞（秋）勝利
 # [번역 대상] tenn_sho_win
@@ -4629,7 +4629,7 @@ s_arim_kin_win_clothe1:
                 - 「다음 일은, 나중에 해도 될까?」
 
 # クリスマス勝負服
-# [번역 대상] s_arim_kin_win_clothe46
+# [번역 완료] s_arim_kin_win_clothe46
 s_arim_kin_win_clothe46:
   title: 도망친 곳의 종착지는，바로 여기
   lines:
@@ -4775,7 +4775,7 @@ s_arim_kin_win_clothe46:
                   content: %CHARA%
                 - 「그렇지……?」
             - %YOU%은(는) 손을 들어 메지로 파머의 머리를 부드럽게 쓰다듬으며 새 옷의 단추를 풀었다.
-            - 白い小さな帽子をパーマーが自分で外し、情の籠った目で待つ
+            - 파머는 작은 흰 모자를 직접 벗고 애정 어린 눈빛으로 기다렸다
             - acc: 1
               content: 「파머, 좋아해」
             # 馬跳び
@@ -4871,7 +4871,7 @@ ak_c46_kiss_sex_end:
       - 「원래는 다시 시작할 마음의 준비를 하고 있었거든! 쓸데없는 준비였네~」
 
 # シニア級12月4週
-# [번역 대상] christmas_party
+# [번역 완료] christmas_party
 christmas_party:
   title: 메지로의 크리스마스 파티
   lines:
@@ -4923,7 +4923,7 @@ christmas_party:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「でもヘリオス%THEY%と会ってからね」
+        - 「하지만 헬리오스 %THEY%를 만나고 난 뒤부터 말이야.」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -5670,7 +5670,7 @@ rain_notify:
 
 # メイクデビュー後、任意G1出走後、一人で商店街外出時
 # リマインド：一人外出の雨の日、思いがけない出会いがあるかも
-# [번역 대상] rain
+# [번역 완료] rain
 rain:
   title: 비에 흠뻑 젖더라도
   lines:
@@ -5760,7 +5760,7 @@ rain:
           content: %CHARA%
         - 「무엇보다 중요한 건, 혼자서 달리고 싶을 때 즉시 시작할 수 있다는 거야!!」
     - 메지로 파머의 말을 들은 %YOU%은(는) 시선을 거둔 채 잠시 멍해졌다.
-    - パーマーの言う「一人」に、胸へ少し異物感が浮かぶ
+    - 파머가 말한 「혼자」라는 말에 가슴속에서 작은 이질감이 피어올랐다
     - 평소의 메지로 파머는 항상 누군가와 함께 있을 터였다.
     - acc: 1
       content: 「혼자서?」
@@ -5882,10 +5882,10 @@ rain:
               content: %CHARA%
             - 「그런 소리 하는 사이에 커피 다 식겠어~ 자, 얼른 마셔.」
 
-# [번역 대상] important_place_notify
+# [번역 완료] important_place_notify
 important_place_notify:
   - color: %COLOR%
-    content: 【%CHARA%は前にここで自由レースに出た……もう一度連れてきてみるか】
+    content: 【%CHARA%는 전에 이곳에서 자유 레이스에 출전했지…… 다시 한번 데려와 볼까?】
 
 #（自由レース、行く？）発動後、クラシック級商店街
 # [번역 대상] important_place
@@ -6033,10 +6033,10 @@ important_place:
             - 「그걸 누구에게도 부정당하고 싶지 않아!」
         - そのあとパーマーは%YOU%に、%SEX%の友人たちの話をたくさんした
 
-# [번역 대상] golf_notify
+# [번역 완료] golf_notify
 golf_notify:
   - color: %COLOR%
-    content: 【最近%CHARA%は、トレーニングのあと商店街へ急いでいる】
+    content: 【최근 %CHARA%는 훈련이 끝나면 서둘러 상점가로 향한다.】
 
 #恋慕＞49、シニア級クリスマス 商店街
 # [번역 대상] golf
@@ -6412,10 +6412,10 @@ golf:
     - acc: 2
       content: 「나중에 다시 이야기하자……」
 
-# [번역 대상] lottery_notify
+# [번역 완료] lottery_notify
 lottery_notify:
   - color: %COLOR%
-    content: 【%CHARA%といっしょに抽選しよう！】
+    content: 【%CHARA%와 함께 추첨에 참가하자!】
 
 # 恋慕＞49、シニア級1月 商店街抽選
 # [번역 대상] lottery
@@ -6528,10 +6528,10 @@ lottery:
         - 하지만 %SEX%를 바라보니 그 파란 눈동자 속에는 옅은 기대감이 서려 있었다.
         - 이런 메지로 파머를 조금 괴롭혀주고 싶다는 생각이 들 정도로 정말 귀여웠다.
 
-# [번역 대상] hot_spring_notify
+# [번역 완료] hot_spring_notify
 hot_spring_notify:
   - color: %COLOR%
-    content: 【%CHARA%といっしょに温泉へ行こう！】
+    content: 【%CHARA%와 함께 온천에 가자!】
 
 # 抽選した年の12月
 # 券あり or 恋慕90
