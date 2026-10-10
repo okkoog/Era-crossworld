@@ -539,7 +539,7 @@ hit_anal:
       - %SEX%はもう声を抑えず、平手のたびに咽んで叫び、尻は微かに上がって、もっと罰を請うみたいだった。
       - 잠시 후, 메지로 파머는 몸을 돌려 %YOU%과(와) 마주 앉았으나, 시선은 여전히 허공을 헤매며 아랫입술을 가볍게 깨물고 있었다.
 
-# [번역 대상] ero_start
+# [번역 완료] ero_start
 ero_start:
   # TFLAGNAME:9 = 強姦
   - if: era.get('tflag:9') === 0
@@ -550,34 +550,34 @@ ero_start:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「え？」
+              - 「어?」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「パーマーと、そういうことするの？」
+              - 「파머와…… 그런 일을 하자는 거야?」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「だめだよ%CALLNAME%、その……わ、私、先に行くね……」
+              - 「안 돼, %CALLNAME%, 그게…… 나, 나 먼저 갈게……」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「あっ！」
+              - 「앗!」
       - if: era.get('love:64') >= 50
         lines:
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「だめ、こんなの……」
+              - 「안 돼, 이러면……」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「来ないで……%CALLNAME%❤️」
+              - 「다가오지 마…… %CALLNAME%❤️」
   - if: era.get('tflag:9') === -1
     lines:
       - if: era.get('love:64') < 50
@@ -586,29 +586,29 @@ ero_start:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「あのね、こういうこと、%CALLNAME%でも……」
+              - 「있잖아, 이런 일은 %CALLNAME%라도……」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「……でも聞くよ。命令なら……」
+              - 「……그래도 들을게. 명령이라면……」
       - if: era.get('love:64') >= 50
         lines:
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「する？」
+              - 「할 거야?」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「あの、恥ずかしいよ……ううん、大丈夫！」
+              - 「저기, 부끄러워…… 아니, 괜찮아!」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「%CALLNAME%なら……」
+              - 「%CALLNAME%라면……」
 
 # [번역 대상] cannot_look_back
 cannot_look_back:
@@ -711,37 +711,37 @@ raping_start:
     lines:
       - %CHARA%は%YOU%の上に伏せ、自分の気持ちと本能のまま、絶えず体を揺らしている。
 
-# [번역 대상] join_3p
+# [번역 완료] join_3p
 join_3p:
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「なんで、%CALLNAME%……」
+      - 「왜 그래, %CALLNAME%……」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「パーマーも……欲しいのに……」
+      - 「파머도…… 함께하고 싶은데……」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「……それとも、来るのが遅かった？」
+      - 「……아니면 내가 너무 늦게 온 거야?」
   - acc: 1
-    content: 「ちょうどいいところだ」
+    content: 「마침 잘 왔어.」
   - acc: 2
-    content: 「これは、だめだ……」
+    content: 「이건 안 돼……」
 
-# [번역 대상] join_3p_accept
+# [번역 완료] join_3p_accept
 join_3p_accept:
-  - %CHARA%は目尻を赤くし、%YOU%の胸に飛び込むと陶酔するように息を吸う。
-  - 再び顔を上げたとき、瞳はもう熱い霞を帯びていた……
+  - %CHARA%는 눈가를 붉힌 채 %YOU%의 품으로 뛰어들어 깊이 숨을 들이쉬었다.
+  - 다시 고개를 들었을 때 눈동자는 이미 뜨거운 열기에 젖어 있었다……
 
-# [번역 대상] join_3p_reject
+# [번역 완료] join_3p_reject
 join_3p_reject:
-  - %CHARA%の表情は期待から陰へ落ち、落胆を下がった前髪の奥へしまう。
-  - %YOU%へ無理に笑みを作り、気まずい寂しさを残して去った。
+  - %CHARA%의 표정에서 기대감이 사라지고 실망한 얼굴을 내려온 앞머리 뒤로 감췄다.
+  - %YOU%에게 억지 미소를 지어 보인 뒤 어색한 쓸쓸함을 남기고 떠났다.
 
 # [번역 대상] join_3p_force
 join_3p_force:
@@ -749,35 +749,35 @@ join_3p_force:
   - 力ずくで自分の前へ引き倒し、強引に口づける。
   - 口を離したとき、%CHARA%はもう服を脱ぎ、上位から容赦なく見下ろしていた……
 
-# [번역 대상] mark_pleasure
+# [번역 완료] mark_pleasure
 mark_pleasure:
   - if: d.level === 1
     color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「肉体関係なだけなのに、パーマー……止められない……」
+      - 「그저 육체적인 관계일 뿐인데도 파머는…… 멈출 수가 없어……」
   - if: d.level === 2
     color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「逃げられない❤️️ もうここからは逃げられないよ❤️」
+      - 「도망칠 수 없어❤️️ 이제 여기서 벗어날 수 없어❤️」
   - if: d.level === 3
     color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「はあっ❤️️ もう逃げられない❤️ これがないとだめ❤️ パーマーはもう……この人のものだよ❤️」
+      - 「하아❤️️ 이제 도망칠 수 없어❤️ 이게 없으면 안 돼❤️ 파머는 이제…… 이 사람의 것이야❤️」
 
-# [번역 대상] mark_meek
+# [번역 완료] mark_meek
 mark_meek:
   - if: d.level === 1
     color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「今さら、私たち……えへへ……」
+      - 「이제 와서 우리 사이에…… 에헤헤……」
   - if: d.level === 2
     color: %COLOR%
     content:
@@ -789,51 +789,51 @@ mark_meek:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「やっぱり、あんたにしかできない❤️️ あんただけ❤️️……」
+      - 「역시 너밖에 할 수 없어❤️️ 너뿐이야❤️️……」
 
-# [번역 대상] report_preg_with_inmon
+# [번역 완료] report_preg_with_inmon
 report_preg_with_inmon:
   title: 妊娠
   lines:
-    - %CHARA%は自然に%YOU%の傍へ座り、そっと頭を肩に凭せる。
-    - 指でゆったりしたスカートの裾を上げ、下腹の異様な淫紋を見せる。
+    - %CHARA%는 자연스럽게 %YOU%의 곁에 앉아 머리를 조심스럽게 어깨에 기댔다.
+    - 손가락으로 넉넉한 치마 자락을 살짝 들어 올려 아랫배에 새겨진 기묘한 문양을 보여 주었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALLNAME%、頑張ったね……」
+        - 「%CALLNAME%, 수고했어……」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「この子も、ちょっと褒めて……あと、パーマーも……」
-    - %CHARA%は目を閉じ、%YOU%の体にぴったり寄り添う。
+        - 「이 아이도 조금 칭찬해 줘…… 그리고 파머도……」
+    - %CHARA%는 눈을 감고 %YOU%의 몸에 바짝 기대었다.
 
-# [번역 대상] report_preg_with_love
+# [번역 완료] report_preg_with_love
 report_preg_with_love:
   title: 妊娠
   lines:
-    - 新しい命を示す検査薬を手に、%CHARA%は恥ずかしそうに顔を指の後ろへ隠し、目だけ出して%YOU%の反応を窺う。
-    - まだ目立たないのに、体はもう習慣を変え始め、こっそり%YOU%の前へ寄ってくる。
+    - 새 생명을 알리는 검사기를 든 %CHARA%는 부끄러운 듯 손가락 뒤로 얼굴을 가리고 눈만 내밀어 %YOU%의 반응을 살폈다.
+    - 아직 겉으로 티가 나지는 않지만 몸은 벌써 변화를 시작했고, 슬그머니 %YOU%의 곁으로 다가왔다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「えへへ……ちょっと、大変なことになったかも。」
-    - %CHARA%は顔を真っ赤にして笑い、%YOU%の肩にすり寄る。
+        - 「에헤헤…… 조금 큰일이 생긴 걸지도 몰라.」
+    - %CHARA%는 얼굴을 새빨갛게 붉히며 웃고는 %YOU%의 어깨에 몸을 비볐다.
 
-# [번역 대상] report_preg_after_raped_in_sleep
+# [번역 완료] report_preg_after_raped_in_sleep
 report_preg_after_raped_in_sleep:
   title: 妊娠
   lines:
-    - また洗面台で吐いたあと、%CHARA%は手の検査薬を見て、ようやく現実を認めた。
-    - 考えても、犯人は一人しかいない。
+    - 또다시 세면대에서 구토를 한 뒤, %CHARA%는 손에 쥔 검사기를 보고서야 현실을 받아들였다.
+    - 아무리 생각해도 범인은 단 한 사람뿐이었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALLNAME%……なんで……」
-    - 翳った瞳が、自分の絶えず震える手を映している。
+        - 「%CALLNAME%…… 어째서……」
+    - 그늘진 눈동자에는 끊임없이 떨리는 자신의 손이 비쳤다.
 
 # [번역 대상] get_semen_blow_job
 get_semen_blow_job:
