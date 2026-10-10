@@ -5698,34 +5698,34 @@ ws_md_l:
   # 全能力+5、PT+100
 
 
-# [번역 대상] ws_md_w_1
+# [번역 완료] ws_md_w_1
 ws_md_w_1:
   sync: true
   lines:
     - content:
         - color: #対応キャラの色
           fontWeight: bold
-          content: 父親
+          content: 아버지
         - fontStyle: italic
-          content: 「スイープ……この英語の童話……興味ある……？」
+          content: 「스윕…… 이 영어 동화책…… 흥미 있니……?」
     - fontStyle: italic
-      content: 父親は、慎重に聞く
+      content: 아버지는 조심스럽게 물었다.
     -
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「やだ。」
+          content: 「싫어.」
     - fontStyle: italic
-      content: 結果、当然のように余地のない返事が返ってきた
+      content: 그러자 예상대로 타협의 여지가 없는 대답이 돌아왔다.
     -
     - content:
         - color: #対応キャラの色
           fontWeight: bold
-          content: 母親
+          content: 어머니
         - fontStyle: italic
-          content: 「スイープ、このぬいぐるみ、欲しい？」
+          content: 「스윕, 이 인형 갖고 싶니?」
     -
     - content:
         - color: %COLOR%
@@ -5734,29 +5734,29 @@ ws_md_w_1:
         - fontStyle: italic
           content: 「……」
     - fontStyle: italic
-      content: ただ立ったまま動かない
+      content: 그저 가만히 서서 움직이지 않았다.
     -
     - content:
         - color: #対応キャラの色
           fontWeight: bold
-          content: おばあちゃん
+          content: 할머니
         - fontStyle: italic
-          content: 「ふふ……子どもは、やっぱりいつも元気ね……」
+          content: 「후후…… 아이들은 역시 언제나 기운이 넘치는구나……」
     - content:
         - color: #対応キャラの色
           fontWeight: bold
-          content: おばあちゃん
+          content: 할머니
         - fontStyle: italic
-          content: 「おばあちゃんのほうにも、いいものを見せたいの」
+          content: 「할머니도 좋은 걸 보여 주고 싶단다.」
     -
     - fontStyle: italic
-      content: おばあちゃんはわざと神秘そうに、%CHARA%の少し苛立った目の中、袖口へ手を入れる
+      content: 할머니는 일부러 신비로운 표정을 짓고, 조금 짜증이 묻어나는 %CHARA%의 눈앞에서 소매에 손을 집어넣었다.
     -
     - fontStyle: italic
-      content: 袖口から、ただ一引き——
+      content: 소매에서 한 번 쓱 꺼내자——
     -
     - fontStyle: italic
-      content: 目の前に赫然と現れたのは、鮮やかな薔薇、たくさん、たくさん
+      content: 눈앞에 선명한 장미가 나타났다. 그것도 잔뜩, 아주 잔뜩.
     -
     - content:
         - color: %COLOR%
@@ -5765,7 +5765,7 @@ ws_md_w_1:
         - fontStyle: italic
           content: 「……！！！」
     - fontStyle: italic
-      content: 目が一気に明るくなる
+      content: 눈이 순식간에 반짝였다.
     # setToBottom、continue
     # ws_md_w_1_end
 
@@ -5783,7 +5783,7 @@ ws_md_w_1_end:
 
   # 茨の記憶
 
-# [번역 대상] ws_md_w_2
+# [번역 완료] ws_md_w_2
 ws_md_w_2:
   sync: true
   lines:
@@ -5792,52 +5792,52 @@ ws_md_w_2:
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「……ねえ。%CALLNAME%。」
+          content: 「……있지, %CALLNAME%.」
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「おんぶ。」
+          content: 「업어 줘.」
     - fontStyle: italic
-      content: %CHARA%は、先に何メートルも続く茨の茂みを指して、%YOU%に%SEX%をおんぶして渡れ、と示す
+      content: %CHARA%는 앞쪽으로 몇 미터나 이어진 가시덤불을 가리키며 %YOU%에게 %SEX%를 업고 지나가라는 뜻을 전했다.
     -
     - fontStyle: italic
-      content: 茨は隙間もなく、縦横に絡んだ枝が陽の光の下でまだらな影を落とし、鋭い棘が番人みたいに並んでいる
+      content: 가시덤불은 빈틈없이 얽힌 가지가 햇살 아래 얼룩덜룩한 그림자를 드리웠고, 날카로운 가시들이 파수꾼처럼 늘어서 있었다.
     - fontStyle: italic
-      content: こんな危ない道、%CHARA%をおんぶして、どころか、一人でも……
+      content: 이런 위험한 길은 %CHARA%를 업고 가기는커녕 혼자서 지나가기도……
     - fontStyle: italic
-      content: 「……別の道、行かない？」
-    -
-    - content:
-        - color: %COLOR%
-          fontWeight: bold
-          content: %CHARA%
-        - fontStyle: italic
-          content: 「やだ。」
-    - content:
-        - color: %COLOR%
-          fontWeight: bold
-          content: %CHARA%
-        - fontStyle: italic
-          content: 「ここから行くの。」
-    - fontStyle: italic
-      content: %CHARA%は迷わず答える。相談の余地はない、わがままな口調だ
-    -
-    - fontStyle: italic
-      content: こうして%YOU%は、小さな%UMA%をおんぶしたまま、びっしりの茨道の前に立つしかなかった
+      content: 「……다른 길로 갈까?」
     -
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「行って。」
+          content: 「싫어.」
+    - content:
+        - color: %COLOR%
+          fontWeight: bold
+          content: %CHARA%
+        - fontStyle: italic
+          content: 「여기로 갈 거야.」
     - fontStyle: italic
-      content: 小さな足が、軽く蹴る力を感じる
+      content: %CHARA%는 망설임 없이 대답했다. 의논할 여지도 없는 고집스러운 말투였다.
     -
     - fontStyle: italic
-      content: 歯を食いしばって、%YOU%は帰りに手足を包帯だらけにする自分を想像しながら、足を踏み出した——
+      content: 그렇게 %YOU%은(는) 작은 %UMA%를 업은 채 빽빽한 가시덤불 길 앞에 설 수밖에 없었다.
+    -
+    - content:
+        - color: %COLOR%
+          fontWeight: bold
+          content: %CHARA%
+        - fontStyle: italic
+          content: 「가.」
+    - fontStyle: italic
+      content: 작은 발이 가볍게 등을 차는 감촉이 전해졌다.
+    -
+    - fontStyle: italic
+      content: %YOU%은(는) 이를 악물고 돌아갈 때쯤 팔다리가 붕대로 뒤덮일 자신의 모습을 떠올리며 발을 내디뎠다——
     # setToBottom、continue
     # ws_md_w_2_end
 
