@@ -58,18 +58,18 @@ o_s_arcade:
   - 반면 타이신의 화면에는 커다란 FULL COMBO가 떠 있었다.
 
 
-# [번역 대상] o_s_drawing
+# [번역 완료] o_s_drawing
 o_s_drawing:
-  - 会計を済ませると、店主が帰りかけた %YOU% を呼び止めた。
-  - 店主「少々お待ちを、お客様。」
-  - 店主は傍の机から小さな紙片を抜き、渡してきた。
-  - 店主「サービスのおくじです。あちらで引けます。ご幸運を。」
+  - 계산을 마치고 돌아가려던 %YOU%을(를) 점주가 불러 세웠다.
+  - 점주 「손님, 잠깐만요.」
+  - 점주는 옆 테이블에서 작은 종잇조각을 꺼내 건넸다.
+  - 점주 「서비스 추첨권입니다. 저쪽에서 뽑으시면 돼요. 행운을 빕니다.」
   - color: %COLOR%
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「くじか。最近ゲームのガチャ運が悪いし、アンタが引け、%CALLNAME%。」
-  - くじを渡したあと、%YOU% はゆっくり抽選機のハンドルを回した……
+      - 「추첨권인가. 요즘 게임 가챠 운이 나쁘니까 네가 뽑아, %CALLNAME%.」
+  - 추첨권을 건넨 뒤 %YOU%은(는) 천천히 추첨기의 손잡이를 돌렸다……
   -
   - if: d.dice === 0
     lines:
@@ -77,69 +77,69 @@ o_s_drawing:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「い、一等！？ 珍しいわね。」
-      - 店主「おめでとうございます。運がいいですね。はい、おふたり様の温泉旅行券です。どうぞ。」
-      - %YOU% は店主から旅行券を受け取った。
+          - 「이, 1등!? 드문 일이네.」
+      - 점주 「축하합니다. 운이 좋으시군요. 자, 두 분이 함께 가실 수 있는 온천 여행권입니다.」
+      - %YOU%은(는) 점주에게서 여행권을 받았다.
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ふたりの温泉旅行か。誰と行くか、決めた？」
+          - 「두 사람이 가는 온천 여행이네. 누구랑 갈지 정했어?」
       - 「……」
-      - 「タイシンと一緒に引いたんだから、タイシンと行くに決まってる！」
+      - 「타이신이랑 같이 뽑았으니 타이신이랑 가야지!」
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「え？ ちょ、ちょっと待てって！」
-      - 「行きたくないのか？」
+          - 「뭐? 자, 잠깐 기다려!」
+      - 「가기 싫은 거야?」
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「そういうわけじゃないけど……もう、アンタってやつは！」
+          - 「그런 건 아니지만…… 정말, 너란 녀석은!」
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「先に家の人と相談しないと……」
-      - 「じゃあ、一緒に行くってことだな？」
+          - 「먼저 집에 이야기해야 하니까……」
+      - 「그럼 같이 간다는 거지?」
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「うるさい！」
-      - %YOU% は器用に、%CHARA% の蹴りをかわした。
+          - 「시끄러워!」
+      - %YOU%은(는) 능숙하게 %CHARA%의 발길질을 피했다.
   - if: d.dice === 1
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ハンバーグ、でかい。ひとりじゃ食べきれない……一緒に食べよ、%CALLNAME%。」
-      - %CHARA% と一緒にハンバーグを味わった。
+          - 「함박스테이크, 크네. 혼자선 다 못 먹겠어…… 같이 먹자, %CALLNAME%.」
+      - %CHARA%와 함께 함박스테이크를 맛보았다.
   - if: d.dice === 2
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「大根こんなに……どうする。帰ったらハヤヒデとチケット%THEY%で分けよう。」
+          - 「무가 이렇게 많이…… 어떡하지. 돌아가면 하야히데랑 티켓 %THEY%와 나눠야겠어.」
   - if: d.dice === 3
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「ニンジン？ ちょうどお腹空いてた。」
+          - 「당근? 마침 배고팠는데.」
   - if: d.dice === 4
     lines:
       - color: %COLOR%
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「チッ……ないよりマシか。」
-      - そうは言っても、最下等しか引けないのは、不運としか言いようがない。
+          - 「쳇…… 없는 것보단 낫지.」
+      - 그렇게 말해도 최하위 상품밖에 뽑지 못한 건 불운이라고밖에 할 수 없었다.
 
 
 # [번역 완료] o_s_ktv
@@ -380,7 +380,7 @@ select_after_recruit:
         - 「진심인지 빈말인지는 앞으로 3년 동안 증명해 봐.」
 
 
-# [번역 대상] talk
+# [번역 완료] talk
 talk:
   - if: era.get('base:50:体力') < era.get('maxbase:50:体力') / 3
     lines:
@@ -390,14 +390,14 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「大丈夫だって言ってるでしょ。休む必要ない。」
+              - 「괜찮다니까. 쉴 필요 없어.」
       - random: true
         lines:
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「このくらいで足を止めてたまるか。」
+              - 「이 정도로 발걸음을 멈출 순 없지.」
   - if: era.get('base:50:体力') >= era.get('maxbase:50:体力') / 3
     lines:
       - random: true
@@ -406,7 +406,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「調子はまあ悪くない。今日の予定は？」
+              - 「컨디션은 뭐, 나쁘지 않아. 오늘 일정은?」
       - random: true
         if: era.get('love:50') >= 100 && era.get('cflag:50:育成回合计时') >= 144
         lines:
@@ -414,28 +414,28 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「最近の感想を聞けって？」
+              - 「요즘 어땠냐고?」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「んー……この三年、本当にいろんなことがあった。」
+              - 「으음…… 지난 3년 동안 정말 많은 일이 있었지.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「勝ちも負けも、私にとっては大事な思い出。」
+              - 「승리도 패배도 내겐 모두 소중한 추억이야.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「これから先はまだわからない。でも、アンタが傍にいると思うと、安心する……」
+              - 「앞으로 어떻게 될지는 몰라. 그래도 네가 곁에 있다고 생각하면 안심이 돼……」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「ちょっ、その顔はなに！」
-          - 一瞬、タイシンの幸せそうな笑みが、照れた睨みに変わった。
+              - 「잠깐, 그 표정은 뭐야!」
+          - 순간 타이신의 행복한 미소가 부끄러움 섞인 노려봄으로 바뀌었다.
       - random: true
         if: era.get('love:50') >= 90 && era.get('status:0:熬夜') > 0
         lines:
@@ -443,17 +443,17 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「しっかりしなさいよ。昨日も徹夜したんでしょ。」
+              - 「정신 좀 차려. 어제도 밤새웠지?」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「まったく、体には気をつけろって何度言わせるの。」
+              - 「정말, 건강 조심하라고 몇 번이나 말해야 해.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「いつも心配させるなよ……」
+              - 「자꾸 걱정시키지 마……」
       - random: true
         if: era.get('love:50') >= 75
         lines:
@@ -461,23 +461,23 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「ほら、これ、持ってきた。」
-          - タイシンは %YOU% に缶をひとつ渡した
+              - 「자, 이거 가져왔어.」
+          - 타이신은 %YOU%에게 캔 하나를 건넸다.
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「なに？ 甘い飲み物ばっかりだと太るって？」
+              - 「뭐? 단 음료만 마시면 살찐다고?」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「飲みたくないなら返せばいいでしょ。」
+              - 「안 마실 거면 돌려줘.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「そんな目で見ないで。体重はちゃんと管理してるわよ。」
+              - 「그런 눈으로 보지 마. 체중 관리는 제대로 하고 있거든.」
       - random: true
         if: era.get('love:50') >= 50
         lines:
@@ -485,22 +485,22 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「ソシャゲの新イベント、内容多すぎ。徹夜しないとコンプできないかも。」
+              - 「모바일 게임 신이벤트, 분량이 너무 많아. 밤새워야 다 끝낼 수 있을지도.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「ダメだ、そんなことでトレーニングを疎かにできない。」
+              - 「안 돼. 그런 일 때문에 훈련을 소홀히 할 수는 없어.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「でも今回の限定アイテム、逃すと次まで長いし。」
+              - 「그래도 이번 한정 아이템을 놓치면 다음 기회까지 오래 걸린단 말이지.」
           - color: %COLOR%
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「くっ、決められない……」
+              - 「크윽, 못 정하겠어……」
       - random: true
         if: era.get('cflag:50:干劲') === 2
         lines:
@@ -508,7 +508,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「この調子なら、いける！」
+              - 「이 기세라면 할 수 있어!」
       - random: true
         if: era.get('cflag:50:干劲') === 2
         lines:
@@ -516,7 +516,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「準備はできてる。早く始めよう、%CALLNAME%！」
+              - 「준비는 끝났어. 어서 시작하자, %CALLNAME%!」
       - random: true
         if: era.get('cflag:50:干劲') === 1
         lines:
@@ -524,7 +524,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「調子？ まあ悪くない。計画どおりでいい。」
+              - 「컨디션? 뭐, 나쁘진 않아. 계획대로 하면 돼.」
       - random: true
         if: era.get('cflag:50:干劲') === 0 && era.get('cflag:50:育成回合计时') < 144
         lines:
@@ -532,7 +532,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「今日のトレーニングはなに、いつもどおり？」
+              - 「오늘 훈련은 뭐야? 평소대로?」
       - random: true
         if: era.get('cflag:50:干劲') === -1
         lines:
@@ -540,7 +540,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「体は少し疲れてるけど、もう少しなら持つ。」
+              - 「몸이 조금 피곤하지만 좀 더 버틸 수 있어.」
       - random: true
         if: era.get('cflag:50:干劲') === -2
         lines:
@@ -548,7 +548,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「くそっ、なんで足がこんなに重い……」
+              - 「젠장, 왜 다리가 이렇게 무거운 거야……」
       - random: true
         if: era.get('cflag:50:干劲') === -2
         lines:
@@ -556,7 +556,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「いや、大丈夫。トレーニングは続ける。」
+              - 「아니, 괜찮아. 훈련은 계속할 거야.」
       - random: true
         if: era.get('flag:当前月') >= 3 && era.get('flag:当前月') <= 5
         lines:
@@ -564,7 +564,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「だんだん暖かくなってきたな。昼はどこかで少し仮眠しよう。」
+              - 「점점 따뜻해지네. 낮에는 어디서 잠깐 낮잠을 자야겠어.」
       - random: true
         if: era.get('flag:当前月') >= 3 && era.get('flag:当前月') <= 5
         lines:
@@ -572,7 +572,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「春……桜、咲くかな。時間があったら公園を散歩するか。」
+              - 「봄이라…… 벚꽃이 필까? 시간 나면 공원이나 산책할래.」
       - random: true
         if: era.get('flag:当前月') >= 6 && era.get('flag:当前月') <= 8
         lines:
@@ -580,7 +580,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「あー暑い……トレーニング前から汗だ。場の連中もうるさいし、余計に暑くなる。」
+              - 「아, 더워…… 훈련 전부터 땀이 나네. 주변 사람들도 시끄러워서 더 덥게 느껴져.」
       - random: true
         if: era.get('flag:当前月') >= 6 && era.get('flag:当前月') <= 8
         lines:
@@ -588,7 +588,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「夏になると、蝉の声があちこちだな。夏らしいけど、たまにうるさいと思う。」
+              - 「여름이 되니 사방에서 매미 소리가 들리네. 여름답지만 가끔은 시끄럽단 말이지.」
       - random: true
         if: era.get('flag:当前月') >= 9 && era.get('flag:当前月') <= 11
         lines:
@@ -596,7 +596,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「道の両側に落ち葉が積もると、秋だって感じる。防寒しないと。」
+              - 「길 양옆에 낙엽이 쌓이면 가을이 왔다는 게 실감 나. 따뜻하게 입어야지.」
       - random: true
         if: era.get('flag:当前月') >= 9 && era.get('flag:当前月') <= 11
         lines:
@@ -604,7 +604,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「秋の午後は眠くなるな。今日も授業で先生に怒られた……なに？ 昨夜は徹夜してないわよ！」
+              - 「가을 오후는 졸려. 오늘도 수업에서 선생님께 혼났어…… 뭐? 어젯밤엔 안 샜거든!」
       - random: true
         if: era.get('flag:当前月') >= 12 || era.get('flag:当前月') <= 2
         lines:
@@ -612,7 +612,7 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「冬になっても、家の花屋は忙しい。一年の雑務を片付けて、来年の準備もある。こたつでみかんばっかり剥いてるわけにはいかない。」
+              - 「겨울이 되어도 우리 집 꽃집은 바빠. 한 해의 잡일도 끝내고 내년 준비도 해야 하니까. 코타츠에서 귤만 까먹을 수는 없지.」
       - random: true
         if: era.get('love:50') >= 50 && (era.get('flag:当前月') >= 12 || era.get('flag:当前月') <= 2)
         lines:
@@ -620,5 +620,5 @@ talk:
             content:
               - fontSize: bold
                 content: %CHARA%
-              - 「雪だな。雪の日は家にいたくなる。豪華な鍋でも煮て……ん？ アンタも食べたい？ 当然、アンタの分もあるわよ、バカ。」
+              - 「눈이다. 눈 오는 날은 집에 있고 싶어지네. 맛있는 전골이나 끓이고…… 응? 너도 먹고 싶어? 당연히 네 몫도 있지, 바보야.」
 
