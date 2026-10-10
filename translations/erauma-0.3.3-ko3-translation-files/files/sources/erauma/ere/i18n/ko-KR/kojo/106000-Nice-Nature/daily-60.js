@@ -18,9 +18,9 @@ module.exports = {
     );
   },
 
-  // [번역 대상] cl_christmas
+  // [번역 완료] cl_christmas
   cl_christmas: (() => {
-    const title = 'クリスマス';
+    const title = '크리스마스';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {string} callname ナイスネイチャのプレイヤーへの呼び方
@@ -28,130 +28,130 @@ module.exports = {
      */
     const f = async (nature, callname, self_call) => {
       await nature.say_and_wait(
-        'もしもし？ あたしだよ？ 詐欺電話じゃない、本人だよ？',
+        '여보세요? 나야. 보이스 피싱 아니고 본인 맞으니까 끊지 마?',
       );
       await era.printAndWait(
-        '受話器の向こうから、聞き慣れた声。ナイスネイチャだ。',
+        '수화기 너머로 익숙한 목소리, 나이스 네이처의 목소리가 들려왔다.',
       );
       await nature.say_and_wait(
-        'ねえ、公園まで来てくれない？ 今……うん、あとで！',
+        '저기 말이야, 지금 공원으로 좀 와 줄 수 있어? 지금 바로…… 응, 이따 봐!',
       );
-      era.drawLine({ content: '⏰公園に着いた⏰' });
-      await nature.say_and_wait(`あ、来た来た、${callname}！ こっちこっち～`);
-      await era.printAndWait('遠くからでも、手を振るナイスネイチャが見える。');
-      await era.printAndWait('今日はクリスマスだ');
+      era.drawLine({ content: '⏰공원 도착⏰' });
+      await nature.say_and_wait(`아, 왔다! ${callname}! 여기야, 여기~!`);
+      await era.printAndWait('멀리서 손을 흔드는 나이스 네이처의 모습이 보였다.');
+      await era.printAndWait('오늘은 크리스마스다.');
       await nature.say_and_wait(
-        `まあ、大した用事じゃないよ。${self_call}、予定なさそうだったから、一緒にクリスマスしようって誘っただけ！`,
+        `뭐, 별일은 아니고. ${self_call}가 보기에 일정이 비어 있는 것 같아서 같이 크리스마스를 보내자고 부른 것뿐이야!`,
       );
-      await nature.say_and_wait('だめ……かな？');
+      await nature.say_and_wait('안…… 돼?');
       await era.printAndWait(
-        '肯定の返事をもらうと、ナイスネイチャは再び笑みを浮かべ、後ろからギフトボックスを差し出した',
+        '긍정적인 답변을 듣자 나이스 네이처는 다시 미소 지으며 등 뒤에서 선물 상자를 꺼냈다.',
       );
       await nature.say_and_wait(
-        'これ！ メリークリスマス！ 手編みのマフラー……あんまり上手じゃないし、柄も地味だけど……',
+        '이거! 메리 크리스마스! 직접 짠 목도리야…… 솜씨가 서툴고 무늬도 촌스러울지 모르지만……',
       );
-      await nature.say_and_wait('でも！ よかったら、受け取って！');
+      await nature.say_and_wait('그래도! 괜찮다면 받아 줬으면 좋겠어!');
       await era.printAndWait(
-        '箱のなかは丁寧に編まれたマフラーで、ナイスネイチャの気遣いがよくわかる',
+        '상자 안에는 정성스럽게 짠 목도리가 담겨 있었다. 네이처의 진심이 느껴졌다.',
       );
       await nature.say_and_wait(
-        '気に入った？ そ、そっか……気を遣って言ってるんじゃないよね？',
+        '마음에 들어? 그, 그렇구나…… 내 기분 맞춰 주려고 하는 말 아니지?',
       );
       await era.printAndWait(
-        'ナイスネイチャの不安を解いたあと、ふたりは穏やかなクリスマスを過ごした……',
+        '나이스 네이처를 안심시켜 준 뒤 두 사람은 평화롭고 따뜻한 크리스마스를 함께 보냈다……',
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] cl_fans
+  // [번역 완료] cl_fans
   cl_fans: (() => {
-    const title = 'ファン感謝祭';
+    const title = '팬 감사제';
     /** @param {CharaTalk} nature ナイスネイチャ */
     const f = async (nature) => {
-      await nature.say_and_wait('わあ——すごい賑わいだね？');
+      await nature.say_and_wait('와아—— 여기 정말 북적거리네?');
       await era.printAndWait(
-        '来客で埋まった校内を見て、ナイスネイチャが感嘆する',
+        '방문객들로 가득 찬 교정을 보며 나이스 네이처가 감탄했다.',
       );
       await nature.say_and_wait(
-        'でも大半はテイオーとかマックイーンみたいな、輝いてる大スターのファンでしょ？',
+        '그래도 대부분 테이오나 맥퀸처럼 반짝이는 스타들의 팬이겠지?',
       );
-      await nature.say_and_wait('あたしみたいな端役は裏方に——');
-      await era.printAndWait('？？？「あ！ ネイチャちゃん見つけた！」');
+      await nature.say_and_wait('나 같은 조연은 뒤에서 지원이나——');
+      await era.printAndWait('??? 「아! 네이처 발견!」');
       await era.printAndWait(
-        `ナイスネイチャが踵を返して去ろうとしたとき、女の声が${nature.sex}を呼び止めた。`,
+        `나이스 네이처가 돌아서려는 순간 한 여성이 ${nature.sex}를 불러 세웠다.`,
       );
-      await nature.say_and_wait('えっ？ 八百屋のおばさん？ どうして来たの？');
+      await nature.say_and_wait('에? 야채가게 아주머니? 여긴 어쩐 일이세요?');
       await era.printAndWait(
-        '八百屋のおばさん「決まってるでしょ、ネイチャちゃんの学園生活を見に来たのよ！ あたしだけじゃない——」',
+        '야채가게 아주머니 「당연히 네이처가 학원생활 잘하고 있나 보러 왔지! 나뿐만이 아니라고——」',
       );
       await nature.say_and_wait(
-        'あ！ 焼肉屋のおじさん！ 売店のおばあちゃん……みんな来てる……',
+        '아! 고깃집 아저씨! 구멍가게 할머니까지…… 다들 오셨네요……',
       );
       await era.printAndWait(
-        '八百屋のおばさん「来るに決まってるでしょ！ あたしたち、ネイチャちゃんのファンなんだから！」',
+        '야채가게 아주머니 「당연히 와야지! 우리 모두 네이처의 팬인걸!」',
       );
       await nature.say_and_wait(
-        'うっ……その気持ちは嬉しいよ……でも、こう……なんだか、恥ずかしい……',
+        '으으…… 그 마음은 정말 기쁘지만…… 이렇게까지 오시면 왠지 부끄럽다니까요……',
       );
       await era.printAndWait(
-        '三つ編みで顔を隠したナイスネイチャを、商店街の人たちが取り囲む。',
+        '양 갈래 머리에 얼굴을 묻은 나이스 네이처를 상점가 이웃들이 둘러쌌다.',
       );
       await era.printAndWait(
-        `どうやら${nature.sex}は、このファン感謝祭をとても楽しく過ごしそうだ……`,
+        `아무래도 ${nature.sex}는 이번 팬 감사제를 아주 즐겁게 보낼 것 같다……`,
       );
     };
     f.title = title;
     return f;
   })(),
 
-  // [번역 대상] cl_valentine
+  // [번역 완료] cl_valentine
   cl_valentine: (() => {
-    const title = 'バレンタイン';
+    const title = '발렌타인데이';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {string} callname ナイスネイチャのプレイヤーへの呼び方
      * @param {string} self_call ナイスネイチャの自称
      */
     const f = async (nature, callname, self_call) => {
-      await nature.say_and_wait(`やあ、${callname}、おはよう`);
+      await nature.say_and_wait(`야아, ${callname}. 좋은 아침~`);
       await era.printAndWait(
-        '朝早く学園に着くと、ナイスネイチャが校門で待ちかねていたように現れる。',
+        '이른 아침 학원에 도착하자 나이스 네이처가 기다렸다는 듯 교문에 나타났다.',
       );
-      await nature.say_and_wait('えっと……その……まあ、あとでトレセンで！');
+      await nature.say_and_wait('에…… 저기…… 뭐, 이따가 훈련장에서 봐!');
       await era.printAndWait(
-        `${nature.teen_sex_title}は何か言いたげだったが、結局口に出せず、校門の中へ走っていった。`,
+        `${nature.teen_sex_title}는 무언가 말하고 싶은 듯했지만 결국 입을 다문 채 교문 안으로 뛰어 들어갔다.`,
       );
-      era.drawLine({ content: '⏰昼になった⏰' });
-      await nature.say_and_wait(`おっ～${callname}、${self_call} だよ？`);
+      era.drawLine({ content: '⏰점심시간⏰' });
+      await nature.say_and_wait(`오~ ${callname}, ${self_call}야!`);
       await era.printAndWait(
-        '食堂で食事中、ナイスネイチャが突然そばに現れる。',
+        '식당에서 밥을 먹던 도중 나이스 네이처가 갑자기 곁에 나타났다.',
       );
-      await nature.say_and_wait(`${callname} にいいものあげる。これ、チョ……`);
+      await nature.say_and_wait(`${callname}에게 줄 좋은 게 있어. 바로 이 초……`);
       await era.printAndWait(
-        'ナイスネイチャは言いよどみ、言いにくそうにしている。',
+        '나이스 네이처는 말을 더듬으며 뭔가 꺼내기 힘든 이야기가 있는 듯했다.',
       );
       await nature.say_and_wait(
-        `チョ……蕎麦の割引券！ 前に商店街のおばさんが何枚かくれて、あたし使い切れないから ${callname} に！ はははは……じゃあ、また！`,
+        `초…… 초특가 메밀국수 쿠폰! 예전에 상점가 아주머니가 몇 장 주셨는데 나 혼자 다 못 써서 ${callname}에게 주는 거야! 하하하하…… 그럼 나중에 봐!`,
       );
       await era.printAndWait(
-        'ナイスネイチャは様子がおかしいまま、食堂から逃げていった',
+        '나이스 네이처는 묘하게 이상한 모습으로 식당을 빠져나갔다.',
       );
-      era.drawLine({ content: '⏰夜になった⏰' });
-      await nature.say_and_wait('ここまででいいよ？');
+      era.drawLine({ content: '⏰저녁시간⏰' });
+      await nature.say_and_wait('여기까지만 배웅해 줘도 괜찮아.');
       await era.printAndWait(
-        'ナイスネイチャを栗東寮の前まで送り、帰ろうとしたところで衣の裾を掴まれる。',
+        '나이스 네이처를 릿토 생활관 앞까지 데려다주고 돌아서려는데 옷소매를 붙잡혔다.',
       );
-      await nature.say_and_wait('こ、これ！ 受け取って！');
+      await nature.say_and_wait('이, 이거! 부디 받아 줘!');
       await era.printAndWait(
-        'ナイスネイチャは頬を真っ赤にして、勇気を出して後ろからチョコを差し出した',
+        '나이스 네이처는 얼굴을 붉히며 용기를 내 등 뒤에서 초콜릿을 꺼냈다.',
       );
       await nature.say_and_wait(
-        '一応……手づくりのチョコ。嫌いなら、受け取らなくてもいいよ……？',
+        '나름대로…… 직접 만든 초콜릿인데 마음에 안 들면 안 받아도 괜찮으니까……?',
       );
-      await era.printAndWait('こんな大切な贈り物を、断れるはずがない。');
-      await era.printAndWait('ナイスネイチャとの絆が、また一段深まった。');
+      await era.printAndWait('하지만 이렇게 소중한 선물을 거절할 리가 없다.');
+      await era.printAndWait('나이스 네이처와의 유대감이 한층 더 깊어졌다.');
     };
     f.title = title;
     return f;
