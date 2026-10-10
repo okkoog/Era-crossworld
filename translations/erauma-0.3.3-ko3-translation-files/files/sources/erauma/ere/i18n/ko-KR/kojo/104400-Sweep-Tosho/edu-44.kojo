@@ -5886,7 +5886,7 @@ ws_md_w_2_end:
 
 # 宣言の記憶
 
-# [번역 대상] ws_md_w_3
+# [번역 완료] ws_md_w_3
 ws_md_w_3:
   sync: true
   lines:
@@ -5895,12 +5895,12 @@ ws_md_w_3:
           fontWeight: bold
           content: %ZOB_ZOY%
         - fontStyle: italic
-          content: 「スイープさんほどすごいなら、
+          content: 「스윕 씨처럼 대단하시다면,
         - fontWeight: bold
           fontStyle: italic
-          content: 『自分の魔法を創る』
+          content: 『자신만의 마법을 만든다』
         - fontStyle: italic
-          content: 、ではだめですか？」
+          content: , 그렇게 해 보시면 어떨까요?」
     -
     - content:
         - color: %COLOR%
@@ -5910,122 +5910,122 @@ ws_md_w_3:
           content: 「……！」
     -
     - fontStyle: italic
-      content: %YOU%は、この思いつきの小さな%UMA%に、また無理矢理トレーニング場へ引き戻される
+      content: %YOU%은(는) 이 기발한 생각에 들뜬 작은 %UMA%에게 또 억지로 훈련장으로 끌려왔다.
     -
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「おばあちゃんの目の『走る魔法』なんて、どうでもいい」
+          content: 「할머니 눈에 비친 『달리기의 마법』 따위는 이제 아무래도 좋아.」
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「今日から、天才%MOHOSHOJO%sweepyは、自分の魔法を『創る』んだから！」
+          content: 「오늘부터 천재 %MOHOSHOJO% 스위피는 스스로 마법을 『만들』 거야!」
     -
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「ふんふん～おばあちゃんは、私のこの『魔法を創る』才能を見て、あの話をしたに決まってる！」
+          content: 「흥흥~ 할머니는 내 『마법을 만드는』 재능을 알아보고 그런 이야기를 하신 게 틀림없어!」
     - content:
         - color: %COLOR%
           fontWeight: bold
           content: %CHARA%
         - fontStyle: italic
-          content: 「見てなさい%CALLNAME%！次のこの魔法、一回しか使わないから！」
+          content: 「잘 봐, %CALLNAME%! 지금부터 보여 줄 이 마법은 딱 한 번만 쓸 거니까!」
     -
     - fontStyle: italic
-      content: %CHARA%は帽子をかぶり、トレーニング場のコースに立ち、スタートの姿勢を取る——
+      content: %CHARA%는 모자를 쓰고 훈련장 코스에 서서 출발 자세를 잡았다——
     -
     - fontStyle: italic
-      content: あの奇跡のような速さは、何度見ても一つの事実を確定させるだけだ：
+      content: 기적 같은 그 속도는 몇 번을 보더라도 단 하나의 사실을 확인해 줄 뿐이었다.
     - fontStyle: italic
-      content: 「これが、『魔法』——」
+      content: 「이것이 『마법』——」
     -
     - fontStyle: italic
-      content: %YOU%を追った魔法でも、他人から学んだ魔法でもない
+      content: %YOU%을(를) 쫓아 얻은 마법도, 남에게 배운 마법도 아니었다.
     - fontStyle: italic
-      content: %CHARA%の、「自分の魔法」だ
+      content: %CHARA%만의, 『자신의 마법』이었다.
   # setToBottom、continue
   # ws_md_w_3_end
 
 
 
-# [번역 대상] ws_md_w_3_end
+# [번역 완료] ws_md_w_3_end
 ws_md_w_3_end:
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「『魔法を創る』！」
+      - 「『마법을 만든다』!」
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ふんふん～これで、おばあちゃんはもう魔法がないなんて言えない！」
+      - 「흥흥~ 이제 할머니도 마법이 없다고는 못 하실걸!」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「天才%MOHOSHOJO%sweepyも、偉大な大魔法使いとして、みんなに何年も何年も褒められるんだから！」
+      - 「천재 %MOHOSHOJO% 스위피도 위대한 대마법사가 돼서 모두에게 몇 년이고 몇 년이고 칭찬받을 거니까!」
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ねえ、%CALLNAME%。」
-  - %CHARA% は、何かを分かって微笑むおばあちゃんの手から、元どおりの帽子を受け取る
-  - それから、ゆっくり、きちんと頭にかぶる
+      - 「있지, %CALLNAME%.」
+  - %CHARA%는 무언가를 알아챈 듯 미소 짓는 할머니의 손에서 원래 모습으로 돌아온 모자를 건네받았다.
+  - 그리고 천천히, 단정하게 머리에 썼다.
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALLNAME%なら、主人がどんな決断をしても、ずっと付いてくるんでしょ？」
-  - 目の前の小さなウマ%UMA%は、%YOU%に信頼の目を向ける。その中には、魔法があるみたいだ
+      - 「%CALLNAME%라면 주인이 어떤 결정을 내리더라도 언제까지나 따라올 거지?」
+  - 눈앞의 작은 우마 %UMA%는 %YOU%에게 신뢰 어린 시선을 보냈다. 그 눈에는 마법이 깃든 듯했다.
   -
   - acc: 1
-    content: 「もちろん」
+    content: 「물론이지.」
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「ふんふん、さすが私の%CALLNAME%！」
+          - 「흥흥, 역시 내 %CALLNAME%야!」
       -
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「一年でも、十年でも、百年でも……」
+          - 「1년이든 10년이든 100년이든……」
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「いつか、大%MAJO%の姿でおばあちゃんのそばに戻って、おばあちゃんもびっくりさせるんだから！」
+          - 「언젠가 위대한 %MAJO%의 모습으로 할머니 곁에 돌아와서 깜짝 놀라게 해 드릴 거야!」
   - acc: 2
-    content: 「したくても、今さら断れないよ」
+    content: 「그러고 싶어도 이제 와서 거절할 수는 없잖아.」
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「む！その態度なに%CALLNAME%～！」
+          - 「흥! 그게 무슨 태도야, %CALLNAME%~!」
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「次から、主人に不満があっても言っちゃだめ、分かった！！」
+          - 「다음부터는 주인에게 불만이 있어도 말하면 안 돼. 알겠어!!」
   -
-  - そのあと、何もなかったみたいにおばあちゃんと一緒に穏やかにお茶を飲む
-  - %CHARA%は、童話が聞きたいとせがみ、おばあちゃんも笑って一組、%SEX%に話してくれた
+  - 그 뒤에는 아무 일도 없었던 것처럼 할머니와 느긋하게 차를 마셨다.
+  - %CHARA%는 동화를 들려 달라고 졸랐고, 할머니는 웃으며 %SEX%에게 이야기 한 편을 들려주었다.
   -
-  - ほどなく、名残惜しくおばあちゃんと別れる
+  - 얼마 지나지 않아 아쉬운 마음을 뒤로하고 할머니와 헤어졌다.
   # 全能力+5、PT+100
 
 
