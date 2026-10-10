@@ -580,20 +580,20 @@ module.exports = {
     get_random_entry(buffer)();
   },
 
-  // [번역 대상] talk
+  // [번역 완료] talk
   async talk(treve) {
     const buffer = [];
     if (era.get('base:205:体力') < 0.3 * era.get('maxbase:205:体力')) {
       buffer.push(
-        () => treve.say_and_wait('あなたの胸、貸してくれる？'),
-        () => treve.say_and_wait('今は歩くのも無理よ～'),
+        () => treve.say_and_wait('품을 잠시 빌려주실 수 있나요?'),
+        () => treve.say_and_wait('지금은 걷는 것조차 힘들답니다~'),
       );
     } else {
       switch (era.get('cflag:205:干劲')) {
         case 2:
           buffer.push(() =>
             treve.say_and_wait(
-              '今のは自分でトレーニングしてたの。トレーニングよ。',
+              '방금 건 저 혼자 한 훈련이에요, 훈련이라니까요.',
             ),
           );
           era
@@ -601,46 +601,46 @@ module.exports = {
             .some((cid) => cid !== 205 && era.get(`love:${cid}`) >= 50) &&
             buffer.push(() =>
               treve.say_and_wait(
-                `あなたと${treve.couple_title}がどう知り合ったか、教えてくれない？`,
+                `당신과 ${treve.couple_title}가 어떻게 만났는지 제게 이야기해 주시면 안 되나요?`,
               ),
             );
           era.get('love:205') >= 50 &&
             buffer.push(() =>
               treve.say_and_wait(
-                'あなたに『私の恋人』と言えるの、すごくいい気持ち。',
+                '당신에게 『내 사랑』이라고 말할 수 있다니, 정말 좋은 느낌이네요.',
               ),
             );
           break;
         case 1:
           buffer.push(
             () =>
-              treve.say_and_wait('人の物語はみんな違う。私、聞くのが大好き。'),
-            () => treve.say_and_wait('これからも、私の面倒を見てほしい。'),
+              treve.say_and_wait('사람마다 저마다의 이야기가 있어서, 전 듣는 걸 무척 좋아해요.'),
+            () => treve.say_and_wait('앞으로도 계속 절 보살펴 주셨으면 좋겠어요.'),
           );
           break;
         case 0:
           buffer.push(
-            () => treve.say_and_wait('あなたを待つのは、本当に大変だった。'),
+            () => treve.say_and_wait('당신을 기다리는 건 정말 쉬운 일이 아니네요.'),
             () =>
               treve.say_and_wait(
-                '『新人』トレーナーに、お手本を見せてあげる。',
+                '제가 『초보』 트레이너 씨를 위해 시범을 보여 드려야겠어요.',
               ),
           );
           break;
         case -1:
           buffer.push(
             () =>
-              treve.say_and_wait('抱きしめてくれたら、少しは良くなるかも。'),
-            () => treve.say_and_wait('私の情熱、影も形も、音もない……'),
+              treve.say_and_wait('만약 절 안아 주신다면 제 컨디션이 조금은 나아질지도 몰라요.'),
+            () => treve.say_and_wait('제 열정이 흔적도 없이, 소리 소문도 없이 사라져 버렸어요……'),
           );
           break;
         case -2:
           buffer.push(
-            () => treve.say_and_wait('休ませてくれたら、最高なんだけど。'),
-            () => treve.say_and_wait('死は、生活の税金……'),
+            () => treve.say_and_wait('절 쉬게 해 주신다면 더할 나위 없이 좋겠어요.'),
+            () => treve.say_and_wait('죽음이란 인생의 세금 같은 것……'),
             () =>
               treve.say_and_wait(
-                'あなたはトレーナーだけじゃない。恋の渡り鳥でもある……',
+                '당신은 단순한 트레이너가 아니라 여심을 뒤흔드는 바람둥이예요……',
               ),
           );
       }
