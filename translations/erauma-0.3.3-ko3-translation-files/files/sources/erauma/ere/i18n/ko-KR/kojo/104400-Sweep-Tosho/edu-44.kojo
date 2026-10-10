@@ -1957,33 +1957,33 @@ re_shuk_sho_lose:
 # 発火条件：秋華賞の翌週
 # 根性&スタミナ+5
 
-# [번역 대상] re_shuk_sho_win
+# [번역 완료] re_shuk_sho_win
 re_shuk_sho_win:
-  title: 秋華賞後・未来を望む魔法
+  title: 추화상 이후 · 미래를 바라는 마법
   lines:
-    - 高まったやる気と、長いあいだの努力で、%CHARA%は『魔法三冠』の最後の一冠できれいに優勝した
+    - 한층 높아진 의욕과 오랜 노력 끝에 %CHARA%는 『마법 삼관』의 마지막 관문에서 멋지게 우승했다.
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「これで……『魔女の夜』も……」
-    - 今、コースを出た%CHARA%は頭を下げて何か考え、わずかに笑ったように見える
+        - 「이걸로…… 『마녀의 밤』도……」
+    - 막 코스에서 나온 %CHARA%는 고개를 숙이고 무언가 생각하다가 희미하게 웃는 것처럼 보였다.
     -
-    - でもすぐ、余光で傍らの%YOU%を見下すように一瞥し、頭を上げる
+    - 하지만 곧 곁에 있는 %YOU%을(를) 흘끗 내려다보더니 고개를 들었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ふん！何も言ってないわ！今度は、%CALLNAME%に聞かせないんだから！」
+        - 「흥! 아무 말도 안 했거든! 이번에는 %CALLNAME%한테 안 들려줄 거야!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「秋の魔法を学びたいなんて、%CALLNAME%はまだ早いわ！！」
+        - 「가을의 마법을 배우고 싶다니, %CALLNAME%한테는 아직 일러!!」
     -
-    - ともかく、鼻歌を歌いながら歩く%CHARA%は、『魔法三冠』の最後の一冠を勝ったあと、本当に嬉しそうだ
-    - 『魔女の夜』に、また一歩近づいたのだろう——
+    - 어쨌든 콧노래를 부르며 걷는 %CHARA%는 『마법 삼관』의 마지막 관문을 이긴 뒤 정말 기뻐 보였다.
+    - 『마녀의 밤』에 또 한 걸음 가까워진 것일까——
 
 
 
@@ -3569,17 +3569,17 @@ rs_yh_select:
 
 
 
-# [번역 대상] rs_yush_him
+# [번역 완료] rs_yush_him
 rs_yush_him:
-  title: オークス前・恐れなき Oak Leaf
+  title: 오크스 전 · 두려움 없는 Oak Leaf
   lines:
-    - オークス。生命力にあふれた日に行われる中距離G1
-    - 同時に、牝馬三冠のなかでいちばん注目を集め、いちばん重いレースでもある
+    - 오크스. 생명력이 넘치는 날 열리는 중거리 G1 레이스다.
+    - 동시에 암말 삼관 중에서도 가장 주목받고, 가장 중요한 레이스이기도 하다.
     -
-    - こんなレースの前では、%CHARA%のよく分からない気持ちに振り回され続けるより
-    - こちらから動いたほうがいい——
+    - 이런 레이스를 앞두고 %CHARA%의 종잡을 수 없는 마음에 계속 휘둘리기보다는
+    - 이쪽에서 먼저 행동하는 편이 낫다——
     -
-    - %CHARA%の魔法帽を一時預かっている%YOU%は、その帽子を準備室の机にきちんと置く
+    - %CHARA%의 마법 모자를 잠시 맡아 둔 %YOU%은(는) 준비실 책상에 그 모자를 가지런히 놓았다.
 
 
 
@@ -4401,22 +4401,22 @@ we_gypsonphila:
 
 # 好感+20～30、スキルPt+50、体力&気力+600
 
-# [번역 대상] we_in_school
+# [번역 완료] we_in_school
 we_in_school:
-  title: 授業中の楽しみ
+  title: 수업 시간의 즐거움
   lines:
-    - 普通の平日、%YOU%はいつものどんな一日と同じように道を歩いている
+    - 평범한 평일, %YOU%은(는) 여느 때와 다름없이 길을 걷고 있었다.
     -
-    - 向かってくるのは、見覚えのある鹿毛の小さな%UMA%——
+    - 맞은편에서 익숙한 갈색 털의 작은 %UMA%가 다가왔다——
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あっ、%CALLNAME%、ちょうど探してたの。」
+        - 「아, %CALLNAME%! 마침 찾고 있었어.」
     -
-    - %CHARA%だ。今日のトレーニング計画について、ちょうど%SEX%と話さなければならない
-    - %YOU%は顔を上げ、頭上の太陽を見て、それから傍らで%UMA%たちがいっぱい座っている校舎を見る
+    - %CHARA%였다. 오늘의 훈련 계획을 두고 마침 %SEX%와 이야기를 나눠야 했다.
+    - %YOU%은(는) 고개를 들어 머리 위의 태양을 본 뒤, 곁에 %UMA%들이 가득 앉아 있는 교사를 바라보았다.
 
 
 
@@ -4469,52 +4469,52 @@ we_magic_stage:
 
 
 
-# [번역 대상] we_new_turn
+# [번역 완료] we_new_turn
 we_new_turn:
-  title: 新たな周回の Thistle
+  title: 새로운 순환의 Thistle
   lines:
-    - 新年が明けたら、%CHARA% のクラシック級のレース計画も立てなければならない
+    - 새해가 밝았으니 %CHARA%의 클래식급 레이스 계획도 세워야 한다.
     -
-    - 身体能力、脚質、距離適性を総合すると……
-    - %CHARA% にいちばん合う路線は、たぶん——
+    - 신체 능력과 각질, 거리 적성을 종합해 보면……
+    - %CHARA%에게 가장 잘 맞는 노선은 아마——
     - acc: 1
-      content: 「牝馬三冠。」
+      content: 「암말 삼관.」
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「牝馬三冠……？それ、なに？」
-    - トレーナー室で、目の前の小さな%UMA%が困惑した顔をする
+        - 「암말 삼관……? 그게 뭐야?」
+    - 트레이너실에서 눈앞의 작은 %UMA%가 어리둥절한 표정을 지었다.
     -
-    - 「いろんな魔法の素材で名付けられた、三つのレースの総称だよ。」
-    - ゆっくり言って、そこで一度止める
-    -
-    - color: %COLOR%
-      content:
-        - fontWeight: bold
-          content: %CHARA%
-        - 「！%CALLNAME%、黙らないで、早く続き言いなさい！」
-    - %CHARA%は一気に食いついた
-    -
-    - 「『桜花賞』、『オークス』、『秋華賞』」
-    - 「春のソメイヨシノ、夏のイギリスオーク、秋の百花に対応している」
-    - 「季節のちがう魔法の力を全部揃えれば——」
+    - 「여러 마법 재료의 이름을 딴 세 레이스를 통틀어 이르는 말이야.」
+    - 차근차근 설명하다가 잠깐 말을 멈췄다.
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「いい、いい、すごくいい、%CALLNAME%！それで決まり！」
-    - %YOU%が言い終わる前に、言葉を遮る
+        - 「! %CALLNAME%, 가만히 있지 말고 어서 계속 말해!」
+    - %CHARA%가 곧바로 관심을 보였다.
+    -
+    - 「『벚꽃상』, 『오크스』, 『추화상』.」
+    - 「봄의 왕벚나무, 여름의 영국 참나무, 가을의 온갖 꽃에 대응하지.」
+    - 「서로 다른 계절의 마력을 전부 모으면——」
+    -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「天才%MOHOSHOJO%sweepyは、牝馬三冠を目標に、『魔法三冠』を取るわ！」
+        - 「좋아, 좋아! 정말 좋아, %CALLNAME%! 그걸로 정하자!」
+    - %YOU%이(가) 말을 끝내기도 전에 끼어들었다.
+    - color: %COLOR%
+      content:
+        - fontWeight: bold
+          content: %CHARA%
+        - 「천재 %MOHOSHOJO% 스위피는 암말 삼관을 목표로 『마법 삼관』을 따낼 거야!」
     -
-    - 言い回しは少し奇妙で、しかも%CHARA%がこの三レースの難しさと価値を分かっているかも全く不明だ
-    - でもともかく、少なくとも %CHARA% にははっきりした目標ができた……
+    - 말투는 조금 특이했고, %CHARA%가 이 세 레이스의 난도와 가치를 얼마나 이해하는지도 알 수 없었다.
+    - 하지만 어쨌든 적어도 %CHARA%에게는 확실한 목표가 생겼다……
 
 
 # 好感+20、恋慕+1、やる気+1、スキルPt+50
@@ -5771,13 +5771,13 @@ ws_md_w_1:
 
 
 
-# [번역 대상] ws_md_w_1_end
+# [번역 완료] ws_md_w_1_end
 ws_md_w_1_end:
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「おばあちゃんが目の前で花を出した、あのときのめまいみたいな興奮……」
+      - 「할머니가 바로 눈앞에서 꽃을 피워 냈던 그때의, 어지러울 만큼 벅찬 흥분……」
   - # ws_md_w_2
 
 
@@ -5843,44 +5843,44 @@ ws_md_w_2:
 
 
 
-# [번역 대상] ws_md_w_2_end
+# [번역 완료] ws_md_w_2_end
 ws_md_w_2_end:
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ずっと%CALLNAME%が私のああだこうだに従ってきたこと……」
+      - 「지금까지 %CALLNAME%가 내 이래라저래라 하는 말을 전부 따라줬다는 것도……」
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「どうやって分かるのよ……！！」
-  - %CHARA%は怒って足を踏み鳴らす
+      - 「그걸 어떻게 알아……!!」
+  - %CHARA%는 화를 내며 발을 굴렀다.
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「やだやだ！絶対認めない！！」
+      - 「싫어, 싫어! 절대 인정 못 해!!」
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「おばあちゃんが魔法はないって言うなら……」
+      - 「할머니가 마법 따윈 없다고 하신다면……」
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「天才%MOHOSHOJO%sweepyの私は……」
+      - 「천재 %MOHOSHOJO% 스위피인 내가……」
   -
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「自分で——」
+      - 「직접——」
   # ws_md_w_3
 
 
@@ -6854,55 +6854,55 @@ ws_ny_sub_option:
 
 
 
-# [번역 대상] ws_ny_sub_reject
+# [번역 완료] ws_ny_sub_reject
 ws_ny_sub_reject:
   - if: d.reject === 0
     lines:
-      - %CHARA%は眉をひそめ、それからまた魔法の杖を振る
+      - %CHARA%는 눈살을 찌푸렸다가 다시 마법 지팡이를 흔들었다.
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「Freesia★Dogwood、言いなさい～！」
+          - 「Freesia★Dogwood, 말하라~!」
   - if: d.reject === 1
     lines:
-      - %CHARA%の杖を持つ手が、明らかに震えた
-      - 眉を寄せ、咳をしたふりをして、%CHARA%はまた魔法の杖を振る
+      - 지팡이를 쥔 %CHARA%의 손이 눈에 띄게 떨렸다.
+      - 눈썹을 찌푸리고 헛기침하는 척하며 %CHARA%는 다시 지팡이를 흔들었다.
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「Freesia★Dogwood、言いなさい～！」
+          - 「Freesia★Dogwood, 말하라~!」
   - if: d.reject === 2
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「言えって言ったら言いなさい！！！」
-      - 声が一気に大きくなる
+          - 「말하라면 말하란 말이야!!!」
+      - 순식간에 목소리가 커졌다.
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%！！！願いを主人に言いなさい！！！！！」
+          - 「%CALLNAME%!!! 주인에게 소원을 말하라고!!!!!」
 
 
 # クラシック級第1週終了
 
-# [번역 대상] ws_ny_sub_select
+# [번역 완료] ws_ny_sub_select
 ws_ny_sub_select:
   - acc: 1
     key: select
-    content: 言う
+    content: 말한다
     # ws_ny_sub_option
   - if: d.reject < 3
     acc: 2
-    content: 首を振る
+    content: 고개를 젓는다
     # ws_ny_sub_reject
   - if: d.reject < 3
     acc: 3
-    content: 「お願いごとって、言っちゃうと叶わないんだ……」
+    content: 「소원은 입 밖에 내면 이루어지지 않는대……」
     # ws_ny_sub_reject
 
 
