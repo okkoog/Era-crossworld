@@ -1036,9 +1036,9 @@ module.exports = {
         await ruby.say_and_wait('……おんぶして。');
         await era.printAndWait([you.get_colored_name(), ' は喜んで応じた。']);
         await era.printAndWait([
-          'まだ未成年で、小柄な ',
+          '아직 미성년이고 체구도 작은 ',
           ruby.get_colored_name(),
-          ' は、容易におぶえた。',
+          '는 어렵지 않게 업을 수 있었다.',
         ]);
         await era.printAndWait([
           ruby.get_colored_name(),
@@ -1192,9 +1192,9 @@ module.exports = {
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、「成金が未成年の',
+        '는 「졸부가 미성년자인 ',
         ruby.teen_sex_title,
-        'を囲っている」ような視線に、少々閉口した。幸い、',
+        '를 데리고 다닌다」는 듯한 시선에 조금 난처해졌다. 다행히, ',
         ruby.get_colored_name(),
         ' が ',
         you.get_colored_name(),
