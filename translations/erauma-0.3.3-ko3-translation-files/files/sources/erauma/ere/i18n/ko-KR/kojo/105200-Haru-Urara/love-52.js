@@ -27,29 +27,29 @@ module.exports = {
         ' に、思い切り抱きつかれた。',
       ]);
       await urara.say_and_wait([
-        '今日も一緒にいて！ ',
+        "오늘도 나랑 같이 있어 줘! ",
         callname,
-        ' がしたいなら、何してもいいよ？',
+        "가 원한다면 우리 뭐든지 할 수 있어!",
       ]);
       await era.printAndWait([
         urara.get_colored_name(),
-        ' は正面から両腕でしっかり ',
+        "는 정면에서 두 팔로 ",
         you.get_colored_name(),
-        ' を捉え、',
+        "을(를) 꽉 붙잡았고, 이로 인해 ",
         you.get_colored_name(),
-        ' が視線を外して逃げる隙を、完全に消した。',
+        "은(는) 시선을 돌려 빠져나갈 기회를 완전히 잃어버렸다.",
       ]);
       await era.printAndWait([
-        '状況がまだ飲み込めない ',
+        "상황 파악이 채 되지 않은 ",
         you.get_colored_name(),
-        ' は、少し緊張したまま ',
+        "은(는) 그저 약간 긴장한 채로 ",
         urara.get_colored_name(),
-        ' の笑顔を受けるしかない。',
+        "의 웃는 얼굴을 마주할 뿐이었다.",
       ]);
       await urara.say_and_wait([
-        'だから今日は、もっと ',
+        "그러니까, 오늘은 ",
         self_name,
-        ' に付き合って！',
+        "랑 조금만 더 같이 있어 줘!",
       ]);
       await era.printAndWait([
         you.get_colored_name(),
@@ -58,16 +58,16 @@ module.exports = {
         ' は少し現実感のない笑顔で、一方的に話を終えた。',
       ]);
       await era.printAndWait([
-        'それから ',
+        "이어서 ",
         urara.get_colored_name(),
-        ' は、予想外の力で ',
+        "는 예상치 못한 힘으로 ",
         you.get_colored_name(),
-        ' を半ば引きずるように、トレーニング場を離れた。',
+        "을(를) 거의 끌다시피 하여 훈련장을 벗어났다.",
       ]);
       await era.printAndWait([
-        '寂しすぎたのか。でも ',
+        "너무 외로웠던 것일까? 하지만 ",
         urara.get_colored_name(),
-        ' がここにいたのは……偶然、だよね。',
+        "가 이곳에 나타난 것은…… 그저 우연이겠지?",
       ]);
       await era.printAndWait([
         'ウララに先回りして待ち伏せされていた、など想像したくない。',
