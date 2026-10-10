@@ -3534,95 +3534,95 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ws_cook04
+  // [번역 완료] ws_cook04
   async ws_cook04(tachyon, you, callname) {
     await tachyon.say_and_wait('…………');
     era.println();
     await era.printAndWait([
-      '今日実験室に着いた瞬間、',
+      '오늘 실험실에 도착한 순간 ',
       you.get_colored_name(),
-      ' は ',
+      '은(는) ',
       tachyon.get_colored_name(),
-      ' の機嫌がひどく悪いと察した。しかも、',
+      '의 기분이 무척 나쁘다는 것을 알아챘다. 게다가 ',
       you.get_colored_name(),
-      ' は理由を知っている',
+      '은(는) 이유도 알고 있었다.',
     ]);
     era.println();
-    await era.printAndWait(['原因は ', you.get_colored_name()]);
+    await era.printAndWait(['원인은 ', you.get_colored_name()]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は三週間、',
+      '이(가) 3주 동안 ',
       tachyon.get_colored_name(),
-      ' に料理をしていない',
+      '에게 요리를 해 주지 않았다는 사실이었다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は慌てて',
+      '은(는) 황급히 ',
       tachyon.sex,
-      'に、この数週間は本当に忙しくて時間が取れなかったと弁解した……',
+      '에게 지난 몇 주 동안은 너무 바빠 시간을 낼 수 없었다고 변명했다……',
       you.get_colored_name(),
-      ' 自身ですら信じられない嘘だった',
+      '스스로도 믿기 어려운 거짓말이었다.',
     ]);
     await era.printAndWait([
-      '純粋に忘れたのか、他の',
+      '그냥 잊어버린 것인지, 다른 ',
       tachyon.uma_sex_title,
-      'の育成に時間を割いたのか、',
+      '의 육성에 시간을 쏟은 것인지,',
     ]);
     await era.printAndWait(
-      'あるいは、まだ違う台詞があるか確かめたかっただけなのか。「あなた」の時間は、いくらでもある',
+      '아니면 아직 다른 대사가 있는지 확인하고 싶었을 뿐인지. 『당신』에게는 시간이 얼마든지 있다.',
     );
     await era.printAndWait([
-      'だが今の ',
+      '하지만 지금의 ',
       you.get_colored_name(),
-      ' は、そんな拙い言い訳で許しを乞うしかなかった',
+      '은(는) 이런 서투른 변명으로 용서를 구할 수밖에 없었다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('…………許すも何も、ありませんわ');
+    await tachyon.say_and_wait('…………용서고 뭐고 할 것도 없네.');
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は ',
+      '은(는) ',
       you.get_colored_name(),
-      ' を一瞥して言った',
+      '을(를) 흘끗 보며 말했다.',
     ]);
     era.println();
     await tachyon.say_and_wait(
-      'これもあなたの可能性の一つ、立派な研究サンプルですわ。あなたの努力は否定しません、',
+      '이것도 자네의 가능성 가운데 하나이며 훌륭한 연구 자료일세. 자네의 노력을 부정하지 않네.',
     );
     await tachyon.say_and_wait(
-      '同様に、怠惰も唾棄しません。どちらにせよあなた自身の選択ですもの。私には一点の関係もありませんわ',
+      '마찬가지로 게으름을 비난하지도 않지. 어느 쪽이든 자네 자신의 선택이니까. 나와는 아무 상관도 없네.',
     );
     era.println();
-    await era.printAndWait('そうだ。強いて言えば');
+    await era.printAndWait('아, 굳이 한마디 하자면……');
     await era.printAndWait([
       tachyon.sex,
-      'はやっと振り返った。今日初めて',
+      '은(는) 마침내 돌아섰다. 오늘 처음으로 ',
       tachyon.sex,
-      'が ',
+      '이(가) ',
       you.get_colored_name(),
-      ' を見た',
+      '을(를) 바라보았다.',
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'の眼に失望も、嫌悪も、怒りもなかった',
+      '의 눈에는 실망도, 혐오도, 분노도 없었다.',
     ]);
     await era.printAndWait(
-      '言いようのない感情だった。どうしても名づけるなら、それは————退屈',
+      '형언할 수 없는 감정이었다. 굳이 이름을 붙인다면 그건————지루함.',
     );
     era.println();
-    await tachyon.say_and_wait('あなたの可能性とは、この程度ですのね');
+    await tachyon.say_and_wait('자네의 가능성이라는 게 고작 이 정도였나.');
     era.println();
     await era.printAndWait([
       tachyon.sex,
-      'は目標に届かなかった実験動物を見る目で ',
+      '은(는) 목표에 미치지 못한 실험동물을 바라보듯 ',
       you.get_colored_name(),
-      ' を見て、それから口を開いた',
+      '을(를) 보다가 입을 열었다.',
     ]);
     era.println();
     await tachyon.say_and_wait([
-      '価値を上げる努力を続けなさい、',
+      '자신의 가치를 높이기 위해 계속 노력하게, ',
       callname,
-      '……でないと、退屈した日に捨ててしまうかもしれませんわ',
+      '……그러지 않으면 지루해진 날에 자네를 버릴지도 모르니까.',
     ]);
   },
 
