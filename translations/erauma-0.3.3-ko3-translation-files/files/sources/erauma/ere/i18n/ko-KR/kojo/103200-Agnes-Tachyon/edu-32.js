@@ -6031,54 +6031,54 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] train_success
+  // [번역 완료] train_success
   async train_success(tachyon, you, callname, call_25, stmn_rat, plan_b) {
     era.print([
       tachyon.get_colored_name(),
-      ' のトレーニングは順調に終わった！',
+      '의 훈련이 무사히 끝났다!',
     ]);
     era.println();
     const buffer = [];
     if (plan_b && era.get('cflag:32:育成回合计时') < 95 + 16) {
       buffer.push(
         async () => {
-          await tachyon.say_and_wait([' ', call_25, ' を……もう一段上へ']);
+          await tachyon.say_and_wait([' ', call_25, '이…… 한 단계 더 위로 올라설 수 있도록.']);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は格別に力を込めてトレーニングを終えた。だが',
+            '은 각별히 노력하며 훈련을 마쳤지만, ',
             tachyon.sex,
-            'が口にする標語には、どう向き合えばいいかわからない',
+            '가 입 밖으로 내뱉는 구호는 대체 어떻게 반응해야 할지 알 수 없었다.',
           ]);
         },
         async () => {
           await tachyon.say_and_wait([
-            '私が努力しなければ、',
+            '내가 노력해서 ',
             call_25,
-            ' に追いつけない……',
+            '을 쫓아가야만 해……',
           ]);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' はトレーニングを終えた',
+            '은 훈련을 마쳤다.',
           ]);
-          await era.printAndWait('走りは相変わらず絢爛だ');
-          await era.printAndWait('だが、何かが欠けている気がする');
+          await era.printAndWait('그 달리는 모습은 여전히 찬란했다.');
+          await era.printAndWait('하지만 어딘가 모르게, 소중한 무언가가 빠져 있는 듯한 느낌을 주었다.');
         },
         async () => {
-          await tachyon.say_and_wait('実験の成功のため……私であっても……');
+          await tachyon.say_and_wait('실험의 성공을 위해서라면…… 설령 나라고 해도……');
           era.println();
           await era.printAndWait([
-            'トレーニングを終えた ',
+            '훈련을 마친 ',
             tachyon.get_colored_name(),
-            ' は呟いた。言葉はそうでも、',
+            '이 나직이 읊조렸다. 비록 내용은 그러하였으나, ',
             tachyon.sex,
-            'の口調には迷いが混じっているようだった',
+            '의 말투에는 어딘가 망설임이 섞여 있는 듯했다.',
           ]);
           await era.printAndWait([
-            '……いや、それは ',
+            '……아니, 그것도 어쩌면 ',
             you.get_colored_name(),
-            ' の深読みかもしれない',
+            '의 착각일지도 모른다.',
           ]);
         },
       );
@@ -6089,77 +6089,77 @@ module.exports = {
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' はトレーニングを終えると、汗まみれも構わず ',
+            '은 훈련이 끝나자마자 온몸이 땀범벅인 것도 개의치 않고, ',
             you.get_colored_name(),
-            ' へ飛びついた',
+            '에게 달려들어 안겼다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は慌てて',
+            '은(는) 당황하며 ',
             tachyon.sex,
-            'を押しのけようとした',
+            '를 밀어내려 했다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            '構いませんわ、恋人の体液ですもの……夜に、あなたの体液で返せばいいだけ♡',
+            '뭐 어떤가, 그저 사랑하는 이의 체액일 뿐인데…… 정 그러면 밤에 자네의 체액으로 되돌려주면 되지 않겠나?♡',
           );
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は ',
+            '은 ',
             you.get_colored_name(),
-            ' の反対を無視して抱きしめ、',
+            '의 반대에도 아랑곳하지 않고 ',
             you.get_colored_name(),
-            ' の耳元で囁いた',
+            '을(를) 꼭 껴안은 채, ',
           ]);
         });
       } else {
         buffer.push(async () => {
           await tachyon.say_and_wait(
-            'ふぅ……トレーニング、終わりましたわね……やっと',
+            '의 귓가에 대고 속삭였다.',
           );
           await tachyon.say_and_wait(
-            'まったく……運動なら、ただ走るより、夜のほうを好みますわ……',
+            '후우…… 드디어 훈련이 끝난 건가…… 드디어.',
           );
           await tachyon.say_and_wait([
-            'どう？ ',
+            '정말이지…… 운동이라면 단순한 달리기보다, 밤에 하는 그런 쪽이 훨씬 더 내 취향인데 말이야……',
             callname,
-            '、満たしてくれますわよね♡',
+            '、자네라면 날 만족시켜 주겠지?♡',
           ]);
         });
       }
     } else if (era.get('love:32') >= 50) {
       buffer.push(
         async () => {
-          await tachyon.say_and_wait('ふんふん、どうですの');
+          await tachyon.say_and_wait('흥흥, 어떤가?');
           await tachyon.say_and_wait(
-            'また私に魅了されました？ フフ、大げさですわね',
+            '또다시 나에게 매료되었나? 후훗, 참으로 과장된 표현이군.',
           );
-          await tachyon.say_and_wait('でも、嫌いではありませんわ♡');
+          await tachyon.say_and_wait('하지만, 싫지 않네♡');
         },
         async () => {
-          await tachyon.say_and_wait([callname, '！ ', callname, '………あ']);
+          await tachyon.say_and_wait([callname, '！ ', callname, '………아']);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' はいつものように ',
+            '은 평소처럼 ',
             you.get_colored_name(),
-            ' へ走ろうとして、ふと足を止めた',
+            '에게 달려오려다, 돌연 발걸음을 멈추었다.',
           ]);
           era.println();
-          await tachyon.say_and_wait('………いいえ、今はやめておきますわ');
+          await tachyon.say_and_wait('………아니, 지금은 역시 관두겠네.');
           era.println();
           await era.printAndWait([
             tachyon.sex,
-            'は汗でびしょ濡れの運動着を見て、なぜか ',
+            '는 땀으로 흠뻑 젖은 자신의 트레이닝복을 슬쩍 보더니, 왠지 모르게 ',
             you.get_colored_name(),
-            ' と距離を取った',
+            '과(와) 일정한 거리를 유지했다.',
           ]);
-          await era.printAndWait('まさか……匂いを気にしている？');
+          await era.printAndWait('설마…… 몸에서 나는 냄새를 신경 쓰고 있는 건가?');
           await era.printAndWait([
-            'いや、あの ',
+            '아니, 그 ',
             tachyon.get_colored_name(),
-            ' が……あり得ないはずだ',
+            '아라면…… 그럴 리가 없겠지.',
           ]);
         },
       );
@@ -6167,75 +6167,75 @@ module.exports = {
       buffer.push(
         async () => {
           await tachyon.say_and_wait([
-            'ふんふんふん、',
+            '후후훗, ',
             callname,
-            '、今日の走りはどう！ 褒めすぎても構いませんわよ！',
+            ', 오늘 달리기는 어땠나! 좀 더 칭찬해 줘도 괜찮다고!',
           ]);
           era.println();
           await era.printAndWait('三十分後');
           era.println();
-          await tachyon.say_and_wait('………そこまで褒めなくても……');
+          await tachyon.say_and_wait('………아니, 그렇게까지 칭찬할 필요는 없었네만……');
         },
         async () => {
-          await tachyon.say_and_wait('ふぅ……疲れましたわ……');
+          await tachyon.say_and_wait('후우…… 정말 힘들군……');
           await tachyon.say_and_wait([
             callname,
-            '……おんぶして連れていって～～～～',
+            '……나를 업고 돌아가 주게나~~~~',
           ]);
         },
         async () => {
-          await tachyon.say_and_wait('このままなら……必ず届きますわ');
-          await tachyon.say_and_wait('限界という目標に……');
+          await tachyon.say_and_wait('이대로만 간다면…… 반드시 도달할 수 있겠어.');
+          await tachyon.say_and_wait('한계라는 이름의 목표에……');
         },
       );
     } else if (era.get('relation:32:0') > 225) {
       buffer.push(
         async () => {
           await tachyon.say_and_wait(
-            'ふん……この速度、着実に伸ばせれば、限界超越は確実ですわ',
+            '흥흥…… 이 정도 속도라면, 꾸준히 향상시킨다는 전제하에 한계 돌파는 문제없겠어.',
           );
           await tachyon.say_and_wait([
-            '……そんなに急がなくていい、少し休んでも？ ',
+            '……그렇게 서두를 필요 없이 조금 쉬어도 되지 않겠냐고? ',
             callname,
-            '、研究は立ち止まれば後退ですわ。自己を上げるには、一瞬たりとも緩めてはいけません',
+            ', 연구라는 것은 제자리에 머무는 순간 퇴보하는 것이네. 자기 자신을 높이기 위해서는 한순간도 늦추지 않고 정진해야만 해.',
           ]);
         },
         async () => {
-          await tachyon.say_and_wait('ふハハハ！ そうです、この速度ですわ！');
+          await tachyon.say_and_wait('푸하하하! 바로 이거야, 바로 이 속도라고!');
           await tachyon.say_and_wait(
-            'もっと速く、もっと速く、やがて……光速を超えるまで！',
+            '더 빠르게, 조금 더 빠르게, 마침내…… 광속을 뛰어넘는 거다!',
           );
         },
         () =>
           tachyon.say_and_wait(
-            'タイムを見せて……ふんふんふん……よろしい。この調子なら、私たちの夢はもう遠くありませんわ！',
+            '어디 시간을 좀 볼까…… 흠흠…… 좋군. 이대로라면 우리의 꿈도 머지않은 곳에 있겠어!',
           ),
       );
     } else if (era.get('relation:32:0') > 75) {
       buffer.push(
-        () => tachyon.say_and_wait('よろしい、今日の走りは最適解ですわ！'),
+        () => tachyon.say_and_wait('좋아. 오늘의 주법이야말로 최적의 해답임에 틀림없어!'),
         () =>
           tachyon.say_and_wait([
-            'ふぅ……',
+            '후우…… ',
             callname,
-            '、データを見せて……フフ、よろしいよろしい。前回のトレーニングより大幅に上がっていますわ。このままなら問題ありません',
+            ', 데이터를 보여주게나…… 후훗, 좋군, 아주 좋아. 지난번 훈련에 비해 대폭 상승했어. 이대로라면 분명 문제없겠군.',
           ]),
         () =>
           tachyon.say_and_wait(
-            'よろしいよろしい、研究進捗がまた 0.02 ポイント進みましたわ',
+            '좋아 좋아, 이걸로 연구 진척도가 다시 0.02%p 전진했군.',
           ),
       );
     } else {
       buffer.push(
         () =>
           tachyon.say_and_wait(
-            'ふう、なるほど……今日の実験成果は悪くありませんわ',
+            '후우, 과연 그렇군…… 오늘의 실험 성과는 나쁘지 않아.',
           ),
         () =>
           tachyon.say_and_wait(
-            'こんな簡単なトレーニング、難なく終わりますわ……実力測定の対照群、ですの？',
+            '이토록 간단한 훈련이라니, 완수하는 데 아무런 어려움도 없군…… 실력 측정을 위한 대조군인가?',
           ),
-        () => tachyon.say_and_wait('当然の成果ですわ'),
+        () => tachyon.say_and_wait('지극히 당연한 결과일 뿐이네.'),
       );
     }
     await get_random_entry(buffer)();
