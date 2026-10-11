@@ -5045,9 +5045,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_b_95_47
+  // [번역 완료] ws_b_95_47
   ws_b_95_47: (() => {
-    const title = '超えられた限界';
+    const title = '넘어선 한계';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -5058,169 +5058,169 @@ module.exports = {
      */
     const f = async (tachyon, coffee, you, callname, call_25, love) => {
       await tachyon.print_and_wait([
-        '夢の中の ',
+        '꿈속의 ',
         tachyon.get_colored_name(),
-        ' は、またあの日へ戻った',
+        '은(는) 또다시 그날로 돌아갔다.',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        '会場の歓声も、',
+        '경기장의 함성도, ',
         you.sex,
-        'の視線も、ゴールを越え、淡く手を振るその',
+        '의 시선도 결승선을 넘어 희미하게 손을 흔드는 ',
         tachyon.uma_sex_title,
-        'に集まっている',
+        '에게 쏠려 있다.',
       ]);
       await tachyon.print_and_wait([
-        '当然ですわ。今日の主役は ',
+        '당연한 일이네. 오늘의 주인공은 ',
         coffee.get_colored_name(),
-        ' なのですから',
+        '이니까.',
       ]);
       await tachyon.print_and_wait([
-        '主役は自分ではない。周囲が',
+        '주인공은 내가 아니다. 주변 사람들이 ',
         tachyon.sex,
-        'を見るのも道理です',
+        '을(를) 바라보는 것도 당연하다.',
       ]);
-      await tachyon.print_and_wait('ですが……');
-      await tachyon.print_and_wait('なぜ');
+      await tachyon.print_and_wait('하지만……');
+      await tachyon.print_and_wait('어째서……');
       era.println();
-      await tachyon.say_and_wait('ずっと私を見ると、約束したはずですわ', true);
+      await tachyon.say_and_wait('줄곧 나를 바라보겠다고 약속했지 않은가.', true);
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、もう走れません',
+        '은(는) 이제 더는 달릴 수 없네.',
       ]);
       await tachyon.print_and_wait([
-        'だから視線を ',
+        '그래서 시선을 ',
         coffee.get_colored_name(),
-        ' へ移すのですか',
+        '에게로 옮긴 건가?',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        '周囲の観客にも、「',
+        '주변 관객들 중에는 『',
         tachyon.get_colored_name(),
-        ' より ',
+        '보다 ',
         coffee.get_colored_name(),
-        ' のほうが強い」と叫ぶ者がいる',
+        '이(가) 더 강하다』고 외치는 이도 있다.',
       ]);
       await tachyon.print_and_wait([
-        'ですが、そうした上げ下ろしの言葉より、',
+        '하지만 그런 비교의 말보다도 ',
         you.sex,
-        'の目のほうが自分を傷つける',
+        '의 눈빛이 나를 더 아프게 한다.',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        'かつては自分を見るときにしか浮かばなかったあの目が、いま',
+        '예전에는 나를 바라볼 때만 나타나던 그 눈빛이, 이제는 ',
         you.sex,
-        'が ',
+        '가 ',
         call_25,
-        ' を見る瞳にある',
+        '을(를) 바라보는 눈동자에 깃들어 있다.',
       ]);
-      await tachyon.say_and_wait('あの目は、私専属ではなかったのですの？');
-      await tachyon.say_and_wait('私が灼いた両目は、もう癒えたのですの？');
-      await tachyon.say_and_wait('私を、一人に残すのですの？');
+      await tachyon.say_and_wait('그 눈빛은 나만을 위한 게 아니었나?');
+      await tachyon.say_and_wait('내가 태워 버린 그 두 눈은 이제 다 나은 건가?');
+      await tachyon.say_and_wait('나를 혼자 남겨 두려는 건가?');
       era.println();
       await tachyon.print_and_wait([
-        '夢の中の',
+        '꿈속의 ',
         you.sex,
-        'は、',
+        '은(는) ',
         call_25,
-        ' と遠ざかっていく',
+        '와 함께 멀어져 간다.',
       ]);
-      await tachyon.print_and_wait('自分を漆黒の空間へ置き去りにして');
+      await tachyon.print_and_wait('나만 칠흑 같은 공간에 남겨 둔 채.');
       era.println();
-      await tachyon.say_and_wait('いや……待って、待ってくださいまし……');
+      await tachyon.say_and_wait('싫어…… 잠깐, 잠깐만 기다려 주게……');
       era.println();
-      await tachyon.print_and_wait('追い付きたい');
-      await tachyon.print_and_wait('ですが……両脚が言うことを聞かない');
-      await tachyon.print_and_wait('頭を下げて気づく……ああ');
+      await tachyon.print_and_wait('뒤쫓고 싶다.');
+      await tachyon.print_and_wait('하지만…… 두 다리가 말을 듣지 않는다.');
+      await tachyon.print_and_wait('고개를 숙이고서야 깨달았다…… 아아.');
       await tachyon.print_and_wait(
-        '砕けた両脚で、走っている者に追い付けるはずがありません',
+        '망가진 두 다리로는 달리는 이를 따라잡을 수 없다는 것을.',
       );
       era.println();
-      await tachyon.print_and_wait('自分の声が届いたのか、その背が振り返る');
-      await tachyon.print_and_wait('目の光は、もうない');
+      await tachyon.print_and_wait('내 목소리가 들린 것인지, 멀어지던 등이 돌아본다.');
+      await tachyon.print_and_wait('그 눈에 더는 빛이 없다.');
       await tachyon.print_and_wait(
-        'いいえ、消えたのではありません————別の誰かへ移ったのです',
+        '아니, 빛이 사라진 게 아니라———— 다른 누군가에게 옮겨 간 것이다.',
       );
       era.println();
-      await tachyon.print_and_wait('いや');
-      await tachyon.print_and_wait('私を見て');
-      await tachyon.print_and_wait('以前のように、私を見て');
-      await tachyon.print_and_wait('置いていかないで、一人にしないで');
+      await tachyon.print_and_wait('싫어.');
+      await tachyon.print_and_wait('나를 봐 주게.');
+      await tachyon.print_and_wait('예전처럼 나를 바라봐 주게.');
+      await tachyon.print_and_wait('날 두고 가지 말게. 혼자 두지 말게.');
       era.println();
-      await tachyon.print_and_wait('ですが');
+      await tachyon.print_and_wait('하지만……');
       await tachyon.print_and_wait([
-        '走れない ',
+        '달릴 수 없는 ',
         tachyon.get_colored_name(),
-        ' に、相手を留める資格などありますの',
+        '에게 상대를 붙잡아 둘 자격이 있을까?',
       ]);
       era.drawLine();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は夢から覚めた',
+        '은(는) 꿈에서 깨어났다.',
       ]);
-      await tachyon.print_and_wait('何を見たのか、もうよく覚えていません');
+      await tachyon.print_and_wait('무엇을 보았는지는 이제 잘 기억나지 않는다.');
       await tachyon.print_and_wait([
-        '……ですが体の不調からして、八割はジャパンカップのときのことでしょう',
+        '……하지만 몸 상태를 생각하면 십중팔구 재팬컵 때의 꿈이겠지.',
       ]);
-      await tachyon.print_and_wait([call_25, ' は、すでに限界を超えた']);
-      await tachyon.print_and_wait([tachyon.get_colored_name(), ' を超えた']);
+      await tachyon.print_and_wait([call_25, '은(는) 이미 한계를 넘어섰다.']);
+      await tachyon.print_and_wait([tachyon.get_colored_name(), '을(를) 넘어섰다.']);
       await tachyon.print_and_wait([
-        'だから……',
+        '그러니……',
         you.sex,
-        'が ',
+        '가 ',
         call_25,
-        ' に魅了されても、当然ですわね',
+        '에게 매료되는 것도 당연한 일이네.',
       ]);
       await tachyon.print_and_wait([
-        'なにしろ、',
+        '무엇보다 ',
         tachyon.get_colored_name(),
-        ' を超えた走りなのですから',
+        '을(를) 넘어선 달리기니까.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……いや');
+      await tachyon.say_and_wait('……아니.');
       if (love <= 50) {
-        await tachyon.print_and_wait('今さら気づくのは、遅すぎますかしら');
+        await tachyon.print_and_wait('이제야 깨닫다니 너무 늦은 걸까?');
         await tachyon.print_and_wait(
-          'これほど長く傍にいても、ずっと当然だと思っていた',
+          '이렇게 오랫동안 곁에 있으면서도 줄곧 당연하게 여겼다.',
         );
         await tachyon.print_and_wait([
-          '失いかけて初めて、自分が',
+          '잃을 뻔하고서야 내가 ',
           you.sex,
-          'から離れられないと気づいた',
+          '에게서 떠날 수 없다는 사실을 깨달았다.',
         ]);
       }
       era.println();
       await tachyon.print_and_wait([
         you.sex,
-        'なら、これまでどおり自分の世話をしてくれるでしょう',
+        '이라면 앞으로도 예전처럼 나를 돌봐 주겠지.',
       ]);
       await tachyon.print_and_wait([
-        'これまでどおり、',
+        '지금까지 그랬듯 ',
         tachyon.get_colored_name(),
-        ' の求めにも応えてくれる',
+        '의 부탁도 들어줄 것이다.',
       ]);
-      await tachyon.print_and_wait([you.sex, 'は、それほど優しい人ですから']);
+      await tachyon.print_and_wait([you.sex, '은(는) 그만큼 다정한 사람이니까.']);
       await tachyon.print_and_wait([
-        '……ですが、それだけでは ',
+        '……하지만 그것만으로는 ',
         tachyon.get_colored_name(),
-        ' は足りません',
+        '에게 충분하지 않다.',
       ]);
-      await tachyon.print_and_wait([you.sex, 'の光が、自分を温めた']);
-      await tachyon.print_and_wait('希望を、レースへの渇望を生んだ');
+      await tachyon.print_and_wait([you.sex, '의 빛이 나를 따뜻하게 해 주었다.']);
+      await tachyon.print_and_wait('희망을, 레이스를 향한 갈망을 일깨웠다.');
       await tachyon.print_and_wait(
-        'だからどうか……自分の光を、奪わないでくださいまし',
+        '그러니 제발…… 나에게서 그 빛을 빼앗지 말아 주게.',
       );
       era.println();
       await tachyon.print_and_wait(
         'Jingle bell Jingle bell Jingle all the way～～',
       );
       era.println();
-      await tachyon.print_and_wait('突然、窓の外でクリスマスソングが聞こえた');
+      await tachyon.print_and_wait('갑자기 창밖에서 크리스마스 노래가 들려왔다.');
       await tachyon.print_and_wait([
-        '聖夜が近づくのに、',
+        '성탄절이 다가오지만 ',
         tachyon.get_colored_name(),
-        ' の胸はまだ闇のままだ',
+        '의 가슴은 여전히 어둠에 잠겨 있다.',
       ]);
     };
     f.title = title;
