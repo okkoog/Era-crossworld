@@ -4346,9 +4346,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_a_47_29
+  // [번역 완료] ws_a_47_29
   ws_a_47_29: (() => {
-    const title = 'メディア対応';
+    const title = '언론 대응';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -4357,109 +4357,109 @@ module.exports = {
       await era.printAndWait('夏合宿');
       await era.printAndWait([
         tachyon.uma_sex_title,
-        'たちにとっては、休息と実力向上を兼ねた期間',
+        '들에게는 휴식과 실력 향상을 겸하는 기간이다.',
       ]);
       await era.printAndWait([
-        '記者たちにとっては、普段はレース以外で人前に出にくい',
+        '기자들에게는 평소 레이스 밖에서는 좀처럼 모습을 드러내지 않는 ',
         tachyon.uma_sex_title,
-        'たちに、ようやく取材できる日々',
+        '들을 드디어 취재할 수 있는 시기다.',
       ]);
       await era.printAndWait(
-        'だからこそ、パパラッチたちは合宿所の外に早くから集まっていた',
+        '그래서 파파라치들은 이른 아침부터 합숙소 밖으로 모여들었다.',
       );
-      await you.say_as_passer_by_and_wait('記者A', '見えたか？');
+      await you.say_as_passer_by_and_wait('기자 A', '봤어?');
       await you.say_as_passer_by_and_wait(
-        '記者B',
-        '焦るな、まだ完全に降りてない',
+        '기자 B',
+        '서두르지 마, 아직 완전히 내리지 않았어.',
       );
       await you.say_as_passer_by_and_wait(
         '記者C',
-        '来た来た！ あれだ、トレーナーが光ってるやつ！',
+        '나왔다, 나왔어! 저거야, 트레이너가 빛나는 녀석!',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' が車を降りた瞬間、記者たちに取り囲まれた',
+        '이(가) 차에서 내리자마자 기자들에게 둘러싸였다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' はまずいと思い、慌てて体の輝きを落とす。だが、もう遅かった',
+        '은(는) 일이 잘못됐음을 깨닫고 급히 몸의 빛을 줄였지만 이미 늦었다.',
       ]);
-      await you.say_as_passer_by_and_wait('記者A', [
-        'お伺いします。',
+      await you.say_as_passer_by_and_wait('기자 A', [
+        '여쭤보겠습니다. ',
         tachyon.get_colored_name(),
-        ' が月桂杯を辞退した理由は？',
+        '이(가) 월계배 출전을 포기한 이유는 무엇입니까?',
       ]);
       await you.say_as_passer_by_and_wait(
-        '記者B',
-        '何か事情があるのでしょうか？',
+        '기자 B',
+        '특별한 사정이라도 있나요?',
       );
       await you.say_as_passer_by_and_wait(
         '記者C',
-        '生徒会長への不信、ということですか？',
+        '학생회장을 신뢰하지 못한다는 뜻입니까?',
       );
       await era.printAndWait(
-        'うわ、厄介な質問ばかりだ。しかも最後の記者、発想が危うい。対立を煽りたいのか？',
+        '으윽, 곤란한 질문뿐이다. 게다가 마지막 기자는 발상부터 위험하다. 대립을 부추길 셈인가?',
       );
       await era.printAndWait([
-        'これだけの記者を前に、',
+        '이렇게 많은 기자들 앞에서 ',
         you.get_colored_name(),
-        ' は——',
+        '은(는)——',
       ]);
-      era.printButton('丁寧に説明する（やる気1段階ダウン）', 1);
-      era.printButton('追い払う（名声ダウン）', 2);
+      era.printButton('차근차근 설명한다 (의욕 1단계 하락)', 1);
+      era.printButton('쫓아낸다 (명성 하락)', 2);
       const ret = await era.input();
       if (ret === 1) {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は辛抱強く、陣営の目標が年末の菊花賞だと説明した',
+          '은(는) 인내심을 갖고 진영의 목표가 연말 국화상이라고 설명했다.',
         ]);
         await era.printAndWait(
-          'それまでは他の予定を後ろに回す必要があること、そして現会長への不満はないこと',
+          '그전까지 다른 일정을 미룰 필요가 있으며 현 학생회장에게 불만은 전혀 없다는 점도.',
         );
         await era.printAndWait(
-          '記者対応に時間を取られ、タキオンの機嫌もそわそわし始めた',
+          '기자들에게 붙잡혀 시간이 지체되자 타키온도 점점 안절부절못하기 시작했다.',
         );
         await era.printAndWait([
-          'それを見た ',
+          '이를 본 ',
           you.get_colored_name(),
-          ' は適当な理由で取材を切り上げ、',
+          '은(는) 적당한 핑계로 취재를 끝내고 ',
           tachyon.get_colored_name(),
-          ' を連れて合宿寮へ入った',
+          '을(를) 데리고 합숙 숙소로 들어갔다.',
         ]);
       } else {
-        await era.printAndWait('ああ、うるさい');
+        await era.printAndWait('아아, 시끄러워.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' と ',
+          '와(과) ',
           tachyon.get_colored_name(),
-          ' は目を合わせた',
+          '은(는) 서로 눈을 마주쳤다.',
         ]);
         await era.printAndWait([
-          '長い呼吸の合わせ方で、',
+          '오래 함께해 온 두 사람답게 ',
           tachyon.sex,
-          'はすぐに ',
+          '은(는) 곧바로 ',
           you.get_colored_name(),
-          ' の意図を察し、鞄からサングラスを取り出した',
+          '의 의도를 알아채고 가방에서 선글라스를 꺼냈다.',
         ]);
-        await era.printAndWait('そして……');
-        era.printButton('「本気で光る！」', 1);
+        await era.printAndWait('그리고……');
+        era.printButton('「전력으로 빛난다!」', 1);
         era.printButton('「太陽拳！」', 2);
         await era.input();
-        await you.say_as_passer_by_and_wait('記者A', '目が！');
-        await you.say_as_passer_by_and_wait('記者B', 'まぶしい！');
+        await you.say_as_passer_by_and_wait('기자 A', '눈이!');
+        await you.say_as_passer_by_and_wait('기자 B', '눈부셔!');
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' の120%全力発光の前では、太陽すら霞んで見えた',
+          '의 출력 120%짜리 전력 발광 앞에서는 태양조차 희미해 보였다.',
         ]);
         await era.printAndWait([
-          '記者が目をこする隙に、',
+          '기자들이 눈을 비비는 사이 ',
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' を連れて合宿寮へ駆け込んだ',
+          '을(를) 데리고 합숙소 안으로 뛰어들었다.',
         ]);
       }
       return [ret];
