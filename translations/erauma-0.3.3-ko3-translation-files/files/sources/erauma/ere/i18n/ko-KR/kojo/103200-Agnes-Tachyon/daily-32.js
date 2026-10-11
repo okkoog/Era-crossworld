@@ -171,147 +171,147 @@ module.exports = {
     }
   },
 
-  // [번역 대상] event_atrium_evil
+  // [번역 완료] event_atrium_evil
   async event_atrium_evil(tachyon, you, callname) {
-    await you.say_and_wait('タキオン———？');
+    await you.say_and_wait('타키온———?');
     era.println();
     await era.printAndWait([
-      '今日は朝から、なぜか ',
+      '오늘은 아침부터 어째서인지 ',
       tachyon.get_colored_name(),
-      ' の姿がない。',
+      '의 모습이 보이지 않았다.',
     ]);
     await era.printAndWait([
-      'いつも研究に没頭している',
+      '언제나 연구에 몰두하는 ',
       tachyon.sex,
-      'が、どこへ行ったのかわからない。',
+      '이(가) 어디로 간 것인지 알 수 없었다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は学園を探し回り、通りがかりの生徒から',
+      '은(는) 학원 곳곳을 돌아다니다가 지나가던 학생에게서 ',
       tachyon.sex,
-      'が枯れた樹洞のそばにいると聞いた。',
+      '이(가) 말라 버린 나무 구멍 근처에 있다는 말을 들었다.',
     ]);
     await era.printAndWait([
-      '樹洞……',
+      '나무 구멍……',
       tachyon.sex,
-      'にも、吐きたい悩みがあるのか？',
+      '에게도 털어놓고 싶은 고민이 있는 걸까?',
     ]);
-    await era.printAndWait('トレーナーとして機嫌が読めないのは、失職ものだ。');
+    await era.printAndWait('트레이너가 담당 선수의 기분도 읽지 못한다면 실격이지.');
     era.drawLine();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は中庭へ来た。授業時間なので人は少なく、人がいないのを見計らって気持ちを吐く',
+      '은(는) 안뜰에 도착했다. 수업 시간이라 사람이 많지 않았고, 남들의 시선을 피해 속마음을 털어놓는 ',
       tachyon.uma_sex_title,
-      'が数人いるだけだった。',
+      '가 몇 명 있을 뿐이었다.',
     ]);
     await era.printAndWait([
-      '人通りが少ないからこそ、',
+      '사람들의 발길이 뜸했기에 ',
       you.get_colored_name(),
-      ' は「あれ」を目撃した。',
+      '은(는) 『그것』을 목격했다.',
     ]);
     await era.printAndWait([
       tachyon.uma_sex_title,
-      'へ近づき、',
+      '에게 다가가 ',
       tachyon.couple_title,
-      'の心の弱いところを突く黒い影。',
+      '의 마음속 약점을 파고드는 검은 그림자.',
     ]);
     await you.say_as_passer_by_and_wait(
       `${tachyon.uma_sex_title}A`,
-      'うわあああ！ 私は弱い……なぜ、どうしても勝てない……！',
+      '으아아아! 난 너무 약해…… 왜 아무리 해도 이길 수 없는 거야……!',
     );
-    await tachyon.say_as_unknown_and_wait('力を……欲しいですの？');
-    await you.say_as_passer_by_and_wait(`${tachyon.uma_sex_title}A`, '……力？');
-    await tachyon.say_as_unknown_and_wait('誰より強くなり、全員に勝つ力……');
+    await tachyon.say_as_unknown_and_wait('힘이…… 필요하신가?');
+    await you.say_as_passer_by_and_wait(`${tachyon.uma_sex_title}A`, '……힘?');
+    await tachyon.say_as_unknown_and_wait('누구보다 강해지고 모두를 이길 수 있는 힘 말일세……');
     await you.say_as_passer_by_and_wait(
       `${tachyon.uma_sex_title}A`,
-      '……ほ、本当ですか？ 対価は？',
+      '……저, 정말인가요? 대가는요?',
     );
     await tachyon.say_as_unknown_and_wait(
-      'ふふふ……知りたいなら、旧理科実験室へいらっしゃい……',
+      '후후후…… 궁금하면 옛 과학 실험실로 오게나……',
     );
     await you.say_as_passer_by_and_wait(
       `${tachyon.uma_sex_title}B`,
-      'なぜ……告白する勇気が出ない……あの鈍感……ここまでして、まだわからないなんて……！',
+      '왜…… 고백할 용기가 나지 않는 걸까…… 그 둔감한 사람…… 이렇게까지 하는데도 눈치채지 못하다니……!',
     );
     await tachyon.say_as_unknown_and_wait(
-      '本心を素直に伝えたいですの？ 口に出さなくても、相手に気持ちを悟られたいですの？',
+      '진심을 솔직히 전하고 싶은 건가? 말하지 않아도 상대가 마음을 알아주길 바라나?',
     );
     await you.say_as_passer_by_and_wait(
       `${tachyon.uma_sex_title}B`,
-      'あ、あなたは……！',
+      '다, 당신은……!',
     );
     await tachyon.say_as_unknown_and_wait(
-      '旧理科実験室へ。欲しいものは、全部手に入りますわ……',
+      '옛 과학 실험실로 오게. 원하는 것은 모두 손에 넣을 수 있다네……',
     );
-    await you.say_and_wait('……あいつ、何をしてる', true);
+    await you.say_and_wait('……저 녀석, 대체 뭘 하는 거야?', true);
     await era.printAndWait([
-      '枯れた樹洞のそばで、人を惑わす悪魔のように囁き続けているのは、間違いなく ',
+      '말라 버린 나무 구멍 옆에서 악마처럼 사람을 현혹하는 말을 속삭이는 것은 틀림없이 ',
       you.get_colored_name(),
-      ' の担当',
+      '이(가) 담당하는 ',
       tachyon.uma_sex_title,
       ' ',
       tachyon.get_colored_name(),
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'は悩みを樹洞に吐く者たちの前に現れ、堕落を誘う言葉を紡ぐ。神話の悪魔そのものだった',
+      '은(는) 나무 구멍에 고민을 털어놓는 이들 앞에 나타나 타락을 부추기는 말을 건넸다. 그야말로 신화 속 악마였다.',
     ]);
     await era.printAndWait([
-      'そのときの',
+      '그때 ',
       tachyon.sex,
-      'は ',
+      '은(는) ',
       you.get_colored_name(),
-      ' にも気づいた',
+      '도 알아챘다.',
     ]);
     await tachyon.say_and_wait([
       callname,
-      '、丁度いいわ。客を迎える準備をしましょう',
+      ', 마침 잘 왔네. 손님 맞을 준비를 하세.',
     ]);
-    await you.say_and_wait('客？');
+    await you.say_and_wait('손님?');
     await tachyon.say_and_wait([
-      'もちろん、あの困っている',
+      '물론 저기 곤란해하는 ',
       tachyon.uma_sex_title,
-      'たちですわ。',
+      '들이지.',
     ]);
     await tachyon.say_and_wait(
-      'まあ、以前の私は失礼でしたわね。樹洞など不要だと思っていたのですもの。',
+      '그러고 보니 예전의 난 참 무례했군. 이런 나무 구멍은 쓸모없다고 생각했으니까.',
     );
     await tachyon.say_and_wait([
-      '今思えば、心の意志が弱い',
+      '지금 생각해 보면 의지가 약한 ',
       tachyon.uma_sex_title,
-      'を自ら選別してくれる、私にぴったりな場所ではありませんか。',
+      '을(를) 스스로 골라 주는 셈이니 내게 안성맞춤인 장소 아닌가?',
     ]);
-    await era.printAndWait('意志が弱いからこそ、外からの誘導で気持ちを吐く。');
+    await era.printAndWait('의지가 약하기에 외부의 유도에 넘어가 속마음을 털어놓는다.');
     await era.printAndWait([
-      '意志が弱いからこそ、目的のためなら魂を悪（タキ）魔（オン）に売りやすい。',
+      '의지가 약하기에 목적을 위해서라면 영혼마저 악(타키)마(온)에게 팔기 쉽다.',
     ]);
     await era.printAndWait([
-      'ある意味、不逞の輩から見れば、ここに来る',
+      '어떤 의미에서 불순한 자들의 눈으로 보면 이곳에 오는 ',
       tachyon.uma_sex_title,
-      'はいちばん狙われやすい、無垢な子たちだ。',
+      '들은 가장 노리기 쉬운 순진한 이들이다.',
     ]);
     await era.printAndWait([
-      'ただ、',
+      '다만 ',
       tachyon.get_colored_name(),
-      ' なら',
+      '이라면 ',
       tachyon.couple_title,
-      'を傷つけはしない……だろうか？',
+      '을(를) 해치지는 않겠지…… 아마도?',
     ]);
     await tachyon.say_and_wait([
-      'それはそれとして、',
+      '그건 그렇고 ',
       callname,
-      '、急ぎましょう。',
+      ', 서두르세.',
     ]);
     await era.printAndWait(
-      '急にどうした……良心が疼いた、ということはあるまい。',
+      '갑자기 왜 이러지…… 양심에 찔려서 그러는 건 아닐 테고.',
     );
     await tachyon.say_and_wait(
-      'あなたに見つかったということは、生徒会の連中もすぐ来るでしょう。説教される前に、行きなさい！',
+      '자네에게 들켰다는 건 학생회 녀석들도 곧 온다는 뜻이겠지. 설교를 듣기 전에 얼른 가세!',
     );
     await era.printAndWait([
-      '…………たまには',
+      '…………가끔은 ',
       tachyon.sex,
-      'を説教に捕まらせてもいいかもしれない',
+      '이(가) 붙잡혀 설교를 듣게 놔두는 것도 괜찮을지 모르겠다.',
     ]);
   },
 
