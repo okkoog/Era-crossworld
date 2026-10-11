@@ -1529,161 +1529,161 @@ module.exports = {
     }
   },
 
-  // [번역 대상] event_talk_drink
+  // [번역 완료] event_talk_drink
   async event_talk_drink(tachyon, you, callname, y_call_c) {
-    await tachyon.say_and_wait([callname, '～～何か飲みます？']);
+    await tachyon.say_and_wait([callname, '~~ 뭐라도 마시겠나?']);
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は突然、悪い笑みを浮かべて ',
+      '은(는) 갑자기 음흉한 미소를 지으며 ',
       you.get_colored_name(),
-      ' に訊いた',
+      '에게 물었다.',
     ]);
-    await era.printAndWait('ただでは起きない親切');
+    await era.printAndWait('공짜로 베푸는 친절일 리가 없다.');
     await era.printAndWait([
-      'とはいえ、正面から断れば',
+      '그렇다고 대놓고 거절하면 ',
       tachyon.sex,
-      'はきっと逆上する',
+      '은(는) 틀림없이 화를 낼 것이다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('どうです、何を飲みます？');
+    await tachyon.say_and_wait('그래서 뭘 마시겠나?');
     era.println();
-    era.print('どうしよう……');
-    era.printButton('紅茶', 1);
-    era.printButton('コーヒー', 2);
-    era.printButton('サース', 3);
-    era.printButton('飲まない', 4);
+    era.print('어쩌지……');
+    era.printButton('홍차', 1);
+    era.printButton('커피', 2);
+    era.printButton('사스', 3);
+    era.printButton('안 마신다', 4);
     switch (await era.input()) {
       case 1:
-        await era.printAndWait('やはり王道の紅茶だろう');
+        await era.printAndWait('역시 정석은 홍차겠지.');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は頷いた。',
+          '은(는) 고개를 끄덕였다. ',
           you.get_colored_name(),
-          ' がこれを選ぶと知っていたように、後ろからもう仕込んである紅茶を取り出した',
+          '이(가) 그걸 고를 줄 알았다는 듯 뒤에서 미리 타 둔 홍차를 꺼냈다.',
         ]);
         era.drawLine();
         await era.printAndWait([
           '…………',
           you.get_colored_name(),
-          ' は、粉が溶けきっていない紅茶を見て、顔が引きつった',
+          '은(는) 가루가 채 녹지도 않은 홍차를 보고 얼굴이 굳어졌다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'どうしました、',
+          '왜 그러나, ',
           callname,
-          '？ これは私が淹れたお茶ですわ。早く飲みなさい',
+          '? 내가 직접 탄 차일세. 어서 마시게.',
         ]);
         era.println();
         await era.printAndWait([
-          '……まあいい。紅茶を選んだ時点で、',
+          '……뭐, 좋다. 홍차를 고른 순간부터 ',
           you.get_colored_name(),
-          ' はこの展開を覚悟していたはずだ',
+          '은(는) 이런 전개를 각오했을 것이다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は紅茶を一気に飲み干した',
+          '은(는) 홍차를 단숨에 들이켰다.',
         ]);
-        await era.printAndWait('うん、美味くて爽やかだ');
+        await era.printAndWait('음, 맛있고 상쾌하군.');
         break;
       case 2:
         if (era.get('cflag:25:招募状态') === recruit_flags.yes) {
           await you.say_and_wait([
-            'コーヒーがいい。最近よく ',
+            '커피가 좋아. 요즘 자주 ',
             y_call_c,
-            ' の淹れたコーヒーを飲んでいる',
+            '이(가) 내려 준 커피를 마시고 있거든.',
           ]);
         } else {
-          await you.say_and_wait('コーヒーがいい。最近仕事が忙しくてよく飲む');
+          await you.say_and_wait('커피가 좋아. 요즘 일이 바빠서 자주 마시거든.');
         }
         era.println();
         await tachyon.say_and_wait(
-          'どうしてあんな苦くて泥水みたいなものを飲むのです',
+          '대체 왜 그렇게 쓰고 흙탕물 같은 걸 마시는 겐가?',
         );
         era.println();
-        await you.say_and_wait(['それ ', y_call_c, ' に謝れ']);
+        await you.say_and_wait(['방금 그 말은 ', y_call_c, '에게 사과해.']);
         era.println();
-        await tachyon.say_and_wait('まあいいわ、飲みたいならどうぞ');
+        await tachyon.say_and_wait('뭐, 좋네. 마시고 싶다면 마시게.');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は仕方なさそうに、すでに用意してあった飲み物を後ろから取り出した',
+          '은(는) 하는 수 없다는 듯 뒤에 미리 준비해 둔 음료를 꺼냈다.',
         ]);
         era.drawLine();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は眼前の、粉が溶けきっていない深紅の液体を見て、突っ込みどころが多すぎて言葉が出ないという感覚を初めて味わった',
+          '은(는) 눈앞의 가루도 다 녹지 않은 짙은 붉은색 액체를 보며, 지적할 것이 너무 많아 말이 나오지 않는다는 감각을 처음으로 맛보았다.',
         ]);
         era.println();
-        await you.say_and_wait('まず……コーヒー？');
+        await you.say_and_wait('일단…… 이게 커피라고?');
         await tachyon.say_and_wait(
-          '……カフェインは多いですわ。コーヒーということで',
+          '……카페인은 많다네. 그러니 커피라고 치게.',
         );
         await tachyon.say_and_wait('…………');
         await you.say_and_wait('…………');
         era.println();
         await era.printAndWait([
-          '二人は黙り合い、',
+          '두 사람은 말없이 서로를 바라봤고, ',
           you.get_colored_name(),
-          ' は諦めてそれを飲んだ',
+          '은(는) 체념한 채 그것을 마셨다.',
         ]);
         break;
       case 3:
-        await you.say_and_wait('サースがいい。マイナーだけど、たしかにうまい');
+        await you.say_and_wait('사스가 좋아. 좀 생소해도 확실히 맛있거든.');
         era.println();
-        await tachyon.say_and_wait('ええ……どうしてそんな妙な味が好きなのです');
+        await tachyon.say_and_wait('에에…… 왜 그렇게 괴상한 맛을 좋아하는 건가?');
         era.println();
-        await you.say_and_wait('好きなんだよ、だめか？');
+        await you.say_and_wait('좋아하니까 그렇지. 안 되나?');
         era.println();
         await tachyon.say_and_wait(
-          '………いいえ、あれは匂も味も薬ですわ。つまり私の薬を直接飲めばいいではありませんか',
+          '………아니, 그건 냄새도 맛도 약과 비슷하지 않나. 그러니 차라리 내 약을 직접 마시면 되겠군.',
         );
         era.println();
         await you.say_and_wait('！？');
-        await era.printAndWait(['どうやら', tachyon.sex, 'はもう装う気がない']);
+        await era.printAndWait(['아무래도 ', tachyon.sex, '은(는) 더 이상 속일 생각도 없는 모양이다.']);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は薬入りの紅茶を脇へ置き、白衣から蛍光色の薬剤を取り出した',
+          '은(는) 약을 탄 홍차를 옆으로 치우고 백의 속에서 형광색 약품을 꺼냈다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は形だけの抵抗を二度し、すぐに一気飲みさせられた',
+          '은(는) 형식적인 저항을 두 번 했지만 이내 약을 단숨에 마시게 되었다.',
         ]);
         await era.printAndWait(
-          'というか、この薬、薬味がしない。なぜ親子丼の味なんだ！？',
+          '그런데 이 약은 약 맛이 안 난다. 어째서 오야코동 맛이 나는 거야!?',
         );
         break;
       case 4:
         await era.printAndWait([
           you.get_colored_name(),
-          ' は断った。抵抗が無駄でも、',
+          '은(는) 거절했다. 저항이 무의미하더라도 ',
           you.get_colored_name(),
-          ' は自分の反抗を見せる',
+          '은(는) 자신의 반항을 보여 주려 했다.',
         ]);
         era.println();
         await era.printAndWait(
-          'これこそが、これこそが、人類の覚悟だああああああああ',
+          '이것이야말로, 이것이야말로 인류의 각오다아아아아아아!',
         );
         era.println();
-        await tachyon.say_and_wait('うるさいですわ');
+        await tachyon.say_and_wait('시끄럽군.');
         era.println();
         await era.printAndWait([
-          'だが覚悟は ',
+          '하지만 그 각오는 ',
           you.get_colored_name(),
-          ' の小宇宙を爆発させなかった。人間は所詮',
+          '의 소우주를 폭발시키지 못했다. 결국 인간은 ',
           tachyon.uma_sex_title,
-          'には勝てない。五秒後、',
+          '에게 이길 수 없다. 5초 후 ',
           you.get_colored_name(),
-          ' は顔を押さえられ、口を開けさせられ、液体を流し込まれた',
+          '은(는) 얼굴이 붙들리고 입을 벌린 채 액체를 들이켜야 했다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('最初からこうすれば手間が省けましたわね');
+        await tachyon.say_and_wait('처음부터 이렇게 했으면 수고를 덜었을 텐데.');
     }
-    await era.printAndWait('ぱたん');
+    await era.printAndWait('털썩');
     await era.printAndWait([
-      'それは ',
+      '그것은 ',
       you.get_colored_name(),
-      ' が気を失って机に突っ伏した音だった',
+      '이(가) 의식을 잃고 책상에 쓰러지는 소리였다.',
     ]);
   },
 
