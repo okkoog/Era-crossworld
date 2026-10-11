@@ -3016,9 +3016,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_a_95_35
+  // [번역 완료] we_a_95_35
   we_a_95_35: (() => {
-    const title = '因子・傍観者の設定';
+    const title = '인자·관찰자의 설정';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -3026,218 +3026,218 @@ module.exports = {
      */
     const f = async (tachyon, you, callname) => {
       await tachyon.say_and_wait(
-        'よく考えると……観客席でレースを見るのは、これが初めてですわね',
+        '생각해 보니…… 관중석에서 레이스를 보는 건 이번이 처음이군요.',
       );
       era.println();
-      await era.printAndWait(['今日は神戸新聞杯']);
+      await era.printAndWait(['오늘은 고베 신문배가 열리는 날이다.']);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' が後輩に招かれて観戦する日だ',
+        '은(는) 후배의 초대로 경기를 관전하러 왔다.',
       ]);
-      era.printButton('「だいたい自分が出走するからな」', 1);
-      era.printButton('「だいたい映像で見るからな」', 2);
+      era.printButton('「평소엔 직접 출전하니까.」', 1);
+      era.printButton('「평소엔 영상으로만 보니까.」', 2);
       await era.input();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' にとって、自分のレース以外で場に来る必要はなかったはずだ',
+        '에게는 자신의 레이스가 아니면 경기장까지 올 필요가 없었을 것이다.',
       ]);
       await era.printAndWait(
-        'レースのデータ分析なら、観客席より終了後の映像のほうが取れる情報は多い',
+        '레이스 데이터를 분석하려면 관중석보다 경기 종료 후 영상을 보는 편이 더 많은 정보를 얻을 수 있다.',
       );
       await era.printAndWait(
-        'だから今日は本当に初めてだ。研究ではなく、観客としてレースを見る',
+        '그래서 오늘은 진정한 첫 경험이다. 연구자가 아니라 관객으로서 레이스를 관람하는 날.',
       );
       era.println();
-      await tachyon.say_and_wait('……現場の感触は……やはりうるさいですわね');
+      await tachyon.say_and_wait('……현장의 분위기는…… 역시 시끄럽군요.');
       era.println();
-      await you.say_as_passer_by_and_wait('ファンA', '頑張れ！');
-      await you.say_as_passer_by_and_wait('ファンB', '絶対勝ってくれ！');
-      await you.say_as_passer_by_and_wait('ファンC', [
-        '神戸新聞杯は菊花賞の前哨戦と言われるけど、実際2400メートルで阪神開催という二点は、菊花賞の検証としては……',
+      await you.say_as_passer_by_and_wait('팬 A', '힘내!');
+      await you.say_as_passer_by_and_wait('팬 B', '꼭 이겨 줘!');
+      await you.say_as_passer_by_and_wait('팬 C', [
+        '고베 신문배를 국화상의 전초전이라고는 하지만, 사실 2400m라는 거리와 한신 개최라는 점을 보면 국화상을 검증하기에는……',
       ]);
-      await you.say_as_passer_by_and_wait('ファンC', [
-        '……だから神戸新聞杯を勝った',
+      await you.say_as_passer_by_and_wait('팬 C', [
+        '……그러니 고베 신문배에서 우승한 ',
         tachyon.uma_sex_title,
-        'が菊花賞も勝つとは限らない',
+        '이(가) 국화상까지 우승한다고 장담할 수는 없지.',
       ]);
-      await you.say_as_passer_by_and_wait('ファンD', '急に何の話だよ');
+      await you.say_as_passer_by_and_wait('팬 D', '갑자기 무슨 소리야?');
       era.println();
-      await tachyon.say_and_wait('これが、普段私が走る前の観客席なのですか？');
-      era.printButton('「だいたいそんな感じ。もっと賑やかなくらいだ」', 1);
+      await tachyon.say_and_wait('이게 제가 출전하기 전 관중석의 풍경인가요?');
+      era.printButton('「대체로 이런 분위기야. 사실은 좀 더 떠들썩하지.」', 1);
       await era.input();
       await tachyon.say_and_wait(
-        '……そうですわね、G1ですもの。気持ちはわかりますが、このタイミングで声援しても無意味でしょう',
+        '……그렇겠군요. G1이니까요. 마음은 알겠지만 지금 응원한들 무슨 의미가 있겠어요?',
       );
-      era.printButton('「無意味かどうか……そういう計算じゃない」', 1);
-      era.printButton('「見ていればわかる」', 2);
+      era.printButton('「의미가 있느냐 없느냐의 계산 문제가 아니야.」', 1);
+      era.printButton('「계속 보면 알 거야.」', 2);
       await era.input();
-      await tachyon.say_and_wait('見ていれば、とは……おや？ ゲートインですわ');
+      await tachyon.say_and_wait('보다 보면 알게 된다니…… 어라? 게이트에 들어가는군요.');
       era.drawLine();
-      await tachyon.print_and_wait('あの子がゲートに入った');
+      await tachyon.print_and_wait('그 아이가 게이트에 들어갔다.');
       await tachyon.print_and_wait([
-        '正直、このレースで ',
+        '솔직히 이번 경기에서 ',
         tachyon.get_colored_name(),
-        ' が注目すべき点は多くない',
+        '이(가) 주목할 부분은 그리 많지 않았다.',
       ]);
-      await tachyon.print_and_wait('可能性を持つあの子が、当然の最優先だ');
+      await tachyon.print_and_wait('가능성을 지닌 그 아이가 당연히 최우선이다.');
       await tachyon.print_and_wait(
-        '……それ以外は、クラシック級限定のG2にすぎない',
+        '……그 외에는 클래식급만 출전하는 G2 레이스일 뿐이다.',
       );
       era.println();
-      await tachyon.say_and_wait('負けようがない、と言えますわね');
+      await tachyon.say_and_wait('질 리가 없는 경기라고 해도 되겠군요.');
       era.println();
-      await tachyon.print_and_wait('事前人気も当然の1番人気');
-      await tachyon.print_and_wait('天の時、地の利、人の和。負けるはずがない');
-      await tachyon.print_and_wait('事前分析の勝率は97.46%');
+      await tachyon.print_and_wait('당연히 사전 인기 순위도 1위.');
+      await tachyon.print_and_wait('천시와 지리, 인화까지 갖췄으니 질 리가 없다.');
+      await tachyon.print_and_wait('사전 분석에 따른 승률은 97.46%.');
       era.println();
-      await tachyon.print_and_wait('だが……');
+      await tachyon.print_and_wait('그런데……');
       era.println();
-      await you.say_as_passer_by_and_wait('観客A', '負けるな！');
+      await you.say_as_passer_by_and_wait('観客A', '지지 마!');
       await you.say_as_passer_by_and_wait('観客B', [
-        '頑張れ！ まだいける！ 外から',
+        '힘내! 아직 할 수 있어! 바깥으로 돌아서 ',
         tachyon.sex,
-        'を捲れ！',
+        '을(를) 추월해!',
       ]);
       await you.say_as_passer_by_and_wait(
         '観客C',
-        '諦めるな！ 必ず追いつける！',
+        '포기하지 마! 반드시 따라잡을 수 있어!',
       );
       era.println();
       await tachyon.print_and_wait([
-        'なぜまだ後ろの',
+        '왜 아직도 뒤처진 ',
         tachyon.uma_sex_title,
-        'に声援を送る',
+        '에게 응원을 보내는 거지?',
       ]);
-      await tachyon.print_and_wait('明らかに、もう届かないではないか');
-      await tachyon.print_and_wait('……わからない');
+      await tachyon.print_and_wait('분명 이미 따라잡을 수 없는데.');
+      await tachyon.print_and_wait('……이해가 가지 않는다.');
       await tachyon.print_and_wait([
-        'いいえ、理解はできる。徒労でも、支持する',
+        '아니, 이해는 할 수 있다. 헛된 일일지라도 응원하는 ',
         tachyon.uma_sex_title,
-        'に声を上げたい。その気持ちはわかる',
+        '에게 힘을 주고 싶어 하는 마음은 알겠다.',
       ]);
       await tachyon.print_and_wait(
-        '狂った科学者と呼ばれても、人情のわからないロボットではない',
+        '미친 과학자라는 소리를 듣더라도 인간적인 감정을 모르는 로봇은 아니다.',
       );
-      await tachyon.print_and_wait('だが、なぜ自分は……');
+      await tachyon.print_and_wait('그런데 어째서 나는……');
       era.println();
       await you.say_as_passer_by_and_wait('実況', [
-        '追い上げた！ いま後方の',
+        '따라붙었다! 지금 후방의 ',
         tachyon.uma_sex_title,
-        'が追い上げた！',
+        '이(가) 치고 올라온다!',
       ]);
       era.println();
       await tachyon.say_and_wait('！');
-      await tachyon.say_and_wait('……頑張れ');
-      await tachyon.say_and_wait('頑張れ！ 負けるんじゃないわよ！');
+      await tachyon.say_and_wait('……힘내.');
+      await tachyon.say_and_wait('힘내! 지지 말라고!');
 
       era.printButton('「！」', 1);
       await era.input();
       await you.say_as_passer_by_and_wait(
         '実況',
-        'ゴール—————イン！ 1着は1番1枠—————',
+        '골————인! 1착은 1번 게이트의 1번————!',
       );
       era.drawLine();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の声援は、場内の喝采と声援に埋もれた',
+        '의 응원 소리는 경기장 전체에 울리는 환호와 함성에 묻혔다.',
       ]);
       await era.printAndWait([
-        '場内で聞こえたのは、おそらく',
+        '경기장에서 그 목소리를 들은 사람은 아마 ',
         tachyon.sex,
-        'のそばの ',
+        '곁에 있던 ',
         you.get_colored_name(),
-        ' と……',
+        '와(과)……',
       ]);
       era.println();
       await you.say_as_passer_by_and_wait(
         tachyon.uma_sex_title + 'A',
-        '先輩！ 応援、聞こえました！ ありがとう……あのとき、全身に力が湧いて！',
+        '선배님! 응원이 들렸어요! 고마워요…… 그때 온몸에 힘이 솟아났어요!',
       );
       era.println();
       await tachyon.say_and_wait(
-        '……ふふ、いい走りでしたわ。これからも、努力を続けなさい',
+        '……후후, 훌륭한 달리기였어요. 앞으로도 꾸준히 노력하세요.',
       );
       await you.say_as_passer_by_and_wait(
         tachyon.uma_sex_title + 'A',
-        'はい！',
+        '네!',
       );
       era.println();
       await era.printAndWait([
-        '神戸新聞杯が終わり、',
+        '고베 신문배가 끝난 뒤 ',
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' は場を離れた',
+        '은(는) 경기장을 떠났다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……理論では確定していましたが、場外の人間として……あるいは当事者として見るのは、初めてですわ',
+        '……이론으로는 이미 알고 있었지만 외부인의 입장에서…… 혹은 당사자로서 보는 것은 처음이군요.',
       );
       await tachyon.say_and_wait(
-        '他の子も、あの子も、最後は……本当に限界を超えました',
+        '다른 아이들도, 그 아이도 마지막에는…… 정말로 한계를 뛰어넘었어요.',
       );
       era.println();
       await era.printAndWait([
-        '今日のレースでは、何人もの',
+        '오늘 레이스에서는 여러 명의 ',
         tachyon.uma_sex_title,
-        'が',
+        '이(가) ',
       ]);
-      await era.printAndWait('限界を超えた');
+      await era.printAndWait('한계를 뛰어넘었다.');
       await era.printAndWait([
-        '事前に測った、',
+        '사전에 측정한 ',
         tachyon.couple_title,
-        'の理論上の最高速度を超えた',
+        '의 이론상 최고 속도마저 뛰어넘었다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         '……',
         callname,
-        '、ファン感謝祭のときのこと、覚えていますか？',
+        ', 팬 감사제 때 있었던 일 기억하시나요?',
       ]);
 
       era.printButton(
-        '「タキオンは見返りを考えて、あの子を応援したのか？」',
+        '「타키온은 무언가 보답을 바라면서 그 아이를 응원했어?」',
         1,
       );
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は答えず、問い返しただけだった',
+        '은(는) 대답하지 않고 되물었을 뿐이었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……ふふ');
+      await tachyon.say_and_wait('……후후.');
       await tachyon.say_and_wait(
-        '聞かれたい、やり取りをしたい、からの行為ではない……',
+        '누군가에게 들리고 싶어서, 말을 주고받고 싶어서 한 행동이 아니에요……',
       );
       await tachyon.say_and_wait(
-        'ただ自分の気持ちと情緒を、声にして吐き出した',
+        '그저 자신의 마음과 감정을 목소리에 담아 내보냈을 뿐이죠.',
       );
-      await tachyon.say_and_wait('言い換えれば、『感動』ですわ');
+      await tachyon.say_and_wait('달리 말하면 『감동』이에요.');
       await tachyon.say_and_wait([
-        '観客が',
+        '관객은 ',
         tachyon.uma_sex_title,
-        'に感動して歓声を上げ、',
+        '에게 감동해서 환호하고 ',
         tachyon.uma_sex_title,
-        'も観客に感動して自分の限界を超える……',
+        '도 관객에게 감동받아 자신의 한계를 뛰어넘는 거죠……',
       ]);
       await tachyon.say_and_wait(
-        '左足で右足を踏むような、永久機関じみた不合理な概念なのに、実際に起きている',
+        '왼발로 오른발을 밟아 올라가려는 것처럼 영구기관을 연상시키는 비합리적인 개념인데, 실제로 벌어지고 있어요.',
       );
       await tachyon.say_and_wait(
-        'やはり、研究室では絶対に味わえないものですわ。はっはっはっ！',
+        '역시 연구실에서는 절대 경험할 수 없는 일이군요. 하하하!',
       );
 
-      era.printButton('「これで、レースを『好き』になったのか」', 1);
+      era.printButton('「이제 레이스를 『좋아하게』 된 거야?」', 1);
       await era.input();
-      await tachyon.say_and_wait('……ええ、私にもわかりませんわ');
+      await tachyon.say_and_wait('……글쎄요. 저도 아직 잘 모르겠어요.');
       era.println();
-      await era.printAndWait('……そうだ');
-      await era.printAndWait('結局、自分で場に立って走ったわけではない');
-      await era.printAndWait('好きか嫌いかは、まだ言葉にしにくいだろう');
+      await era.printAndWait('……그렇다.');
+      await era.printAndWait('결국 직접 경기장에 서서 달린 것은 아니니까.');
+      await era.printAndWait('좋아하는지 싫어하는지 아직 말로 표현하기 어려울 것이다.');
       await era.printAndWait([
-        'だが神戸新聞杯が終わり、有馬記念がすぐそこまで来ている',
+        '하지만 고베 신문배가 끝났고, 아리마 기념이 코앞까지 다가왔다.',
       ]);
-      await era.printAndWait('研究の終わり（Deadline）が、眼前にある');
+      await era.printAndWait('연구의 끝(데드라인)이 눈앞에 있다.');
     };
     f.title = title;
     return f;
