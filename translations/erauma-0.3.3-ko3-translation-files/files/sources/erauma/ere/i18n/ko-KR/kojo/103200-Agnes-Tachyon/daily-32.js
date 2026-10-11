@@ -1273,62 +1273,62 @@ module.exports = {
     return [];
   },
 
-  // [번역 대상] event_talk_callname
+  // [번역 완료] event_talk_callname
   async event_talk_callname(tachyon, you, callname, talk_times) {
     switch (talk_times) {
       case 1:
         await tachyon.say_and_wait([callname, '……']);
         era.println();
-        await you.say_and_wait('ん？');
+        await you.say_and_wait('응?');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' が ',
+          '가 ',
           you.get_colored_name(),
-          ' を呼んでいるように聞こえたので、振り返った',
+          '이(가) 부르는 소리가 들린 것 같아 뒤돌아보았다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('何でもありませんわ。呼んでみただけです');
+        await tachyon.say_and_wait('아무것도 아니네. 그냥 한번 불러 봤을 뿐일세.');
         era.println();
         await era.printAndWait([
-          'そこで ',
+          '그러자 ',
           you.get_colored_name(),
-          ' はまた前を向き、自分の作業に戻った',
+          '은(는) 다시 앞을 보고 하던 일로 돌아갔다.',
         ]);
         era.println();
         await tachyon.say_and_wait([callname]);
         await tachyon.say_and_wait([callname]);
         await tachyon.say_and_wait([callname]);
         era.println();
-        await tachyon.say_and_wait([you.actual_name, '君']);
+        await tachyon.say_and_wait([you.actual_name, '군']);
         await era.printAndWait('！？');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は急に振り返ったが、眼前の ',
+          '은(는) 화들짝 뒤돌아봤지만 눈앞의 ',
           tachyon.get_colored_name(),
-          ' はいつもの笑顔だった',
+          '은(는) 평소처럼 웃고 있었다.',
         ]);
-        await era.printAndWait('今しがた何も起きなかったかのように');
+        await era.printAndWait('마치 방금 아무 일도 없었던 것처럼.');
         break;
       case 2:
         await tachyon.say_and_wait([callname, '……']);
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は ',
+          '은(는) ',
           you.get_colored_name(),
-          ' の背に寄り、甘えるような囁きを漏らした',
+          '의 등에 가까이 다가가 응석을 부리듯 속삭였다.',
         ]);
         await era.printAndWait([
-          'だが ',
+          '하지만 ',
           you.get_colored_name(),
-          ' は、少しも顔を赤らめなかった',
+          '은(는) 얼굴을 조금도 붉히지 않았다.',
         ]);
         await era.printAndWait(
-          '前回、これに乗って振り返った瞬間に薬を飲まされた',
+          '지난번에 이 속삭임에 넘어가 돌아보는 순간 약을 먹었기 때문이다.',
         );
-        await era.printAndWait('今度は何度呼ばれても、絶対に振り返らない');
+        await era.printAndWait('이번에는 몇 번을 불러도 절대로 돌아보지 않으리라.');
         era.println();
         await tachyon.say_and_wait([callname, '……']);
         await tachyon.say_and_wait([callname, '……❤']);
@@ -1336,83 +1336,83 @@ module.exports = {
         await tachyon.say_and_wait([callname, '❤']);
         era.println();
         await era.printAndWait([
-          'なぜか、',
+          '어째서인지 ',
           tachyon.sex,
-          'の口調はだんだん甘く、ねっとりしていった',
+          '의 목소리는 점점 달콤하고 끈적하게 변해 갔다.',
         ]);
         await era.printAndWait([
-          '振り返れない ',
+          '차마 돌아볼 수 없는 ',
           you.get_colored_name(),
-          ' は、焦りを堪えてその場に座り続けた',
+          '은(는) 초조함을 꾹 참으며 자리에 앉아 있었다.',
         ]);
         era.println();
         await tachyon.say_and_wait('…………馬鹿');
         era.println();
         await era.printAndWait([
           tachyon.sex,
-          'の最後の小さな鼻息を聞いて、',
+          '의 마지막 작은 한숨을 듣고 ',
           you.get_colored_name(),
-          ' はついに我慢できず、振り返ってしまった',
+          '은(는) 결국 참지 못하고 뒤를 돌아봤다.',
         ]);
-        await era.printAndWait('そして……');
+        await era.printAndWait('그리고……');
         era.println();
-        await era.printAndWait('ごくん');
+        await era.printAndWait('꿀꺽');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の手には、空の試験管があった',
+          '의 손에는 텅 빈 시험관이 들려 있었다.',
         ]);
         await era.printAndWait([
-          '中身は？ 今しがた ',
+          '내용물은? 방금 전 ',
           you.get_colored_name(),
-          ' が振り返った瞬間に、全部 ',
+          '이(가) 돌아본 순간 전부 ',
           you.get_colored_name(),
-          ' の口へ押し込まれていた',
+          '의 입속으로 들어간 것이다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('まったく……今回は随分としぶといですわね');
+        await tachyon.say_and_wait('정말이지…… 이번에는 꽤 끈질겼군.');
         era.println();
-        await era.printAndWait('薬が回り始めた。今度は麻痺作用らしい');
+        await era.printAndWait('약효가 돌기 시작했다. 이번에는 마비 작용인 모양이다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' はなんとか振り返った。眼前には得意げな ',
+          '은(는) 간신히 고개를 돌렸다. 눈앞에는 득의양양한 ',
           tachyon.get_colored_name(),
         ]);
         await era.printAndWait([
-          'こぼそうとした文句は、',
+          '터져 나오려던 불평은 ',
           tachyon.sex,
-          'の微かに赤い頬を見た瞬間、跡形もなく消えた',
+          '의 살짝 붉어진 뺨을 보자 흔적도 없이 사라졌다.',
         ]);
         era.println();
-        await era.printAndWait(['やはり、', tachyon.sex, 'には敵わない']);
+        await era.printAndWait(['역시 ', tachyon.sex, '에게는 당할 수가 없군.']);
         await era.printAndWait([
-          'そんな感想を抱いたまま、',
+          '그런 생각을 하는 사이 ',
           you.get_colored_name(),
-          ' は闇へ落ちた',
+          '은(는) 의식을 잃었다.',
         ]);
         break;
       case 3:
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は実験をしているらしい',
+          '은(는) 실험을 하고 있는 모양이다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は',
+          '은(는) ',
           tachyon.sex,
-          'の整った横顔を見つめ、ふと悪戯心が湧いた',
+          '의 단정한 옆얼굴을 바라보다 문득 장난기가 생겼다.',
         ]);
-        era.printButton('「アグネスタキオン」', 1);
+        era.printButton('「아그네스 타키온.」', 1);
         await era.input();
-        await era.printAndWait([you.get_colored_name(), ' はそっと言った']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 조용히 불렀다.']);
         await era.printAndWait([
           tachyon.sex,
-          'の背が小さく震えたが、振り返らず、何事もないように実験を続けた',
+          '의 등이 살짝 떨렸지만 돌아보지 않고 아무 일도 없다는 듯 실험을 계속했다.',
         ]);
         era.println();
         await era.printAndWait([
-          'その様子が、さらに ',
+          '그 모습은 ',
           you.get_colored_name(),
-          ' の子供心を煽った',
+          '의 장난기를 더욱 부추겼다.',
         ]);
         era.println();
         await you.say_and_wait(tachyon.name);
@@ -1422,39 +1422,39 @@ module.exports = {
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は声の調子をいろいろ変えてみた',
+          '은(는) 여러 가지 목소리로 불러 보았다.',
         ]);
         await era.printAndWait([
-          '呼ぶたび、',
+          '이름을 부를 때마다 ',
           tachyon.sex,
-          'の体は前回より長く震えた',
+          '의 몸은 전보다 더 오래 떨렸다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は横から、',
+          '은(는) 옆에서 ',
           tachyon.sex,
-          'の顔がどんどん赤くなっていくのを見た',
+          '의 얼굴이 점점 빨개지는 것을 지켜보았다.',
         ]);
         era.println();
         await era.printAndWait([
           tachyon.sex,
-          'の頬が朱に染まるのを見て、',
+          '의 뺨이 붉게 물드는 모습을 보자 ',
           you.get_colored_name(),
-          ' も恥ずかしくなった',
+          '도 부끄러워졌다.',
         ]);
-        await era.printAndWait('だがこのときの欲は、もう止まらせてくれない');
+        await era.printAndWait('하지만 이미 시작된 장난을 멈출 수는 없었다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は呼び続け、声はますます優しくなった',
+          '은(는) 계속 이름을 불렀고 목소리는 점점 부드러워졌다.',
         ]);
         await era.printAndWait([
-          'やがて悪戯心は消え、今の ',
+          '어느새 장난기는 사라지고 지금의 ',
           you.get_colored_name(),
-          ' はただ、',
+          '은(는) 그저 ',
           tachyon.sex,
-          'がもっと恥じらい、もっと',
+          '가 더 수줍어하고 한층 ',
           tachyon.teen_sex_title,
-          'らしい顔をするのを見たくてならなかった',
+          '다운 얼굴을 보여 주기를 간절히 바랐다.',
         ]);
         era.println();
         await era.printAndWait([
@@ -1465,63 +1465,63 @@ module.exports = {
           '？',
         ]);
         await era.printAndWait(
-          '本来なら釣り合わない二つの語が、今は妙にしっくりくる',
+          '원래라면 어울리지 않을 두 단어가 지금은 이상할 만큼 잘 어울렸다.',
         );
-        await era.printAndWait('そうして、ずっと続いた');
-        await era.printAndWait('一方が呼び続け、もう一方が知らないふりをする');
+        await era.printAndWait('그렇게 한참이 흘렀다.');
+        await era.printAndWait('한 사람은 계속 부르고 다른 한 사람은 모르는 척했다.');
         era.drawLine();
         await era.printAndWait([
-          '突然、',
+          '갑자기 ',
           tachyon.sex,
-          'の顔色が朱から青白へ変わった',
+          '의 얼굴빛이 붉은색에서 창백한 푸른빛으로 변했다.',
         ]);
         await era.printAndWait([
-          'ずっと',
+          '계속 ',
           tachyon.sex,
-          'を見ていた ',
+          '을(를) 지켜보던 ',
           you.get_colored_name(),
-          ' はすぐに気づき、',
+          '은(는) 금세 알아채고 ',
           tachyon.sex,
-          'の視線を辿った',
+          '의 시선을 따라갔다.',
         ]);
         era.println();
         await era.printAndWait([
-          '視線の先は、',
+          '시선 끝에는 ',
           tachyon.sex,
-          'が握る、三角の危険マークの薬だった',
+          '가 쥐고 있는 삼각형 위험 표시가 붙은 약이 있었다.',
         ]);
-        await era.printAndWait('瓶はもう、完全に空になっている');
-        await era.printAndWait('入れるときに手が震え、一度に全部入ったらしい');
+        await era.printAndWait('약병은 이미 완전히 비어 있었다.');
+        await era.printAndWait('약을 넣던 중 손이 떨려 한꺼번에 전부 쏟아 넣은 모양이다.');
         await era.printAndWait([
-          'そして',
+          '그리고 ',
           tachyon.sex,
-          'の手にある、危険薬を入れすぎたその試験管……',
+          '의 손에 들린, 위험한 약을 너무 많이 넣은 그 시험관은……',
         ]);
         await era.printAndWait(
-          '液面が目に見える速さで膨れ、管から溢れ出す。それより致命的なのは噴き出す蒸気で、',
+          '액체가 눈에 띄는 속도로 부풀어 시험관 밖으로 넘쳤다. 더 심각한 것은 뿜어져 나오는 증기였다.',
         );
         await era.printAndWait(
-          'あんな小さな管から出るとは思えない量で室内を満たし、外へ流れていく',
+          '저렇게 작은 시험관에서 나왔다고 믿기 힘들 만큼 많은 증기가 방 안을 채우고 밖으로 흘러나갔다.',
         );
         era.println();
         await era.printAndWait([
-          'そのとき、',
+          '그때 ',
           tachyon.sex,
-          'はやっと振り返った',
+          '는 마침내 뒤돌아보았다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は',
+          '은(는) ',
           tachyon.sex,
-          'の顔が再び朱に染まるのを見た。今度は、',
+          '의 얼굴이 다시 붉게 물드는 것을 보았다. 하지만 이번에는 ',
           you.get_colored_name(),
-          ' は確信した。これは羞恥ではない',
+          '은(는) 확신했다. 부끄러움 때문이 아니었다.',
         ]);
-        await era.printAndWait('これは……………');
+        await era.printAndWait('이건……………');
         era.println();
         await tachyon.say_and_wait([callname, '！！！！！！！！！！！！！！']);
         era.drawLine({ offset: 8, width: 8 });
-        await era.printAndWait('【学園からのお知らせ】', { align: 'center' });
+        await era.printAndWait('【학원에서 알려드립니다】', { align: 'center' });
         await era.printAndWait(
           ['午後、', tachyon.get_colored_name(), '、薬剤、終了'],
           { align: 'center' },
