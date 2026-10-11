@@ -2900,7 +2900,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] talk
+  // [번역 완료] talk
   async talk(
     tachyon,
     coffee,
@@ -2921,86 +2921,86 @@ module.exports = {
           await tachyon.say_and_wait([
             '……',
             callname,
-            '、今日の実験報告は書き終えました？',
+            ', 오늘 실험 보고서는 다 작성했나?',
           ]);
           await tachyon.say_and_wait(
-            'ここで雑談する暇があるなら、先にやるべきことを済ませなさい',
+            '여기서 잡담할 여유가 있다면 해야 할 일부터 끝내게.',
           );
         });
       } else {
         buffer.push(
           () =>
             tachyon.say_and_wait(
-              'さあ、今回の薬ですわ………『味が変』？ 忘れていますのね。あなたは実験動物ですわ。実験動物が薬の味を嫌う道理などありません。',
+              '자, 이번 약일세…… 『맛이 이상하다』고? 잊은 모양이군. 자네는 실험동물일 뿐이야. 실험동물이 약 맛을 따진다는 게 말이 된다고 보나?',
             ),
           async () => {
             await tachyon.say_and_wait([
               '限界……',
               tachyon.uma_sex_title,
-              '……脚……いいえ、やはりだめですわ……',
+              '……다리…… 아니, 역시 안 되겠어……',
               callname,
-              '？ そこにいつから立っていますの？',
+              '? 거기 언제부터 서 있었던 건가?',
             ]);
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は何かを考え込んでいるようだった。',
+              '은(는) 무언가 깊이 생각하는 듯했다.',
             ]);
           },
           () =>
             tachyon.say_and_wait([
               coffee.get_colored_name(),
-              '？ ええ、',
+              '? 흠, ',
               tachyon.sex,
-              'は興味深い観察対象ですわ。それに万一……いいえ、何でもありません。今の話は忘れてください。',
+              '는 상당히 흥미로운 관찰 대상이지. 게다가 만약…… 아니, 아무것도 아니네. 방금 말은 잊어버리게.',
             ]),
           async () => {
             await tachyon.say_and_wait(
-              '服……？ ああ、三日ほど風呂に入っていませんわね……',
+              '옷……? 아아, 그러고 보니 사흘 정도 씻지 않았던가……',
             );
             await tachyon.say_and_wait(
-              'あなたに何の関係がありますの。無駄にするなら実験に回しなさい……',
+              '그게 자네와 무슨 상관이지? 그런 데 시간을 낭비할 거면 실험에 쓰게……',
             );
             await tachyon.say_and_wait(
-              'もう結構ですわ。あなたはモルモットです。私が何をしようと、あなたには関係ありません。',
+              '됐네. 자네는 모르모트일 뿐이야. 내가 무엇을 하든 자네와 상관없는 일이라네.',
             );
           },
           async () => {
             await era.printAndWait([
               you.get_colored_name(),
-              ' は、',
+              '은(는) ',
               tachyon.get_colored_name(),
-              ' がミキサーで今日の昼食を掻き回しているのを見た。',
+              '이(가) 믹서기로 오늘 점심 식사를 갈아 버리고 있는 모습을 보았다.',
             ]);
             await tachyon.say_and_wait([
-              '食事？ 必要ありませんわ。人であろうと',
+              '음식? 필요 없네. 인간이든 ',
               tachyon.uma_sex_title,
-              'であろうと、最低限の栄養さえ補えば足ります。味を求める余分など、無駄な手間ですわ。',
+              '든 최소한의 영양만 보충하면 충분하네. 맛까지 추구하는 건 불필요한 수고일 뿐이야.',
             ]);
           },
           () =>
             tachyon.say_and_wait(
-              'たかがモルモットですわ。実験の手伝いをしながら私の機嫌も取っておきなさい。価値がなくなったとき、慈悲をかけてあげるかもしれませんもの。',
+              '고작 모르모트 아닌가. 실험을 도우면서 내 기분도 맞춰 두게. 가치가 없어졌을 때 자비를 베풀어 줄지도 모르니까.',
             ),
           () =>
             tachyon.say_and_wait(
-              '用があるなら早く言いなさい。実験の時間を無駄にしないで。',
+              '할 말이 있다면 빨리 하게. 내 실험 시간을 낭비하지 말고.',
             ),
           async () => {
-            await tachyon.say_and_wait('ふう……');
+            await tachyon.say_and_wait('후우……');
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は溜息をついた。機嫌は悪そうだ。今は構わないほうがいい……',
+              '은(는) 한숨을 쉬었다. 기분이 나빠 보이니 지금은 건드리지 않는 편이 낫겠다……',
             ]);
           },
           async () => {
-            await tachyon.say_and_wait('ふんふんふん～～ふんふん～～');
+            await tachyon.say_and_wait('흠흠흠~~ 흠흠~~');
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' はご機嫌らしい。だが',
+              '은(는) 꽤 기분이 좋아 보인다. 하지만 ',
               tachyon.sex,
-              'の手にある、危険な墨緑色に光る薬剤を見て、',
+              '의 손에 들린 위험한 암녹색 약제를 보고 ',
               you.get_colored_name(),
-              ' はその上機嫌を壊さないことにした。',
+              '은(는) 그 좋은 기분을 망치지 않기로 했다.',
             ]);
           },
         );
@@ -3010,12 +3010,12 @@ module.exports = {
         if (cook_times < 5) {
           await tachyon.say_and_wait([
             callname,
-            '、暇なら料理の腕を磨きなさいな。人が口にできるもの、早く作れるようになってください',
+            ', 한가하다면 요리 솜씨나 갈고닦게. 사람이 먹을 수 있는 음식부터 빨리 만들 수 있도록 말일세.',
           ]);
         } else {
           await tachyon.say_and_wait([
             callname,
-            '、本当に用がないなら実験器具を全部洗いなさい。実験着を洗うでも、ゴミを捨てるでもいいわ。できることはいくらでもありますでしょう？ そこでぼうっとしていないで',
+            ', 정말 할 일이 없다면 실험 기구를 전부 닦게. 실험복을 빨거나 쓰레기를 버려도 좋네. 할 일이 얼마든지 있는데 왜 그렇게 멍하니 서 있나?',
           ]);
         }
       } else {
@@ -3023,87 +3023,87 @@ module.exports = {
           () =>
             tachyon.say_and_wait([
               callname,
-              '、今日の薬ですわ……逃げますの？ ふふ、',
+              ', 오늘 약일세…… 도망칠 셈인가? 후후, ',
               tachyon.uma_sex_title,
-              'の手から逃げられるとでも思ったのですか？',
+              '의 손아귀에서 벗어날 수 있으리라 생각했나?',
             ]),
           async () => {
             await tachyon.say_and_wait([
               tachyon.uma_sex_title,
-              'の限界……スパート……進化……生存……人類補完計画……腐敗した社会……救済……再生……閉じた現状からの脱出……',
+              '의 한계…… 스퍼트…… 진화…… 생존…… 인류 보완 계획…… 부패한 사회…… 구원…… 재생…… 폐쇄된 현실로부터의 탈출……',
             ]);
             await tachyon.say_and_wait(
-              'ああ、わかりましたわ。すべての真実はエジプトにありますわね。',
+              '아아, 알았네. 모든 진실은 이집트에 있었군.',
             );
             await era.printAndWait([
               '……',
               tachyon.get_colored_name(),
-              ' が突然おかしなことを言い出した。今は構わないほうがいい。',
+              '이(가) 갑자기 이상한 말을 하기 시작했다. 지금은 건드리지 않는 편이 낫겠다.',
             ]);
           },
           async () => {
             await tachyon.say_and_wait(
-              'ああ……丁度いいわ。白衣を洗ってくださいな。先日の実験で汚してしまって…………',
+              '아아…… 마침 잘 왔군. 내 백의 좀 빨아 주게. 지난번 실험에서 더러워져서 말이야…………',
             );
             await tachyon.say_and_wait(
-              'なぜすぐに渡さないの？ 忘れていただけですわ。第一、気づかなかったのはモルモットとしての怠慢でしょう？',
+              '왜 바로 건네지 않았느냐고? 그저 잊었을 뿐이네. 애초에 알아차리지 못한 건 모르모트로서 자네의 태만 아닌가?',
             );
           },
           async () => {
             await tachyon.say_and_wait(
-              '食事？ ……見解は変わっていませんわ。食事は栄養を補うためだけに存在し、それ以上でも以下でもない……',
+              '식사? ……내 생각은 변하지 않았네. 식사는 영양을 보충하기 위한 것일 뿐, 그 이상도 이하도 아니야……',
             );
             await tachyon.say_and_wait(
-              'ただ、そうですね。最近はこの時間を、少し楽しみにしていますわ……',
+              '다만…… 최근에는 이 시간을 조금 기대하고 있긴 하네……',
             );
             await tachyon.say_and_wait(
-              'いいえ、深読みしないで。天と地の差を思い知らせるためだけですわ。あのときの屈辱はそう簡単に帳消しになりません。毎日試薬を引き受けてくれるなら、考えなくもありませんけれど……',
+              '아니, 넘겨짚지 말게. 하늘과 땅만큼의 차이를 깨닫게 해 주려는 것뿐이야. 그때의 굴욕이 그렇게 쉽게 사라질 리 없지. 매일 시험약을 받아 준다면 고려할 수도 있겠지만……',
             );
-            await you.say_and_wait('それ、今と同じじゃないか？');
+            await you.say_and_wait('그거 지금과 다를 게 없잖아?');
             await tachyon.say_and_wait(
-              'そう言われると……待って、毎日……いいえ、何でもありません。忘れて。今、すぐに、直ちに。',
+              '그렇게 말하니…… 잠깐, 매일…… 아니, 아무것도 아니네. 잊게. 지금 당장, 즉시.',
             );
           },
           () =>
             tachyon.say_and_wait(
-              '最近のご飯……まあ及第点ですわ。もう少し甘く……いいえ、何でもありません',
+              '요즘 식사는…… 뭐, 합격점이네. 조금 더 달면…… 아니, 아무것도 아니야.',
             ),
           async () => {
             await tachyon.say_and_wait([
-              'ああ、',
+              '아아, ',
               call_9,
-              '……『この前のクッキーと飲み物、ありがとうございました』？',
+              '……『지난번 쿠키와 음료, 감사합니다』라고?',
             ]);
             await tachyon.say_and_wait(
-              '大したことではありませんわ。気に入ったなら、また取りにいらっしゃい…………',
+              '별일 아니네. 마음에 들었다면 언제든 또 받으러 오게…………',
             );
             await tachyon.say_and_wait(
-              'その顔は何ですの。可愛い後輩に、そんなものは渡しませんわよ',
+              '그 표정은 뭔가? 귀여운 후배에게 이상한 걸 줄 리 없잖나.',
             );
           },
           async () => {
-            await tachyon.say_and_wait('ふんふん～～ふんふんふん～～');
+            await tachyon.say_and_wait('흠흠~~ 흠흠흠~~');
             await tachyon.say_and_wait(
-              '十匹のモルモットお出かけ〜湾に落ちて九匹〜',
+              '모르모트 열 마리가 놀러 나갔다가~ 만에 빠져 아홉 마리~',
             );
-            await tachyon.say_and_wait('火山に落ちて八匹〜宝穴で迷って七匹〜');
+            await tachyon.say_and_wait('화산에 빠져 여덟 마리~ 동굴에서 길을 잃어 일곱 마리~');
             await tachyon.say_and_wait(
-              '怒涛に巻かれて六匹〜コンドルに襲われ五匹〜',
+              '거센 파도에 휩쓸려 여섯 마리~ 콘도르에게 잡혀 다섯 마리~',
             );
-            await tachyon.say_and_wait('食べ過ぎて四匹〜頂を目指して三匹〜');
+            await tachyon.say_and_wait('너무 먹어 네 마리~ 정상을 향해 세 마리~');
             await tachyon.say_and_wait(
-              'ターボ爆発で二匹〜コーヒー飲み過ぎて一匹〜',
+              '터보 폭발로 두 마리~ 커피를 너무 마셔 한 마리~',
             );
             await tachyon.say_and_wait(
-              'ひとりぼっちのモルモットチューチュー〜薬を飲んでドカンと爆発〜〜',
+              '외톨이 모르모트 찍찍~ 약을 마시고 펑 하고 폭발~~',
             );
             await era.printAndWait([
               you.get_colored_name(),
-              ' は ',
+              '은(는) ',
               tachyon.get_colored_name(),
-              ' が妙な歌を口ずさんでいるのを聞いた……歌詞の意味はわからないが、今の',
+              '이(가) 이상한 노래를 흥얼거리는 걸 들었다…… 가사의 뜻은 모르겠지만 지금의 ',
               tachyon.sex,
-              'には近づかないほうがいい気がした。',
+              '에게는 다가가지 않는 편이 좋을 것 같다.',
             ]);
           },
         );
@@ -3112,91 +3112,91 @@ module.exports = {
       buffer.push(
         async () => {
           await tachyon.say_and_wait([
-            'おや、',
+            '오호, ',
             callname,
-            '、どうして急に話しかけに来たのです？',
+            ', 어쩐 일로 갑자기 말을 걸러 온 건가?',
           ]);
-          await tachyon.say_and_wait('ふふ、ただの気紛れですの？');
+          await tachyon.say_and_wait('후후, 그냥 변덕인가?');
           await tachyon.say_and_wait(
-            '他に目的があるはずですもの。いいえ、何でもありません。物事に好奇心を持つのは良いことですわ',
+            '다른 목적이 있을 텐데. 아니, 아무것도 아니네. 무엇에든 호기심을 갖는 건 좋은 일이야.',
           );
           await tachyon.say_and_wait([
-            '口上の探索も含めて、ですわ。そうでしょう、画面の向こうの ',
+            '대사를 찾아보는 것도 포함해서 말일세. 그렇지 않나, 화면 너머의 ',
             callname,
             '？',
           ]);
           await tachyon.say_and_wait(
-            '何の話かって？ ふふ、さあ、誰が知っているかしら',
+            '무슨 말이냐고? 후후, 글쎄. 누가 알겠나?',
           );
         },
         async () => {
-          await tachyon.say_and_wait(['ああ、', callname, '、危ない！']);
+          await tachyon.say_and_wait(['아아, ', callname, ', 위험해!']);
           await tachyon.say_and_wait(
-            'ふう、突然話しかけてくるからですわ。薬が零れるところでした',
+            '후우, 갑자기 말을 걸어서 그렇잖나. 하마터면 약을 쏟을 뻔했네.',
           );
           await tachyon.say_and_wait(
-            '何の薬かですって？ ふふ、以前集めたあなたのDNA、覚えていますわね？',
+            '무슨 약이냐고? 후후, 전에 채취한 자네의 DNA를 기억하겠지?',
           );
           await tachyon.say_and_wait(
-            '匂いを嗅いだ者をあなたに狂わせる薬ですわよ……ん？ 零れなくて後悔し始めました？ ……助平ですわね',
+            '냄새를 맡은 사람이 자네에게 미쳐 버리게 만드는 약일세…… 음? 쏟지 않아서 아쉽기 시작했다고? ……음흉하군.',
           );
           await tachyon.say_and_wait(
-            '冗談ですわ。本当は、あの人のDNAを基にした指向性の毒……',
+            '농담이네. 사실은 그 사람의 DNA를 바탕으로 만든 선택성 독극물이라네……',
           );
           await tachyon.say_and_wait(
-            '蒸気を嗅いだだけでも鼻腔に病変を起こし、癌細胞を作らせますわ……',
+            '증기를 들이마시기만 해도 비강에 병변을 일으키고 암세포를 만들어 내지……',
           );
           await tachyon.say_and_wait(
-            'まあまあ、そんなに怯えなくても。はは、零れていないのですからいいでしょう',
+            '자자, 그렇게 겁먹지 말게. 하하, 쏟지도 않았으니 괜찮지 않나?',
           );
           await tachyon.say_and_wait(
-            'ん？ どちらが本当か……それはご想像にお任せしますわ～～',
-          );
-        },
-        async () => {
-          await tachyon.say_and_wait([callname, '……今日の服……']);
-          await tachyon.say_and_wait(
-            'それから、その、考えたのですけれど。洗濯を頼むのはまだしも、下着まで洗うのはさすがに行き過ぎですわね',
-          );
-          await tachyon.say_and_wait(
-            '……いいえ、匂いの話ではありませんわ。第一、臭くなどありませんわよ！',
+            '음? 둘 중 어느 쪽이 진짜냐고…… 상상에 맡기겠네~~',
           );
         },
         async () => {
+          await tachyon.say_and_wait([callname, '……오늘 입은 옷……']);
           await tachyon.say_and_wait(
-            'ここまで来ると、あなたの弁当にはすっかり慣れましたわね',
+            '그리고 그…… 생각해 봤는데, 세탁을 부탁하는 건 몰라도 속옷까지 빨게 하는 건 좀 지나쳤군.',
           );
           await tachyon.say_and_wait(
-            'ふふ、今では食べられない日のほうが落ち着かないくらいですわ',
+            '……아니, 냄새 이야기가 아닐세. 애초에 냄새가 날 리 없잖나!',
           );
-          await tachyon.say_and_wait('こんな暮らし……このまま維持して……');
+        },
+        async () => {
           await tachyon.say_and_wait(
-            'ふふ、研究者にとって、維持など褒め言葉ではありませんわ',
+            '이제는 자네의 도시락에 완전히 익숙해졌군.',
           );
           await tachyon.say_and_wait(
-            '維持ばかり考えていては、突破は訪れません……',
+            '후후, 이제는 먹지 못하는 날이 오히려 마음이 불편할 정도라네.',
           );
-          await tachyon.say_and_wait('その通りですわ……でも……');
+          await tachyon.say_and_wait('이런 생활…… 이대로 유지하고……');
           await tachyon.say_and_wait(
-            'どうしてかしら。今の暮らしが、このまま続いてもいいと思えてしまって……',
+            '후후, 연구자에게 현상 유지란 칭찬할 만한 일이 아니지.',
           );
-          await tachyon.say_and_wait('どうして……');
+          await tachyon.say_and_wait(
+            '유지만 생각해서는 돌파구를 찾을 수 없네……',
+          );
+          await tachyon.say_and_wait('맞는 말일세…… 하지만……');
+          await tachyon.say_and_wait(
+            '어째서일까. 지금 같은 생활이 계속되어도 좋겠다는 생각이 들어서……',
+          );
+          await tachyon.say_and_wait('어째서……');
         },
       );
     } else if (relation > 375 && love < 50) {
       buffer.push(async () => {
-        await tachyon.say_and_wait(['おや、来ましたわね ', callname]);
-        await tachyon.say_and_wait('今日の実験は……ん？ どうしました');
+        await tachyon.say_and_wait(['오호, 왔군. ', callname]);
+        await tachyon.say_and_wait('오늘 실험은…… 음? 무슨 일인가?');
         await tachyon.say_and_wait(
-          '近すぎます？ そうかしら。私は丁度いいと思いますわ',
+          '너무 가깝다고? 글쎄, 난 딱 좋다고 생각하는데.',
         );
-        await tachyon.say_and_wait('それとも、恥ずかしがっていますの？');
+        await tachyon.say_and_wait('아니면 부끄러워하는 건가?');
       });
     } else if (talk_times >= 10) {
       buffer.push(() =>
         tachyon.say_and_wait([
           callname,
-          '、もっと話すのは構いませんけれど、他にやるべきことがあるでしょう？',
+          ', 이야기를 더 나누는 건 상관없지만 다른 할 일이 있지 않나?',
         ]),
       );
     } else {
@@ -3204,194 +3204,194 @@ module.exports = {
         async () => {
           await tachyon.say_and_wait([
             callname,
-            '！今日の薬は、右の緑と左の赤、どちらにします？',
+            '! 오늘 약은 오른쪽의 초록색과 왼쪽의 빨간색 중 무엇을 고르겠나?',
           ]);
           await tachyon.say_and_wait(
-            'どちらもいや？ わかっていましたわ。やはり第三の選択、虹色ですわね！',
+            '둘 다 싫다고? 그럴 줄 알았네. 역시 세 번째 선택지인 무지개색이군!',
           );
         },
         async () => {
-          await tachyon.say_and_wait([callname, '……明日の弁当']);
+          await tachyon.say_and_wait([callname, '……내일 도시락']);
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             tachyon.get_colored_name(),
-            ' に、明日は休みだと伝えようとした',
+            '에게 내일은 쉬는 날이라고 말하려 했다.',
           ]);
           era.println();
           await tachyon.say_and_wait([
-            'ええ……',
+            '음……',
             callname,
-            '、休みでも人は食事をしなくていいわけではありませんわよ',
+            ', 쉬는 날이라고 해서 밥을 먹지 않아도 되는 건 아니잖나.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'は心配そうな目で ',
+            '은(는) 걱정스러운 눈빛으로 ',
             you.get_colored_name(),
-            ' を見た',
+            '을(를) 바라보았다.',
           ]);
           await you.say_and_wait('…………');
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は悟った。この状況で何を言っても無駄だ。',
+            '은(는) 깨달았다. 이 상황에서 무슨 말을 해도 소용없다.',
             tachyon.sex,
-            'の弁当を作ると約束するしかなかった',
+            '의 도시락을 만들어 주겠다고 약속할 수밖에 없었다.',
           ]);
         },
         async () => {
           await tachyon.say_and_wait([
             callname,
-            '～～今日の服もお願いしますわ',
+            '~~ 오늘 입은 옷도 부탁하네.',
           ]);
           await tachyon.say_and_wait(
-            'はあ？ 自分で洗う？ 私の時間は風が運んでくるものだとでも？',
+            '뭐라고? 직접 빨라고? 내 시간은 바람이 가져다주는 줄 아나?',
           );
           await tachyon.say_and_wait(
-            'それに、これもあなたへのご褒美ですわよ～～',
+            '게다가 이것도 자네에게 주는 포상일세~~',
           );
-          await tachyon.say_and_wait('私が着ていた肌着ですもの～～');
+          await tachyon.say_and_wait('내가 입었던 속옷이니까 말이지~~');
           await tachyon.say_and_wait(
-            '臭い！？ ちょっと！ 失礼にもほどがありますわ！',
+            '냄새가 난다고!? 이보게! 무례하기 짝이 없군!',
           );
         },
         async () => {
           await tachyon.say_and_wait(
-            'はあ？ 授業に出なくても成績に響くかですって？',
+            '뭐라고? 수업에 나가지 않아도 성적에 영향이 없냐고?',
           );
           await tachyon.say_and_wait([
             callname,
-            '、受験教育は凡人を育てるためのものですわ。天賦の才である私に、必要などあるはずがありません',
+            ', 입시 교육은 범인을 키우기 위한 것일세. 천재인 나에게 필요할 리 없지.',
           ]);
           await tachyon.say_and_wait([
-            '『では試験も出なくていいのですか？』？ 何を言っていますの、',
+            '『그럼 시험도 보지 않아도 되나요?』라고? 무슨 말을 하는 건가, ',
             callname,
-            '。試験は明日……今日！？',
+            '. 시험은 내일…… 오늘이라고!?',
           ]);
         },
         async () => {
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' はいつもと違い、無言のまま体を預けてきた',
+            '은(는) 평소와 달리 말없이 몸을 기대 왔다.',
           ]);
           era.println();
-          await tachyon.say_and_wait([callname, '、どうかしました？']);
+          await tachyon.say_and_wait([callname, ', 무슨 일인가?']);
           era.println();
-          await you.say_and_wait('何でもない');
+          await you.say_and_wait('아무것도 아니야.');
           await era.printAndWait([
             you.get_colored_name(),
-            ' が答えたあと、',
+            '이(가) 대답한 뒤 ',
             tachyon.sex,
-            'は続けて ',
+            '은(는) 계속해서 ',
             you.get_colored_name(),
-            ' に寄りかかった',
+            '에게 몸을 기댔다.',
           ]);
           await era.printAndWait(
-            '二人のあいだに言葉はなく、そのまま無言の時間が流れた',
+            '두 사람 사이에는 아무 말도 오가지 않았고 조용한 시간이 흘렀다.',
           );
         },
         async () => {
           await tachyon.say_and_wait([
             callname,
-            '？ 丁度いいわ。これを全部、防炎の特殊紙に書き写して！',
+            '? 잘 왔네. 이걸 전부 방염 특수지에 옮겨 적게!',
           ]);
           await tachyon.say_and_wait([
             call_25,
-            ' のやつ！ ',
+            ' 그 녀석! ',
             tachyon.sex,
-            'で実験をしただけなのに、実験資料を全部焼くと脅してきましたわ！',
+            '에게 실험을 조금 했을 뿐인데 연구 자료를 전부 태우겠다고 협박하더군!',
           ]);
           await tachyon.say_and_wait([
-            'なんとか午後三時まで待ってもらいましたけれど、それまでに写し終えませんと！',
+            '어떻게든 오후 세 시까지 기다려 달라고 했지만 그 전에 다 옮겨 적어야 하네!',
           ]);
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             tachyon.get_colored_name(),
-            ' に急き立てられ、机に向かって書き写しに加わった',
+            '의 재촉에 못 이겨 책상에 앉아 필사를 돕기 시작했다.',
           ]);
           await era.printAndWait([
-            'だが ',
+            '하지만 ',
             you.get_colored_name(),
-            ' の胸に疑問が浮かぶ。本当に焼くなら、事前に知らせたりするだろうか……？',
+            '의 마음속에 의문이 들었다. 정말 태울 생각이라면 미리 알려 주기나 할까……?',
           ]);
           era.println();
           await era.printAndWait(
-            '案の定、午後三時を過ぎても研究資料は燃えなかった。実験室はいつものように穏やかで、',
+            '역시나 오후 세 시가 지나도 연구 자료는 타지 않았다. 실험실은 평소처럼 평온했고 ',
           );
           await era.printAndWait([
-            '被害を受けたのは、半日かけて部屋一杯の資料を書き写した ',
+            '피해를 본 건 반나절 동안 방 가득한 자료를 옮겨 적은 ',
             you.get_colored_name(),
-            ' と ',
+            '와(과) ',
             tachyon.get_colored_name(),
-            ' の手だけだった',
+            '의 손뿐이었다.',
           ]);
         },
         async () => {
           await tachyon.say_and_wait([
             call_9,
-            ' の子……可愛いではありませんか？',
+            '의 아이…… 귀엽지 않나?',
           ]);
           await tachyon.say_and_wait([
-            'なぜか',
+            '왠지 ',
             tachyon.sex,
-            'を見ると、父性に近いものが湧いてくるのですわ',
+            '을(를) 보면 부성애 같은 감정이 샘솟는다네.',
           ]);
           if (tachyon.sex_code - 1) {
             era.println();
-            await you.say_and_wait('母性じゃないのか？');
+            await you.say_and_wait('모성애가 아니라?');
           }
           era.println();
           if (era.get('cflag:0:种族') > 0) {
             await tachyon.say_and_wait([
-              'もう',
+              '이미 ',
               you.uma_sex_title,
-              'になったのにわからないのですか？',
+              '이(가) 되었는데도 모르겠나?',
               callname,
-              ' は鈍いですわね',
+              '은(는) 둔하군.',
             ]);
             era.println();
-            await you.say_and_wait('……何を言っているのかわからない');
+            await you.say_and_wait('……무슨 말인지 모르겠어.');
           } else {
             await tachyon.say_and_wait([
-              '違いますわ……この感覚は説明しにくいのです。あなたが',
+              '아니라네…… 이 감각은 설명하기 어렵지. 자네가 ',
               tachyon.uma_sex_title,
-              'になれば、わかるでしょう',
+              '이(가) 되면 알게 될 걸세.',
             ]);
             era.println();
             await you.say_and_wait([
-              'いつか自分が',
+              '언젠가 내가 ',
               tachyon.uma_sex_title,
-              'になるみたいに言わないでくれ！？',
+              '이(가) 될 것처럼 말하지 말아 줄래!?',
             ]);
           }
         },
         async () => {
-          await tachyon.say_and_wait('sky君はいい子ですわね……');
+          await tachyon.say_and_wait('sky군은 참 착한 아이로군……');
           era.println();
           await you.say_and_wait([
-            'ん？ タキオンは ',
+            '음? 타키온은 ',
             y_call_s,
-            ' と知り合いなのか',
+            '와(과) 아는 사이야?',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            'いいえ……私が言っているのと、あなたの言っているのは、たぶん同じsky君ではありませんわ',
+            '아니라네…… 내가 말하는 sky군과 자네가 말하는 sky군은 아마 다른 인물일 거야.',
           );
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は首を傾げて ',
+            '은(는) 고개를 갸웃하며 ',
             tachyon.get_colored_name(),
-            ' を見た。学園に他にもskyがいるのか',
+            '을(를) 바라보았다. 학원에 다른 sky가 또 있다는 건가?',
           ]);
           era.println();
           await tachyon.say_and_wait([
-            '……いいえ、やめましょう、',
+            '……아니, 관두세, ',
             callname,
-            '。今のは聞かなかったことにして',
+            '. 방금 말은 못 들은 걸로 하게.',
           ]);
         },
       );
