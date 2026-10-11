@@ -6208,9 +6208,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_a_95_39
+  // [번역 완료] ws_a_95_39
   ws_a_95_39: (() => {
-    const title = '最終因子を求めて';
+    const title = '마지막 인자를 찾아서';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -6230,144 +6230,144 @@ module.exports = {
       love,
     ) => {
       await era.printAndWait(
-        '時が秋に入ると、年末最大のレースも世間の目に入ってくる',
+        '계절이 가을로 접어들자, 연말 최대의 레이스에도 세간의 관심이 쏠리기 시작했다.',
       );
       era.println();
-      await you.say_as_passer_by_and_wait('記者A', [
+      await you.say_as_passer_by_and_wait('기자 A', [
         tachyon.get_colored_name(),
         ' ',
         tachyon.adult_sex_title,
-        '、年末の有馬記念で1番人気であることについて、感想は？',
+        '님, 연말 아리마 기념에서 가장 유력한 우승 후보로 꼽히는 소감은 어떠십니까?',
       ]);
       await tachyon.say_and_wait([
-        '1番人気？ 別に……いいえ、皆様の支持に感謝します。有馬記念は……',
+        '1번 인기라고? 별로…… 아니, 여러분의 성원에 감사드립니다. 아리마 기념에서는……',
       ]);
-      await tachyon.say_and_wait('自分の限界を超えることを目標に、走りますわ');
-      await you.say_as_passer_by_and_wait('記者B', [
+      await tachyon.say_and_wait('제 자신의 한계를 뛰어넘겠다는 목표로 달리겠습니다.');
+      await you.say_as_passer_by_and_wait('기자 B', [
         tachyon.get_colored_name(),
         ' ',
         tachyon.adult_sex_title,
-        'の目標は',
+        '의 목표는 ',
         tachyon.uma_sex_title,
-        'の限界を超える、とのことですが、どういう意味でしょう？',
+        '의 한계를 뛰어넘는다는 뜻이라 하셨는데, 구체적으로 어떤 의미입니까?',
       ]);
       await tachyon.say_and_wait(
-        'ふふふ……万事うまくいけば、有馬記念でご覧になれますわ',
+        '후후후…… 모든 일이 순조롭게 풀린다면 아리마 기념에서 직접 보시게 될 걸세.',
       );
-      await you.say_as_passer_by_and_wait('記者C', [
-        '有馬記念に向けて、',
+      await you.say_as_passer_by_and_wait('기자 C', [
+        '아리마 기념을 앞두고 ',
         tachyon.get_colored_name(),
         ' ',
         tachyon.adult_sex_title,
-        'はどんな準備を？',
+        '는 어떤 준비를 하고 계십니까?',
       ]);
       await tachyon.say_and_wait(
-        'コースと肉体の突破は言うまでもありません。それ以外に……実は、精神面の突破を求めていますの',
+        '코스와 육체의 한계를 극복하는 건 물론이고, 그 밖에도…… 사실 정신적인 돌파구를 찾고 있네.',
       );
       era.println();
-      await era.printAndWait('精神面の突破');
-      await era.printAndWait('その話題に、現場の記者は戸惑った');
-      await era.printAndWait('外見の印象でも、たまに聞く噂でも');
+      await era.printAndWait('정신적인 돌파구');
+      await era.printAndWait('뜻밖의 화제에 현장의 기자들은 당황했다.');
+      await era.printAndWait('겉으로 풍기는 인상으로 보나 가끔 들리는 소문으로 보나, ');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は精神論を語る',
+        '은(는) 정신론을 입에 올릴 만한 ',
         tachyon.uma_sex_title,
-        'には見えない',
+        '로는 보이지 않았으니까.',
       ]);
       era.println();
-      await you.say_as_passer_by_and_wait('記者A', [
-        'せ……精神面の突破？……次の相手があの ',
+      await you.say_as_passer_by_and_wait('기자 A', [
+        '저, 정신적인 돌파구라고요? ……다음 상대가 바로 그 ',
         coffee.get_colored_name(),
-        ' だから、精神面の助けを求めている、ということで？',
+        '이기 때문에 정신적인 도움이 필요하다는 뜻입니까?',
       ]);
-      await tachyon.say_and_wait([call_25, '……相手……？']);
-      await you.say_as_passer_by_and_wait('記者A', 'ち、違うんですか？');
-      await tachyon.say_and_wait('……いいえ、検討に値する可能性ですわ。ふふふ');
+      await tachyon.say_and_wait([call_25, '……상대……?']);
+      await you.say_as_passer_by_and_wait('기자 A', '아, 아닌가요?');
+      await tachyon.say_and_wait('……아니, 검토해 볼 만한 가능성이군. 후후후.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は含みのある言葉を残し、説明はしなかった',
+        '은(는) 의미심장한 말만 남긴 채 더는 설명하지 않았다.',
       ]);
       if (love >= 50 && love < 75) {
-        await you.say_as_passer_by_and_wait('記者A', [
-          'そういえば……あと、',
+        await you.say_as_passer_by_and_wait('기자 A', [
+          '그러고 보니…… 한 가지 더, ',
           tachyon.get_colored_name(),
-          ' とトレーナーの噂',
+          '와 트레이너 사이의 소문 말입니다.',
         ]);
-        await you.say_as_passer_by_and_wait('記者A', 'お二人に伺いたい……');
+        await you.say_as_passer_by_and_wait('기자 A', '두 분께 직접 여쭙고 싶습니다……');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が ',
+          '은(는) ',
           you.get_colored_name(),
-          ' を一瞥する。なぜか、',
+          '을(를) 힐끗 보았다. 어째서인지 ',
           you.get_colored_name(),
-          ' は背筋がざわついた',
+          '은(는) 등골이 오싹해졌다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          '聞きたいのは、私と',
+          '묻고 싶은 건 나와 ',
           you.sex,
-          'のあいだに……恋愛の感情があるか、ですの？',
+          '사이에…… 연애 감정이 존재하는지, 그런 것이겠지?',
         ]);
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はまた ',
+          '은(는) 다시 ',
           you.get_colored_name(),
-          ' を見た。今度はわかった。',
+          '을(를) 바라봤다. 이번에는 알 수 있었다. ',
           tachyon.sex,
-          'の意味は「どう答えてほしい？」だ',
+          '의 눈빛은 「어떻게 대답해 주길 바라나?」라는 뜻이었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は記者に見えない角度で、最小限に首を振った。',
+          '은(는) 기자들에게 보이지 않도록 고개를 아주 작게 저었다. ',
           tachyon.sex,
-          'に届くように',
+          '에게만 알아볼 수 있을 만큼.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          '……こう言いましょう。',
+          '……이렇게 대답하지. ',
           you.sex,
-          'は……私にとって最も大切な……',
+          '는…… 내게 가장 소중한……',
         ]);
-        await you.say_as_passer_by_and_wait('記者A', '最も大切な……？');
+        await you.say_as_passer_by_and_wait('기자 A', '가장 소중한……?');
         era.println();
         await era.printAndWait([
-          '場の注意が、すべて ',
+          '모두의 시선이 온통 ',
           tachyon.get_colored_name(),
-          ' の言葉に集まった',
+          '의 다음 말에 쏠렸다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' も思わず唾を飲み込んだ',
+          '도 자기도 모르게 침을 삼켰다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('最も大切な……実験動物ですわ');
+        await tachyon.say_and_wait('가장 소중한…… 실험동물일세.');
         era.println();
-        await era.printAndWait('記者たちは答えを聞いて、みな肩を落とした');
+        await era.printAndWait('대답을 들은 기자들은 일제히 어깨를 축 늘어뜨렸다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' も息を吐いた。ただし、安心のそれだ',
+          '도 한숨을 내쉬었다. 다만 안도의 한숨이었다.',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'は口の形だけで、',
+          '은(는) 입 모양만으로 ',
           you.get_colored_name(),
-          ' に「貸し一つ」と伝えた',
+          '에게 「빚 하나 진 걸세」라고 전했다.',
         ]);
         await era.printAndWait([
-          'だが今の ',
+          '하지만 지금 ',
           you.get_colored_name(),
-          ' に、それを気にする余裕はない',
+          '에게는 그런 것을 신경 쓸 여유가 없었다.',
         ]);
         era.println();
-        await era.printAndWait('余談。その翌日の新聞見出しは……');
+        await era.printAndWait('여담이지만, 다음 날 신문의 제목은 이랬다……');
         await you.say_as_unknown_and_wait([
           tachyon.get_colored_name(),
-          ' が噂に応答！ トレーナーを最も大切な存在と発言！',
+          '이(가) 소문에 답하다! 트레이너를 가장 소중한 존재라고 밝혀!',
         ]);
-        await era.printAndWait('…………何も回避できていないではないか');
+        await era.printAndWait('…………결국 아무것도 피하지 못했잖아.');
       }
     };
     f.title = title;
