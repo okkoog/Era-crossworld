@@ -1326,9 +1326,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] hot_spring_a
+  // [번역 완료] hot_spring_a
   hot_spring_a: (() => {
-    const title = 'シュレーディンガーの超光速粒子';
+    const title = '슈뢰딩거의 초광속 입자';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -1337,311 +1337,311 @@ module.exports = {
      * @param {number} love アグネスタキオンのプレイヤーへの恋慕値
      */
     const f = async (tachyon, coffee, you, callname, love) => {
-      await tachyon.say_and_wait('そういえば、まだこれがありましたわ……');
+      await tachyon.say_and_wait('맞아, 그러고 보니 이런 게 있었지……');
       await tachyon.say_and_wait([
-        '無駄にするのも惜しいですし、どうです、',
+        '그냥 썩히기엔 아깝다는 생각이 드는데, 어떤가, ',
         callname,
-        '？ 一緒に行きませんこと？',
+        '? 함께 가겠나?',
       ]);
       era.println();
-      await era.printAndWait('たまたま研究室を片付けていたとき');
-      await era.printAndWait(['隅に隠されていた封筒を見つけた']);
+      await era.printAndWait('우연히 실험실을 정리하던 중이었다.');
+      await era.printAndWait(['은 어느 구석에 숨겨져 있던 봉투를 발견했다.']);
       if (love >= 75) {
-        await era.printAndWait('ん……？');
-        await era.printAndWait('なぜか、違和感がひどく重い');
+        await era.printAndWait('응……?');
+        await era.printAndWait('어쩐지 모를 위화감이 강하게 느껴졌다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' はよく見て、すぐに綻びを見つけた',
+          '은(는) 자세히 관찰한 끝에 실마리를 찾아냈다.',
         ]);
         await era.printAndWait(
-          '大掃除で「見つかった」はずなのに、封筒に皺ひとつない。むしろ大切にしまわれていた気配すらある',
+          '분명 대청소 중에 발견된 것임에도 불구하고, 봉투에는 구겨진 흔적이 전혀 없었으며 오히려 소중하게 보관되어 온 듯한 느낌마저 들었다.',
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が「見つけた」ものだと考えると、',
+          '이 직접 「찾아낸」 것이라는 점을 미루어 보아, ',
           you.get_colored_name(),
-          ' はだいたい真相を察した',
+          '은(는) 대략적인 진상을 짐작했다.',
         ]);
         era.println();
-        await tachyon.say_and_wait(['ん？', callname, '？ どうかしましたの？']);
+        await tachyon.say_and_wait(['응? ', callname, '? 왜 그러나?']);
         era.println();
-        await era.printAndWait('……言わないでおこう');
+        await era.printAndWait('……역시 입 밖으로 내지는 말자.');
         await era.printAndWait([
-          '怒らせるのはまだいい。問題は、',
+          '화를 내는 것은 그나마 괜찮다. 정말 문제는 ',
           tachyon.sex,
-          'が怒ったあと、夜の自分が絶対に無事では済まないことだ',
+          '가 토라진 뒤의 밤은 결코 편안하지 않을 것이라는 점이었다.',
         ]);
       }
       era.println();
       await era.printAndWait([
-        '着いた温泉宿は、商店街の企画としてはかなり豪華だった',
+        '이 도착한 온천 여관은 상점가 경품 치고는 상당히 호화로운 곳이었다.',
       ]);
       await era.printAndWait(
-        '貸切の湯船、和風の標準客室、さらには懐石料理まで',
+        '단독 온천탕, 일본 전통식 객실, 그리고 가이세키 요리까지 제공되었다.',
       );
       await era.printAndWait(
-        'というより……普通の商店街の抽選が、こんな特賞を用意するだろうか',
+        '생각해 보면…… 일반적인 상점가 추첨에서 이런 호화로운 경품을 준비하는 게 가능한 일일까?',
       );
       await era.printAndWait([
-        'まさか……最初から誰かが仕組んで、この機会に',
+        '어쩌면…… 처음부터 누군가가 계획한 것이고, 그저 이 기회를 빌려 ',
         tachyon.uma_sex_title,
-        'とトレーナーへ渡した、というだけでは？',
+        '와 트레이너에게 제공한 것은 아닐까?',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は湯船に浸かり、際限のない妄想を巡らせていた',
+        '은(는) 온천탕에 앉아 이런저런 잡념에 잠겨 있었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait([callname, '？ 入りますわよ～～']);
+      await tachyon.say_and_wait([callname, '? 저기, 나 들어가도 되나~~?']);
       era.println();
       await era.printAndWait([
-        '突然、担当',
+        '갑자기 들려온 담당 ',
         tachyon.uma_sex_title,
-        'の戸の外からの呼びかけが、',
+        '의 목소리에 ',
         you.get_colored_name(),
-        ' の意識を引き戻した',
+        '은(는) 정신을 차렸다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は反射でどうぞと答えてから、今自分が湯に浸かっていることを思い出した',
+        '은(는) 무심코 들어오라고 대답해 버렸지만, 곧 자신이 지금 온천욕 중이라는 사실을 깨달았다.',
       ]);
-      await era.printAndWait('今から隠すには、もう遅い—————');
+      await era.printAndWait('이제 와서 몸을 가리기엔 이미 늦어버렸다—————');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は慌てて体を湯の中へ沈め、湯気で見えてはいけない部分を少しでも隠そうとした',
+        '은(는) 서둘러 몸을 물속으로 깊숙이 집어넣고, 온천의 수증기가 조금이라도 시야를 가려주기를 바랐다.',
       ]);
       if (era.get('exp:32:性爱次数') > era.get('exp:32:睡奸次数')) {
         await tachyon.say_and_wait([
           callname,
-          '—————どうしてそんなに恥ずかしがって縮こまっていますの？ もう何度も見ていますのに',
+          '————— 왜 그렇게 부끄러워하며 몸을 웅크리고 있나? 이미 볼 건 다 본 사이 아닌가.',
         ]);
       } else {
         await tachyon.say_and_wait([
           callname,
-          '—————どうしてそんなに恥ずかしがって縮こまっていますの？ 実験のときは全部見えていますのに',
+          '————— 왜 그렇게 부끄러워하며 몸을 웅크리고 있나? 실험할 때 이미 다 보지 않았나.',
         ]);
       }
       era.println();
       await era.printAndWait([
-        'そうは言っても、',
+        '말은 그렇게 했지만, ',
         tachyon.get_colored_name(),
-        ' の声にも、少し遠慮がある',
+        '의 말투 역시 조금은 긴장한 듯 보였다.',
       ]);
       await era.printAndWait([
-        '裸の ',
+        '알몸인 ',
         you.get_colored_name(),
-        ' と違い、',
+        '과(와) 달리, ',
         tachyon.get_colored_name(),
-        ' はバスタオルを一枚巻いている',
+        '은 몸에 타월을 두르고 있었다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'は勝手に湯へ入り、',
+        '는 자연스럽게 탕 안으로 들어와 ',
         you.get_colored_name(),
-        ' のほうへ寄ってきた',
+        '의 옆으로 다가왔다.',
       ]);
       await era.printAndWait([
-        'それから ',
+        '그리고 ',
         you.get_colored_name(),
-        ' の隣に座り、緩んだ顔で寄りかかった',
+        '의 곁에 앉아 편안한 표정으로 몸을 기대어 왔다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('やっと……URAも終わりましたわね');
-      await tachyon.say_and_wait('たまには、こうして緩むのも悪くありませんわ');
+      await tachyon.say_and_wait('드디어…… URA도 끝이 났군.');
+      await tachyon.say_and_wait('가끔은 이렇게 긴장을 푸는 것도 나쁘지 않네.');
       era.println();
-      await era.printAndWait([tachyon.sex, 'は満足げに息を吐いた']);
+      await era.printAndWait([tachyon.sex, '은 만족스러운 듯 한숨을 내뱉었다.']);
       await era.printAndWait(
-        '大仕事を終えた会社員が、宴でビールを一気に飲んで漏らす、あの吐息に似ている',
+        '마치 큰 프로젝트를 마친 직장인이 회식 자리에서 맥주 한 잔을 들이켜고 내뱉는 한숨과도 같았다.',
       );
       await era.printAndWait(
-        '解放感か、達成感か。あるいは……自分でも理由のわからない、薄い喪失感か',
+        '그것이 해방감인지 성취감인지, 아니면…… 스스로도 알 수 없는 미묘한 상실감인지 알 수 없었다.',
       );
       await era.printAndWait([
-        'この三年を振り返れば、',
+        '지난 3년을 되돌아보면, ',
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         tachyon.get_colored_name(),
-        ' は、たしかに多くのことを成し遂げた',
+        '은 참으로 많은 것을 함께 이루어 냈다.',
       ]);
       await era.printAndWait([
-        '三冠への道、感情の研究課題、',
+        '삼관을 향한 여정, 감정에 대한 연구 과제, ',
         coffee.get_colored_name(),
-        ' との激戦……',
+        '와의 격전……',
       ]);
       await era.printAndWait(
-        'それ以外にも、語るに足ることも、語るまでもないことも',
+        '그 밖에도 언급할 가치가 있거나 혹은 사소한 수많은 추억이 있었다.',
       );
       await era.printAndWait([
-        '三年の重みに、',
+        '지난 3년의 무게에, ',
         you.get_colored_name(),
-        ' もつい、',
+        ' 역시 ',
         tachyon.get_colored_name(),
-        ' と同じように息を吐いた',
+        '과 마찬가지로 깊은 한숨을 내쉬었다.',
       ]);
       era.println();
       await era.printAndWait([
-        'そのあとしばらく、二人は何も言わず、ただ寄り添っていた',
+        '그 후 한동안 ',
       ]);
       await era.printAndWait([
-        'このときになって ',
+        ' 두 사람은 아무 말 없이 서로에게 기대어 있었다.',
         you.get_colored_name(),
-        ' は気づく。隣の',
+        '은(는) 그제야 곁에 있는 ',
         tachyon.sex,
-        'の体が、こんなにも小さい',
+        '의 몸이 무척이나 가냘프다는 사실을 새삼 깨달았다.',
       ]);
       await era.printAndWait([
-        '今は天才',
+        '지금 이곳에 있는 그녀는 천재 ',
         tachyon.uma_sex_title,
-        'でも、狂った科学者でもない',
+        '도, 매드 사이언티스트도 아니었다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'は、ただの普通の',
+        ' 또한 그저 평범한 한 명의 ',
         tachyon.teen_sex_title,
-        'にすぎない',
+        '일 뿐이었다.',
       ]);
       era.println();
-      await era.printAndWait('湯気が立つ温泉で、わずかな静けさを味わう二人');
+      await era.printAndWait('수증기가 피어오르는 온천 속에서 두 사람은 정적을 만끽했다.');
       await era.printAndWait([
-        'トラブルメーカーの ',
+        '트러블 메이커인 ',
         tachyon.get_colored_name(),
-        ' と、それに悪乗りする担当トレーナーを知る者には、信じがたい光景だろう',
+        '과 그녀의 조력자인 트레이너를 아는 사람들이라면 상상조차 할 수 없는 광경일 것이다.',
       ]);
-      await era.printAndWait('だが今、二人はまさにそこに沈んでいる');
+      await era.printAndWait('하지만 지금 이 순간, 두 사람은 그 어느 때보다 이 평온함에 침잠해 있었다.');
       era.drawLine();
       await tachyon.say_and_wait([
         callname,
-        '、シュレーディンガーの猫は、ご存知ですの？',
+        ', 자네는 『슈뢰딩거의 고양이』를 알고 있나?',
       ]);
       era.println();
       await era.printAndWait([
-        '突然、',
+        '갑자기 ',
         tachyon.get_colored_name(),
-        ' がその沈黙を破った',
+        '이 침묵을 깼다.',
       ]);
-      await era.printAndWait('シュレーディンガーの猫……？');
-      era.printButton('「知らない」', 1);
-      era.printButton('「知っている」', 2);
+      await era.printAndWait('슈뢰딩거의 고양이……?');
+      era.printButton('「몰라」', 1);
+      era.printButton('「알아」', 2);
       if ((await era.input()) === 1) {
         await tachyon.say_and_wait(
-          'シュレーディンガーの猫は、もともとシュレーディンガーが量子力学を反論するために出した思考実験ですわ',
+          '슈뢰딩거의 고양이란, 본래 슈뢰딩거가 양자역학의 모순을 반박하기 위해 제시했던 가상 실험이라네.',
         );
         await tachyon.say_and_wait(
-          '皮肉なことに、今では量子力学を説明する最良の象徴になっています',
+          '아이러니하게도 지금은 양자역학을 설명하는 가장 대표적인 예시가 되어버렸지만 말이야.',
         );
         await tachyon.say_and_wait(
-          '簡単に言えば、放射性物質と、放射線で作動する毒ガスのスイッチと、猫を、外界から完全に隔てた箱へ入れる',
+          '간단히 말해, 방사성 물질과 그 방사선에 반응하는 독가스 장치, 그리고 고양이를 밀폐된 상자 안에 넣는 실험이지.',
         );
         await tachyon.say_and_wait(
-          '放射性物質がいつ崩壊して放射線を出すかは、誰にもわかりません',
+          '방사성 물질이 언제 붕괴하여 방사선을 내뿜을지는 아무도 모른다네.',
         );
         await tachyon.say_and_wait(
-          'つまり、スイッチが落ちるかどうかもわからない。箱を開けるまで、猫は死と生の重ね合わせにありますわ',
+          '즉, 장치가 작동할지 안 할지도 알 수 없지. 상자를 열기 전까지 고양이는 죽어 있는 상태와 살아 있는 상태가 동시에 중첩되어 있는 셈이라네.',
         );
       } else {
         await tachyon.say_and_wait(
-          'この実験については、今も各学派がそれぞれの解釈を持っていますわ。ですが、どれも根は同じ……この実験で最も重要なものは、何だかわかりますの？',
+          '이 실험에 대해서는 오늘날 여러 학파가 저마다의 견해를 내놓고 있지. 하지만 그 본질은 변하지 않아…… 자네는 이 실험에서 가장 중요한 것이 무엇이라고 생각하나?',
         );
       }
-      era.printButton('「……猫？」', 1);
-      era.printButton('「……毒ガス？」', 2);
+      era.printButton('「……고양이?」', 1);
+      era.printButton('「……독가스?」', 2);
       await era.input();
       await tachyon.say_and_wait(
-        'はは、たしかに、それがなければ実験は成立しませんわ……ですが、どちらも違いますのよ',
+        '하하, 확실히 그것들이 없으면 실험 자체가 성립되지 않으니 정답이라 할 수도 있겠군…… 하지만 틀렸어.',
       );
       era.println();
       await era.printAndWait([
-        '突然、',
+        '갑자기 ',
         tachyon.get_colored_name(),
-        ' が湯から立ち上がり、',
+        '이 온천에서 일어나 ',
         you.get_colored_name(),
-        ' に向かい、目と目を合わせた',
+        '을(를) 정면으로 마주 보았다. 두 사람의 시선이 얽혔다.',
       ]);
       await era.printAndWait(
-        'ワイン色の瞳は、長く熟した蜜の泉のように、人を酔わせる',
+        '그녀의 와인빛 눈동자는 잘 익은 과실주처럼 사람을 매료시켰다.',
       );
       await era.printAndWait([
-        'ふと ',
+        '문득 ',
         you.get_colored_name(),
-        ' は思う。こんな',
+        '은(는) 생각했다. 이런 ',
         tachyon.sex,
-        'も、かつては自分の目を狂った目だと評した',
+        '는 자신을 보고 광기 어린 눈을 가졌다고 평한 적이 있었다.',
       ]);
       await era.printAndWait([
-        'では今、',
+        '그렇다면 지금 그녀의 눈동자에 비친 ',
         tachyon.sex,
-        'の瞳に映っているのは、何だろう',
+        '의 모습은 과연 어떠할까.',
       ]);
       era.println();
-      await tachyon.say_and_wait('答えは—————『観測者』ですわ');
+      await tachyon.say_and_wait('정답은————— 『관측자』라네.');
       await tachyon.say_and_wait(
-        '猫が死んでいようと生きていようと、それはただの『可能』。限りなく近づいても、定まらない可能性です',
+        '고양이가 살았는지 죽었는지는 어디까지나 『가능성』에 불과해. 무한히 수렴하지만 정해지지 않은 가능성이지.',
       );
       await tachyon.say_and_wait(
-        '観測が加わって初めて、可能性は定まり、生死どちらであれ結果になりますわ',
+        '오직 관측이 더해졌을 때만 가능성이 고정되어, 생과 사라는 결과로 나타나는 걸세.',
       );
       era.println();
-      await era.printAndWait('つまり');
+      await era.printAndWait('즉, 다시 말해.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は手を伸ばす。',
+        '은 손을 뻗어 ',
         you.get_colored_name(),
-        ' の目に触れようとして、それでも震え、傷つけまいとしている',
+        '의 눈을 만지려 했다. 하지만 그녀의 손은 어쩐지 조금 떨리고 있었고, 혹시라도 상처를 입힐까 두려워하는 듯 보였다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は自ら',
+        '은(는) 먼저 ',
         tachyon.sex,
-        'の手を取り、ゆっくり、しかし確かに、自分の両目へ近づけた',
+        '의 손을 맞잡았다. 그리고 느릿하지만 확실하게 자신의 눈가로 그녀의 손을 이끌었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('あなたが、私の観測者ですわ');
+      await tachyon.say_and_wait('자네가 바로 나의 관측자라네.');
       await tachyon.say_and_wait([
         tachyon.get_colored_name(),
-        ' の可能性を、固定した人',
+        '의 가능성을 고정해 주는 단 한 사람이지.',
       ]);
       await tachyon.say_and_wait([
-        '今この瞬間の ',
+        '지금 이 순간의 ',
         tachyon.get_colored_name(),
-        ' を、決めた人',
+        '을 결정해 주는 사람 말일세.',
       ]);
       await tachyon.say_and_wait(
-        'この実験では、あなたが研究者。私は、あなたが箱へ入れた猫にすぎませんわ',
+        '이 실험에서 연구자는 자네고, 나는 그저 자네가 상자 속에 넣은 고양이일 뿐이라네.',
       );
       era.println();
-      await era.printAndWait('そっと、触れた');
-      await era.printAndWait('特別な感触はない。眼球を触れられた刺痛だけだ');
+      await era.printAndWait('그녀의 손가락이 조심스럽게 닿았다.');
+      await era.printAndWait('눈동자에 닿은 이물감 외에는 특별한 감각은 없었다.');
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         tachyon.get_colored_name(),
-        ' は、それで足りたように、自ら手を引いた',
+        '은 그것만으로 만족한 듯 스스로 손을 거두었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'これからの実験……どうぞ、よろしくお願いいたしますわ',
+        '앞으로의 실험도…… 부디 잘 부탁하네.',
       );
-      await tachyon.say_and_wait('私の、親愛なる教授くん');
+      await tachyon.say_and_wait('나의 친애하는 교수 군.');
       await tachyon.say_and_wait(
-        '上がったら、用意した贈り物を忘れないでくださいまし',
+        '이따가 밖으로 나가면 내가 준비한 선물을 잊지 말게나.',
       );
       era.println();
       await era.printAndWait([
-        '言い終えると、',
+        '말을 마친 뒤, ',
         tachyon.get_colored_name(),
-        ' は先に岸へ上がった',
+        '은 먼저 탕 위로 올라갔다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'そういえば、今日の薬は冷たい牛乳に入れてありますわ。忘れずに飲んでくださいまし',
+        '참, 오늘 먹을 약은 차가운 우유에 섞어 두었으니 잊지 말고 마시게.',
       );
       era.println();
       await era.printAndWait(
-        '…………せめて、冷たい牛乳を用意してくれる。これも成長、なのか？',
+        '…………적어도 차가운 우유를 챙겨줄 정도로는 성장했다고 봐도 되는 걸까.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、依存を刷り込まれた人間に近い考えを巡らせながら、もうしばらく湯に浸かることにした',
+        '은(는) 마치 가스라이팅이라도 당한 듯한 생각을 하며, 온천욕을 조금 더 즐기기로 했다.',
       ]);
     };
     f.title = title;
