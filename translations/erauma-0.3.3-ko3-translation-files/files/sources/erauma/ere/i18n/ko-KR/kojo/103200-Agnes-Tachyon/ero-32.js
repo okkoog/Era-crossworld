@@ -1542,223 +1542,223 @@ module.exports = {
     );
   },
 
-  // [번역 대상] cum_in_mouth_tr_tit
+  // [번역 완료] cum_in_mouth_tr_tit
   async cum_in_mouth_tr_tit(tachyon, you, callname) {
-    await tachyon.say_and_wait('ちゅ❤️ぐちゅ❤️ちゅる❤️');
+    await tachyon.say_and_wait('츄❤️ 꾸츄❤️ 츄릅❤️');
     era.println();
     await era.printAndWait([
-      '射精された精液が、',
+      '사정한 정액이 ',
       tachyon.get_colored_name(),
-      ' の喉へ注がれる。',
+      '의 목구멍으로 흘러들었다.',
     ]);
     await era.printAndWait([
-      'だが射精量が多すぎて、',
+      '하지만 사정량이 지나치게 많아 ',
       tachyon.get_colored_name(),
-      ' が一度に飲みきれる量を超えていた。',
+      '이(가) 한 번에 삼킬 수 있는 양을 넘겼다.',
     ]);
     await era.printAndWait([
-      '白い精液が口角から乳房へ流れ落ち、',
+      '하얀 정액이 입가에서 가슴으로 흘러내리자 ',
       tachyon.get_colored_name(),
-      ' は慌てて片手で胸を支え、落ちた精液を再び口へ戻す。',
+      '은(는) 서둘러 한 손으로 가슴을 받치고 흘러내린 정액을 다시 입으로 가져갔다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('ちゅ❤️ちゅる❤️');
-    await tachyon.say_and_wait('まだ……');
+    await tachyon.say_and_wait('츄❤️ 츄릅❤️');
+    await tachyon.say_and_wait('아직……');
     await tachyon.say_and_wait([
-      'これらはすべて ',
+      '이건 전부 ',
       callname,
-      ' の大切な因子ですわ❤️無駄にはできませんわ❤️',
+      '의 소중한 인자라네❤️ 헛되이 할 수는 없지❤️',
     ]);
     era.println();
     await era.printAndWait([
-      '自分の体の分を舐め終えると、',
+      '몸에 묻은 것을 다 핥고 나자 ',
       tachyon.get_colored_name(),
-      ' は余韻の残る肉棒へ目を向ける。',
+      '은(는) 여운이 남은 남근에 눈길을 돌렸다.',
     ]);
     await era.printAndWait([
       tachyon.sex,
-      'は強く一口吸い、竿の中に残った精液を吸い出す。',
+      '은(는) 힘껏 빨아들여 남근 안에 남아 있던 정액까지 끌어냈다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('これで……綺麗になりましたわね❤️');
+    await tachyon.say_and_wait('이제…… 깨끗해졌군❤️');
     era.println();
     await era.printAndWait([
-      '集めた精液を口の中に溜め、見せてから、',
+      '모은 정액을 입 안에 머금고 보여 준 뒤 ',
       tachyon.get_colored_name(),
-      ' はゆっくり白濁を飲み下す。',
+      '은(는) 천천히 흰 액체를 삼켰다.',
     ]);
     await era.printAndWait([
-      '喉が色っぽく上下し、',
+      '목이 요염하게 움직여 ',
       you.get_colored_name(),
-      ' に飲み込む過程を見せつけるかのようだ。',
+      '에게 삼키는 과정을 보여 주는 듯했다.',
     ]);
     era.println();
     await tachyon.say_and_wait(
-      'はあっ……また空きましたわ❤️もっと出して、入ってきませんの❤️',
+      '하앗…… 다시 비었군❤️ 더 내놓게, 들어오지 않겠나❤️',
     );
   },
 
-  // [번역 대상] cum_in_throat
+  // [번역 완료] cum_in_throat
   async cum_in_throat(tachyon, you, callname) {
-    await tachyon.say_and_wait('ん……ごく……ごくり……');
+    await tachyon.say_and_wait('음…… 꿀꺽…… 꼴깍……');
     era.println();
     if (Math.random() < 0.5) {
-      await era.printAndWait('この瞬間を、長く待っていたかのようだ。');
+      await era.printAndWait('마치 이 순간을 오랫동안 기다린 듯했다.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は一口また一口、喜んで射精された白濁をすべて飲み下す。',
+        '은(는) 한 모금씩 기꺼이 사정된 흰 액체를 전부 삼켰다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('ぷはっ……');
+      await tachyon.say_and_wait('푸하앗……');
       era.println();
-      await era.printAndWait('開いた口と舌に、白い糸が少し残っている。');
+      await era.printAndWait('벌어진 입과 혀에 하얀 실 같은 흔적이 조금 남아 있었다.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はそのまま口を開け、舌で口内の精液を一つに集める。',
+        '은(는) 그대로 입을 벌린 채 혀로 입 안의 정액을 한데 모았다.',
       ]);
-      await era.printAndWait('そして、もう一度飲み下す。');
+      await era.printAndWait('그리고 다시 한번 삼켰다.');
       era.println();
-      await tachyon.say_and_wait('ご馳走さまでしたわ❤️');
+      await tachyon.say_and_wait('잘 먹었네❤️');
     } else {
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' の前で舌を出し、自分が搾った大量の精液を見せる。',
+        '의 앞에서 혀를 내밀어 자신이 받아 낸 많은 정액을 보여 주었다.',
       ]);
       await era.printAndWait([
-        'いつも自信に満ちた顔が白濁に汚される姿が、',
+        '언제나 자신만만하던 얼굴이 흰 액체로 더러워진 모습이 ',
         you.get_colored_name(),
-        ' の内側の欲を煽る。',
+        '의 마음속 욕망을 부추겼다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'これが、',
+        '이것이 ',
         callname,
-        ' の因子ですわね……実験に使うなら……',
+        '의 인자군…… 실험에 쓴다면……',
       ]);
       era.println();
-      await era.printAndWait('そう言いながらも、口の中でしばらく弄んだあと……');
+      await era.printAndWait('그렇게 말하면서도 한동안 입 안에서 굴리다가……');
       era.println();
-      await tachyon.say_and_wait('ぐちゅ……ぐちゅ……ぷはっ❤️');
+      await tachyon.say_and_wait('꾸츄…… 꾸츄…… 푸하앗❤️');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' に向かって、もう何もない小さな口を開ける。',
+        '을(를) 향해 이제 아무것도 남지 않은 작은 입을 벌렸다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '全部飲みましたわ……ではもう一度、するしかありませんわね❤️',
+        '전부 삼켰네…… 그러니 한 번 더 할 수밖에 없겠군❤️',
       );
     }
   },
 
-  // [번역 대상] cum_in_throat_force
+  // [번역 완료] cum_in_throat_force
   async cum_in_throat_force(tachyon, you) {
-    await tachyon.say_and_wait('んぐっぐぐ❤️んぅ❤️んぐ❤️');
+    await tachyon.say_and_wait('응그윽❤️ 으응❤️ 응그❤️');
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '은(는) ',
       tachyon.get_colored_name(),
-      ' の頭を強く押さえる。',
+      '의 머리를 세게 눌렀다.',
     ]);
     await era.printAndWait([
-      '亀頭を ',
+      '귀두를 ',
       tachyon.get_colored_name(),
-      ' の喉の奥へ押しつけたまま、射精を始める。',
+      '의 목구멍 깊숙이 밀어 넣은 채 사정하기 시작했다.',
     ]);
     await era.printAndWait([
-      '射精が終わっても ',
+      '사정이 끝난 뒤에도 ',
       you.get_colored_name(),
-      ' は肉棒で塞ぎ続け、精液が ',
+      '은(는) 남근으로 막아 둔 채 정액이 ',
       tachyon.get_colored_name(),
-      ' の胃の隅々まで染み込むようにする。',
+      '의 위장 구석구석까지 스며들게 했다.',
     ]);
     era.println();
     await era.printAndWait([
-      '酸欠のせいだろう、肉棒を抜いたあと ',
+      '산소가 부족했던 탓일까, 남근을 빼낸 뒤 ',
       tachyon.get_colored_name(),
-      ' の表情は少し呆けている。',
+      '의 표정은 약간 멍해 보였다.',
     ]);
     await era.printAndWait(
-      'だが無意識に、口辺の白い漿液と曲がった毛まで口へ運び……',
+      '하지만 무의식중에 입가의 흰 액체와 구부러진 털까지 입으로 가져갔다……',
     );
   },
 
-  // [번역 대상] cum_in_tit
+  // [번역 완료] cum_in_tit
   async cum_in_tit(tachyon, you, callname) {
-    await tachyon.say_and_wait('濃いですわ……❤️');
+    await tachyon.say_and_wait('진하군……❤️');
     await tachyon.say_and_wait([
-      '全部顔に塗られて……いっぱい、',
+      '얼굴에 전부 묻어서…… 온통 ',
       callname,
-      ' の匂い❤️',
+      '의 냄새가 나네❤️',
     ]);
     era.println();
-    await era.printAndWait('濃い漿液が顔を伝い、胸へ落ちる。');
+    await era.printAndWait('진한 액체가 얼굴을 타고 흘러 가슴으로 떨어졌다.');
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' はまず顔に付いた精液を拭き取り、手の上へ集める。',
+      '은(는) 먼저 얼굴에 묻은 정액을 닦아 손바닥에 모았다.',
     ]);
     await era.printAndWait(
-      'だが胸の跡は、うっかり忘れたかのように残している。',
+      '하지만 가슴에 남은 흔적은 깜빡 잊기라도 한 듯 내버려 두었다.',
     );
     await era.printAndWait([
-      '裸の乳に、',
+      '맨가슴 위에는 ',
       you.get_colored_name(),
-      ' が射精した腥い白濁がべっとりと乗っている。',
+      '이(가) 사정한 비릿한 흰 액체가 잔뜩 묻어 있었다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('あら……忘れていましたわ❤️');
+    await tachyon.say_and_wait('어머…… 잊고 있었군❤️');
     era.println();
     await era.printAndWait([
       you.get_colored_name(),
-      ' の視線が胸へ吸い寄せられるのを見て。',
+      '의 시선이 가슴으로 향하는 것을 보고 ',
     ]);
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は、わざとらしい、作り物の驚きを上げる。',
+      '은(는) 일부러 놀란 척했다.',
     ]);
-    await era.printAndWait('胸の白濁を層ごとに拭い、口へ運ぶ。');
+    await era.printAndWait('가슴에 묻은 흰 액체를 조금씩 닦아 입으로 가져갔다.');
     era.println();
-    await tachyon.say_and_wait('ちゅ……ちゅる❤️ご馳走さまでしたわ❤️');
+    await tachyon.say_and_wait('츄…… 츄릅❤️ 잘 먹었네❤️');
     era.println();
     await era.printAndWait([
       tachyon.sex,
-      'は指を吸い、口を開け、綺麗になった舌と唇を見せて、取りこぼしがないと示す。',
+      '은(는) 손가락을 빨고 입을 벌려 깨끗해진 혀와 입술을 보여 주며 한 방울도 남기지 않았음을 알렸다.',
     ]);
   },
 
-  // [번역 대상] doggy_style
+  // [번역 완료] doggy_style
   async doggy_style(tachyon, you, callname, y_call_t, is_first) {
     if (is_first) {
       await tachyon.say_and_wait(
-        'この体勢ですと、雄をいちばん完全に受けられる体位ですわ。',
+        '이 자세라면 수컷을 가장 온전히 받아들일 수 있겠군.',
       );
-      await tachyon.say_and_wait('人体工学の観点から申しますと……うっ！');
+      await tachyon.say_and_wait('인체공학적 관점에서 설명하자면…… 윽!');
       era.println();
       await you.print_and_wait([
         y_call_t,
-        ' が喋り続ける隙に、タイミングを見て',
+        '이(가) 계속 떠드는 틈을 노려 ',
         tachyon.sex,
-        'の晒した蜜穴へ挿入する。',
+        '의 드러난 안쪽으로 삽입했다.',
       ]);
       era.println();
-      await you.say_and_wait('続きは？');
-      await you.print_and_wait(['わざと ', y_call_t, ' に聞く。']);
+      await you.say_and_wait('그다음은?');
+      await you.print_and_wait(['일부러 ', y_call_t, '에게 물었다.']);
       await you.print_and_wait([
         y_call_t,
-        ' は顔を赤らめ、完全に満たされた喜悦に沈んでいる。',
+        '은(는) 얼굴을 붉히며 온몸이 채워진 기쁨에 잠겨 있었다.',
       ]);
     } else {
-      await tachyon.say_and_wait('深いですわ❤️ 一気に、いっぱいに……❤️');
+      await tachyon.say_and_wait('깊군❤️ 단번에 가득……❤️');
       era.println();
       await tachyon.print_and_wait(
-        '肉棒が穴口へ強く沈み、とうに城門を失った自分の蜜穴を貫く。',
+        '남근이 입구를 세차게 파고들어 이미 방어할 힘을 잃은 안쪽을 꿰뚫었다.',
       );
-      await tachyon.print_and_wait('狭い雌穴が喜んで収縮し、肉棒に吸い付く……');
+      await tachyon.print_and_wait('좁은 안쪽이 기쁘게 수축하며 남근을 붙잡았다……');
     }
   },
 
