@@ -1881,9 +1881,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] kiku_sho_win
+  // [번역 완료] kiku_sho_win
   kiku_sho_win: (() => {
-    const title = '勝てるわよ';
+    const title = '이길 수 있어';
     /**
      * Plan A 専用（Plan B は菊花賞出走不可）
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -1895,7 +1895,7 @@ module.exports = {
      * @param {PrintedSpan} c_call_t マンハッタンカフェのアグネスタキオンへの呼び方
      * @param {number} love アグネスタキオンのプレイヤーへの恋慕値
      * @param {boolean} coffee_kiku_sho マンハッタンカフェが菊花賞に出走するか
-     * @param {boolean} win_triple_crowns アグネスタキオンが三冠を制したか
+     * @param {boolean} win_triple_crowns アグネスタキオンが삼관を制したか
      * @param {boolean} invincible アグネスタキオンが無敗か
      */
     const f = async (
@@ -1913,176 +1913,176 @@ module.exports = {
     ) => {
       if (win_triple_crowns) {
         if (invincible) {
-          await you.say_as_passer_by_and_wait('実況', [
-            '無敗三冠の誕生！ 歴史の車輪が、またひとつ回った！',
+          await you.say_as_passer_by_and_wait('실황', [
+            '무패 삼관의 탄생! 역사의 수레바퀴가 또 한 번 돌아갑니다!',
             tachyon.get_colored_name(),
-            '、無敗三冠達成！',
+            ', 무패 삼관 달성!',
           ]);
         } else {
-          await you.say_as_passer_by_and_wait('実況', [
-            '三冠',
+          await you.say_as_passer_by_and_wait('실황', [
+            '삼관',
             tachyon.uma_sex_title,
-            '誕生！ 同年最強！ 最も速く、最も幸運で、最も強い',
+            '탄생! 동세대 최강! 가장 빠르고, 가장 운이 좋고, 가장 강한 ',
             tachyon.uma_sex_title,
-            '、それが ',
+            '! 바로 ',
             tachyon.get_colored_name(),
             '！',
           ]);
         }
       } else {
-        await you.say_as_passer_by_and_wait('実況', [
-          '強敵を退け、いち早くゴールを駆け抜けたのは、超光速の',
-          tachyon.sex_code - 1 ? '姫' : '王子',
+        await you.say_as_passer_by_and_wait('실황', [
+          '강적들을 물리치고 누구보다 먼저 결승선을 통과한 것은 초광속의 ',
+          tachyon.sex_code - 1 ? '공주' : '왕자',
           '、',
           tachyon.get_colored_name(),
-          '！ 菊花賞最強の',
+          '! 국화상 최강의 ',
           tachyon.uma_sex_title,
-          'は、',
+          '는, ',
           tachyon.get_colored_name(),
           '！',
         ]);
       }
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' が菊花賞を制した。疑いようのない勝利',
+        ' 이(가) 국화상을 제패했다. 누구도 부정할 수 없는 승리였다.',
       ]);
       await era.printAndWait(
-        'だが、祝杯を上げる間もなく、招かれざる客が訪れた',
+        '그러나 축배를 들기도 전에 반갑지 않은 손님이 찾아왔다.',
       );
       era.println();
-      await coffee.say_and_wait([c_call_t, '……今日の走り方は……']);
-      await tachyon.say_and_wait(['おや、', call_25, '、どうかしましたか？']);
+      await coffee.say_and_wait([c_call_t, '……오늘 달리는 방식은……']);
+      await tachyon.say_and_wait(['오호, ', call_25, ', 무슨 일인가?']);
       era.println();
       await era.printAndWait([coffee.get_colored_name()]);
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の Plan B の後継者',
+        '의 플랜 B를 이을 후계자.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の Plan A の試金石',
+        '의 플랜 A를 시험할 시금석.',
       ]);
       if (coffee_kiku_sho) {
         await era.printAndWait([
-          'この菊花賞における、',
+          '이번 국화상에서 ',
           tachyon.get_colored_name(),
-          ' 最大の敵',
+          '의 최대 적수.',
         ]);
       }
       if (era.get('cflag:25:招募状态') === recruit_flags.yes) {
         await era.printAndWait([
-          '同時に、',
+          '동시에 ',
           you.get_colored_name(),
-          ' のもうひとりの担当',
+          '이(가) 맡고 있는 또 다른 ',
           tachyon.uma_sex_title,
         ]);
       }
       era.println();
-      await coffee.say_and_wait([c_call_t, '、あなたの走り方……以前と違う……']);
+      await coffee.say_and_wait([c_call_t, ', 네 주법…… 예전과 달라졌어……']);
       await tachyon.say_and_wait(
-        'ふふ、何か問題ですの？ 走り方は、もともと進化し続けるものでしょう？',
+        '후후, 무슨 문제라도 있나? 주법이란 원래 끊임없이 발전하는 것이지 않은가?',
       );
       await coffee.say_and_wait(
-        '……別に。ただ、おめでとう。もうひとりの自分を、越えたわ',
+        '……별건 아니야. 다만 축하해. 또 다른 자신을 넘어섰구나.',
       );
       await tachyon.say_and_wait([
-        '……もうひとりの自分？ 待ちなさい、',
+        '……또 다른 자신이라고? 잠깐, ',
         call_25,
-        '！ どういう意味ですの！',
+        '! 그게 무슨 뜻인가!',
       ]);
       await coffee.say_and_wait(
-        '……どういう意味なのかしら。私は、友人の言葉を伝えているだけ',
+        '……무슨 뜻일까. 난 그저 친구가 전한 말을 대신한 것뿐이야.',
       );
       if (era.get('cflag:25:招募状态') === recruit_flags.yes) {
         if (era.get('love:25') >= 75) {
           await coffee.say_and_wait([
-            'それと、担当',
+            '그리고 네가 담당하는 ',
             tachyon.uma_sex_title,
-            'でも……他人の恋人を長く独占しないで、',
+            '라고 해도…… 남의 연인을 너무 오래 독차지하지 말아 줘, ',
             c_call_t,
           ]);
           await era.printAndWait([
-            '言い終えると、',
+            '말을 마친 뒤 ',
             coffee.get_colored_name(),
-            ' は ',
+            '은(는) ',
             you.get_colored_name(),
-            ' の頬にキスをし、所有を示した',
+            '의 뺨에 입을 맞춰 자신의 마음을 드러냈다.',
           ]);
         } else if (era.get('love:25') >= 50) {
           await coffee.say_and_wait([
-            '今日は特別な日だから、',
+            '오늘은 특별한 날이니까 ',
             c_call_y,
-            ' を少し貸してあげる……あとで返して',
+            '을(를) 잠깐 빌려줄게…… 나중에 돌려줘.',
           ]);
         } else {
           await coffee.say_and_wait([
-            'それから……あとで ',
+            '그리고…… 나중에 ',
             c_call_y,
-            ' を返してね',
+            '을(를) 돌려줘.',
           ]);
         }
       }
       era.println();
       await tachyon.say_and_wait([
         call_25,
-        '！…………ちっ、行ってしまいましたわ……',
+        '! …………쳇, 가 버렸군……',
       ]);
       await era.printAndWait([
-        '大丈夫かと、',
+        '괜찮은지 걱정되어 ',
         you.get_colored_name(),
-        ' は心配そうに ',
+        '은(는) 걱정스러운 눈으로 ',
         tachyon.get_colored_name(),
-        ' を見た',
+        '을(를) 바라보았다.',
       ]);
       if (era.get('love:25') >= 75) {
         if (love < 50) {
           await tachyon.say_and_wait([
-            '別に……それにしても、',
+            '별거 아니네…… 그건 그렇고 ',
             callname,
-            '、随分とモテますわね',
+            ', 꽤 인기가 많은 모양이군.',
           ]);
         } else if (love < 75) {
           await tachyon.say_and_wait([
-            '別に……それにしても ',
+            '별거 아니네…… 그건 그렇고 ',
             callname,
-            '、色恋の借りが多すぎますわよ',
+            ', 연애 문제로 얽힌 빚이 너무 많군.',
           ]);
         } else {
           await tachyon.say_and_wait([
-            '別に……それより、',
+            '별거 아니네…… 그것보다 ',
             callname,
-            '……色恋の借りが多すぎますわよ',
+            '……연애 문제로 얽힌 빚이 너무 많군.',
           ]);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は歯噛みしながら振り返って言った',
+            '은(는) 이를 악문 채 돌아보며 말했다.',
           ]);
           era.println();
           await tachyon.say_and_wait([
             call_25,
-            ' に汚された場所は、きちんと消毒しなければ！',
+            '이(가) 건드린 곳은 제대로 소독해야 하지 않겠나!',
           ]);
           era.println();
           await era.printAndWait([
-            'それを口実に、',
+            '그 말을 핑계로 ',
             tachyon.sex,
-            'は ',
+            '은(는) ',
             you.get_colored_name(),
-            ' の頬に何度もキスを重ね、',
+            '의 뺨에 여러 차례 입을 맞췄고 ',
             coffee.get_colored_name(),
-            ' が先に残したキスを十倍百倍で塗り潰そうとした',
+            '이(가) 먼저 남긴 입맞춤의 흔적을 열 배, 백 배로 덮어 버리려 했다.',
           ]);
         }
       }
       era.println();
       await era.printAndWait([
-        'とにかく、何はともあれ、',
+        '어찌 됐든 ',
         you.get_colored_name(),
-        ' と ',
+        '와 ',
         tachyon.get_colored_name(),
-        ' の栄光の菊花賞は幕を閉じた',
+        '의 영광스러운 국화상은 막을 내렸다.',
       ]);
     };
     f.title = title;
