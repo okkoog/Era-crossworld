@@ -2282,9 +2282,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] hoch_sho_win
+  // [번역 완료] hoch_sho_win
   hoch_sho_win: (() => {
-    const title = '対照結果の分析';
+    const title = '대조 결과 분석';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -2295,87 +2295,87 @@ module.exports = {
      */
     const f = async (tachyon, you, callname, love, hoch_sho, sats_sho) => {
       await era.printAndWait([
-        '当然のように、',
+        '당연하다는 듯 ',
         tachyon.get_colored_name(),
-        ' は ',
+        '은(는) ',
         hoch_sho,
-        ' を制した',
+        '에서 승리했다.',
       ]);
-      era.printButton('「すごいレースだった！」', 1);
+      era.printButton('「정말 대단한 레이스였어!」', 1);
       await era.input();
       await tachyon.say_and_wait(
-        'ふぅ……ふぅ……くふふ、その反応、毎回大袈裟ですわね。本気で走ってもいないのに、何がすごいのです',
+        '후우…… 후우…… 크후후, 자네는 매번 반응이 너무 과장되군. 진심으로 달린 것도 아닌데 무엇이 그리 대단하다는 건가?',
       );
       era.println();
-      await era.printAndWait([tachyon.sex, 'は面白がるように言った']);
+      await era.printAndWait([tachyon.sex, '은(는) 재미있다는 듯 말했다.']);
       era.println();
-      await you.say_and_wait('大袈裟じゃない');
+      await you.say_and_wait('과장하는 게 아니야.');
       await you.say_and_wait(
-        '本気でもそうでなくても、タキオンの走りは同じように惹きつける。たとえば……そうだ、光電子だ',
+        '진심이든 아니든 타키온의 달리기는 똑같이 사람을 사로잡아. 이를테면…… 그래, 광전자야.',
       );
       era.println();
       await tachyon.say_and_wait('光電子……？');
       era.println();
       await you.say_and_wait(
-        '電極に当たる光束は、強弱にかかわらず電子を飛ばす。周波数、つまり規格の違いだ',
+        '전극에 닿는 빛은 강약에 상관없이 전자를 방출시키지. 주파수, 다시 말해 빛의 성질이 다른 거야.',
       );
       await you.say_and_wait(
-        '強弱も本気も関係ない。タキオンの走りは、自分にとって次元を超えた、電極から電子を引き出せる唯一の光だ',
+        '빛의 강약도 진심인지도 관계없어. 내게 타키온의 달리기는 차원을 넘어 전극에서 전자를 끌어낼 수 있는 유일한 빛이거든.',
       );
       era.println();
-      await tachyon.say_and_wait('……なんです、その比喩は');
+      await tachyon.say_and_wait('……그게 무슨 비유인가?');
       era.println();
-      await you.say_and_wait('ええ……だめか');
+      await you.say_and_wait('에에…… 별로였나?');
       await you.say_and_wait(
-        '時間をかけて考えたのに、わりと自信あったんだが……',
+        '나름대로 시간을 들여 생각한 건데 자신 있었거든……',
       );
       era.println();
       if (love > 75) {
         await tachyon.say_and_wait(
-          'まあ……言いたいことはわかりましたわ。つまり、私にしか外せない貞操帯を着けている、ということですの？',
+          '흠…… 하고 싶은 말은 알겠네. 그러니까 나만 풀 수 있는 정조대를 차고 있다는 뜻인가?',
         );
-        await era.printAndWait('いや、その比喩のほうがひどい……');
+        await era.printAndWait('아니, 그쪽 비유가 더 심하잖아……');
       } else {
         await tachyon.say_and_wait(
-          'まあ……言いたいことはわかりましたわ。走りがどうであれ、私なら満足させられる、ということですのね？',
+          '뭐…… 뜻은 알겠네. 어떤 달리기를 보여 주든 나라면 자네를 만족시킬 수 있다는 거겠지?',
         );
       }
-      await you.say_and_wait('それでも、本気で走ってほしい');
+      await you.say_and_wait('그래도 난 네가 전력으로 달려 줬으면 해.');
       await era.printAndWait([
-        'そこで ',
+        '그 순간 ',
         you.get_colored_name(),
-        ' は、',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' がレース前に言った試験のことを思い出した……',
+        '가 레이스 전에 했던 시험 이야기를 떠올렸다……',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '……問題ありませんわ。少なくとも、',
+        '……문제없네. 적어도 ',
         sats_sho,
-        ' までは問題ありません',
+        '까지는 문제없어.',
       ]);
       era.println();
-      await era.printAndWait('少なくとも……か');
+      await era.printAndWait('적어도…… 라니.');
       await era.printAndWait([
-        '安心できない言葉に、',
+        '안심할 수 없는 말에 ',
         you.get_colored_name(),
-        ' も黙り込んだ',
+        '도 입을 다물었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……その話はもういいですわ。早く戻って実験を続けましょう',
+        '……그 이야기는 이제 됐네. 어서 돌아가 실험을 계속하세.',
       );
       era.println();
       await era.printAndWait([
-        'こうして、',
+        '그렇게 ',
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' の ',
+        '의 ',
         hoch_sho,
-        ' は終わった',
+        '은(는) 끝났다.',
       ]);
-      await era.printAndWait(['次の目標 ', sats_sho, ' は、もう目の前だ！']);
+      await era.printAndWait(['다음 목표 ', sats_sho, '이(가) 이제 눈앞이다!']);
     };
     f.title = title;
     return f;
