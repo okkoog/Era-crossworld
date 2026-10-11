@@ -1979,18 +1979,18 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] office_cook
+  // [번역 완료] office_cook
   async office_cook(tachyon, coffee, you, callname, cook_times, plan_b) {
     if (era.get('relation:32:0') <= 150 && cook_times === 0) {
-      await tachyon.say_and_wait('私に料理を？ 口にできないものはお断りですわ');
-      await era.printAndWait('厳しい食客だ……腕を上げてから出直すしかない');
+      await tachyon.say_and_wait('내게 요리를 대접하겠다고? 먹을 수 없는 물건이라면 사양하겠네.');
+      await era.printAndWait('까다로운 손님이군…… 실력을 더 쌓은 뒤 다시 도전할 수밖에.');
     } else {
       const buffer = [];
       if (!plan_b) {
         buffer.push(async () => {
-          await tachyon.say_and_wait(['頑張って、', callname, '～～']);
+          await tachyon.say_and_wait(['힘내게, ', callname, '～～']);
           await tachyon.say_and_wait(
-            'ん？ 一緒に作るというのは、あなたが作って私が口を挟む、という意味ですわよ？',
+            '음? 같이 만든다는 건 자네가 요리하고 내가 옆에서 참견한다는 뜻일세.',
           );
         });
         if (era.get('relation:32:0') > 375) {
@@ -1998,45 +1998,45 @@ module.exports = {
             async () => {
               await tachyon.say_and_wait([
                 callname,
-                '！ 今日は自分で卵焼きを焼きましたわよ！ 早く食べなさい！',
+                '! 오늘은 직접 달걀말이를 만들었네! 어서 먹어 보게!',
               ]);
               await you.say_and_wait('……');
               await era.printAndWait([
                 you.get_colored_name(),
-                ' は目の前の、少し焦げて卵が外に全部はみ出し、卵焼きというより炒め焼きに卵を足したものを見つめた……',
+                '은(는) 눈앞의 조금 탄 달걀말이를 바라보았다. 내용물이 모두 튀어나와 달걀말이라기보다는 달걀을 넣은 볶음요리에 가까웠다……',
               ]);
-              await era.printAndWait('まあ……味だけは、食べられる');
+              await era.printAndWait('뭐…… 맛만큼은 먹을 만하다.');
             },
             async () => {
               await tachyon.say_and_wait([
                 '……',
                 callname,
-                '、知っていますわね。学園は安全のため、IHなどしか使えませんから、',
+                ', 알고 있겠지? 학원에서는 안전을 위해 인덕션 같은 것밖에 사용할 수 없네.',
               ]);
               await tachyon.say_and_wait(
-                'でも……IHは苦手なのです。だから……私のせいではありませんわ。IHが使いにくいのです。ガスコンロなら絶対にこうはなりません……',
+                '하지만…… 인덕션은 다루기 어렵다네. 그러니…… 내 잘못이 아닐세. 인덕션이 쓰기 힘든 탓이지. 가스레인지였다면 절대로 이렇게 되지 않았을 걸세……',
               );
               await era.printAndWait([
                 you.get_colored_name(),
-                ' は目の前の、真っ黒に焦げた卵を見た。',
+                '은(는) 눈앞의 새까맣게 탄 달걀을 바라보았다.',
               ]);
               await era.printAndWait(
-                '……少し苦く、少し塩辛い。かろうじて食べられる、というところ。',
+                '……조금 쓰고 조금 짜다. 간신히 먹을 수 있는 정도다.',
               );
             },
             async () => {
               await tachyon.say_and_wait(
-                '考えてみれば、トレーナー室で食事を作るのは本来かなり不合理ですわね',
+                '생각해 보면 트레이너실에서 요리하는 것 자체가 상당히 비합리적이군.',
               );
               await era.printAndWait([
-                '今日は',
+                '오늘은 ',
                 tachyon.sex,
-                'が弁当を作ると約束していた ',
+                '가 도시락을 만들기로 약속했던 ',
                 tachyon.get_colored_name(),
-                ' は、出前の箱を二つ取り出した。',
+                '은(는) 배달 음식 상자 두 개를 꺼냈다.',
               ]);
               await era.printAndWait(
-                '……食べられるのは確かだが、もう当初の趣旨から外れている。',
+                '……먹을 수 있는 건 확실하지만 이미 처음의 취지에서 벗어났다.',
               );
             },
           );
@@ -2045,84 +2045,84 @@ module.exports = {
         buffer.push(
           async () => {
             await era.printAndWait([
-              'もともと ',
+              '원래 ',
               you.get_colored_name(),
-              ' と ',
+              '와(과) ',
               tachyon.get_colored_name(),
-              ' は、交代で弁当を作ると決めていた。',
+              '은(는) 번갈아 도시락을 만들기로 정했었다.',
             ]);
             await era.printAndWait([
-              'だが最近は ',
+              '하지만 최근에는 ',
               coffee.get_colored_name(),
-              ' の訓練量が増え、',
+              '의 훈련량이 늘었고 ',
               you.get_colored_name(),
-              ' が立ち止まって弁当を作る暇がなく、',
+              '은(는) 멈춰 서서 도시락을 만들 여유도 없었다.',
             ]);
             await era.printAndWait([
-              'だから最近はほとんど ',
+              '그래서 최근에는 거의 매번 ',
               tachyon.get_colored_name(),
-              ' が作り、',
+              '이(가) 요리하고 ',
               you.get_colored_name(),
-              ' が食べ、食べながら',
+              '은(는) 먹으면서 ',
               tachyon.sex,
-              'と情報を交わす日々だった。',
+              '와 정보를 나누는 나날이 이어졌다.',
             ]);
-            era.printButton('「うまい！」', 1);
+            era.printButton('「맛있어!」', 1);
             await era.input();
-            await tachyon.say_and_wait('ふふ、悪くありませんわね');
+            await tachyon.say_and_wait('후후, 나쁘지 않군.');
             await era.printAndWait([
               you.get_colored_name(),
-              ' の驚きに対して、',
+              '이(가) 놀라워하는데도 ',
               tachyon.get_colored_name(),
-              ' は最後まで波一つない顔だった。',
+              '은(는) 끝까지 표정 하나 바꾸지 않았다.',
             ]);
-            await tachyon.say_and_wait('他にすることも、ありませんもの');
+            await tachyon.say_and_wait('달리 할 일도 없으니까.');
             await era.printAndWait([
-              'その一言を、',
+              '그 말을 ',
               tachyon.sex,
-              'は悲しみを乗せて言ったのだろうか。',
+              '은(는) 슬픈 마음으로 꺼낸 것일까.',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' には、わからない。',
+              '은(는) 알 수 없었다.',
             ]);
           },
           () =>
             era.printAndWait([
               tachyon.get_colored_name(),
-              ' は ',
+              '은(는) ',
               you.get_colored_name(),
-              ' の弁当を普通に食べ終えると、',
+              '의 도시락을 평범하게 다 먹은 뒤 ',
               coffee.get_colored_name(),
-              ' の潜在を引き出す薬剤の研究へ戻っていった。',
+              '의 잠재력을 끌어내는 약제 연구로 돌아갔다.',
             ]),
           async () => {
             await era.printAndWait([
               you.get_colored_name(),
-              ' は ',
+              '은(는) ',
               tachyon.get_colored_name(),
-              ' の弁当を食べた。',
+              '의 도시락을 먹었다.',
             ]);
             await era.printAndWait([
-              '今の',
+              '지금의 ',
               tachyon.sex,
-              'は以前より無口だ。つまらない話より、',
+              '은(는) 예전보다 말수가 적었다. 시시한 이야기보다는 ',
               tachyon.sex,
-              'は ',
+              '은(는) ',
               coffee.get_colored_name(),
-              ' をどう速く走らせるかに集中している。',
+              '을(를) 어떻게 더 빠르게 달리게 할지에 집중하고 있었다.',
             ]);
             await era.printAndWait([
-              '寡黙で、集中力があり、料理がうまい。ある意味、今の ',
+              '말수가 적고 집중력이 뛰어나며 요리도 잘한다. 어떤 의미에서는 지금의 ',
               tachyon.get_colored_name(),
-              ' はかつての',
+              '은(는) 과거의 ',
               tachyon.sex,
-              'より、世間のいう優れた女性像に近い。',
+              '보다 세상 사람들이 말하는 훌륭한 여성상에 더 가까웠다.',
             ]);
             await era.printAndWait([
-              'だがやはり……あの頃の、勢いと熱に満ちた',
+              '하지만 역시…… 그 시절의 열정과 활기로 가득했던 ',
               tachyon.sex,
-              'が恋しい。',
+              '이(가) 그리웠다.',
             ]);
           },
         );
