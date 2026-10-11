@@ -373,131 +373,131 @@ module.exports = {
 
   // [번역 대상] palace
   palace: (() => {
-    const title = (treve) => `${treve.sex}は叶った美しい夢`;
+    const title = (treve) => `${treve.sex}가 이뤄 낸 아름다운 꿈`;
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname トレヴのプレイヤーへの呼び方
      */
     const f = async (treve, you, callname) => {
-      await era.printAndWait(`${you.name} は、何かの音を聞いた。`);
+      await era.printAndWait(`${you.name}은(는) 무언가 소리를 들었다.`);
       await era.printAndWait(
-        `闇の中で目を開けると、眼前は見知らぬ（まったく見知らぬわけではない）天井だ。`,
+        `어둠 속에서 눈을 뜨자 낯선, 하지만 완전히 낯설지는 않은 천장이 보였다.`,
       );
-      await era.printAndWait(`頭がふわふわして、状況が理解できない。`);
+      await era.printAndWait(`머리가 멍해 상황을 이해하기 어려웠다.`);
       await era.printAndWait(
-        `いつもの場所とはまったく違うところにいる気がする。`,
-      );
-      await era.printAndWait(
-        `ぼんやりした頭で虚空を見つめていると、ふわりとした香りが鼻を打つ。`,
+        `평소 지내던 곳과는 전혀 다른 장소에 있는 것 같았다.`,
       );
       await era.printAndWait(
-        `次いで、一人の${treve.teen_sex_title}が突然目に入る。`,
+        `몽롱한 머리로 허공을 바라보던 중 은은한 향기가 코끝을 스쳤다.`,
       );
-      await era.printAndWait(`柔らかい栗色の髪。澄んだ蒼い双眸。`);
+      await era.printAndWait(
+        `이어서 한 명의 ${treve.teen_sex_title}가 갑자기 시야에 들어왔다.`,
+      );
+      await era.printAndWait(`부드러운 밤색 머리카락과 맑고 푸른 두 눈동자.`);
       await era.printAndWait(
         `그리고 ${treve.sex}의 얼굴에는 아기를 바라보듯 자애로운 미소가 떠올라 있었다.`,
       );
-      await treve.say_and_wait(`Bonjour、よく眠れた？`);
-      await era.printAndWait(`撫でるような優しい声色が、微かな睡気を誘う。`);
+      await treve.say_and_wait(`Bonjour, 잘 잤어?`);
+      await era.printAndWait(`쓰다듬는 듯 다정한 목소리가 남아 있던 졸음을 다시 불러왔다.`);
       await era.printAndWait(
-        `相手の顔を見て、${you.name} はようやく状況を理解し、意識を起こそうとする。`,
+        `상대의 얼굴을 보고서야 ${you.name}은(는) 상황을 이해하고 정신을 차리려 했다.`,
       );
-      await era.printAndWait(`だが、温かい掌がそっと目を覆う。`);
-      await treve.say_and_wait(`もう少し寝て？まだ早いの。`);
-      era.printButton(`「……いや、起きないと。」`, 1);
-      era.printButton(`「君といっしょの朝を楽しみたい。」（恋慕+1）`, 2);
+      await era.printAndWait(`그러나 따뜻한 손바닥이 조용히 두 눈을 가렸다.`);
+      await treve.say_and_wait(`조금만 더 자. 아직 이르잖아.`);
+      era.printButton(`「……아니, 일어나야 해.」`, 1);
+      era.printButton(`「너와 함께하는 아침을 즐기고 싶어.」 (연모 +1)`, 2);
       const ret = await era.input();
-      await treve.say_and_wait(`ふふ、そう。嬉しい。`);
-      await era.printAndWait(`掌の眼帯が外れ、光が視野へ入る。`);
+      await treve.say_and_wait(`후후, 그렇구나. 기뻐.`);
+      await era.printAndWait(`눈을 가렸던 손바닥이 걷히자 빛이 시야로 들어왔다.`);
       await era.printAndWait(
-        `起き上がると、${treve.name} は ${you.name} の寝床に座って微笑んでいる。`,
+        `몸을 일으키자 ${treve.name}는 ${you.name}의 침대에 앉아 미소 짓고 있었다.`,
       );
       await era.printAndWait(
-        `何か名残惜しい気がして少し考えたが、これで十分かもしれない。まずすべきことをしなければ。`,
+        `어쩐지 아쉬운 기분이 들어 잠깐 생각했지만 이 정도면 충분한지도 모른다. 우선 해야 할 일을 해야 한다.`,
       );
-      era.printButton(`「おはよう、${treve.name}。」`, 1);
+      era.printButton(`「좋은 아침, ${treve.name}.」`, 1);
       await era.input();
-      await treve.say_and_wait(`ええ、${you.actual_name}！`);
-      await era.printAndWait(`${treve.name} は歌うように返す。`);
+      await treve.say_and_wait(`응, ${you.actual_name}!`);
+      await era.printAndWait(`${treve.name}는 노래하듯 대답했다.`);
       era.drawLine();
       await era.printAndWait(
-        `凱旋門賞以来、あなたたちは海外のレースを主にしてきた。`,
+        `개선문상 이후 두 사람은 주로 해외 레이스에 출전해 왔다.`,
       );
       await era.printAndWait(
-        `正確には、普段以上の実力を示した結果、海外を主戦場にすると決まった。`,
+        `정확히는 평소 이상의 실력을 발휘한 결과 해외를 주 무대로 삼게 된 것이다.`,
       );
       await era.printAndWait(
-        `張り付く ${treve.name} をなんとか追い、着替えて居間へ行く。`,
+        `찰싹 달라붙는 ${treve.name}를 겨우 떼어 내고 옷을 갈아입은 다음 거실로 향했다.`,
       );
       await era.printAndWait(
-        `卓には佳肴が並び、${treve.name} が ${you.name} を待っている。`,
+        `식탁에는 맛있는 요리가 가득했고 ${treve.name}가 ${you.name}을(를) 기다리고 있었다.`,
       );
-      await era.printAndWait(`正直驚く。${treve.name} は料理も上手い。`);
-      await era.printAndWait(`席に座り、さまざまな料理を眺める。`);
+      await era.printAndWait(`솔직히 놀랐다. ${treve.name}는 요리까지 잘하는구나.`);
+      await era.printAndWait(`자리에 앉아 다양한 요리를 둘러봤다.`);
       await era.printAndWait(
-        `マグロ、アンチョビ、オリーブなどで作った分量のあるサラダ。`,
+        `참치와 앤초비, 올리브 등으로 만든 푸짐한 샐러드.`,
       );
-      await era.printAndWait(`暖かな濃いスープが、美しい香りを放つ。`);
-      await era.printAndWait(`どれも目を奪う品だが、一つだけ特に目立つ。`);
-      await era.printAndWait(`厚いハムと大量のチーズを入れたホットサンド。`);
+      await era.printAndWait(`따뜻하고 진한 수프가 그윽한 향기를 풍겼다.`);
+      await era.printAndWait(`어느 것 하나 눈길을 끌지 않는 요리가 없었지만 특히 눈에 띄는 것이 하나 있었다.`);
+      await era.printAndWait(`두툼한 햄과 치즈를 듬뿍 넣은 따뜻한 샌드위치였다.`);
       await era.printAndWait(
-        `${treve.name} に「いただきます」と告げてから、がつがつ食べ始める。`,
+        `${treve.name}에게 『잘 먹겠습니다』라고 말한 뒤 정신없이 먹기 시작했다.`,
       );
       await era.printAndWait(
-        `濃厚なチーズソースにハムの風味。高級店で食べる味と同じだ。`,
+        `진한 치즈 소스에 햄의 풍미까지. 고급 음식점에서 먹었던 맛과 똑같았다.`,
       );
-      await era.printAndWait(`——味がまったく同じだ。いま思い出した。`);
-      era.printButton(`「……これ、買ってきたのか？」`, 1);
+      await era.printAndWait(`——맛이 완전히 같았다. 이제야 기억이 났다.`);
+      era.printButton(`「……이거, 사 온 거야?」`, 1);
       await era.input();
-      await treve.say_and_wait(`私が作ったのよ？`);
-      await treve.say_and_wait(`あなたがおいしそうに食べるから、研究したの！`);
-      await era.printAndWait(`……この子が天才だと、忘れかけていた。`);
+      await treve.say_and_wait(`내가 만든 건데?`);
+      await treve.say_and_wait(`네가 맛있게 먹길래 연구해 봤어!`);
+      await era.printAndWait(`……이 아이가 천재라는 사실을 잠시 잊고 있었다.`);
       await era.printAndWait(
-        `だが、ここまで再現できるのは、やはり${treve.sex}だ。`,
+        `하지만 이만큼 완벽하게 재현할 수 있다니 역시 ${treve.sex}답다.`,
       );
-      await treve.say_and_wait(`……${callname}、ご褒美をくれるでしょう？`);
+      await treve.say_and_wait(`……${callname}, 상을 줘야 하지 않겠어?`);
       await era.printAndWait(
-        `一瞬、微笑む ${treve.name} が次の瞬間に口を開く。`,
-      );
-      await era.printAndWait(
-        `${you.name} は鮮やかな赤い口腔と舌を見て、なぜか心臓が止まる。`,
+        `방금 전까지 미소 짓던 ${treve.name}가 다음 순간 입을 벌렸다.`,
       );
       await era.printAndWait(
-        `見るべきでないものを見ているような背徳感がある。`,
-      );
-      await treve.say_and_wait(`あ……♪`);
-      await era.printAndWait(
-        `そうして ${treve.name} は耳と尻尾を動かし、期待して ${you.name} を見る。`,
-      );
-      await era.printAndWait(`……つまり、あれをしろ、ということだ。`);
-      await era.printAndWait(
-        `少し躊躇するが、しなければ${treve.sex}が口を開けたままになるのは確かだ。`,
+        `${you.name}은(는) 붉은 입안과 혀를 보고 어째서인지 가슴이 철렁했다.`,
       );
       await era.printAndWait(
-        `とにかくサンドを小さく裂き、ゆっくり${treve.sex}の口へ入れる。`,
+        `보아서는 안 될 것을 보는 듯한 묘한 죄책감이 들었다.`,
       );
-      await treve.say_and_wait(`ん……`);
+      await treve.say_and_wait(`아……♪`);
       await era.printAndWait(
-        `${treve.name} は唇を閉じ、${you.name} の指先をわずかに巻き込む。`,
+        `그렇게 ${treve.name}는 귀와 꼬리를 움직이며 기대에 찬 눈으로 ${you.name}을(를) 바라봤다.`,
       );
-      await era.printAndWait(`生々しい感触と温かさが、指先から脳へ伝わる。`);
+      await era.printAndWait(`……그러니까 저걸 해 달라는 뜻이다.`);
       await era.printAndWait(
-        `それから${treve.sex}は何かを考えながら口を動かし、一口ずつ飲み下す。`,
-      );
-      await treve.say_and_wait(`……ん。`);
-      await era.printAndWait(`目を閉じ、また口を開ける。`);
-      await era.printAndWait(`もう一度、とは思わなかった。`);
-      await era.printAndWait(
-        `背徳と保護欲と内側の刺激。${you.name} はまたサンドを裂く。`,
+        `잠시 망설였지만 응하지 않으면 ${treve.sex}가 계속 입을 벌리고 있을 게 분명했다.`,
       );
       await era.printAndWait(
-        `二度、三度、四度、${treve.sex}の口へ入れ、指先が徐々に湿る。`,
+        `우선 샌드위치를 조금 떼어 천천히 ${treve.sex}의 입에 넣어 주었다.`,
+      );
+      await treve.say_and_wait(`음……`);
+      await era.printAndWait(
+        `${treve.name}는 입술을 다물며 ${you.name}의 손가락 끝을 살짝 머금었다.`,
+      );
+      await era.printAndWait(`생생한 감촉과 온기가 손끝에서 머릿속까지 전해졌다.`);
+      await era.printAndWait(
+        `이어서 ${treve.sex}는 무언가 생각하듯 입을 움직이며 한입씩 삼켰다.`,
+      );
+      await treve.say_and_wait(`……음.`);
+      await era.printAndWait(`눈을 감았다가 다시 입을 벌렸다.`);
+      await era.printAndWait(`다시 한 번 해 달라는 뜻이라고는 생각하지 못했다.`);
+      await era.printAndWait(
+        `묘한 죄책감과 보호 본능, 마음속을 자극하는 감정. ${you.name}은(는) 다시 샌드위치를 떼었다.`,
       );
       await era.printAndWait(
-        `やがて皿のフランス風サンドは消え、すぐ終わりが来る。`,
+        `두 번, 세 번, 네 번 ${treve.sex}의 입으로 가져가는 동안 손끝이 조금씩 젖어 갔다.`,
       );
-      await treve.say_and_wait(`あ、あなたの分まで食べちゃった。`);
+      await era.printAndWait(
+        `이윽고 접시에 있던 프랑스식 샌드위치가 사라지면서 식사는 끝나 갔다.`,
+      );
+      await treve.say_and_wait(`아, 네 몫까지 먹어 버렸네.`);
       era.printButton(`「大丈夫、大丈夫だ、ね！？」`, 1);
       await era.input();
       await treve.say_and_wait(`ええ♪ありがとう♪`);
