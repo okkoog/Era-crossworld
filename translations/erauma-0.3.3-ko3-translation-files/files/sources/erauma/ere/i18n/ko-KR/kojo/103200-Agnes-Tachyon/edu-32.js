@@ -6999,133 +6999,133 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_47_23
+  // [번역 완료] we_47_23
   we_47_23: (() => {
-    const title = '最速？ 最強？';
+    const title = '최속? 최강?';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (tachyon, you) => {
-      await tachyon.print_and_wait('もっと速く');
-      await tachyon.print_and_wait('まだ、もっと速く');
+      await tachyon.print_and_wait('더 빠르게.');
+      await tachyon.print_and_wait('더욱더 빠르게.');
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は夜のグラウンドを走っている',
+        '은(는) 밤의 훈련장을 달리고 있었다.',
       ]);
       await tachyon.print_and_wait(
-        '顧みず限界を追う。速度の限界、可能性の限界を',
+        '앞뒤 가리지 않고 한계를 갈구하며, 속도의 한계와 가능성의 한계를 쫓았다.',
       );
       await tachyon.print_and_wait(
-        'まさに、光速を超える粒子（Tachyon）のように',
+        '마치 광속을 초월하는 입자, 타키온처럼.',
       );
-      await tachyon.print_and_wait('だが……');
+      await tachyon.print_and_wait('하지만……');
       era.println();
-      await tachyon.say_and_wait('ちっ……やはり、だめですわ……');
+      await tachyon.say_and_wait('쳇…… 역시 안 되는 건가……');
       era.println();
-      await tachyon.print_and_wait('万物には代価がある');
+      await tachyon.print_and_wait('만물에는 대가가 따르는 법이다.');
       await tachyon.print_and_wait([
-        'かつて、',
+        '과거에 ',
         tachyon.uma_sex_title,
-        'の限界を破った者が、命を対価にしたという',
+        '의 한계를 돌파하려다 목숨을 대가로 치른 자가 있었다고 한다.',
       ]);
       await tachyon.print_and_wait(
-        'その代価で本当に限界を破れるなら、まだいい',
+        '그런 대가를 치러서라도 정말 한계를 돌파할 수 있다면 상관없었을 것이다.',
       );
       await tachyon.print_and_wait([
-        'だが ',
+        '그러나 ',
         tachyon.get_colored_name(),
-        ' の両脚は、その資格すら許されていない',
+        '의 두 다리에는 그런 대가를 치를 자격조차 허락되지 않았다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'どうしても、限界を破れない……凡庸に甘んじるか、それとも……',
+        '무슨 짓을 해도 한계를 넘을 수 없군…… 평범함에 안주할 것인가, 아니면……',
       );
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は足を止めた',
+        '은(는) 발걸음을 멈추었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……私の限界は、ここですの？');
+      await tachyon.say_and_wait('……나의 한계는 여기까지인 건가?');
       era.println();
       await tachyon.print_and_wait([
         tachyon.uma_sex_title,
-        'の限界ではない。',
+        '의 한계가 아닌, ',
         tachyon.get_colored_name(),
-        ' の限界だ',
+        '만의 한계였다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '…………では、この道が通じないなら……Plan Bを選ぶべきですの',
+        '…………그렇다면 이 길이 막혔을 때는…… 플랜 B를 선택해야 하는 건가.',
       );
       era.println();
       await tachyon.print_and_wait(
-        '「最速」の限界を捨て、「最強」の限界を選ぶ',
+        '「최속」의 한계를 포기하고 「최강」의 한계를 선택하는 것.',
       );
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は失敗していい。失敗のあと、',
+        '은(는) 실패해도 좋다. 실패한 후에 ',
         tachyon.sex,
-        'の代わりになれる者がいればいい',
+        '를 대신할 사람이 있다면 그걸로 충분했다.',
       ]);
-      await tachyon.print_and_wait('夢を他人に託す。自己逃避に近い選択だ');
+      await tachyon.print_and_wait('꿈을 타인에게 맡기는, 자기 도피와도 같은 선택이었다.');
       await tachyon.print_and_wait(
-        '本来なら、これが最も理性的だと自分を説得できたかもしれない。可能性をより実現しうる者に預ける、と',
+        '원래라면 이것이야말로 가장 이성적인 선택이며, 실현 가능성이 더 높은 이에게 가능성을 위탁하는 것이라고 스스로를 설득할 수 있었을 것이다.',
       );
-      await tachyon.print_and_wait('だが……');
+      await tachyon.print_and_wait('하지만……');
       era.println();
-      await you.used_to_say_and_wait('タキオンを信じる');
-      await you.used_to_say_and_wait('タキオンなら、絶対大丈夫だ');
+      await you.used_to_say_and_wait('나는 타키온을 믿어.');
+      await you.used_to_say_and_wait('타키온이라면 분명 문제없을 거야.');
       await you.used_to_say_and_wait([
-        '三冠どころか、',
+        '분명 삼관은 물론이고, ',
         tachyon.uma_sex_title,
-        'の可能性を破ることだって問題ない……！',
+        '의 가능성마저 뛰어넘을 수 있을 거야……!',
       ]);
       era.println();
-      await tachyon.print_and_wait('あの人の、自分への信頼');
+      await tachyon.print_and_wait('그 사람이 자신에게 걸어 주는 신뢰.');
       await tachyon.print_and_wait([
         you.sex,
-        'への裏切りに等しいこの行い……本当に、いいのか',
+        '에 대한 배신이나 다름없는 행위인데…… 정말 괜찮은 것일까.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '……いいえ、裏切りではありません。',
+        '……아니, 이건 배신이 아니야. ',
         you.sex,
-        'により良い選択を渡すだけ……ですから……',
+        '에게 더 나은 선택지를 주는 것뿐이야…… 그러니……',
       ]);
       era.println();
-      await tachyon.print_and_wait('迷い');
-      await tachyon.print_and_wait('恐れ');
-      await tachyon.print_and_wait('戸惑い');
-      await tachyon.print_and_wait('いったい……どうすればいい');
+      await tachyon.print_and_wait('망설임.');
+      await tachyon.print_and_wait('공포.');
+      await tachyon.print_and_wait('혼란.');
+      await tachyon.print_and_wait('대체 어떻게 해야 좋을까.');
       era.println();
-      await tachyon.say_and_wait('……それでいいですわ');
+      await tachyon.say_and_wait('……그렇게 하지.');
       era.println();
-      await tachyon.print_and_wait('来月の月桂杯');
+      await tachyon.print_and_wait('다음 달의 월계배.');
       await tachyon.print_and_wait(
-        '生徒会長が催す、学年も本格化の進度も問わないレース',
+        '학생회장이 주최하는, 학년이나 본격화 정도에 상관없이 참가할 수 있는 레이스였다.',
       );
       await tachyon.print_and_wait(
-        '……出れば、ダービーから今までの短い休養では……',
+        '……만약 참가한다면 더비 이후의 짧은 휴양기 동안……',
       );
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' の両脚は、きっと耐えられない',
+        '의 두 다리는 분명 견뎌 내지 못할 것이다.',
       ]);
       await tachyon.print_and_wait(
-        'だが、このデータ収集の機会を逃して、また来るのか',
+        '하지만 이런 데이터 수집 기회를 놓친다면 나중에 또 기회가 올까?',
       );
       await tachyon.print_and_wait([
-        'いや、そもそも……',
+        '아니, 애초에…… ',
         tachyon.get_colored_name(),
-        ' に「これから」はあるのか',
+        '에게 정말 「나중」이라는 게 있기는 한 건가?',
       ]);
-      await tachyon.print_and_wait('いっそ……このレースで、全力を……？');
+      await tachyon.print_and_wait('차라리…… 이 레이스에서 모든 힘을 쏟아붓는 것은 어떨까?');
       era.println();
-      await tachyon.print_and_wait('月下の光の粒子は、なお迷っている');
+      await tachyon.print_and_wait('달빛 아래의 광자는 여전히 방황하고 있었다.');
     };
     f.title = title;
     return f;
