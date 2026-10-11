@@ -4399,9 +4399,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] tr_help_tyr
+  // [번역 완료] tr_help_tyr
   tr_help_tyr: (() => {
-    const title = '悪に手を貸す（？）';
+    const title = '악행에 가담하기(?)';
     /**
      * 好感が熱意以上、やる気中〜高、体力<45%、25%で発動、周回あたり1回
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -4413,158 +4413,158 @@ module.exports = {
     const f = async (tachyon, coffee, you, callname, c_call_t) => {
       await tachyon.say_and_wait([
         callname,
-        '、なぜ自分が',
+        ', 어째서 본인이 ',
         tachyon.uma_sex_title,
-        'の力に勝てるとお思いですの？',
+        '의 힘을 이길 수 있다고 생각하는 겐가?',
       ]);
       era.println();
       await era.printAndWait([
         '実験室内、',
         tachyon.get_colored_name(),
-        ' は面白がるように言った',
+        '은(는) 재미있다는 듯 말했다.',
       ]);
-      await era.printAndWait('口調は悠然として、絶対の自信を滲ませている');
-      await era.printAndWait('種族の差、天賦の差が与えた自信だ');
+      await era.printAndWait('여유로운 말투에서는 절대적인 자신감이 묻어났다.');
+      await era.printAndWait('종족과 타고난 자질의 차이에서 비롯된 자신감이었다.');
       era.println();
       await tachyon.say_and_wait(
-        'もうおわかりでしょう。これが私たちの差。ですから、できれば……',
+        '이제 알겠지? 이것이 우리 사이의 차이라네. 그러니 가능하다면……',
       );
       era.println();
       await era.printAndWait([
-        'いくら力を込めても微動だにしない身体。あれほど華奢な体躯なのに——それが',
+        '아무리 힘을 주어도 꿈쩍하지 않는 몸. 저렇게 가냘픈 체구인데도—— 이것이 바로 ',
         tachyon.uma_sex_title,
-        'という生物の不思議さだ',
+        '라는 생물의 신비로움이다.',
       ]);
       !you.race &&
-        (await era.printAndWait('だが……人間である以上、矜持というものもある'));
+        (await era.printAndWait('하지만…… 인간인 이상 자존심이라는 것도 있다.'));
       era.println();
       await tachyon.say_and_wait(
-        'おや？ まだ余力がありますの？ フフ、粘りだけは認めてあげますわ。ただし、褒めて差し上げられるのはそこまでですわよ',
+        '호오? 아직도 힘이 남았나? 후후, 끈기만은 인정해 주겠네. 다만 칭찬해 줄 수 있는 건 거기까지일세.',
       );
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' の徒労を嘲笑う。だが飽きやすい',
+        '의 헛수고를 비웃었다. 하지만 쉽게 싫증을 내는 ',
         tachyon.sex,
-        'にとって、',
+        '에게는 ',
         you.get_colored_name(),
-        ' が同じ徒労を繰り返す様も、もう退屈になりつつあった',
+        '이(가) 같은 헛수고를 되풀이하는 모습마저 이제 지루해지고 있었다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '……抗うのはやめなさい。わかっているはずですわ。この抗い、徒労にすぎないことを。ええ……',
+        '……저항은 그만두게. 알고 있겠지. 이런 저항은 헛수고에 지나지 않는다는 걸. 그러니……',
       ]);
       era.println();
       await era.printAndWait([
-        'ああ、',
+        '아아, ',
         tachyon.sex,
-        'は、あらゆるトレーナーを奈落へ落とすに足る宣告を放った',
+        '은(는) 모든 트레이너를 절망의 나락으로 떨어뜨릴 만한 선언을 내뱉었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'いくら引っ張っても、私は絶対にトレーニングへは行きませんわ',
+        '아무리 끌어당겨도 나는 절대로 훈련하러 가지 않을 걸세!',
       );
       era.println();
-      await era.printAndWait('つまり、そういうことだ');
+      await era.printAndWait('그러니까 상황은 이렇다.');
       await era.printAndWait([
-        'トレーニングを拒む ',
+        '훈련을 거부하는 ',
         tachyon.get_colored_name(),
-        ' と、今日こそはと食い下がる ',
+        '와(과) 오늘만큼은 반드시 훈련시키겠다며 매달리는 ',
         you.get_colored_name(),
       ]);
       await era.printAndWait([
-        '椅子にしがみついて ',
+        '의자에 매달려 ',
         you.get_colored_name(),
-        ' に引き抜かれまいとする者と、腰を掴んで実験机から引き剥がそうとする ',
+        '에게 끌려가지 않으려는 자, 그리고 허리를 붙잡고 실험대에서 떼어 내려는 ',
         you.get_colored_name(),
       ]);
       await era.printAndWait([
-        'そう、二人のあいだで繰り広げられる、退屈極まりない引っ張り合いだ',
+        '그렇다. 두 사람 사이에서 벌어지는 지루하기 짝이 없는 줄다리기였다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '、諦めなさい。人間にできるはずが……痛っ！？',
+        ', 포기하게. 인간에게 가능할 리가…… 아얏!?',
       ]);
       era.println();
       await era.printAndWait([
-        '調子に乗った',
+        '우쭐해진 ',
         tachyon.sex,
-        'は、忘れていたらしい。',
+        '은(는) 잊고 있었던 모양이다.',
         tachyon.sex,
-        'の改造のおかげで、',
+        '의 개조 덕분에 ',
         you.get_colored_name(),
-        ' はもう',
+        '은(는) 이미 ',
         tachyon.uma_sex_title,
-        'と同等とはいかずとも、七八割の力を持っていることを',
+        '와 동등하지는 않아도 7~8할 정도의 힘을 갖고 있다는 사실을.',
       ]);
       await era.printAndWait([
-        'その怪力に、',
+        '그 괴력에 더해 ',
         tachyon.get_colored_name(),
-        ' の傲慢と油断が重なり、',
+        '의 오만함과 방심까지 겹친 탓에 ',
         you.get_colored_name(),
-        ' はあっさり ',
+        '은(는) 손쉽게 ',
         tachyon.get_colored_name(),
-        ' の下半身を根こそぎ抱き上げた。残ったのは実験台にしがみつく',
+        '의 하체를 통째로 들어 올렸다. 이제 실험대에 매달린 것은 ',
         tachyon.sex,
-        'の両手だけだ',
+        '의 두 손뿐이었다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'ま……まだあなたを甘く見ていたようですわ、',
+        '자…… 자네를 여전히 얕봤던 모양이군, ',
         callname,
-        '……ですが、この油断は二度とありませんわ。両手だけで実験台を掴んでいても、このアグネスタキオンは実験室内では無敵ですわ！ くふふ……くハハハハハハ！ ……うわっ！？',
+        '……하지만 다시는 이런 방심을 하지 않겠네. 양손만으로 실험대를 붙잡고 있어도 이 아그네스 타키온은 실험실 안에서 무적일세! 크후후…… 크하하하하! ……으악!?',
       ]);
       era.println();
       await era.printAndWait([
-        'この退屈な戦争がまだ十〜二十分は続くと思った、まさにそのとき、奇妙なことが起きた',
+        '이 지루한 싸움이 앞으로도 10~20분쯤 이어지리라 생각한 바로 그 순간, 기묘한 일이 일어났다.',
       ]);
       await era.printAndWait([
-        '未知の力に憑かれたように、',
+        '알 수 없는 힘이 작용하기라도 한 듯 ',
         tachyon.get_colored_name(),
-        ' にとって実験台全体が突然マグマのように灼熱し、',
+        '에게 실험대 전체가 갑자기 마그마처럼 뜨겁게 느껴졌고 ',
         tachyon.sex,
-        'は手を離さざるを得なかった',
+        '은(는) 손을 놓을 수밖에 없었다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' と ',
+        '와(과) ',
         you.get_colored_name(),
-        ' は揃って倒れ込んだ。',
+        '은(는) 함께 나동그라졌다.',
         tachyon.get_colored_name(),
-        ' は起き上がると慌てて手を確かめたが、焦げ跡ひとつない。錯覚だったかのようだ',
+        '은(는) 일어나자마자 황급히 손을 살펴봤지만 화상 자국 하나 없었다. 마치 착각이었던 것처럼.',
       ]);
       era.println();
       await coffee.say_and_wait([
-        '……早く ',
+        '……빨리 ',
         c_call_t,
-        ' を連れていって……',
+        '을(를) 데리고 가 줘……',
         tachyon.sex,
-        '、うるさい……',
+        ', 시끄러워……',
       ]);
       era.println();
       await era.printAndWait([
-        '口を開いたのは、',
+        '말을 꺼낸 이는 ',
         tachyon.get_colored_name(),
-        ' と同じ空き教室を使う、霊異系の黒鹿毛の',
+        '와 같은 빈 교실을 이용하는, 영적인 기운을 가진 흑갈색 털의 ',
         tachyon.uma_sex_title,
         '、',
         coffee.get_colored_name(),
       ]);
       era.println();
       await era.printAndWait([
-        '相手がどうやって ',
+        '상대가 어떻게 ',
         tachyon.get_colored_name(),
-        ' の手を離させたのかはわからない。だが、',
+        '의 손을 놓게 했는지는 알 수 없다. 하지만 ',
         tachyon.sex,
-        'がまた実験室に居座る隙を与えぬよう、',
+        '가 다시 실험실에 눌러앉을 틈을 주지 않도록 ',
         you.get_colored_name(),
-        ' は礼も後回しに ',
+        '은(는) 인사도 뒤로 미루고 ',
         tachyon.get_colored_name(),
-        ' を掴んでトレーニング場へ急いだ',
+        '을(를) 붙잡아 훈련장으로 서둘러 향했다.',
       ]);
     };
     f.title = title;
