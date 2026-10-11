@@ -951,176 +951,176 @@ sats_sho_lose:
         - 「안 져!」
 
 
-# [번역 대상] sats_sho_win
+# [번역 완료] sats_sho_win
 sats_sho_win:
-  title: 鬼の末脚
+  title: 귀신 같은 막판 추입
   lines:
-    - %CHARA% は看板をぼんやり見ている。自分の名前を、初めて知ったみたいに。
-    - 実況「ナリタタイシン！ 1着はナリタタイシン！」
-    - 実況「小柄な体に、鬼神のような末脚！ %SEX%の名を覚えよう、ナリタ——タイシン！」
-    - 観客（熱い喝采。）
+    - %CHARA%는 게시판을 멍하니 바라보고 있었다. 자신의 이름을 처음 보는 사람처럼.
+    - 중계 「나리타 타이신! 1착은 나리타 타이신입니다!」
+    - 중계 「작은 체구에서 뿜어져 나오는 귀신 같은 막판 추입! %SEX%의 이름을 기억하십시오! 나리타—— 타이신!」
+    - 관중들이 뜨겁게 환호했다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ふぅ……」
-    - 苦労して辿り着いた勝利のゴールに立ち、汗が%SEX%の短髪から落ち、希望と夢を屈折させる。
+        - 「후우……」
+    - 어렵게 도달한 승리의 결승선에 선 타이신의 짧은 머리카락에서 땀이 흘러내렸다. %SEX%의 희망과 꿈을 비추는 듯했다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「んああああああああああ！」
+        - 「으아아아아아아아아아!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「見たか！ あんたたち！ これが私よ！ これがナリタタイシンよ！」
+        - 「봤지! 너희들! 이게 나야! 이게 나리타 타이신이라고!」
     -
-    - 控え室へ戻ると、ナリタタイシンは%YOU%に声をかけた。
+    - 대기실로 돌아온 나리타 타이신은 %YOU%에게 말을 걸었다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あの……ただいま。」
-    - 「おめでとう、タイシン。綺麗な走りだった。」
+        - 「저기…… 다녀왔어.」
+    - 「축하해, 타이신. 정말 멋지게 달렸어.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あ……」
-    - なぜか、タイシンは戸惑った顔をする。
-    - 「どうした？」
+        - 「아……」
+    - 어쩐 일인지 타이신은 당황한 표정을 지었다.
+    - 「왜 그래?」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あ……もっと反応、大きいと思ってた。」
+        - 「아…… 좀 더 큰 반응을 보일 줄 알았거든.」
     -
     - if: d.sats_sho
       key: select
       acc: 1
-      content: 「はは、さっきの応援、熱く足りなかったか？」
+      content: 「하하, 아까 내가 응원한 걸로는 성에 안 찼어?」
       lines:
-        - %SEX%の顔が突然赤くなる。
+        - %SEX%의 얼굴이 갑자기 빨갛게 달아올랐다.
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「あああああもう！」
+            - 「아아아, 정말!」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「ア、アンタこのバカ！」
+            - 「이, 이 바보야!」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「結果のこと、全然考えてない！」
-        - 「黙って見てるわけにはいかなかっただろ。」
+            - 「결과는 전혀 생각도 안 하고!」
+        - 「그렇다고 가만히 보고만 있을 수는 없잖아.」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「うっ……」
-        - %SEX%は頭を下げ、不服そうだ。
-        - %YOU%に、よくない予感がした。
-        - 続いて、尻に確かな痛みが来る。
-        - 「痛い痛い！」
+            - 「윽……」
+        - %SEX%는 고개를 숙이고 못마땅한 표정을 지었다.
+        - %YOU%은(는) 불길한 예감이 들었다.
+        - 뒤이어 엉덩이에 확실한 통증이 전해졌다.
+        - 「아파, 아프다고!」
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「アンタが貰うべきやつ！」
-        - 口は容赦ないが、この一発は力を殺している。
+            - 「네가 맞아야 할 거라고!」
+        - 말은 사납지만 방금 한 대는 힘을 빼고 때린 것이었다.
     - acc: 2
-      content: 「おお、じゃあもう一回？」
+      content: 「오, 그럼 한 번 더?」
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「えっ、やめて。うるさい。」
-        - 「なんでだよ！」
-        - %SEX%は額を押さえ、%YOU%を見る目は「この人はもうだめ」で満ち、それから溜息をついた
+            - 「뭐? 그만해. 시끄러워.」
+        - 「왜!」
+        - %SEX%는 이마를 짚고 %YOU%을(를) 바라보았다. 그 눈에는 『이 사람은 이제 틀렸어』라는 생각이 가득했다. 그리고 한숨을 내쉬었다.
     - acc: 3
-      content: 「おめでとう！ タイシン！！！」
+      content: 「축하해! 타이신!!!」
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「うわっ、そんな大声出さないで！」
-        - %SEX%は、まだ%YOU%の熱に慣れていないらしい。
+            - 「으악, 그렇게 크게 소리 지르지 마!」
+        - %SEX%는 아직 %YOU%의 열정에 익숙하지 않은 듯하다.
     -
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ふぅ。」
-    - 皐月賞を取った。だが道はまだ遠い。次に待つ挑戦は……
-    - 「日本ダービー」
+        - 「후우.」
+    - 사츠키상을 거머쥐었다. 하지만 갈 길은 아직 멀다. 다음 도전은……
+    - 「일본 더비」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「このまま、ダービーも取る！」
+        - 「이 기세로 더비도 따내겠어!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ねえ、今回勝ったからって、トレーニングは油断しないでよ。」
-    - 「当たり前だ。」
+        - 「있지, 이번에 이겼다고 훈련을 소홀히 하지는 마.」
+    - 「당연하지.」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: ？？？
-        - 「ええ。次の走りも、楽しみにしています。」
-    - 話した%UMA%は、皐月賞の有力馬の一人、ビワハヤヒデだった。
+        - 「네. 다음 레이스도 기대하고 있겠습니다.」
+    - 말을 건 %UMA%는 사츠키상의 유력 주자 중 한 명이었던 비와 하야히데였다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「ご優勝おめでとうございます、タイシンさん。あなたの実力は侮れません。」
-    - %SEX%は眼鏡を上げる。
+        - 「우승 축하드립니다, 타이신 씨. 당신의 실력을 얕볼 수는 없겠군요.」
+    - %SEX%는 안경을 고쳐 올렸다.
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「レース前から注視してはいましたが、末脚があれほどとは。私の油断でした。」
+        - 「레이스 전부터 주목하고 있었습니다만, 막판 추입이 그 정도일 줄은 몰랐습니다. 제가 방심했군요.」
     - color: %COLOR_23%
       content:
         - fontWeight: bold
           content: %HAYAHIDE%
-        - 「ただ、次のダービーでは全力で臨みます。準備しておいてください。」
-    - ビワハヤヒデの後ろから、ウイニングチケットも顔を出した。
-    - だが%SEX%の目には、何かが光っている。
+        - 「하지만 다음 더비에서는 전력을 다하겠습니다. 각오해 두세요.」
+    - 비와 하야히데의 뒤에서 위닝 티켓도 얼굴을 내밀었다.
+    - 하지만 %SEX%의 눈가에는 무언가 반짝이고 있었다.
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「うわああああ！」
+        - 「으아아아아!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「うわっ、いきなり泣くの？！」
+        - 「으악, 갑자기 우는 거야?!」
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「負けたあああ！」
+        - 「져버렸어어어!」
     - color: %COLOR_35%
       content:
         - fontWeight: bold
           content: %TICKET%
-        - 「それに、それにタイシンの走り、すごくよかったあああ！」
+        - 「게다가, 게다가 타이신의 달리기가 정말 멋졌단 말이야아아!」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「静かにして。うるさい……」
-    - 皐月賞の勝利は、予想外の喧騒の中で終わった
+        - 「조용히 해. 시끄러워……」
+    - 사츠키상 우승의 기쁨은 예상 밖의 소란 속에서 마무리되었다.
 
 # 全能力+3
 
