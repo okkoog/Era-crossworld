@@ -3988,9 +3988,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_triple_crowns
+  // [번역 완료] we_triple_crowns
   we_triple_crowns: (() => {
-    const title = '三冠の夢';
+    const title = '삼관의 꿈';
     /**
      * Plan A 専用（Plan B は菊花賞出走不可のため三冠不可）
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -4016,330 +4016,330 @@ module.exports = {
       sats_sho,
       toky_yus,
     ) => {
-      await tachyon.say_and_wait('……ここは');
+      await tachyon.say_and_wait('...여기는?');
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' はふいに意識が遠のいた',
+        '은 문득 정신이 아득해졌다.',
       ]);
       await tachyon.print_and_wait(
-        '目の前にあるのは、緑の芝が広がり、誰もいないレース場',
+        '눈앞에 나타난 것은 푸른 잔디가 깔린, 텅 빈 경기장이었다.',
       );
       era.println();
-      await tachyon.say_and_wait('……夢、ですの？');
+      await tachyon.say_and_wait('...꿈인가?');
       era.println();
       await tachyon.print_and_wait([
-        '覚えている。いまは菊花賞のあと、',
+        '기억하기로는 지금쯤 국화상이 끝나고, 방금 ',
         callname,
-        ' と別れて、疲れ果ててベッドに倒れ込んだはず',
+        '과 헤어진 뒤 피곤에 지쳐 침대에 쓰러졌을 터였다.',
       ]);
       await tachyon.print_and_wait(
-        '菊花賞は、これまでの自分にとって最も過酷な戦いだった',
+        '국화상은 확실히 지금까지의 자신이 겪어온 것 중 가장 힘든 전투였다.',
       );
-      await tachyon.print_and_wait('それでも、勝った');
+      await tachyon.print_and_wait('하지만 결국 이겨냈다.');
       await tachyon.print_and_wait(
-        'だが目の前は、あれほど印象に残ったレース場ではない。ここは……',
+        '그런데 눈앞에 펼쳐진 것은 그 강렬한 인상을 남겼던 경기장이 아니라...',
       );
       era.println();
-      await tachyon.print_and_wait('中山競馬場？');
-      await tachyon.print_and_wait('中山なら、つまり……');
+      await tachyon.print_and_wait('나카야마 경기장?');
+      await tachyon.print_and_wait('만약 나카야마라면, 그렇다는 건...');
       era.println();
       await tachyon.print_and_wait(
-        '案の定、振り返った先のスクリーンには皐月賞の意匠が映っている',
+        '예상대로 뒤를 돌아 전광판을 보니, 화면에는 사츠키상의 로고가 재생되고 있었다.',
       );
       await tachyon.print_and_wait([
-        'だが掲示板の成績は、すでにレースが終わったことを示していた。1着は ',
+        '그러나 게시판의 성적은 이미 레이스가 끝났음을 알리고 있었다. 1위는 ',
         tachyon.get_colored_name(),
-        '。当然だ',
+        '. 당연한 결과였다.',
       ]);
       era.println();
-      await tachyon.say_and_wait(['……皐月賞のときへ戻った、のですか？']);
+      await tachyon.say_and_wait(['...사츠키상 때로 돌아온 건가?']);
       era.println();
       await tachyon.print_and_wait(
-        '誰もいないレース場。出走馬もいないのに、すでに終わっている皐月賞',
+        '아무도 없는 경기장, 주자도 없는데 이미 종료된 사츠키상.',
       );
       await tachyon.print_and_wait(
-        '理屈を捨てた夢だとしても、あまりに常軌を逸している',
+        '아무리 논리가 통하지 않는 꿈이라지만, 이 모든 것은 지나치게 상식에서 벗어나 있었다.',
       );
       era.println();
-      await tachyon.print_and_wait('そこで……');
+      await tachyon.print_and_wait('그러자...');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、いつの間にか現れていた光球を睨んだ',
+        '은 어느새 눈앞에 나타난 빛의 구체를 응시했다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'あなた……誰ですの？ 私をこの夢に引き込んだのは、あなた？',
+        '자네... 누구지? 나를 이 꿈속으로 끌어들인 게 자네인가?',
       );
       era.println();
       await tachyon.print_and_wait([
-        '夢に引き込む、など科学的な言い方ではない。だが……',
+        '꿈속으로 끌어들였다는 말은 그리 과학적인 표현은 아닐지도 모르지만, 만약... ',
         call_25,
-        ' の言葉に沿って考えるなら……',
+        '의 말대로 생각한다면...',
       ]);
-      await you.say_as_passer_by_and_wait('？？？', '…………');
+      await you.say_as_passer_by_and_wait('???', '............');
       era.println();
-      await tachyon.print_and_wait('光球は何も言わず、その場に浮かんでいる');
+      await tachyon.print_and_wait('빛의 구체는 아무런 대답 없이 그저 제자리에 떠 있었다.');
       era.println();
-      await tachyon.say_and_wait('……話したくない、ですの？');
-      await tachyon.say_and_wait('でしたら、私の推測を言いますわ……');
+      await tachyon.say_and_wait('...말하기 싫은 건가?');
+      await tachyon.say_and_wait('그럼 내 나름대로 추측을 말해보도록 하지...');
       await tachyon.say_and_wait([
-        'あなた……「',
+        '자네... 바로 「',
         tachyon.get_colored_name(),
-        '」でしょう',
+        '」이로군.',
       ]);
       era.println();
-      await tachyon.print_and_wait('この推測は、難しくない');
+      await tachyon.print_and_wait('그것을 알아채는 것은 그리 어렵지 않았다.');
       await tachyon.print_and_wait([
         call_25,
-        ' の言った「もうひとりの自分」を重ねればいい',
+        '그저 ',
       ]);
       await tachyon.print_and_wait([
-        '伝説では……',
+        '전설에 따르면... ',
         tachyon.uma_sex_title,
-        'は、異世界の魂を宿した存在だという',
+        '는 이세계의 영혼을 몸에 깃들게 한 존재라고 한다.',
       ]);
       await tachyon.print_and_wait([
-        '……もっとも、',
+        '...뭐, 그런 설화보다는 ',
         tachyon.get_colored_name(),
-        ' はそういう話より、生物の自然な進化の結果だと信じたいが',
+        ' 자신은 생물의 자연스러운 진화 결과라고 믿고 싶지만 말이다.',
       ]);
-      await tachyon.print_and_wait('だが、もしその話が本当なら……');
+      await tachyon.print_and_wait('하지만 만약 그 전설이 사실이라면...');
       era.println();
-      await tachyon.print_and_wait('「もうひとりの自分」とは、おそらくこれだ');
+      await tachyon.print_and_wait('「또 다른 자신」이란, 분명 이것을 말하는 것이리라.');
       await tachyon.print_and_wait(
-        '異世界から来た魂、あるいは「Uma Soul」と呼ばれる存在',
+        '이세계에서 온 영혼, 혹은 「우마 소울(Uma Soul)」이라 불리는 존재.',
       );
       era.println();
       await tachyon.say_as_unknown_and_wait('………⬛⬛………⬛⬛⬛………');
-      await tachyon.say_and_wait('何ですの？');
+      await tachyon.say_and_wait('뭐라고?');
       era.println();
       await tachyon.print_and_wait(
-        'ふいに光球に波紋が走り、全力を振り絞って、わずかな音を出したように見えた',
+        '갑자기 빛의 구체에 파문이 일더니, 마치 온 힘을 다해 짜낸 듯한 몇 마디 소리가 들려왔다.',
       );
       await tachyon.print_and_wait([
-        '気づくと、',
+        '저도 모르게 ',
         tachyon.get_colored_name(),
-        ' は近づき、何を言っているのか聞き取ろうとしていた……',
+        '은 그 소리를 듣기 위해 점점 가까이 다가갔다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('………！');
+      await tachyon.say_and_wait('………!');
       era.println();
-      await tachyon.print_and_wait('触れた');
+      await tachyon.print_and_wait('닿았다.');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' の頭に、存在しない記憶が一気に流れ込んだ',
+        '의 머릿속에 존재하지 않는 기억이 순식간에 흘러들어왔다.',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        'あの世界で、',
+        '그것은 저쪽 세계에서 「',
         tachyon.get_colored_name(),
-        ' と呼ばれた生き物の記憶',
+        '」이라 불린 생물의 기억이었다.',
       ]);
       await tachyon.print_and_wait([
-        '最初に予想した通り、「',
+        '처음 예상했던 대로, 「',
         tachyon.get_colored_name(),
-        '」の両脚は皐月賞のあと負荷に耐えきれず、引退を強いられた',
+        '」의 두 다리는 사츠키상 이후 한계에 도달해 강제로 은퇴해야만 했다.',
       ]);
       await tachyon.print_and_wait([
-        'あの世界で、',
+        '그 세계에서 ',
         tachyon.get_colored_name(),
-        ' は可能性の象徴とされ、「もしもの⬛」「幻の三冠⬛」と呼ばれた',
+        '은 가능성의 상징으로 여겨지며 「만약의 ⬛」, 「환상의 삼관⬛」이라 불렸다.',
       ]);
       await tachyon.print_and_wait(
-        '機会さえあれば、三冠を必ず取れると、誰も疑わなかった',
+        '만약 그에게 기회가 주어졌다면, 분명 삼관을 따냈을 것이라는 사실을 의심하는 이는 아무도 없었다.',
       );
       await tachyon.print_and_wait(
-        '脚部不安がなければ、歴史に名を残す名⬛だったはず',
+        '만약 다리 부상이 없었다면, 분명 역사에 이름을 남길 명⬛가 되었을 것이다.',
       );
       await tachyon.print_and_wait(
-        '引退していなければ、同世代の他の⬛はその陰に霞んでいたはず',
+        '만약 은퇴하지 않았다면, 동세대의 다른 ⬛들은 그에 비해 빛이 바랬을 것이다.',
       );
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、三冠に最も近い存在だった',
+        '은 삼관에 가장 근접했던 존재였다.',
       ]);
-      await tachyon.print_and_wait('だが、もしもは……所詮もしもだ');
-      await tachyon.print_and_wait('果たされないもしもは、ただの紙切れ');
-      await tachyon.print_and_wait('同期たちがそれぞれの領域で輝くにつれ');
-      await tachyon.print_and_wait('その確信は、疑問に変わっていった');
+      await tachyon.print_and_wait('하지만 만약은 결국 만약일 뿐이다.');
+      await tachyon.print_and_wait('실현되지 못한 만약이란 결국 한 장의 종잇조각에 불과하다.');
+      await tachyon.print_and_wait('동기들이 각자의 분야에서 빛을 발함에 따라.');
+      await tachyon.print_and_wait('그러한 확신조차 의문으로 변해갔다.');
       await tachyon.print_and_wait([
-        '東京2400メートルで、あの ',
+        '도쿄 2400미터에서, 정말 저 ',
         pocket.get_colored_name(),
-        ' に本当に勝てたのか？',
+        '을 이길 수 있었을까?',
       ]);
       await tachyon.print_and_wait([
-        '京都3000メートルで、あの ',
+        '교토 3000미터에서, 정말 저 ',
         coffee.get_colored_name(),
-        ' に本当に勝てたのか',
+        '를 이길 수 있었을까?',
       ]);
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、三冠……？',
+        '은 과연 삼관인가...?',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        '到此，',
+        '거기까지 생각이 미치자 ',
         tachyon.get_colored_name(),
-        ' は正気を取り戻した',
+        '은 정신을 차렸다.',
       ]);
       await tachyon.print_and_wait([
-        'ふいに、',
+        '어느덧 ',
         tachyon.sex,
-        'は光球の言葉がわかるようになっていた',
+        '는 자신이 구체의 말을 알아들을 수 있게 되었음을 깨달았다.',
       ]);
-      await tachyon.say_as_unknown_and_wait('……ありがとう……ありがとう……');
-      await tachyon.say_and_wait('…………');
+      await tachyon.say_as_unknown_and_wait('……고마워…… 정말 고마워……');
+      await tachyon.say_and_wait('............');
       era.println();
-      await tachyon.print_and_wait('もしもを、現実にした');
-      await tachyon.print_and_wait('空虚な可能性を、確かな現実にした');
+      await tachyon.print_and_wait('만약이라는 가정을 현실로 증명해 내는 것.');
+      await tachyon.print_and_wait('허무한 가능성을 실재하는 현실로 바꾸는 것.');
       era.println();
       await tachyon.print_and_wait([
-        '異界の「',
+        '비록 이계의 「',
         tachyon.get_colored_name(),
-        '」は果たせなかった',
+        '」은 성공하지 못했지만.',
       ]);
       await tachyon.print_and_wait([
-        'だが ',
+        '하지만 이곳의 ',
         tachyon.get_colored_name(),
-        ' は、やり遂げた',
+        '은 해냈다.',
       ]);
-      await tachyon.print_and_wait('自分の可能性を、証明した');
+      await tachyon.print_and_wait('자신의 가능성을 증명해 보인 것이다.');
       era.println();
-      await tachyon.print_and_wait([tachyon.get_colored_name(), ' は、三冠⬛']);
+      await tachyon.print_and_wait([tachyon.get_colored_name(), '은 삼관⬛이다.']);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、三冠⬛？',
+        '은 삼관⬛인가?',
       ]);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、三冠',
+        '은 삼관 ',
         tachyon.uma_sex_title,
       ]);
       era.println();
-      await tachyon.say_and_wait('……そう、ですのね');
+      await tachyon.say_and_wait('이다.');
       era.println();
-      await tachyon.print_and_wait('過去の自分を越えた');
-      await tachyon.print_and_wait('もうひとつの世界の自分を越えた');
+      await tachyon.print_and_wait('과거의 자신을 뛰어넘었다.');
+      await tachyon.print_and_wait('또 다른 세계의 자신마저 뛰어넘었다.');
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、新しい一歩を踏み出した',
+        '은 새로운 한 걸음을 내디뎠다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('では、私は行きますわ');
-      await tachyon.say_as_unknown_and_wait('…………？');
+      await tachyon.say_and_wait('그럼, 이제 가봐야겠군.');
+      await tachyon.say_as_unknown_and_wait('............?');
       era.println();
       await tachyon.print_and_wait([
-        '言葉はない。それでも、',
+        '말은 없었지만 어쩐지 ',
         tachyon.get_colored_name(),
-        ' は光球の戸惑いを感じ取れた',
+        '에게는 구체의 의아함이 전해져 왔다.',
       ]);
-      await tachyon.print_and_wait('どこへ？');
-      await tachyon.print_and_wait('夢は、もう叶ったのではないか');
-      await tachyon.print_and_wait('目標は、もう達したのではないか');
-      await tachyon.print_and_wait('この先、何をする？');
+      await tachyon.print_and_wait('어디로 가는 거야?');
+      await tachyon.print_and_wait('꿈은 이미 이루어진 것 아니야?');
+      await tachyon.print_and_wait('목표는 이미 달성한 것 아니야?');
+      await tachyon.print_and_wait('이제 와서 또 뭘 더 하려는 거야?');
       era.println();
       await tachyon.say_and_wait([
-        'ふん、『',
+        '흥, 「',
         tachyon.get_colored_name(),
-        '』の可能性は、クラシックの終わりまでしか想像できないのですか？',
+        '」의 가능성이 고작 클래식 시즌의 종료까지만이라고 생각하나?',
       ]);
       await tachyon.say_and_wait(
-        '……いいえ、こう言うと自分を罵っているようですわね……こほん、やり直し',
+        '...아니, 이렇게 말하니 왠지 내 욕을 하는 것 같군... 흠흠, 다시 하지.',
       );
       await tachyon.say_and_wait([
-        '『',
+        '「',
         tachyon.get_colored_name(),
-        '』の可能性は、クラシックの終わりまで、かもしれません……',
+        '」의 가능성은 어쩌면 클래식 시즌이 끝날 때까지만일지도 모르지...',
       ]);
       await tachyon.say_and_wait([
-        'いいえ、せいぜい皐月賞まででしょう。',
+        '아니, 기껏해야 사츠키상까지였을지도 몰라. ',
         tachyon.get_colored_name(),
-        ' の可能性も……',
+        '의 가능성이란 건 말이야...',
       ]);
-      await tachyon.say_and_wait('あるいは、そうかもしれませんわ');
+      await tachyon.say_and_wait('어쩌면 정말 그랬을지도 모르지.');
       era.println();
-      await tachyon.print_and_wait('だが');
+      await tachyon.print_and_wait('하지만.');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は思い出した。自分のために燃え尽きることを厭わず、瞳に狂気を宿したあの人を',
+        '은 자신을 위해 모든 것을 불태워 주었던, 눈동자 속에 광기가 서려 있던 그 사람을 떠올렸다.',
       ]);
       era.println();
       if (relation <= 0) {
         await tachyon.say_and_wait([
-          'まあ……人格としては、',
+          '비록... 인격적으로는 아주 형편없어서, ',
           you.sex,
-          'を滅ぼした方が世界のためになるかもしれない、ひどい人ですけれど',
+          '를 소멸시키는 게 인류에 더 공헌하는 길일 것 같은 인간이지만 말이야.',
         ]);
       } else if (love >= 75) {
-        await tachyon.say_and_wait('私が最も愛する、私を最も愛する、私の恋人');
+        await tachyon.say_and_wait('내가 가장 사랑하고, 나를 가장 사랑해 주는 나의 연인.');
       } else if (relation <= 225) {
-        await tachyon.say_and_wait('私と並んで歩く、志を同じくする仲間');
+        await tachyon.say_and_wait('나와 함께 걷는, 뜻을 같이하는 동료.');
       } else {
         await tachyon.say_and_wait(
-          '私のすべてを理解し、命を預けても一瞬たりとも迷わない、あの人',
+          '나의 모든 것을 이해하고, 목숨을 맡기는 것조차 추호의 망설임도 없을 그 사람.',
         );
       }
       era.println();
-      await tachyon.print_and_wait('もし……あの人がいなければ');
+      await tachyon.print_and_wait('만약... 그 사람이 없었더라면.');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は ',
+        '은 ',
         sats_sho,
-        ' のあと、完全に燃え尽きていたかもしれない',
+        ' 이후에 완전히 연소되어 버렸을지도 모른다.',
       ]);
       era.println();
-      await tachyon.print_and_wait('もし……あの人がいなければ');
+      await tachyon.print_and_wait('만약... 그 사람이 없었더라면.');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は ',
+        '은 ',
         toky_yus,
-        ' のあと、限界に気づいて自ら退いていたかもしれない',
+        ' 이후에 자신의 한계를 깨닫고 스스로 물러났을지도 모른다.',
       ]);
       era.println();
-      await tachyon.print_and_wait('もし……あの人がいなければ');
+      await tachyon.print_and_wait('만약... 그 사람이 없었더라면.');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、未来すら想像できなかったはず',
+        '은 결코 미래를 꿈꾸지도 못했을 것이다.',
       ]);
       era.println();
-      await tachyon.print_and_wait('だが……もしもに意味はない');
-      await tachyon.print_and_wait('そしてこのもしもは、永遠に果たされない');
-      await tachyon.print_and_wait('だから……');
+      await tachyon.print_and_wait('하지만 만약이라는 가정은 의미가 없다.');
+      await tachyon.print_and_wait('게다가 그 만약은 영원히 실현되지 않을 테니까.');
+      await tachyon.print_and_wait('그러니...');
       era.println();
       await tachyon.say_and_wait([
-        '見ていなさい、『',
+        '똑똑히 지켜보게나, 「',
         tachyon.get_colored_name(),
-        '』。『私たち』は過去を越え、今に立っています。次は、未来を拓くときですわ！',
+        '」이여. 「우리」는 이미 과거를 넘어 현재에 서 있네. 이제는 미래를 개척할 시간이야!',
       ]);
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、レース場の出口へ向かった',
+        '은 경기장 출구를 향해 걸어갔다.',
       ]);
       await tachyon.print_and_wait([
-        '扉を出る前、',
+        '문을 나서기 전, ',
         tachyon.sex,
-        'は一度振り返った',
+        '는 뒤를 한 번 돌아보았다.',
       ]);
       era.println();
       await tachyon.print_and_wait(
-        '場内のスクリーンから、皐月賞の意匠は消えていた',
+        '경기장 안의 스크린에서 사츠키상의 로고는 이미 사라져 있었다.',
       );
-      await tachyon.print_and_wait('画面は真っ白だ');
-      await tachyon.print_and_wait('前のレースは、終わった');
-      await tachyon.print_and_wait('この場に次に映るのは、どんなレースだろう');
+      await tachyon.print_and_wait('스크린 속 화면은 텅 비어 있었다.');
+      await tachyon.print_and_wait('지난 레이스는 이미 끝났다.');
+      await tachyon.print_and_wait('다음번에 이 경기장에 열릴 레이스는 대체 어떤 레이스가 될까?');
       era.println();
       await tachyon.print_and_wait(
-        'わからない。だが、約束した。一緒に行く、と',
+        '알 수 없다. 하지만 이미 약속했다, 함께 나아가기로.',
       );
-      await tachyon.print_and_wait('だから');
+      await tachyon.print_and_wait('그러니.');
       era.println();
       await tachyon.say_and_wait(
-        '実験を続けましょう……可能性が届く彼方を、見るために',
+        '실험을 계속하도록 하지... 가능성이 도달할 수 있는 그 피안을 보기 위해서 말일세.',
       );
     };
     f.title = title;
