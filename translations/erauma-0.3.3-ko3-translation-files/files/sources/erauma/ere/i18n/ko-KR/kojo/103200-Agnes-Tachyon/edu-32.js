@@ -2381,7 +2381,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] hope_sta_lose
+  // [번역 완료] hope_sta_lose
   hope_sta_lose: (() => {
     const title = '希望';
     /**
@@ -2394,108 +2394,108 @@ module.exports = {
       await tachyon.say_and_wait('…………');
       era.println();
       await era.printAndWait([
-        'レース後、',
+        '레이스가 끝난 뒤 ',
         you.get_colored_name(),
-        ' は黙って控え室へ戻る ',
+        '은(는) 말없이 대기실로 돌아가는 ',
         tachyon.get_colored_name(),
-        ' を見た',
+        '을(를) 바라보았다.',
       ]);
-      await era.printAndWait('道中、誰も口を開かなかった');
+      await era.printAndWait('돌아오는 길에는 아무도 입을 열지 않았다.');
       await era.printAndWait([
-        'この敗戦は、',
+        '이번 패배는 ',
         you.get_colored_name(),
-        ' にとっても',
+        '에게도 ',
         tachyon.sex,
-        'にとっても、大きな打撃だった',
+        '에게도 커다란 충격이었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……実験、失敗ですわね');
+      await tachyon.say_and_wait('……실험은 실패했군.');
       era.println();
       await era.printAndWait([
-        'このレースの ',
+        '이번 레이스에서 ',
         tachyon.get_colored_name(),
-        ' は、明らかに様子がおかしかった……',
+        '은(는) 분명 평소와 달랐다……',
       ]);
       await era.printAndWait([
-        '普通の人にはわからないだろう。だが今日の走りには、',
+        '평범한 사람은 눈치채지 못했을 것이다. 하지만 오늘 달리기에는 ',
         tachyon.sex,
-        'が持つあの……光がなかった',
+        ' 특유의 그…… 빛이 없었다.',
       ]);
       await era.printAndWait([
-        '最初から鈍い光は、後半でほとんど消え、',
+        '처음부터 희미했던 빛은 후반으로 갈수록 거의 사라졌고 ',
         tachyon.get_colored_name(),
-        ' は敗れた',
+        '은(는) 패배했다.',
       ]);
       era.println();
       await tachyon.say_and_wait('……');
       era.printButton(
-        '「……気にするな。実験の失敗は一度だけだ。戻ろう。実験に絶対成功などない」',
+        '「……신경 쓰지 마. 실험이 한 번 실패한 것뿐이야. 돌아가자. 실험이 반드시 성공하는 건 아니잖아.」',
         1,
       );
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は思わず',
+        '은(는) 저도 모르게 ',
         tachyon.sex,
-        'を慰めた',
+        '을(를) 위로했다.',
       ]);
       await era.printAndWait([
-        'だが床に座った',
+        '하지만 바닥에 앉아 있는 ',
         tachyon.sex,
-        'の表情は、なぜかおかしい',
+        '의 표정이 어쩐지 이상했다.',
       ]);
-      await era.printAndWait('悔恨ではない。むしろ……何かを耐えている？');
+      await era.printAndWait('후회하는 게 아니었다. 오히려…… 무언가를 참고 있는 건가?');
 
-      era.printButton('「タキオン……？ 身体は……」', 1);
+      era.printButton('「타키온……? 몸은 괜찮아……?」', 1);
       await era.input();
       if (relation <= 225) {
         await tachyon.say_and_wait(
-          'なんでもありませんわ。心配いりません……行きましょう',
+          '아무 일도 아니네. 걱정할 필요 없으니…… 돌아가세.',
         );
         era.println();
         await era.printAndWait([
-          'まだ、',
+          '아직 ',
           tachyon.sex,
-          'の心の壁は破れないのかもしれない',
+          '의 마음속 벽은 넘지 못한 것일지도 모른다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は何も言わず、',
+          '은(는) 아무 말 없이 ',
           tachyon.sex,
-          'の後ろについて去った',
+          '의 뒤를 따라 떠났다.',
         ]);
       } else {
         await tachyon.say_and_wait([
-          '……大丈夫ですわ、',
+          '……괜찮네, ',
           callname,
-          '。脚は……問題ありません。次、調整すれば大丈夫ですわ',
+          '. 다리는…… 문제없어. 다음에 조정하면 될 걸세.',
         ]);
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' のほうから慰め、',
+          ' 쪽에서 먼저 위로하며 ',
           you.get_colored_name(),
-          ' を安心させようとした',
+          '을(를) 안심시키려 했다.',
         ]);
         await era.printAndWait([
-          'いつもの、成算ありげな',
+          '늘 승리를 자신하던 ',
           tachyon.sex,
-          'を思い出し、',
+          '을(를) 떠올리자 ',
           you.get_colored_name(),
-          ' の胸も徐々に落ち着いた',
+          '의 가슴도 조금씩 진정되었다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
           {
-            content: '…………代替案、ですかしら……あるいは……',
+            content: '…………대체할 방법, 이라…… 아니면……',
             fontSize: '0.75rem',
           },
         ]);
         era.println();
         await era.printAndWait([
-          'だが、聞かれていないつもりで呟いたその言葉が、',
+          '하지만 듣지 못할 거라고 생각하고 중얼거린 그 말은 ',
           you.get_colored_name(),
-          ' の胸を再び吊り上げた',
+          '의 가슴을 다시 철렁 내려앉게 했다.',
         ]);
       }
     };
