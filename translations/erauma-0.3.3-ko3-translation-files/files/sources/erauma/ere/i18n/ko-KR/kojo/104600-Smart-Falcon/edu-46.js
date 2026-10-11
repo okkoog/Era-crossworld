@@ -190,83 +190,86 @@ module.exports = {
 
   // [번역 대상] before_begin_race
   before_begin_race: (() => {
-    const title = '初めてのオーディション！';
+    const title = "첫 오디션!";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      await era.printAndWait(`川辺の草地\n`);
+      await era.printAndWait(`강가 풀밭
+`);
       await falcon.say_and_wait(
         `目指すは！ トップアイドルの${falcon.uma_sex_title}アイドル——${falcon.name}、いま正式にデビューするよ⭐`,
       );
       await you.say_as_passer_by_and_wait(
-        `ファン`,
-        `ファル子、ついにデビューなの！`,
+        `팬들`,
+        `드디어 팔코가 데뷔하는 거야?!`,
       );
       await falcon.say_and_wait(
-        `そう！ この日のためにファル子、ずっと頑張ってきた！ みんなにもちょっと我慢してもらおうかと思ったけど……`,
+        `맞아! 이 날을 위해서 팔코는 계속 노력해왔어! 비록 팔코도 모두가 조금은 참아줬으면 좋겠다고 생각하지만……`,
       );
       await falcon.say_and_wait(
-        `だってファル子もみんなと同じで、興奮が空まで届いちゃってるから♪`,
+        `왜냐하면 팔코도 모두와 마찬가지로 기분이 하늘 끝까지 솟구칠 정도로 두근거리니까♪`,
       );
       await you.say_as_passer_by_and_wait(
-        `ファン`,
-        `その勢いで、ずっと突き進んで！`,
+        `팬들`,
+        `그 기세 그대로 쭉 달려나가자!`,
       );
       await falcon.say_and_wait(
         `ファル子、レース開始からおしまいまでキラキラし続けるよ⭐……わあ、ドキドキする！ 不思議な感じ、心臓がずっとdokidokiって応えてる……`,
       );
       await falcon.say_and_wait(
-        `約束だよ、みんなは観客席でファル子のステージを見ててね⭐`,
+        `약속이야, 다들 관객석에서 팔코의 무대를 지켜봐줘⭐`,
       );
-      await you.say_as_passer_by_and_wait(`ファン`, `ファル子！ ファル子！`);
-      await era.printAndWait(`\n控え室\n`);
+      await you.say_as_passer_by_and_wait(`팬들`, `팔코! 팔코!`);
+      await era.printAndWait(`
+대기실
+`);
       await falcon.say_and_wait(
-        `リボン……オッケー！ 背中のゼッケン……間違いなし！`,
+        `리본…… ok! 등 뒤의 번호표…… 이상 무!`,
       );
       await era.printAndWait(
-        `姿見の前に立つ${falcon.name}は、何度も自分の様子を確かめた。`,
+        `전신 거울 앞에 선 ${falcon.name}은 자신의 모습을 몇 번이고 확인했다.`,
       );
       await falcon.say_and_wait(
-        `ずっと応援してくれるみんなのために……ファル子、絶対勝つ！`,
+        `언제나 응원해주는 모두를 위해서…… 팔코는 반드시 이길 거야!`,
         true,
       );
-      await falcon.say_and_wait(`ファル子！ ファイト！`);
+      await falcon.say_and_wait(`팔코! 파이팅!`);
       await era.printAndWait(`${falcon.name}は握った拳を高く掲げた。`);
-      era.printButton(`レース場をステージだと思えばいい`, 1);
+      era.printButton(`경기장을 무대라고 생각하면 돼`, 1);
       await era.input();
       await era.printAndWait(
-        `傍らで待つ${you.name}は、初めてメイクデビューに臨む${falcon.name}を見ていた。`,
+        `옆에서 기다리고 있던 ${you.name}은(는) 처음으로 데뷔전에 나서는 ${falcon.name}을 바라보았다.`,
       );
-      await you.say_and_wait(`ファル子なら、きっと勝てる！`);
+      await you.say_and_wait(`팔코가 반드시 승리할 거라고 믿어!`);
       await falcon.say_and_wait(`${callname}も！`);
       await era.printAndWait(
-        `${you.name}は${falcon.name}の両手の、かすかな震えを感じた。`,
+        `${you.name}은(는) ${falcon.name}의 양손이 미세하게 떨리고 있는 것을 느꼈다.`,
       );
       await falcon.say_and_wait(
-        `ファンのみんなは、どこでファル子を待ってるのかな♪ 輝くファル子が、勝利をみんなに届けるよ⭐`,
+        `팬 여러분은 어디에 앉아서 팔코를 기다려 줄까♪ 반짝반짝 빛나는 팔코가 반드시 승리를 가져다줄게⭐`,
       );
       await era.printAndWait(
-        `慰めではない。この期間のトレーニング成果への、${falcon.name}の確信だ。`,
+        `그것은 단순한 위로가 아니라, ${falcon.name}이 그동안 쌓아온 훈련 성과에 대한 확신이었다.`,
       );
       await falcon.say_and_wait(
-        `${callname}は観客席で、ファル子のすごいところをちゃんと見ててね♪`,
+        `${callname}은(는) 관객석에서 팔코의 멋진 활약을 제대로 지켜봐줘♪`,
       );
       await falcon.say_and_wait(
-        `……それに、ファル子には、負けられない理由がもう一つある！`,
+        `……그리고, 팔코에게는 질 수 없는 이유가 하나 더 있어!`,
         true,
       );
       // トレーナーとは無関係。ただ恐れに耐えきれない結果
       await falcon.say_and_wait(
-        `沈んだ考えはここまで！ ファル子のトップアイドルへの道は、ここから始まる！`,
+        `부정적인 생각은 여기서 끝! 팔코의 톱 우마돌로 향하는 길은 여기서부터 시작이야!`,
         true,
       );
       await falcon.say_and_wait(
         `輝く${falcon.uma_sex_title}アイドル——${falcon.name}！ これから観客席のみんなに、まばたきする暇もないくらいファル子を見つめさせるよ！`,
       );
-      await era.printAndWait(`${falcon.name}はレース場へ向かった。`);
+      await era.printAndWait(`${falcon.name}이 경기장으로 향했다.`);
     };
     f.title = title;
     return f;
@@ -285,23 +288,23 @@ module.exports = {
         `クラシックの準備を経て、次はチャンピオンズカップだ。`,
       );
       await era.printAndWait(
-        `前のようにチラシを配り歩く必要はなく、${falcon.name}が出ると知ったファンが、自分で席を買った。`,
+        `고생하며 전단지를 돌리던 예전과는 달리, ${falcon.name}의 츨주 소식을 들은 팬들이 자발적으로 좌석을 구매했다.`,
       );
-      await falcon.say_and_wait(`ファル子、思ってたより人気だね。`);
+      await falcon.say_and_wait(`팔코, 생각했던 것보다 훨씬 더 사랑받고 있나 봐.`);
       await era.printAndWait(
-        `外の騒ぎが、むしろ大きな圧になって聞こえてくる。`,
+        `오히려 밖에서 들려오는 소란스러움이 거대한 압박감으로 다가왔다.`,
       );
       await you.say_and_wait(`無理して出てきたの？`);
       await era.printAndWait(
-        `微かに震える両手。見えない圧の前で、ファル子は。`,
+        `미세하게 떨리는 손. 보이지 않는 압박감에 맞서 팔코.`,
       );
-      await falcon.say_and_wait(`次のレースも、ファル子、頑張る！`);
+      await falcon.say_and_wait(`다음 레이스도 팔코는 힘낼 거야!`);
       await you.say_and_wait(`武運を祈る……具合が悪かったら、僕のところへ。`);
       await era.printAndWait(
-        `少し止まってから、${falcon.name}は控え室の扉を開けた。`,
+        `잠시 멈칫한 후, ${falcon.name}이 대기실 문을 열었다.`,
       );
       await era.printAndWait(
-        `耳を潰す歓声の中、${falcon.name}はコースへ上がった。`,
+        `귀를 찢는 듯한 환호성 속에서 ${falcon.name}은 경기장으로 걸어 나갔다.`,
       );
     };
     f.title = title;
@@ -310,34 +313,34 @@ module.exports = {
 
   // [번역 대상] before_febr_sta
   before_febr_sta: (() => {
-    const title = '先輩と後輩（一）';
+    const title = "선배와 후배 (1)";
     /** @param {CharaTalk} falcon スマートファルコン */
     const f = async (falcon) => {
       await falcon.say_and_wait(
-        `トップアイドルへ進むファル子の走り、みんなレース場で見てね♪`,
+        `톱 우마돌을 향해 나아가는 팔코의 레이스를 다들 보러 와줬으면 좋겠어♪`,
       );
-      await falcon.say_and_wait(`ファル子なら、いちばんいいレースを届けるよ⭐`);
+      await falcon.say_and_wait(`팔코라면 반드시 최고의 레이스를 모두에게 보여줄 테니까⭐`);
       await era.printAndWait(
         `発走前にチラシを配るのは、もう二人の阿吽になっている。`,
       );
       await era.printAndWait(`${falcon.uma_sex_title}「あ、ファル子さん？」`);
       await era.printAndWait(
-        `地方トレセンから来たらしき${falcon.uma_sex_title}が、${falcon.name}に気づいた。`,
+        `지방 트레센에서 온 듯한 ${falcon.uma_sex_title}가 ${falcon.name}을 알아차린 모양이었다.`,
       );
       await era.printAndWait(
         `${falcon.uma_sex_title}「ファル子先輩！ わたしもアイドルとしてダートでデビューしたいです！」`,
       );
       await era.printAndWait(
-        `${falcon.uma_sex_title}「東京大賞典の走りを見て勇気をもらいました。わたしも、人に希望を届けるアイドルになりたいです！」`,
+        `${falcon.uma_sex_title} 「선배가 도쿄 대상전에서 달리는 모습을 보고 용기를 얻었어요. 그래서 저도 사람들에게 희망을 주는 아이돌이 되고 싶어요!」`,
       );
       await era.printAndWait(
-        `憧れの目で${falcon.name}を見る${falcon.uma_sex_title}。`,
+        `동경 어린 눈빛으로 ${falcon.name}을 바라보는 ${falcon.uma_sex_title}.`,
       );
-      await falcon.say_and_wait(`……ファル子`, true);
+      await falcon.say_and_wait(`……팔코는`, true);
       await falcon.say_and_wait(
         `アイドルになりたかった、いちばん最初の気持ち、ファル子がちゃんと届ける！`,
       );
-      await era.printAndWait(`複雑な顔のファル子は、レース場へ向かった。`);
+      await era.printAndWait(`복잡한 감정을 품은 팔코가 경기장으로 향했다.`);
     };
     f.title = title;
     return f;
@@ -345,7 +348,7 @@ module.exports = {
 
   // [번역 대상] before_japa_dir
   before_japa_dir: (() => {
-    const title = 'わけのわからない焦り';
+    const title = "묘한 초조함";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} minoru 駿川たづな / ハーベストタイム
@@ -353,43 +356,43 @@ module.exports = {
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, minoru, you, callname) => {
-      await falcon.say_and_wait(`……ん——`);
+      await falcon.say_and_wait(`……음——`);
       await era.printAndWait(
-        `${you.name} が控え室に入ると、少し沈んだ${falcon.name}がいた。`,
+        `${you.name}이(가) 대기실에 들어서자 기운이 조금 없는 ${falcon.name}의 모습이 보였다.`,
       );
       await falcon.say_and_wait(
-        `${callname}、今度のレース、お客さんたくさん来る？`,
+        `${callname}, 이번 레이스에는 사람들이 많이 보러 올까?`,
       );
       await you.say_and_wait(
         `ファル子が皐月賞に出たおかげで、芝の観客も、ダートで輝いてる${falcon.name}を知ってるよ。`,
       );
-      await falcon.say_and_wait(`芝のコースに比べると……`);
+      await falcon.say_and_wait(`잔디 경기장에 비하면 아직……`);
       await you.say_and_wait(
-        `まだ足りないけど、ファル子の努力で、ダートにも少しずつ人気がついてきた。`,
+        `비록 아직 부족할지도 모르지만, 팔코의 노력 덕분에 더트도 조금씩 인기가 생기고 있어.`,
       );
       await falcon.say_and_wait(`そうなんだ。`);
       await falcon.say_and_wait(`ファル子、ダートのレースを動かせるかも！`);
-      await era.printAndWait(`努力は、いつか結果になる。`);
-      era.printButton(`それに、みんなファル子の登場を待ってる！`, 1);
+      await era.printAndWait(`노력은 결국 결실을 맺는 법이었다.`);
+      era.printButton(`게다가 다들 팔코의 등장을 기대하고 있어!`, 1);
       await era.input();
       await falcon.say_and_wait(
-        `……そうだ！ 観客席で応援してくれるファンのために、ファル子、一気にゴールまで！`,
+        `……맞아! 관객석에서 환호해주는 팬들을 위해서, 팔코는 이대로 단숨에 골인까지 달려갈게!`,
       );
-      await falcon.say_and_wait(`……${callname}、発走まであとどれくらい？`);
+      await falcon.say_and_wait(`……${callname}, 레이스 시작까지 얼마나 남았어?`);
       await era.printAndWait(
-        `${you.name} は携帯を${falcon.name}に渡した。画面の時刻は、発走まで三十分を示している。`,
+        `${you.name}은(는) 스마트폰을 ${falcon.name}에게 건네주었다. 화면에 표시된 시간은 레이스 시작까지 30분 전이었다.`,
       );
-      await falcon.say_and_wait(`それなら！`);
+      await falcon.say_and_wait(`그렇다면!`);
       await era.printAndWait(
         `${falcon.name}は持ってきた荷物から、分厚いポスターの束を取り出した。`,
       );
       await falcon.say_and_wait(
-        `発走前に、近所のみんなにファル子を知ってもらおう！`,
+        `레이스가 시작되기 전에, 근처에 있는 사람들에게 팔코를 더 알리고 올게!`,
       );
       await era.printAndWait(
-        `${you.name} が口を開く前に、${falcon.name}は${you.name} の手首を掴んで外へ走った。`,
+        `${you.name}이(가) 대답하기도 전에, ${falcon.name}은 ${you.name}의 손목을 잡고 밖으로 뛰어나갔다.`,
       );
-      await falcon.say_and_wait(`ファル子！ ファイト！`);
+      await falcon.say_and_wait(`팔코! 파이팅!`);
       await era.printAndWait(
         `その後、出走する${falcon.uma_sex_title}が発走前までライブしていた件は、少し話題になった。`,
       );
@@ -403,61 +406,61 @@ module.exports = {
 
   // [번역 대상] before_jbc_cls_c
   before_jbc_cls_c: (() => {
-    const title = '焦りの始まり';
+    const title = "초조함의 시작";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      await era.printAndWait(`JBCクラシックは、例年なら観客は二万人を超えない`);
-      await era.printAndWait(`だが`);
+      await era.printAndWait(`JBC 클래식, 예년 같으면 관객 수가 2만 명을 넘지 않았을 터였다.`);
+      await era.printAndWait(`하지만`);
       await falcon.say_and_wait(
-        `${callname}、発走前にこのチラシ、配りきらないと！`,
+        `${callname}, 레이스가 시작되기 전에 이 전단지들을 다 돌려야 해!`,
       );
       await era.printAndWait(
-        `ファル子の努力で、行き来するファンが途切れない？！`,
+        `팔코의 노력 덕분인지 오가는 팬들의 발길이 끊이지 않았다?!`,
       );
-      await you.say_and_wait(`ファル子なら、本当にいけるかも？`);
+      await you.say_and_wait(`팔코라면 정말 가능할지도 모르겠네.`);
       await era.printAndWait(
-        `ファル子の体をずっと心配してきた${you.name}の胸にも、現実離れした期待が芽生え始めていた。`,
+        `평소 팔코의 건강을 걱정하던 ${you.name}이었지만, 마음 한구석에서는 비현실적인 기대를 품기 시작했다.`,
       );
       await you.say_as_passer_by_and_wait(
-        `通行人A`,
-        `え？ このへん、レースあるの？`,
+        `행인A`,
+        `어? 이 근처에서 레이스가 있어?`,
       );
       await you.say_as_passer_by_and_wait(
-        `通行人B`,
+        `행인B`,
         `ダートのレース？ 興味な……${falcon.name}が出るの？`,
       );
       await you.say_as_passer_by_and_wait(
-        `通行人C`,
+        `행인C`,
         `${falcon.name}？ ウマスタで話題になってる子？`,
       );
-      await you.say_as_passer_by_and_wait(`通行人A`, `待って。`);
+      await you.say_as_passer_by_and_wait(`행인A`, `待って。`);
       await era.printAndWait(
         `いつの間にか、チラシは奪い合うように無くなった。`,
       );
-      await falcon.say_and_wait(`ファル子、想像より人気あるかも……`);
+      await falcon.say_and_wait(`팔코, 생각보다 훨씬 더 인기쟁이일지도……`);
       await falcon.say_and_wait(
-        `前はこんなに配るのに、午前いっぱい必要だったよ。`,
+        `예전에는 이만큼 돌리려면 적어도 오전 내내 걸렸는데.`,
       );
       await era.printAndWait(
-        `そう言いながらも、${falcon.name}の笑顔は止まらない。`,
+        `그렇게 말하면서도 ${falcon.name}의 미소는 감출 길이 없었다.`,
       );
       await falcon.say_and_wait(
-        `ファル子、もう想像以上に人気者になっちゃったのかも。`,
+        `어쩌면 팔코, 생각보다 훨씬 더 많은 사랑을 받는 사람이 된 걸까나.`,
       );
       await you.say_and_wait(`みんな、ファル子を見てるよ。`);
-      await falcon.say_and_wait(`うん。ずっと応援してくれるみんなのために。`);
-      await falcon.say_and_wait(`ファル子、2000%の努力で優勝する！`);
-      await era.printAndWait(`見えない気の波が${falcon.name}を包んだ。`);
-      await falcon.say_and_wait(`じっとしてられない、今から行こ！`);
-      await you.say_and_wait(`まだ発走してないよ。`);
-      await era.printAndWait(`言い終わる前に、${falcon.name}は通話を切った。`);
-      await falcon.say_and_wait(`これから、${callname}をびっくりさせる！`);
+      await falcon.say_and_wait(`응, 계속 팔코를 지지해준 모두를 위해서.`);
+      await falcon.say_and_wait(`팔코는 2000%의 노력으로 우승할 거야!`);
+      await era.printAndWait(`무형의 기운이 ${falcon.name}을 감싸안았다.`);
+      await falcon.say_and_wait(`지체할 시간 없어, 지금 바로 출발하자!`);
+      await you.say_and_wait(`레이스는 아직 시작 안 했어.`);
+      await era.printAndWait(`말이 끝나기도 전에 ${falcon.name}は通話を切った。`);
+      await falcon.say_and_wait(`이제 ${callname}을(를) 깜짝 놀라게 해줄게!`);
       await era.printAndWait(
-        `${falcon.name}は決意して、競馬場へ走っていった。`,
+        `${falcon.name}은 결심을 굳히고 경기장으로 달려갔다.`,
       );
     };
     f.title = title;
@@ -466,38 +469,38 @@ module.exports = {
 
   // [번역 대상] before_jbc_cls_s
   before_jbc_cls_s: (() => {
-    const title = 'JBCクラシック・アイドルの第一歩';
+    const title = "JBC 클래식·우마돌의 첫걸음";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (falcon, you) => {
       await era.printAndWait(
-        `アイドルの道のひとつの試練、JBCクラシックが始まった。`,
+        `우마돌로 향하는 길의 시험대인 JBC 클래식이 시작되었다.`,
       );
       await era.printAndWait(
-        `${falcon.name}が出走するという知らせで、クラシックの観客が一気に増えた。`,
+        `${falcon.name}이 참가한다는 소식에 클래식 레이스의 관객 수가 순식간에 폭증했다.`,
       );
-      await era.printAndWait(`マイナーな芝のG1と比べられるくらいになった。`);
-      await era.printAndWait(`そしてファル子にとっては。`);
+      await era.printAndWait(`웬만한 비인기 잔디 G1 레이스와 맞먹을 정도였다.`);
+      await era.printAndWait(`그리고 팔코에게 있어서...`);
       await falcon.say_and_wait(
-        `ファル子みたいな普通の${falcon.uma_sex_title}にとって、ここまでの勝ちは全部、奇跡みたいなもの。`,
+        `팔코 같은 평범한 ${falcon.uma_sex_title}에게 지금까지의 승리는 전부 기적 같은 일이었어.`,
       );
-      await falcon.say_and_wait(`それでも、ファル子は輝き続けたい。`);
+      await falcon.say_and_wait(`그럼에도 불구하고 팔코는 계속해서 빛나고 싶어.`);
       await you.say_and_wait(
-        `なら、あとはやっていい。ファル子、自分の考えでこの絵を描いて！`,
+        `그렇다면 이제 마음껏 해봐. 팔코, 네 생각대로 이 그림을 그려나가는 거야!`,
       );
       await you.say_and_wait(
         `トップの${falcon.uma_sex_title}アイドルは、自分で決めるものだ！`,
       );
       await era.printAndWait(
-        `控え室の中でも、外の耳を潰すような声が、かすかに入ってくる。`,
+        `대기실 안에서도 밖에서 들려오는 귀가 먹먹할 정도의 함성 소리가 은은하게 전해졌다.`,
       );
-      await falcon.say_and_wait(`それでも、ファル子は輝き続けたい。`);
+      await falcon.say_and_wait(`그럼에도 팔코는 역시 계속 빛나고 싶어.`);
       await falcon.say_and_wait(
-        `これから、ファル子が輝くところ、ちゃんと見てて！`,
+        `이제부터 팔코가 반짝이는 모습을 똑똑히 지켜봐줘!`,
       );
-      await era.printAndWait(`まだ若いアイドルが、コースへ向かった。`);
+      await era.printAndWait(`아직은 앳된 우마돌이 경기장으로 향했다.`);
     };
     f.title = title;
     return f;
@@ -505,40 +508,40 @@ module.exports = {
 
   // [번역 대상] before_sats_sho
   before_sats_sho: (() => {
-    const title = '皐月賞で輝くファル子';
+    const title = "사츠키상에서 빛나는 팔코";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      await era.printAndWait(`記者会見で皐月賞への出走を発表したあと。`);
+      await era.printAndWait(`기자 회견에서 사츠키상 출주를 선언한 후.`);
       await era.printAndWait(
-        `${falcon.name}が適性外の舞台で勝てるのか、という疑いはある。だがそれ以上に、ダートで活躍する${falcon.name}がどんな元気を見せるかへの期待が大きい。`,
+        `${falcon.name}이 적성에 맞지 않는 경기장에서 승리할 수 있을지에 대한 우려도 있었지만, 더트에서 활약하던 ${falcon.name}이 어떤 활력을 보여줄지에 대한 기대가 더 컸다.`,
       );
-      await era.printAndWait(`控え室`);
-      await falcon.say_and_wait(`ふんふん♪ これでファル子、準備かんりょう！`);
+      await era.printAndWait(`대기실 안`);
+      await falcon.say_and_wait(`흐흥♪ 이 정도면 팔코는 준비 완료야!`);
       await era.printAndWait(
-        `${falcon.name}は姿見の前で、勝負服をもう一度確かめた。`,
+        `${falcon.name}은 전신 거울 앞에서 다시 한번 승부복을 확인했다.`,
       );
-      await falcon.say_and_wait(`${callname}、どう？`);
-      era.printButton(`まぶしいよ！`, 1);
+      await falcon.say_and_wait(`${callname}은(는) 어때 보여?`);
+      era.printButton(`정말 눈부셔!`, 1);
       await era.input();
-      await falcon.say_and_wait(`こうしてファンの視線を、全部——奪っちゃう！`);
+      await falcon.say_and_wait(`이대로 모든 팬의 시선을 전부——뺏어버리겠어!`);
       await falcon.say_and_wait(
-        `……そういえば、ファル子がこの勝負服を着るのも初めてだね……`,
+        `……그러고 보니, 팔코가 이 승부복을 입는 것도 이번이 처음이네……`,
       );
       await era.printAndWait(
-        `${falcon.name}は急に照れくさそうに、${you.name} と合わせていた目をそらした。`,
+        `${falcon.name}은 갑자기 쑥스러운 듯 ${you.name}과(와) 마주 보던 시선을 피했다.`,
       );
-      await falcon.say_and_wait(`……なんでもない⭐`);
-      await era.printAndWait(`それから何か隠すように、口を覆って笑った。`);
-      await falcon.say_and_wait(`今度こそ、出発だよ！`);
+      await falcon.say_and_wait(`……아무것도 아냐⭐`);
+      await era.printAndWait(`그러고는 무언가를 얼버무리는 듯 입을 가리고 웃었다.`);
+      await falcon.say_and_wait(`이번에야말로 정말 출발이야!`);
       await era.printAndWait(
-        `${falcon.name}はドアノブを握り、開けようとした。`,
+        `${falcon.name}이 문손잡이를 잡고 열려고 했다.`,
       );
       era.printButton(
-        `僕の視線を奪ったみたいに、レース場のみんなの視線も全部奪ってこい！`,
+        `내 시선을 뺏은 것처럼, 경기장의 모든 사람의 시선을 전부 뺏어버리고 와!`,
         1,
       );
       await era.input();
@@ -553,7 +556,7 @@ module.exports = {
 
   // [번역 대상] before_teio_sho
   before_teio_sho: (() => {
-    const title = '帝王賞前の準備';
+    const title = "제왕상 전의 준비";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
@@ -564,30 +567,30 @@ module.exports = {
         `${falcon.name}が帝王賞に挑むという知らせが、ウマスタ中に広がった。`,
       );
       await era.printAndWait(
-        `ファル子の走りと歌に惹かれた人たちは、発売と同時にチケットを買い尽くした。`,
+        `팔코의 질주와 노래에 매료된 사람들이 예매 시작과 동시에 티켓을 전부 매진시켰다.`,
       );
       await era.printAndWait(
-        `ダートが${falcon.name}を選んだというより、${falcon.name}がダートを形にした。`,
+        `더트가 ${falcon.name}을 선택했다기보다, ${falcon.name}이 더트를 완성시켰다고 해야 할 정도였다.`,
       );
       await era.printAndWait(`控え室で`);
-      await falcon.say_and_wait(`……ファル子、ちょっと緊張してる`);
+      await falcon.say_and_wait(`……팔코, 역시 조금 긴장되네`);
       await era.printAndWait(
-        `いつもの${falcon.name}と違い、もうすぐ始まるレースの前で迷っている。`,
+        `평소와 다르게 ${falcon.name}은 곧 시작될 레이스를 앞두고 망설이는 모습을 보였다.`,
       );
       await falcon.say_and_wait(
-        `ミスしたら、応援してくれてるファンと後輩、がっかりしないかな。`,
+        `만약 실수라도 하면, 응원해주는 팬들과 후배들이 나에게 실망하지 않을까 해서.`,
       );
       await you.say_and_wait(
-        `ファル子のファンで、${falcon.name}のトレーナーとして、僕は信じてる`,
+        `팔코의 팬이자 ${falcon.name}의 트레이너로서, 나는 믿고 있어.`,
       );
-      await you.say_and_wait(`ファル子なら大丈夫！`);
-      await falcon.say_and_wait(`${callname}が言うなら、ファル子、頑張る！`);
-      await era.printAndWait(`${you.name}は時計を見る。もう出発の時間だ。`);
-      await you.say_and_wait(`じゃあ、いい知らせを待ってるよ、ファル子！`);
+      await you.say_and_wait(`팔코라면 분명 문제없을 거야!`);
+      await falcon.say_and_wait(`${callname}이(가) 그렇게 말해준다면, 팔코 노력해볼게!`);
+      await era.printAndWait(`${you.name}은(는) 시간을 확인했다. 슬슬 출발해야 할 때였다.`);
+      await you.say_and_wait(`그럼, 이제 좋은 소식을 기다리고 있을게, 팔코!`);
       await falcon.say_and_wait(
-        `うん！ 後輩の${falcon.uma_sex_title}に、先輩アイドルのやり方を見せてくる！`,
+        `좋아! 이제 후배 ${falcon.uma_sex_title}에게 선배 아이돌이 어떻게 하는지 보여주겠어!`,
       );
-      await era.printAndWait(`先輩アイドルのファル子が、コースへ向かった。`);
+      await era.printAndWait(`선배 우마돌로서의 팔코가 경기장으로 향했다.`);
     };
     f.title = title;
     return f;
@@ -603,35 +606,35 @@ module.exports = {
      */
     const f = async (falcon, you, callname) => {
       await era.printAndWait(
-        `立て直した${falcon.name}は、歩幅を少し緩めて進むと決めた。`,
+        `다시 마음을 다잡은 ${falcon.name}은 발걸음을 조금 늦추어 나아가기로 했다.`,
       );
-      await era.printAndWait(`ずっと自分を探してくれていたファンを、待つ。`);
+      await era.printAndWait(`계속해서 자신을 찾아 헤매주던 팬들을 기다리며.`);
       await era.printAndWait(`トレーナー室`);
       await you.say_and_wait(`これから先は、ファル子の頑張りを信じるよ。`);
       await falcon.say_and_wait(
-        `${callname}も、観客席でファル子の成長を見ててね。`,
+        `${callname}도 앞으로 관객석에서 팔코의 성장을 지켜봐줘.`,
       );
       await era.printAndWait(
-        `実際、この${falcon.teen_sex_title}は意外と強い。`,
+        `사실 이 ${falcon.teen_sex_title}는 의외로 강인했다.`,
       );
       await era.printAndWait(
         `考え直したあと、大半の予定を切り、少数のことに集中した。`,
       );
       await era.printAndWait(
-        `方向を見つけ直し、着実に進み始めてから、まだ一ヶ月ほどだ。`,
+        `다시 방향을 잡고 착실하게 전진하기 시작한 지 이제 겨우 한 달 남짓이었다.`,
       );
-      await falcon.say_and_wait(`${callname}、左の髪飾り、直してくれる？`);
+      await falcon.say_and_wait(`${callname}, 왼쪽 머리 장식 좀 조절해줄 수 있어?`);
       await era.printAndWait(
-        `姿見の中の${falcon.teen_sex_title}がいつもの顔に戻ると、言いようのない嬉しさが湧いた。`,
+        `전신 거울 속의 ${falcon.teen_sex_title}가 다시 정상 상태로 돌아온 것을 보며, 말로 다 못 할 기쁨이 솟구쳤다.`,
       );
       await falcon.say_and_wait(
         `東京大賞典は、有馬にはいつまでも届かないけど——`,
       );
-      await era.printAndWait(`見物の客は、もう例年をはるかに超えている。`);
+      await era.printAndWait(`찾아온 관객들은 이미 예년의 인원수를 훨씬 뛰어넘어 있었다.`);
       await falcon.say_and_wait(
-        `少なくとも、タンポポとしては、ファル子は幸せだよ♪`,
+        `적어도, 민들레로서 팔코는 정말 행복해♪`,
       );
-      await era.printAndWait(`${falcon.name}は控え室の扉をそっと閉めた。`);
+      await era.printAndWait(`${falcon.name}은 살며시 대기실 문을 닫았다.`);
     };
     f.title = title;
     return f;
@@ -639,33 +642,33 @@ module.exports = {
 
   // [번역 대상] before_toky_dai_s
   before_toky_dai_s: (() => {
-    const title = '東京大賞典・the biggest stage';
+    const title = "도쿄 대상전·The Biggest Stage";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (falcon, you) => {
-      await falcon.print_and_wait(`この日の到来は、思ったより早かった。`);
+      await falcon.print_and_wait(`이 날이 생각보다 훨씬 빨리 찾아왔어.`);
       await falcon.print_and_wait(
-        `辛い汗も、頑張った値打ちも、この瞬間に現れる。`,
+        `고생하며 흘린 땀방울, 노력의 가치가 모두 이 순간에 드러날 거야.`,
       );
       await falcon.print_and_wait(
-        `トップアイドルを追うために、応援してくれたファンのために、ここまで来た。`,
+        `톱 우마돌이라는 목표를 쫓기 위해, 나를 지지해주는 팬들을 위해 지금까지 계속 노력해왔어.`,
       );
-      await falcon.print_and_wait(`なのに、自分を説得できない。`);
+      await falcon.print_and_wait(`분명히 그런데, 스스로를 설득할 수가 없어.`);
       await falcon.print_and_wait(
-        `奥から来る声が、ずっと聞いてくる。これでいいの？`,
+        `마음속 깊은 곳에서 들려오는 목소리가 계속 물어봐. 이렇게 하는 게 정말 맞는 거야?`,
       );
       await falcon.print_and_wait(`胸が痛い。心臓を掴まれたみたい。`);
-      await falcon.print_and_wait(`答えは分からない。`);
+      await falcon.print_and_wait(`팔코는 답을 모르겠어.`);
       await falcon.print_and_wait(
-        `でも、かすかに分かる。最後の答えは、ここで出る。`,
+        `하지만 어렴풋이 느껴져. 마지막 정답은 여기서 보일 거라는 걸.`,
       );
-      era.printButton(`もう出発だ、ファル子。`, 1);
+      era.printButton(`슬슬 출발할 시간이야, 팔코.`, 1);
       await era.input();
-      await falcon.say_and_wait(`……出発しよう。その答えを追うために。`);
+      await falcon.say_and_wait(`……가자, 그 답을 찾기 위해서.`);
       await era.printAndWait(
-        `砂混じりの風で目が開けない${you.name}は、ふと、コースへ向かう${falcon.name}と、初めて会ったときの${falcon.teen_sex_title}が重なった。`,
+        `모래 섞인 바람 때문에 거의 눈을 뜰 수 없었던 ${you.name}は、ふと、コースへ向かう${falcon.name}と、初めて会ったときの${falcon.teen_sex_title}의 모습을 겹쳐 보았다.`,
       );
     };
     f.title = title;
@@ -674,41 +677,41 @@ module.exports = {
 
   // [번역 대상] begin_race_win
   begin_race_win: (() => {
-    const title = 'メイクデビュー後・昇る新星';
+    const title = "데뷔전 후·떠오르는 신성";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      await you.say_as_passer_by_and_wait(`実況`, `勝者は——${falcon.name}！`);
+      await you.say_as_passer_by_and_wait(`해설`, `승자는 바로——${falcon.name}입니다!`);
       await era.printAndWait(
-        `${falcon.name}がファンに宣言したとおり、レースの最初から観客の視線をしっかり掴んだ。`,
+        `팬들에게 선언했던 대로, ${falcon.name}은 레이스 시작부터 모든 관객의 시선을 한몸에 사로잡았다.`,
       );
       await era.printAndWait(
-        `そのまま他の${falcon.uma_sex_title}との差を保ったまま、最後まで走り切った。`,
+        `그렇게 다른 ${falcon.uma_sex_title}들과의 거리를 유지하며 마지막까지 달려 나갔다.`,
       );
       await falcon.say_and_wait(
-        `${callname}！ ${callname}！ ファル子のレース、見てた？`,
+        `${callname}! ${callname}! 경기장에서 팔코가 활약하는 모습 봤어?`,
       );
-      era.printButton(`つい見入っちゃった！`, 1);
+      era.printButton(`나도 모르게 넋을 잃고 봤어!`, 1);
       await era.input();
       await falcon.say_and_wait(`ほんと？ やった⭐`);
       await era.printAndWait(
-        `コースを下りた${falcon.name}は、少し休むと再び元気を取り戻した。`,
+        `경기장에서 내려온 ${falcon.name}은 잠시 휴식을 취한 뒤 금세 활기를 되찾았다.`,
       );
       await era.printAndWait(
         `しびれた脚の筋肉をマッサージしていると、${you.name}の顔から笑顔がこぼれ落ちない。`,
       );
       await falcon.say_and_wait(
-        `——もうダメかなってとき、観客席の応援が聞こえて、そしたらどこからか力が湧いて、そのまま一気にゴールまで！`,
+        `——그렇게 팔코가 더 이상 못 버티겠다 싶었을 때, 관객석에서 응원 소리가 들렸어! 그러니까 팔코도 모르게 어디선가 힘이 솟아나서 그대로 끝까지 단번에 달려 나갔지 뭐야!`,
       );
       await era.printAndWait(
         `コースを下りた${falcon.name}は、ステージ前の隙間で毎日のゲリラライブを観客席に売り込みかけたが、結局${you.name}に止められた。`,
       );
-      await falcon.say_and_wait(`ファル子の次のステージ、楽しみにしててね！`);
+      await falcon.say_and_wait(`팔코의 다음 공연도 기대해 줘!`);
       await era.printAndWait(
-        `最後のマッサージが終わると、${falcon.name}は新しい感触を確かめるようにつま先立ちした。`,
+        `마지막 마사지가 끝나자, ${falcon.name}은 새로운 감각을 확인하듯 발끝을 세웠다.`,
       );
       era.printButton(`ダートアイドルの気概、ちゃんと見せてこい！`, 1);
       await era.input();
@@ -723,21 +726,21 @@ module.exports = {
       await era.printAndWait(
         `並んでいるうちはまだまばらな声が聞こえたが、定位置に着くと、残ったのはか細い息づかいだけだった。`,
       );
-      await falcon.say_and_wait(`${falcon.name}の夢は、ここから始まる！`, true);
+      await falcon.say_and_wait(`${falcon.name}의 꿈이 여기서 시작되는 거야!`, true);
       await era.printAndWait(
-        `強い揺れのあと、${falcon.name}は下方向の力を感じた。これから本番だ。`,
+        `強い揺れのあと、${falcon.name}에게 아래로 향하는 힘이 전해졌다. 이제 곧 정식 공연이다.`,
       );
       await era.printAndWait(
-        `怖くない、と心の中で言い聞かせても、額と掌は汗で濡れていた。`,
+        `마음속으로 무서울 것 없다고 다짐했지만, 이마와 손바닥은 이미 땀으로 젖어 있었다.`,
       );
       await era.printAndWait(
-        `スポットライトが着順どおりにステージを照らし、時間は${falcon.teen_sex_title}たちを待って、ゆっくり止まっていく。`,
+        `조명은 이미 순위 순서대로 무대를 비추고 있었고, 시간은 ${falcon.teen_sex_title}들을 기다리며 서서히 멈춰갔다.`,
       );
       await era.printAndWait(
         `待ち焦がれたステージが目の前にある。稽古したステップが頭の中を何度も駆け、緊張で頭は真っ白になりかけた。それでも止まった時間は回り始め、いまが、進むときだ。`,
       );
       await era.printAndWait(
-        `こうして${falcon.name}は、初めてのウィンナーズステージを終えた。`,
+        `그렇게 ${falcon.name}は、初めてのウィンナーズステージを終えた。`,
       );
     };
     f.title = title;
@@ -905,7 +908,7 @@ module.exports = {
 
   // [번역 대상] cham_cup_win_s
   cham_cup_win_s: (() => {
-    const title = 'チャンピオンズカップ後・目標——東京大賞典';
+    const title = "챔피언스 컵 후·목표는 도쿄 대상전";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
@@ -913,40 +916,40 @@ module.exports = {
      */
     const f = async (falcon, you, callname) => {
       await era.printAndWait(
-        `${falcon.name}は楽にチャンピオンズカップを取った。`,
+        `${falcon.name}은 가볍게 챔피언스 컵에서 승리했다.`,
       );
       await era.printAndWait(
         `ステージの上の${falcon.name}は、さらに輝いている。`,
       );
-      await era.printAndWait(`控え室で`);
-      await falcon.say_and_wait(`${callname}——あとは東京大賞典だけ。`);
+      await era.printAndWait(`대기실에서`);
+      await falcon.say_and_wait(`${callname}—— 이제 도쿄 대상전만 남았어!`);
       await you.say_and_wait(`ファル子なら、できる。`);
       await era.printAndWait(`静かに、自分の気持ちを言った。`);
       await era.printAndWait(`励ましというより、確かな確信を述べている。`);
-      await falcon.say_and_wait(`——今のファル子、ちょっと緊張してる。`);
+      await falcon.say_and_wait(`——팔코, 지금 조금 긴장되는 것 같아.`);
       await era.printAndWait(
-        `そうだ。最後の一歩の前、結果が来るまでの時間が、いちばん緊張する。`,
+        `마지막 한 걸음을 앞둔 지금, 결과가 나오기 전까지가 가장 긴장되는 순간일 것이다.`,
       );
       await you.say_and_wait(
         `${
           falcon.name
-        }は僕が見た中でいちばん強い${falcon.uma_sex_title}だ。だから、君の夢が叶ってほしい。`,
+        }은 내가 본 ${falcon.uma_sex_title} 중에서 가장 강해. 그러니까 너의 꿈이 꼭 이뤄졌으면 좋겠어.`,
       );
       await era.printAndWait(
         `${falcon.name}の小さな頭を撫でる。最初は拒んでいた${falcon.sex}が、今は落ち着いて見える。`,
       );
-      await falcon.say_and_wait(`気持ち、ちょっと落ち着いた。ありがとう。`);
+      await falcon.say_and_wait(`이제 마음이 좀 놓이는 것 같아, 고마워.`);
       await you.say_and_wait(`落ち着いたなら、どこかで食べて祝おうか。`);
       await falcon.say_and_wait(`焼肉が食べたいな。いっしょに行こ⭐`);
       await era.printAndWait(
-        `食事を楽しんだあと、門限前に${falcon.name}を寮まで送った。`,
+        `즐거운 식사를 마친 후, 통금 시간이 되기 전에 ${falcon.name}을 기숙사까지 데려다주었다.`,
       );
-      await falcon.say_and_wait(`${callname}。`);
-      await era.printAndWait(`何か言おうとした${falcon.name}が、少し迷う。`);
-      await you.say_and_wait(`どうした？`);
-      await falcon.say_and_wait(`なんでもないよ⭐`);
+      await falcon.say_and_wait(`${callname}.`);
+      await era.printAndWait(`무슨 말을 하려던 ${falcon.name}이 잠시 머뭇거렸다.`);
+      await you.say_and_wait(`왜 그래?`);
+      await falcon.say_and_wait(`아무것도 아니야⭐`);
       await era.printAndWait(
-        `${falcon.teen_sex_title}は口を覆って忍び笑いし、走って行った。`,
+        `${falcon.teen_sex_title}는 입을 가리고 킥킥 웃으며 뛰어갔다.`,
       );
     };
     f.title = title;
@@ -1243,14 +1246,15 @@ module.exports = {
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      await era.printAndWait(`控え室\n`);
-      await falcon.say_and_wait(`${callname}、ファル子のステージ、見てた？⭐`);
-      await you.say_and_wait(`会場の熱、想像以上だった！`);
+      await era.printAndWait(`대기실
+`);
+      await falcon.say_and_wait(`${callname}! 무대 위에서의 팔코 모습 봤어?⭐`);
+      await you.say_and_wait(`현장 분위기가 생각보다 훨씬 뜨거웠어!`);
       await era.printAndWait(
         `ステージ上のファル子は、レースより、むしろステージが${falcon.sex}のホームだ。`,
       );
       await era.printAndWait(
-        `何度も練習したステップと、ファンとの掛け合いが、会場を熱くした。`,
+        `수없이 연습했던 안무와 팬들과의 티키타카가 현장 분위기를 한껏 끌어올렸다.`,
       );
       await you.say_and_wait(`ファル子、アイドルとしてプロ級だよ。`);
       await era.printAndWait(
@@ -1259,32 +1263,32 @@ module.exports = {
       await falcon.say_and_wait(
         `ファル子はトップアイドルを目指して進むんだから、アイドルの基礎中の基礎も、ちゃんとやらなきゃ！`,
       );
-      await you.say_and_wait(`いま、脚の感覚はある？`);
+      await you.say_and_wait(`지금 다리에 감각은 좀 있어?`);
       await era.printAndWait(
         `スパイクを脱がせると、ファル子の脚をマッサージし始めた。`,
       );
-      await falcon.say_and_wait(`前よりは、ちょっと感じるよ！`);
+      await falcon.say_and_wait(`아까보다는 조금 감각이 돌아온 것 같아!`);
       await you.say_and_wait(
         `ファル子の熱は炎みたいに熱いけど、体を無視したら怪我しやすい！`,
       );
       await falcon.say_and_wait(
-        `わかった。これから先も、${callname}にお願いね。`,
+        `응, 알았어. 앞으로도 ${callname}에게 잘 부탁할게.`,
       );
       await era.printAndWait(
-        `ステージを下りたファル子はほとんど立てず、${you.name}が抱えて控え室まで戻った。`,
+        `무대에서 내려온 팔코는 거의 서 있지도 못할 정도여서, 결국 ${you.name}이(가) 팔코를 안고 대기실까지 옮겨야 했다.`,
       );
-      await you.say_and_wait(`ファル子、蝶みたいにきれいだね。`);
+      await you.say_and_wait(`팔코는 나비처럼 예쁘네.`);
       await era.printAndWait(
-        `自分を燃やして世界を照らす。脆くて、壊れやすい。`,
+        `스스로를 태워 세상을 비추는, 연약하면서도 깨지기 쉬운 존재.`,
       );
       await falcon.say_and_wait(
-        `え？ 蝶……蝶なら、${callname}も花の中にいるの？`,
+        `어? 나비……? 만약 팔코가 나비라면, ${callname}も花の中にいるの？`,
       );
-      await you.say_and_wait(`ファル子に出会えたのは、僕の光栄だよ！`);
-      await falcon.say_and_wait(`やあ——ファル子、捕まっちゃう！`);
+      await you.say_and_wait(`오히려 팔코를 만난 건 내 영광이지!`);
+      await falcon.say_and_wait(`앗—— 팔코, 잡혀버리겠어!`);
       await you.say_and_wait(`これでファル子は逃げられない！`);
       await era.printAndWait(
-        `${falcon.name} はジャパンダートダービーを制した。`,
+        `${falcon.name}은 재팬 더트 더비에서 승리했다.`,
       );
     };
     f.title = title;
@@ -1611,53 +1615,53 @@ module.exports = {
 
   // [번역 대상] oc_95_1
   oc_95_1: (() => {
-    const title = '神社で祈願';
+    const title = "신사 참배";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (falcon, you) => {
-      await falcon.say_and_wait(`何度来ても、ここはこんなに静かだね⭐`);
+      await falcon.say_and_wait(`몇 번을 와도 여기는 참 조용하네⭐`);
       await falcon.say_and_wait(
-        `ん——いっそ神様にも、ファル子のライブ見てもらおっか！`,
+        `음— 차라리 신령님도 팔코의 콘서트를 보러 오게 할까!`,
       );
-      era.printButton(`バカもほどほどに！`, 1);
+      era.printButton(`엉뚱한 소리는 거기까지 해!`, 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} は ${falcon.name} の頭を軽く叩いた。うぅん、という声のあと、波紋の水面は再び静まった。`,
+        `${you.name}이(가) ${falcon.name}의 머리를 가볍게 콩 쥐어박자, 팔코가 '으으' 소리를 내며 조용해졌고 잔잔한 수면처럼 다시 평화가 찾아왔다.`,
       );
       await era.printAndWait(
-        `頭を上げて長い列の参拝客を見ると、無力感が全身を襲う。`,
+        `길게 줄을 선 참배객들을 다시 올려다보자, 온몸에 알 수 없는 무력감이 엄습했다.`,
       );
-      era.printButton(`参拝の人、想像より多いな。`, 1);
+      era.printButton(`참배하러 온 사람들이 생각보다 훨씬 많네.`, 1);
       await era.input();
       await falcon.say_and_wait(
-        `みんな、時間をかけても叶えたい願いがあるからね。`,
+        `다들 시간을 들여서라도 꼭 이루고 싶은 소원이 있어서 그런 거겠지?`,
       );
       await falcon.say_and_wait(
         `でもファル子は、ファン（予定）のみんなのために頑張るよ！`,
       );
       await era.printAndWait(
-        `大勢が同じ場所へ進むのを見て、本能になったアイドル意識が${falcon.name}を一瞬で熱くした。`,
+        `大勢が同じ場所へ進むのを見て、本能になったアイドル意識が${falcon.name}은 순식간에 들뜬 모습이 되었다.`,
       );
-      await you.say_and_wait(`……まずは参拝を終えよう。`);
+      await you.say_and_wait(`……일단 참배부터 끝내고 말해.`);
       await era.printAndWait(
         `隣で元気が尽きない${falcon.teen_sex_title}を見て、${you.name} は少し頭を抱えた。`,
       );
       await era.printAndWait(
-        `勝手なゲリラライブの迷惑でも、これから先のダートG1全勝という厳しい目標でもない。`,
+        `제멋대로 게릴라 콘서트를 열어서 생기는 곤란함 때문도 아니고, 앞으로 있을 더트 G1 레이스 전승이라는 가혹한 목표 때문도 아니었다.`,
       );
       await you.say_and_wait(`あの笑顔は、どう見ても作りものだ。`, true);
       era.drawLine();
       await era.printAndWait(`長い待ちのあと、二人は奉納箱の前に立った。`);
       await era.printAndWait(
-        `目の前の三女神像を見て、三女神に繁栄を祈った河の神の話が頭に浮かぶ。`,
+        `눈앞의 세 여신상을 바라보자, 세 여신에게 번영을 빌었다는 시냇물의 신령의 전설이 머릿속에 떠올랐다.`,
       );
-      await era.printAndWait(`……繁栄を祈る河の神、か。`);
-      await era.printAndWait(`思考が時間の前を行ったり来たりする。`);
-      await falcon.say_and_wait(`三女神さま——`);
-      await era.printAndWait(`体は隣の動きを真似た。`);
-      await era.printAndWait(`その一瞬、${you.name} が出した答えは`);
+      await era.printAndWait(`……번영을 빌었던 시냇물의 신령인가?`);
+      await era.printAndWait(`생각은 시간의 흐름 속에서 이리저리 맴돌았다.`);
+      await falcon.say_and_wait(`세 여신님——`);
+      await era.printAndWait(`몸이 옆에 있는 팔코를 따라 똑같은 동작을 취했다.`);
+      await era.printAndWait(`그 찰나의 순간, ${you.name}이(가) 내린 결론은……`);
       era.printButton(`河の神は、土地の人の健康を祈る（体力+600）`, 1);
       era.printButton(`河の神は、土地の人の勇気を祈る（全能力+10）`, 2);
       era.printButton(
@@ -1666,7 +1670,7 @@ module.exports = {
       );
       const ret = await era.input();
       await era.printAndWait(
-        `そのあと、${you.name} の耳に三女神の囁きが届いた。`,
+        `그 후, ${you.name}의 귓가에 세 여신의 속삭임이 들려왔다.`,
       );
       return [ret];
     };
@@ -1892,48 +1896,48 @@ module.exports = {
 
   // [번역 대상] sats_sho_lose
   sats_sho_lose: (() => {
-    const title = '皐月賞後・憧れたステージの真ん中';
+    const title = "사츠키상 후·동경하는 무대 중앙";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (falcon, you) => {
-      await era.printAndWait(`控え室`);
-      era.printButton(`ステージお疲れ、ファル子。`, 1);
+      await era.printAndWait(`대기실에서`);
+      era.printButton(`라이브 수고했어, 팔코.`, 1);
       await era.input();
       await era.printAndWait(
-        `皐月賞では勝てなかったが、${falcon.name}は満足そうだった。`,
+        `사츠키상에서 우승하지는 못했지만, ${falcon.name}은 만족스러운 모습이었다.`,
       );
-      await falcon.say_and_wait(`皐月賞のステージ、想像より大きかった……`);
+      await falcon.say_and_wait(`사츠키상 무대는 생각보다 훨씬 컸어……`);
       await falcon.say_and_wait(
-        `いつものステージの倍もあるし、まぶしいフラッシュ、目に入るのは全部こちらを見てるお客さん。`,
+        `평소에 서던 무대보다 두 배는 더 크고, 눈부신 플래시랑 우리를 지켜봐 주는 관객들로 가득했지.`,
       );
       await falcon.say_and_wait(
-        `でも、いちばん輝いてるのはステージの真ん中だよね……次は、ファル子が絶対に立つ！`,
+        `그래도 역시 가장 빛나는 건 무대 정중앙 자리겠지…… 다음번엔 팔코가 꼭 저 자리에 올라가고 말 거야!`,
       );
-      await falcon.say_and_wait(`ファル子、ファイト！`);
+      await falcon.say_and_wait(`팔코 파이팅!`);
       await you.say_and_wait(
-        `バカ、皐月賞はクラシック級の競走${falcon.uma_sex_title}しか出られないレースだよ！`,
+        `バカ、皐月賞はクラシック級の競走${falcon.uma_sex_title}만 참가할 수 있는 레이스라고!`,
       );
       await era.printAndWait(
-        `${you.name}は${falcon.name}の小さな頭を、軽く叩いた。`,
+        `${you.name}은(는) ${falcon.name}の小さな頭を、軽く叩いた。`,
       );
-      await falcon.say_and_wait(`えへ⭐`);
-      await era.printAndWait(`舌を出した${falcon.name}は、意外とかわいい。`);
-      await you.say_and_wait(`かわいいな。`, true);
+      await falcon.say_and_wait(`에헤헤⭐`);
+      await era.printAndWait(`혀를 쏙 내미는 ${falcon.name}은 의외로 귀여워 보였다.`);
+      await you.say_and_wait(`정말 귀엽네.`, true);
       await you.say_and_wait(
         `コホン！ 次はファル子、ジャパンダートダービーをしっかり準備しよう。`,
       );
-      await falcon.say_and_wait(`うん⭐`);
+      await falcon.say_and_wait(`응⭐`);
       await you.say_and_wait(`でもアイドルのステージも、気を抜くなよ！`);
       await falcon.say_and_wait(`はい⭐`);
-      await you.say_and_wait(`この勢いのまま、前へ進もう！`);
+      await you.say_and_wait(`이 기세 그대로 나아가는 거야!`);
       await falcon.say_and_wait(
         `最強の${falcon.uma_sex_title}アイドル——${
           falcon.name
         }⭐ 次は絶対、キラキラしてるところをみんなに見せる！`,
       );
-      await era.printAndWait(`${falcon.name}は元気な声で答えた。`);
+      await era.printAndWait(`${falcon.name}은 활기찬 목소리로 대답했다.`);
       await era.printAndWait(`${you.name}は、次のレースが楽しみになってきた。`);
     };
     f.title = title;
@@ -2162,7 +2166,7 @@ module.exports = {
 
   // [번역 대상] teio_sho_win
   teio_sho_win: (() => {
-    const title = '帝王賞後・輝くアイドル';
+    const title = "제왕상 후·반짝이는 아이돌";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} maru マルゼンスキー
@@ -2170,24 +2174,24 @@ module.exports = {
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, maru, you, callname) => {
-      await era.printAndWait(`${falcon.name}はきれいに一着を取った。`);
+      await era.printAndWait(`${falcon.name}은 멋지게 1착을 거머쥐었다.`);
       await era.printAndWait(`ウィンナーズステージでも、見せ切った。`);
       await era.printAndWait(
         `ファル子にとって、トップアイドルまでの道は、もうかなり近い。`,
       );
       await falcon.say_and_wait(
-        `${callname}、ファル子のステージ、どうだった？`,
+        `${callname}, 팔코의 퍼포먼스 어땠어?`,
       );
       await you.say_and_wait(`プロのアイドルと、もう大差ないよ。`);
       await you.say_and_wait(
         `でも比べるなら、うちのファル子がいちばん可愛い。`,
       );
       await falcon.say_and_wait(`うん！ ファル子も自分、可愛いと思う！`);
-      await maru.say_and_wait(`ファル子、すごいわね！`);
+      await maru.say_and_wait(`팔코, 정말 대단한걸!`);
       await era.printAndWait(
-        `いつの間にか、マルゼンスキーが控え室の入り口に立っていた。`,
+        `어느새 마루젠스키가 대기실 문앞에 서 있었다.`,
       );
-      await falcon.say_and_wait(`えっ？ マルゼン先輩、なんでここに？`);
+      await falcon.say_and_wait(`어라? 마루젠 선배가 여기 웬일이야?`);
       await maru.say_and_wait(
         `うん！ ファル子が一生懸命走る姿、アタシ超～感動したわ！`,
       );
@@ -2198,16 +2202,16 @@ module.exports = {
         `${maru.elder_sibling_sex_title}も、その熱に火がついたわ！`,
       );
       await falcon.say_and_wait(
-        `そ、そんなにマルゼン先輩が言うほどじゃないよ……`,
+        `아, 아니야…… 마루젠 선배가 말한 정도는……`,
       );
-      await maru.say_and_wait(`ふーん——機会があったら、いっしょに練習しない？`);
-      await falcon.say_and_wait(`あの、ファル子`);
+      await maru.say_and_wait(`음—— 그러고 보니 기회가 된다면 같이 연습해 보지 않을래?`);
+      await falcon.say_and_wait(`그게, 팔코는……`);
       await maru.say_and_wait(
         `ダートなら、${maru.elder_sibling_sex_title}がその弱点、なんとかするわ♪`,
       );
-      await maru.say_and_wait(`じゃあ、また今度ね♪`);
+      await maru.say_and_wait(`그럼, 그때 또 보자♪`);
       await falcon.say_and_wait(
-        `……うん！ マルゼン先輩といっしょなら、ファル子ももっと学べるかも！`,
+        `……응! 마루젠 선배와 함께라면 팔코도 더 많은 걸 배울 수 있을지도 몰라!`,
       );
       await era.printAndWait(`こうして、帝王賞はきれいに終わった。`);
     };
@@ -2348,7 +2352,7 @@ module.exports = {
 
   // [번역 대상] train_fail
   train_fail: (() => {
-    const title = '体を大事に！';
+    const title = "건강 조심!";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
@@ -2356,78 +2360,78 @@ module.exports = {
      * @param {number} fail_again 頑張るを選んだ場合、再び失敗するか
      */
     const f = async (falcon, you, callname, fail_again) => {
-      await falcon.say_and_wait(`……${callname}`);
+      await falcon.say_and_wait(`......${callname}`);
       await you.say_and_wait(`ファル子……`);
       await era.printAndWait(
-        `校医「あなたが${falcon.sex}のトレーナーですか。なぜ${falcon.sex}がこれほど疲弊しているのに、こんな危険を冒したのです」`,
+        `보건 교사 「당신은 ${falcon.sex}의 트레이너죠? 왜 ${falcon.sex}가 이렇게 지쳐 있는데도 무리하게 놔둔 거죠?」`,
       );
       await era.printAndWait(
-        `返す言葉がなく、${you.name}は黙って${falcon.sex}の叱責を聞くしかなかった。`,
+        `할 말이 없었다. ${you.name}은(는) 그저 묵묵히 ${falcon.sex}의 꾸중을 들을 수밖에 없었다.`,
       );
-      await falcon.say_and_wait(`ちがう、ファル子が自分からお願いしたんだよ。`);
+      await falcon.say_and_wait(`아니야, 내가 하고 싶다고 한 거야.`);
       await era.printAndWait(
-        `校医「怪我をすれば後遺症が残る可能性もあると、ご存じないのですか」`,
+        `보건 교사 「트레이너 선생님, 부상이 후유증을 남길 수 있다는 걸 모르나요?」`,
       );
       await era.printAndWait(
-        `トレーナー手帳にも、普段のトレーニングの怪我が後遺症になり、引退を余儀なくされた例が載っている。`,
+        `트레이너 매뉴얼에도 평소 훈련 중 입은 부상 때문에 후유증이 생겨 은퇴해야 했던 사례들이 적혀 있었다.`,
       );
       await era.printAndWait(`それでも。`);
-      await you.say_and_wait(`すみません。次から気をつけます。`);
-      await era.printAndWait(`校医「患者の休養を妨げないでください」`);
+      await you.say_and_wait(`죄송합니다. 다음부터는 주의하겠습니다.`);
+      await era.printAndWait(`보건 교사 「환자가 쉬어야 하니 방해하지 마세요.」`);
       await era.printAndWait(
-        `校医は溜息をつき、ついでに扉を閉めた。保健室で、黙った二人が視線を交わす。`,
+        `보건 교사가 한숨을 내쉬며 문을 닫자, 보건실 안에는 침묵 속에 서로를 마주 보는 두 사람만 남았다.`,
       );
-      era.printButton('「大丈夫だ。ファル子は、こうしてちゃんと休んで」', 1);
-      era.printButton('「……」', 2);
+      era.printButton("「괜찮아, 팔코. 그냥 푹 쉬어.」", 1);
+      era.printButton("「......」", 2);
       const ret = await era.input();
       if (ret === 1) {
-        await falcon.say_and_wait(`……うん。ファル子、すぐ元気になるよ。`);
+        await falcon.say_and_wait(`......응, 팔코는 금방 나을 거야.`);
         await falcon.say_and_wait(
-          `ファル子、ときどき急ぎすぎるから、全部${callname}のせいじゃないよ。`,
+          `팔코도 가끔 너무 서두를 때가 있어서, 전부 ${callname}의 잘못은 아니야.`,
         );
-        era.printButton('「ありがとう、ファル子」', 1);
+        era.printButton("고마워, 팔코.", 1);
         await era.input();
         await falcon.say_and_wait(
-          `うん、${callname}。トレーナー室の雑誌、持ってきてくれる？`,
+          `응. ${callname}。トレーナー室の雑誌、持ってきてくれる？`,
         );
-        await you.say_and_wait(`いいよ。ファル子も、ちゃんと休んで。`);
-        await falcon.say_and_wait(`うん。`);
+        await you.say_and_wait(`알았어. 팔코는 푹 쉬고 있어.`);
+        await falcon.say_and_wait(`응.`);
         await era.printAndWait(
-          `保健室の扉をそっと閉めると、ファル子はもう眠ったようだった。`,
+          `조심스럽게 보건실 문을 닫았다. 팔코는 이미 잠든 것 같았다.`,
         );
       } else if (fail_again) {
-        await falcon.say_and_wait(`${callname}。`);
+        await falcon.say_and_wait(`${callname}.`);
         await era.printAndWait(`ファル子が${callname}より先に沈黙を破った。`);
-        await falcon.say_and_wait(`手、握ってくれる？`);
+        await falcon.say_and_wait(`내 손 좀 잡아줄래?`);
         await era.printAndWait(
-          `ファル子の視線が、天井からゆっくり窓の外へ移る。`,
+          `팔코의 시선이 천장에서 창밖으로 천천히 옮겨졌다.`,
         );
-        await falcon.say_and_wait(`友達と別れたのも、この夕日のときだった。`);
-        await falcon.say_and_wait('痛い！');
-        await you.say_and_wait(`ファル子！`);
-        await falcon.say_and_wait(`${callname}、もう少し近くに来てくれる？`);
+        await falcon.say_and_wait(`친구들과 헤어졌던 것도, 바로 이런 석양이 질 때였어.`);
+        await falcon.say_and_wait("아야!");
+        await you.say_and_wait(`팔코!`);
+        await falcon.say_and_wait(`${callname}, 조금만 더 가까이 와줄래?`);
         await falcon.say_and_wait(
-          `もうこんなに友達と別れてきたのに、${callname}まで失いたくない。`,
+          `이미 너무 많은 친구와 헤어졌어. 더 이상 ${callname}까지 잃고 싶지 않아.`,
         );
         await era.printAndWait(
           `咽び泣くファル子を強く抱きしめ、${you.name}は巨大な金色の塊が地平線に呑まれていくのを見た。`,
         );
-        await era.printAndWait(`長い夜が来る。`);
+        await era.printAndWait(`긴 밤이 오려 하고 있었다.`);
       } else {
-        await falcon.say_and_wait(`${callname}`);
+        await falcon.say_and_wait(`${callname}.`);
         await era.printAndWait(`ファル子が${callname}の名を呼ぶ。`);
         await era.printAndWait(
           `なぜか、${callname}は${falcon.sex}の手を強く握った。`,
         );
-        await falcon.say_and_wait(`わかるよ、${callname}の温かい大きな手`);
-        await falcon.say_and_wait(`ちょっと楽になった。`);
-        await you.say_and_wait(`僕はここにいる。どこにも行かない！`);
-        await falcon.say_and_wait(`${callname}、優しいね。`);
-        await era.printAndWait(`ファル子は大きな手を自分の頬へ当てた`);
+        await falcon.say_and_wait(`${callname}의 크고 따뜻한 손이 느껴져.`);
+        await falcon.say_and_wait(`기분이 좀 나아진 것 같아.`);
+        await you.say_and_wait(`여기 있을게. 아무 데도 안 가.`);
+        await falcon.say_and_wait(`${callname}은(는) 정말 상냥하네.`);
+        await era.printAndWait(`팔코가 그 커다란 손을 자신의 뺨에 가져다 댔다.`);
         await falcon.say_and_wait(`このまま、少し休もう。`);
-        await era.printAndWait(`間もなく、ファル子はそのまま眠った。`);
+        await era.printAndWait(`얼마 지나지 않아 팔코는 그대로 잠이 들었다.`);
         await era.printAndWait(`そっと扉を閉めて、${callname}は保健室を出た。`);
-        await era.printAndWait(`ファル子はすぐに元気を取り戻した。`);
+        await era.printAndWait(`팔코는 금방 활력을 되찾았다.`);
       }
       return [ret];
     };
@@ -2437,7 +2441,7 @@ module.exports = {
 
   // [번역 대상] train_fumble
   train_fumble: (() => {
-    const title = '無理は禁止！';
+    const title = "무리 금물!";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
@@ -2445,71 +2449,71 @@ module.exports = {
      * @param {number} fail_again 頑張るを選んだ場合、再び失敗するか
      */
     const f = async (falcon, you, callname, fail_again) => {
-      await falcon.say_and_wait(`${callname}……`);
+      await falcon.say_and_wait(`${callname}.......`);
       await era.printAndWait(
-        `ファル子はトレーニング中、不覚にも足首をひねった`,
+        `팔코가 훈련 도중 발을 삐끗하고 말았다.`,
       );
-      await falcon.say_and_wait(`ごめん、ファル子、疲れすぎて……`);
+      await falcon.say_and_wait(`미안해, 팔코가 너무 지쳐서 그만......`);
       await era.printAndWait(
-        `立て続けのゲリラライブで、ファル子の体力が大きく削られていたのかもしれない`,
+        `연이은 게릴라 라이브가 팔코의 체력을 크게 소모시킨 모양이었다.`,
       );
-      era.printButton('「この先の街角ライブは、しばらく止めよう。」', 1);
-      era.printButton('「街角ライブ、試してみる？」', 2);
+      era.printButton("「당분간 거리 라이브는 중단해야겠어.」", 1);
+      era.printButton("「거리 공연을 해볼까?」", 2);
       const ret = await era.input();
       if (ret === 1) {
         await falcon.say_and_wait(
-          `うぅ～ファル子を待ってるファンのみんな、どうしよう。`,
+          `으앙~ 팔코를 기다려주는 팬들은 어떡해?`,
         );
         era.printButton(
-          '「怪我した足で無理して演ったら、ファンも心配するだろ？」',
+          "「이렇게 다친 다리로 억지로 공연하면 팬들도 걱정할 거야.」",
           1,
         );
         await era.input();
-        await falcon.say_and_wait('……じゃあ、少しだけお休みするしかないね');
+        await falcon.say_and_wait(".....그렇네, 당분간은 쉬어야겠어.");
         await falcon.say_and_wait(
           'それなら元気出すために、トレーナー室で有馬記念のウィンナーズステージ見よ！',
         );
-        era.printButton('「怪我したところに力を入れないで。」', 1);
+        era.printButton("「다친 부위에 힘 들어가지 않게 조심해.」", 1);
         await era.input();
-        await falcon.say_and_wait(`わかった！ ${callname}、抱っこしてくれる？`);
-        era.printButton(`「よいしょ！」`, 1);
+        await falcon.say_and_wait(`알았어! ${callname}, 팔코 안아줄래?`);
+        era.printButton(`「영차!」`, 1);
         await era.input();
-        await falcon.say_and_wait(`うわ、本当に抱っこされた`, true);
-        await falcon.say_and_wait(`いい匂いするし、すごく近い`, true);
+        await falcon.say_and_wait(`우와, 정말 안아줬네.`, true);
+        await falcon.say_and_wait(`좋은 냄새도 나고 엄청 가까워……`, true);
         await era.printAndWait(
-          `脚の休養が必要なので、調子を戻すには少し時間がかかる。`,
+          `다리 부상으로 휴식이 필요했기에 컨디션을 회복하기까지는 시간이 좀 걸릴 것 같았다.`,
         );
       } else {
         await era.printAndWait(
-          `音楽のリズムに乗れたら、ファル子の治りも早くなるかもしれない。`,
+          `음악 비트에 몸을 맡기면 팔코가 더 빨리 나을지도 모른다.`,
         );
-        await era.printAndWait('少し考えて、試してみることにした。');
+        await era.printAndWait("잠시 고민한 끝에 시도해보기로 했다.");
         era.printButton(
-          '「気分が上がれば傷も早く治る。だからライブしよう！」',
+          "「기분이 즐거우면 상처도 빨리 나을 거야, 그러니까 라이브 하러 가자!」",
           1,
         );
         await era.input();
         await falcon.say_and_wait(
-          `え、そんな方法もあるんだ。ファル子、頑張る！`,
+          `에, 그런 방법도 있어? 팔코 힘낼게!`,
         );
         if (fail_again) {
           await era.printAndWait(
             `いつものように、緑の悪魔が${callname}に絡まれている隙に、ファル子の定例ライブが始まった。`,
           );
           await falcon.say_and_wait(
-            `みんな！ こっち見て！ ファル子のライブ、今から始まるよ！`,
+            `여러분! 여기 보세요! 팔코의 라이브가 지금 시작됩니다!`,
           );
           await era.printAndWait(
-            `こちらでリズムに合わせて踊り続けるファル子は、怪我などしていないみたいだった。`,
+            `리듬에 맞춰 춤을 추는 팔코는 마치 전혀 다치지 않은 사람처럼 보였다.`,
           );
           await falcon.say_and_wait(
             `やった！ やっとファンが何人か来てくれた！`,
             true,
           );
           await era.printAndWait(
-            `頭で考えているあいだに反応が一拍遅れ、うっかり転んでしまった。`,
+            `하지만 생각이 너무 많았던 탓인지 반응이 한 박자 늦었고, 그만 발을 헛디뎌 넘어지고 말았다.`,
           );
-          await falcon.say_and_wait(`う、ファル子は大丈夫だよ⭐`);
+          await falcon.say_and_wait(`으으, 팔코는 괜찮아⭐`);
           await era.printAndWait(
             `${callname}がたづなさんからようやく逃れたころ、ファル子の傷は悪化していた。`,
           );
@@ -2517,20 +2521,20 @@ module.exports = {
           await era.printAndWait(`ライブの出来は、意外なほど良かった`);
           await falcon.say_and_wait('みんな！ こっち！ 見て見て！');
           await era.printAndWait(
-            `平地をステージに、携帯マイクを取り出せば、ファル子の小さな舞台ができあがる。`,
+            `평지를 무대 삼아 휴대용 마이크를 꺼내 들자, 팔코의 작은 스테이지가 완성되었다.`,
           );
           await falcon.say_and_wait(`♪`);
           await era.printAndWait(
             `誰もいないところから、まばらな人だかり、やがて人が集まっていく。`,
           );
-          await era.printAndWait(`河岸の芝は、人でいっぱいになった。`);
-          era.printButton('「効果は抜群だな」', 1);
+          await era.printAndWait(`강변 풀밭이 관객들로 가득 찼다.`);
+          era.printButton("「효과가 아주 좋은데?」", 1);
           await era.input();
           await era.printAndWait(
             `${callname}も時おり喝采する人の輪の中に立ち、静かにファル子のライブを見ていた。`,
           );
           await era.printAndWait(
-            `ライブ作戦は大成功に見え、${falcon.name}の傷の治りも早かった。`,
+            `ライブ作戦は大成功に見え、${falcon.name}의 상처도 훨씬 빠르게 회복되었다.`,
           );
         }
       }
@@ -2628,102 +2632,102 @@ module.exports = {
 
   // [번역 대상] we_34
   we_34: (() => {
-    const title = '輝く大ステージへ、止まらず進め！';
+    const title = "눈부신 큰 무대를 향해 멈추지 않고 전진!";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (falcon, you) => {
-      await falcon.say_and_wait(`……ふぅ⭐ありがとう、みんな！`);
+      await falcon.say_and_wait(`……후우⭐ 모두 고마워!`);
       await era.printAndWait(
-        `即興のメドレーが終わると、次々と湧く拍手が${falcon.name}への認めになった。`,
+        `즉석 메들리 곡이 끝난 후, 여기저기서 터져 나온 박수 소리는 ${falcon.name}에 대한 인정으로 모였다.`,
       );
       await era.printAndWait(
-        `メイクデビュー後、レースでもステージでも輝いたファル子は、大きな注目を集めた。`,
+        `데뷔전이 끝난 후, 경기장과 무대 위에서 반짝반짝 빛나는 팔코는 엄청난 주목을 받았다.`,
       );
       await era.printAndWait(
-        `ウマスタでは「${falcon.uma_sex_title}アイドル？！${falcon.name}⭐」が盛んに語られている。`,
+        `우마스타그램에서는 「${falcon.uma_sex_title} 아이돌?! ${falcon.name}⭐」이라는 주제로 많은 토론이 오갔다.`,
       );
       await era.printAndWait(
-        `それに続く川辺ライブの動画も、ウマスタでたくさんのファンを得た。`,
+        `그와 함께 강변 공연 영상도 우마스타그램에서 수많은 팬을 확보했다.`,
       );
-      await you.say_and_wait(`このまま、進み続けよう！`, true);
+      await you.say_and_wait(`이대로 계속 나아가자!`, true);
       await era.printAndWait(
-        `噂を聞いて集まった観客に囲まれ、川辺の草地で真剣に歌う${falcon.name}は、深夜まで一気に歌い続けた。`,
+        `소문을 듣고 찾아온 관객들에게 겹겹이 둘러싸여 강변 풀밭에서 열심히 공연한 ${falcon.name}은 밤늦게까지 노래를 불렀다.`,
       );
-      await you.say_and_wait(`お疲れ！`);
+      await you.say_and_wait(`수고했어!`);
       await era.printAndWait(
-        `最後のファンが満足して帰ったあと、${you.name}は${falcon.name}のほうへ歩いた。`,
-      );
-      await era.printAndWait(
-        `こうなると見越して、寮長には外泊許可を申請してあった。`,
+        `마지막 팬이 만족스럽게 떠난 후, ${you.name}은(는) ${falcon.name}에게 다가갔다.`,
       );
       await era.printAndWait(
-        `${you.name}が用意したタオルを${falcon.sex}に渡すと、汗に濡れた感触と妙な香りが神経を揺する。`,
+        `이런 상황을 예상했기에, 미리 기숙사 사감에게 외박 허가를 신청해 두었다.`,
       );
-      await falcon.say_and_wait(`ありがとう⭐`);
       await era.printAndWait(
-        `${you.name}は${falcon.name}と組んだステージを片付けながら、${falcon.name}の表情を見た。`,
+        `${you.name}이(가) 준비한 수건을 ${falcon.sex}에게 건네자, 땀에 젖은 촉감과 섞인 기묘한 향기가 신경을 자극했다.`,
+      );
+      await falcon.say_and_wait(`정말 고마워⭐`);
+      await era.printAndWait(
+        `${you.name}は${falcon.name}と組んだステージを片付けながら、${falcon.name}의 표정을 살폈다.`,
       );
       await falcon.say_and_wait(`～～～♪`);
       await era.printAndWait(
-        `ご機嫌な${falcon.name}は、まだステージの余韻に浸っている。`,
+        `기분이 좋아 보이는 ${falcon.name}은 아직 공연의 여운에 푹 빠져 있었다.`,
       );
-      await you.say_and_wait(`お疲れ！ あとは僕が片付けるよ。`);
+      await you.say_and_wait(`정말 고생 많았어! 나머지는 내가 정리할게.`);
       await era.printAndWait(
-        `後始末を全部引き受けようとした${you.name}は、しっぽで何度も叩かれた。`,
+        `마무리 작업을 전부 도맡으려던 ${you.name}은(는) 꼬리에 여러 번 얻어맞았다.`,
       );
       await falcon.say_and_wait(
-        `こんなに応援してくれるファンがいると、動力が満タンになったみたいで、翌朝まで一気に歌えそう！`,
+        `이렇게 많은 팬이 팔코를 응원해주는 걸 보니까 온몸에 힘이 넘치는 것 같아. 다음 날 아침까지도 계속 노래할 수 있을 것 같아!`,
       );
       await falcon.say_and_wait(
-        `片付けてるときでも、心臓がぱくぱく跳ねてるよ。`,
+        `짐을 정리하는 지금도 심장이 두근두근 뛰고 있어.`,
       );
-      await falcon.say_and_wait(`……それに。`);
+      await falcon.say_and_wait(`……게다가.`);
       await era.printAndWait(
         `ステージから抜け出せない${falcon.name}が、袖をそっと引っ張り、${you.name}の返事を待っている。`,
       );
       await you.say_and_wait(
-        `ファル子のステージ、すごくよかった。ずっと見てるファンとして、本当に感動した！`,
+        `팔코의 공연은 정말 멋졌어. 계속 지켜봐 온 팬으로서 정말 감동했어!`,
       );
-      await falcon.say_and_wait(`……ほんと！`);
+      await falcon.say_and_wait(`……정말이야?`);
       await era.printAndWait(
-        `${falcon.name}は${you.name}の手をきゅっと握った。`,
+        `${falcon.name}은 ${you.name}의 손을 꽉 잡았다.`,
       );
       await falcon.say_and_wait(`よかった！`);
       await era.printAndWait(
-        `突然のぐぅ、という音がなければ、すべてがこんなに美しいままだった。`,
+        `갑자기 들려온 꼬르륵 소리만 아니었다면 모든 것이 완벽했을 것이다.`,
       );
-      await falcon.say_and_wait(`……あはは、ファンがいなくてよかった。`);
+      await falcon.say_and_wait(`……아하하, 팬분들이 안 계셔서 다행이네.`);
       await era.printAndWait(
-        `少し気まずい${falcon.name}は、恥ずかしそうに俯いた。`,
+        `약간 민망해진 ${falcon.name}은 쑥스러운 듯 고개를 숙였다.`,
       );
       await you.say_and_wait(
         `そういえば、最近すごい人気のラーメン屋があるんだ。行ってみない？`,
       );
-      await era.printAndWait(`${you.name}は時計を見た。いま急げば間に合う。`);
+      await era.printAndWait(`${you.name}은(는) 시간을 확인했다. 지금 빨리 걸어가면 늦지 않을 것이다.`);
       await falcon.say_and_wait(`——いいね⭐ じゃあ今から行こ！`);
       await era.printAndWait(
-        `${falcon.name}が${you.name}の手を掴んだ瞬間、${you.name}は嫌な予感がした。`,
+        `${falcon.name}은 ${you.name}의 손을 꽉 잡았고, ${you.name}은(는) 문득 불길한 예감이 들었다.`,
       );
       await falcon.say_and_wait(`——3、1！ スタート！`);
-      era.drawLine({ content: 'ラーメン店内' });
+      era.drawLine({ content: "라면집 안" });
       await falcon.say_and_wait(
-        `わ——あぁ！ 想像以上に美味しい！ ファル子、エネルギー満タン⭐`,
+        `와—아아! 생각했던 것보다 훨씬 맛있어! 팔코, 이제 에너지가 꽉 찼어⭐`,
       );
       await era.printAndWait(
         `${you.name}は、${falcon.name}がウマスタに上げた、${you.name}の手を引き丁寧に並べたラーメン二杯との自撮りを見ていた。`,
       );
-      await you.say_and_wait(`すごいな。`);
+      await you.say_and_wait(`정말 대단하네.`);
       await era.printAndWait(
-        `配置の角度も、シャッターの間も、文句のつけようがない。`,
+        `구도 배치부터 타이밍 포착까지, 무엇 하나 나무랄 데가 없는 수준이었다.`,
       );
-      await you.say_and_wait(`ファル子、カメラマンの才能もあるんじゃない？`);
+      await you.say_and_wait(`팔코, 혹시 사진작가로서의 재능이 있는 거 아냐?`);
       await era.printAndWait(
-        `画面の上を指がすばやく走る${falcon.name}が、ときどき微笑む。いまは邪魔しないほうがいい、と思った。`,
+        `스마트폰 화면 위에서 손가락을 빠르게 움직이며 이따금 미소 짓는 ${falcon.name}을 보며, 문득 지금 방해해서는 안 되겠다는 생각이 들었다.`,
       );
       await era.printAndWait(
-        `${falcon.uma_sex_title}アイドルとは何か。たぶん、まだ答えは出ていない。`,
+        `${falcon.uma_sex_title} 아이돌이란 대체 무엇일까? 아마 아직은 결론이 나지 않았을 것이다.`,
       );
     };
     f.title = title;
@@ -3018,87 +3022,87 @@ module.exports = {
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      era.printButton(`やっと終わった。`, 1);
+      era.printButton(`드디어 끝났다.`, 1);
       await era.input();
       await era.printAndWait(
-        `最後の書類を片付けて、${you.name}は肩の荷が下りたように息をついた。`,
+        `마지막 서류를 정리하며 ${you.name}은(는) 안도의 한숨을 내쉬었다.`,
       );
-      await you.say_and_wait(`トレーナーって、本当に大変だな`, true);
+      await you.say_and_wait(`트레이너 노릇도 정말 쉽지 않네.`, true);
       await era.printAndWait(
-        `いつの間にかトレーナー室へ金色の夕日がそっと訪れていた。窓の外の熱いトレーニングの声が、${you.name}にトレーナー養成学校の日々を思い出させる。`,
+        `いつの間にかトレーナー室へ金色の夕日がそっと訪れていた。窓の外の熱いトレーニングの声が、${you.name}에게 트레이너 학원 시절을 떠올리게 했다.`,
       );
       await era.printAndWait(
-        `ダートを駆ける${falcon.uma_sex_title}アイドル——${falcon.name}。まだ実感はないが、いまやダートの新星だ。`,
+        `더트 위를 질주하는 ${falcon.uma_sex_title} 아이돌——${falcon.name}. 아직 실감은 나지 않지만, 이미 더트의 떠오르는 별이 되어 있었다.`,
       );
       await era.printAndWait(
         `だが、${falcon.name}のファン層が日増しに大きくなり、予定表の進みもどんどん遅くなっていくのを見ると。`,
       );
-      await era.printAndWait(`なぜか、心の隅が空いてしまう。`);
+      await era.printAndWait(`왠지 마음 한구석이 허전해졌다.`);
       await you.say_and_wait(
-        `……トレーナーとしての役目は、ちゃんと果たせているだろうか。`,
+        `……나는 트레이너로서의 직무를 잘 수행하고 있는 걸까?`,
         true,
       );
       await era.printAndWait(
-        `一日の注意力は限られている。気づける範囲にしか、意識は置けない。`,
+        `하루의 주의력은 한정되어 있기에, 자신이 인지할 수 있는 범위 내에서만 신경을 쓸 수밖에 없다.`,
       );
       await era.printAndWait(
-        `すべてに行き届かせるのはほぼ不可能だ。事故を防ぐために注意を増やせば、かえって不確かさが増える。`,
+        `모든 면에서 완벽할 수는 없으며, 사고를 방지하려고 과도하게 신경을 쓰다 보면 오히려 더 큰 불확실성을 초래할 수도 있다.`,
       );
       await era.printAndWait(
         `がらんとしたトレーナー室にいると、後ろ向きな考えが記憶の隅から溢れてくる。`,
       );
-      await falcon.say_and_wait(`${callname}、ただいま⭐`);
+      await falcon.say_and_wait(`${callname}, 팔코 돌아왔어⭐`);
       await era.printAndWait(
-        `${falcon.name}の丸い頭が、開いた扉の隙間から飛び出した。`,
+        `${falcon.name}의 동그란 머리가 열린 문틈 사이로 쏙 튀어나왔다.`,
       );
-      await you.say_and_wait(`お疲れ。今日のトレーニングの前に、少し休もう。`);
+      await you.say_and_wait(`수고했어. 오늘 훈련을 시작하기 전에 잠시 쉬자.`);
       await era.printAndWait(
-        `気を持ち直すため、${you.name}は席を立ち、${falcon.name}に紅茶を淹れた。`,
-      );
-      await era.printAndWait(
-        `それから、きちんと座っている${falcon.name}を見た。`,
+        `기운을 차리기 위해 ${you.name}은(는) 자리에서 일어나 ${falcon.name}에게 홍차를 한 잔 타 주었다.`,
       );
       await era.printAndWait(
-        `いつもの${falcon.name}と違い、手には誰かからもらった種が入っている。`,
+        `그리고 눈앞에 바르게 앉은 ${falcon.name}을 바라보았다.`,
       );
       await era.printAndWait(
-        `${falcon.name}は${you.name}の視線に気づき、耳を動かして、手の小さな袋を振った。`,
+        `평소의 ${falcon.name}과 달리, 손에는 누군가에게 받은 듯한 씨앗 꾸러미가 들려 있었다.`,
       );
       await era.printAndWait(
-        `${you.name}と${falcon.name}の努力で、${falcon.uma_sex_title}アイドルという概念は、やっと広がった。`,
+        `${falcon.name}은 ${you.name}의 시선을 느꼈는지 귀를 쫑긋거리며 손에 든 작은 봉지를 흔들어 보였다.`,
       );
       await era.printAndWait(
-        `いま${falcon.uma_sex_title}アイドルと言えば、ダートを見る観客は${falcon.name}を思い浮かべる。`,
+        `${you.name}과(와) ${falcon.name}의 노력 덕분에 ${falcon.uma_sex_title}アイドルという概念は、やっと広がった。`,
+      );
+      await era.printAndWait(
+        `이제 더트 팬들에게 ${falcon.uma_sex_title} 아이돌이라고 하면 누구나 ${falcon.name}을 떠올린다.`,
       );
       await era.printAndWait(
         `そのおかげで、${falcon.name}にもかなりのファン団体がついた。`,
       );
       await falcon.say_and_wait(`うん、商店街のお姉さんがくれたの。`);
       await era.printAndWait(
-        `多くのファンは${falcon.name}を自分の理想の投影にしている。だから助けてくれるのも当然なのか。`,
+        `많은 팬이 ${falcon.name}에게 자신들의 이상을 투영하고 있으니, 도움을 주는 것도 당연한 일일 것이다.`,
       );
       await era.printAndWait(
-        `手紙ならトレーナーの${you.name}が選んでから${falcon.name}に見せる。包装された贈り物も同じだ。`,
+        `편지라면 트레이너인 ${you.name}이(가) 먼저 확인한 뒤 ${falcon.name}에게 보여주었고, 포장된 선물도 마찬가지였다.`,
       );
       await era.printAndWait(
         `${falcon.name}は意外とこの点では素直で、ファン側の自律もある。だからいま${falcon.sex}の小さな頭は、落ち込む言葉に沈んではいない。`,
       );
-      era.printButton(`ちゃんと育てよう。`, 1);
+      era.printButton(`정성껏 키워보자.`, 1);
       await era.input();
       await era.printAndWait(
-        `まずは窓際の日陰に種を植え、芽が出たら陽の当たる場所へ移そう。`,
+        `일단 씨앗을 창가 근처 그늘진 곳에 심고, 싹이 트면 햇볕이 잘 드는 곳으로 옮기기로 했다.`,
       );
       await era.printAndWait(
-        `${falcon.name}が鉢を置いたあと、ぱたぱたと${you.name}の隣に座った。`,
+        `${falcon.name}이 화분을 내려놓고 ${you.name}の隣に座った。`,
       );
-      await falcon.say_and_wait(`あ、${callname}`);
-      await you.say_and_wait(`ん？ ファル子、どうした？`);
-      await falcon.say_and_wait(`……ううん、なんでもない⭐`);
+      await falcon.say_and_wait(`아, ${callname}.`);
+      await you.say_and_wait(`응? 팔코, 왜 그래?`);
+      await falcon.say_and_wait(`……아니, 아무것도 아니야⭐`);
       await era.printAndWait(
-        `${falcon.name}の耳がぱたぱたと揺れ、しっぽもソファを叩き続けている。`,
+        `${falcon.name}의 귀가 파닥파닥 움직였고, 꼬리도 소파를 탁탁 때리고 있었다.`,
       );
-      await falcon.say_and_wait(`そういえば、これからのトレーニング方針は——`);
-      await era.printAndWait(`時間は雑談とトレーニングの中で過ぎていった。`);
+      await falcon.say_and_wait(`그러고 보니, 다음 훈련 방침은——`);
+      await era.printAndWait(`시간은 잡담과 훈련 속에서 흘러갔다.`);
     };
     f.title = title;
     return f;
@@ -3106,100 +3110,100 @@ module.exports = {
 
   // [번역 대상] we_47_32
   we_47_32: (() => {
-    const title = '夏合宿終了・もっと大きなステージへ';
+    const title = "여름 합숙 종료·더 큰 무대를 향해";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname スマートファルコンのプレイヤーへの呼び方
      */
     const f = async (falcon, you, callname) => {
-      await falcon.say_and_wait(`はぁ！ はぁ！ はぁ！`);
-      await you.say_and_wait(`ファル子、ファイト！`);
-      await falcon.say_and_wait(`はあああああ！`);
+      await falcon.say_and_wait(`하아! 하아! 하아!`);
+      await you.say_and_wait(`팔코, 힘내!`);
+      await falcon.say_and_wait(`하아아아아아앗!`);
       await era.printAndWait(
-        `疲れ切った体を駆ってゴールへ向かったファル子は、やっとゆっくり止まった。`,
+        `지칠 대로 지친 몸을 이끌고 결승점을 향해 돌진하던 팔코는 마침내 서서히 멈춰 섰다.`,
       );
-      await you.say_and_wait(`お疲れ。`);
+      await you.say_and_wait(`수고했어.`);
       await era.printAndWait(
-        `用意したタオルをファル子に渡し、紙に最後の一行を記した。`,
+        `준비한 수건을 팔코에게 건네며 서류에 마지막 데이터를 기록했다.`,
       );
       await falcon.say_and_wait(
-        `夏季合宿で覚えたコツを活かして、レースでもっとたくさんのファンにファル子のキラキラを見せるよ⭐`,
+        `여름 합숙에서 배운 기술들을 잘 활용해서, 경기장에서 더 많은 팬에게 팔코의 빛나는 모습을 보여줄 거야⭐`,
       );
       await era.printAndWait(
         `${falcon.uma_sex_title}でも、トレーニングと町のライブを両立するのはもう限界だろう。だが${falcon.uma_sex_title}は少し休んだだけで、ライブの準備に取りかかった。`,
       );
-      era.printButton(`それ、きつすぎないか？`, 1);
+      era.printButton(`너무 무리하는 거 아냐?`, 1);
       await era.input();
       await falcon.say_and_wait(
-        `ほかの${falcon.uma_sex_title}に比べたら、ファル子の特徴は元気なところかもね。`,
+        `다른 ${falcon.uma_sex_title}들과 비교하면, 팔코의 강점은 아마 이 활기찬 모습일지도 몰라.`,
       );
       await era.printAndWait(
-        `${falcon.uma_sex_title}アイドルの${falcon.name}は、町のさよならライブに招かれた。`,
+        `${falcon.uma_sex_title} 아이돌인 ${falcon.name}은 마을의 고별 콘서트에 초대를 받았다.`,
       );
       await era.printAndWait(
-        `この町で新しくできたファンと友達のためにも、疲れ切っていても全力で向かわなければならない。`,
+        `이 마을에서 새로 사귄 팬들과 친구들을 위해서라도, 지친 몸을 이끌고 전력을 다해야 했다.`,
       );
       await you.say_and_wait(
         `今夜のライブは、ファンにとって一生に一度のステージだ！`,
       );
-      await era.printAndWait(`少なくとも、トレーナーとしての役目は果たそう。`);
+      await era.printAndWait(`적어도 트레이너로서의 소임은 다하자고 다짐했다.`);
       await falcon.say_and_wait(
-        `${callname}にとっても、そうなの……ファル子、いま元気満タン！`,
+        `${callname}에게도 그런 의미인 거야...? 팔코, 이제 다시 힘이 불끈 솟아올랐어!`,
       );
-      era.drawLine({ content: 'ライブ終了後' });
-      await falcon.say_and_wait(`～～～～♪ ありがとう、みんな！`);
-      await you.say_as_passer_by_and_wait(`ファン`, `ファル子！ ファル子！`);
+      era.drawLine({ content: "공연이 끝난 후" });
+      await falcon.say_and_wait(`～～～～♪ 모두 고마워!`);
+      await you.say_as_passer_by_and_wait(`팬들`, `팔코! 팔코!`);
       await era.printAndWait(
-        `近くの町で開いたライブは意外な人気で、ファル子がライブすると聞いて三時間も車を飛ばしてきたファンまでいた。`,
+        `근처 마을에서 열린 콘서트는 예상외로 엄청난 인기였다. 팔코의 공연 소식을 듣고 3시간이나 차를 몰고 달려온 팬이 있을 정도였다.`,
       );
       await era.printAndWait(
-        `多くの人にとって、ステージそのものより、ダートアイドルの${falcon.name}をこの目で見ることが本当の目的なのだろう。`,
+        `많은 사람에게 공연 그 자체보다 더트 아이돌인 ${falcon.name}을 직접 보는 것이 진짜 목적이었을 것이다.`,
       );
       await falcon.say_and_wait(
-        `うんうん！ みんなの声、ファル子の耳に届いたよ！ ファル子、嬉しい！`,
+        `응응! 모두의 외침이 팔코의 귀에 다 전달됐어! 팔코 정말 기뻐!`,
       );
       await you.say_as_passer_by_and_wait(
-        `ファン`,
-        `もう一曲！ ファル子！ もう一曲！`,
+        `팬들`,
+        `한 곡 더! 팔코! 한 곡 더!`,
       );
-      await falcon.say_and_wait(`じゃあもう一曲……`);
-      await era.printAndWait(`${falcon.name}は${you.name}の視線に気づいた。`);
+      await falcon.say_and_wait(`그럼 한 곡 더……`);
+      await era.printAndWait(`${falcon.name}은 ${you.name}의 시선을 눈치챘다.`);
       await falcon.say_and_wait(
-        `あはは……もう遅いし、遠くからファル子のライブを見に来てくれたファンもいる……${falcon.uma_sex_title}アイドルとして、ファル子は一人ひとりを考えなきゃ。だから、ごめんね！`,
+        `아하하…… 벌써 시간이 많이 늦었네. 멀리서 팔코의 공연을 보러 와주신 팬분들도 계시고…… ${falcon.uma_sex_title} 아이돌로서 팔코는 팬 한 분 한 분을 다 생각해야 하니까, 정말 미안해!`,
       );
       await falcon.say_and_wait(
         `でも、いいお知らせ！ 今回のライブはファル子のトレーナーにお願いして、ウマスタと動画サイトに上げてあるよ！`,
       );
-      await falcon.say_and_wait(`ファル子のキラキラ、いつでも再生してね❤`);
-      await falcon.say_and_wait(`それじゃ！ 合言葉、いくよ！`);
-      await falcon.say_and_wait(`ファル子が逃げたら？`);
-      await you.say_as_passer_by_and_wait(`ファン`, `追いかけるしかない！`);
-      await falcon.say_and_wait(`ずっと追うの？`);
-      await you.say_as_passer_by_and_wait(`ファン`, `地平線の大ステージまで！`);
-      await falcon.say_and_wait(`ありがとう⭐`);
+      await falcon.say_and_wait(`팔코의 빛나는 모습을 언제든 다시 볼 수 있다구❤`);
+      await falcon.say_and_wait(`자! 그럼 우리의 구호를 외쳐볼까!`);
+      await falcon.say_and_wait(`팔코가 도망친다면?`);
+      await you.say_as_passer_by_and_wait(`팬들`, `쫓아갈 수밖에 없지!`);
+      await falcon.say_and_wait(`계속 쫓아올 거야?`);
+      await you.say_as_passer_by_and_wait(`팬들`, `지평선 너머 큰 무대까지!`);
+      await falcon.say_and_wait(`모두 고마워⭐`);
       await era.printAndWait(
-        `会場のファンが散っていくと、ステージには${you.name}と${falcon.name}だけが残った。`,
+        `현장의 팬들이 서서히 흩어지고, 무대 위에는 ${you.name}과(와) ${falcon.name}만 남았다.`,
       );
-      era.printButton(`すごくよかった。`, 1);
+      era.printButton(`정말 멋졌어.`, 1);
       await era.input();
-      await era.printAndWait(`${falcon.name}は満足そうな顔をした。`);
+      await era.printAndWait(`${falcon.name}은 만족스러운 표정을 지었다.`);
       await era.printAndWait(
-        `ステージで跳ねていた両脚は、${you.name}が${falcon.sex}をそっと抱いた瞬間、壊れた人形みたいに地面へ崩れた。`,
+        `무대 위에서 껑충거리던 다리는 ${you.name}이(가) ${falcon.sex}をそっと抱いた瞬間、壊れた人形みたいに地面へ崩れた。`,
       );
-      await falcon.say_and_wait(`……毎日が、いまみたいだったらいいのに。`);
+      await falcon.say_and_wait(`……매일 오늘 같았으면 좋겠다.`);
       await era.printAndWait(`それでも${falcon.sex}の目は、まだ輝いていた。`);
       await falcon.say_and_wait(
-        `この調子なら、ファル子もあの壁、越えられるかも！`,
+        `이런 기세라면 팔코도 그 장벽을 뛰어넘을 수 있을 것 같아!`,
       );
       await era.printAndWait(
-        `${falcon.name}がいるおかげで、芝ばかり見ていた観客も、少しずつこちらへ視線を向け始めている。`,
+        `${falcon.name}의 존재 덕분에, 원래 잔디 레이스에만 관심 있던 관객들도 서서히 더트 레이스를 주목하기 시작했다.`,
       );
-      await you.say_and_wait(`絶対できる！`);
+      await you.say_and_wait(`꼭 성공할 거야!`);
       await era.printAndWait(
-        `${you.name}の言葉を聞くと、${falcon.name}は観客席を見た。`,
+        `${you.name}의 말을 듣고 ${falcon.name}은 관객석을 바라보았다.`,
       );
-      await falcon.say_and_wait(`こうして一歩ずつ、いちばん高いステージへ。`);
+      await falcon.say_and_wait(`이렇게 한 걸음씩 최고의 무대를 향해 나아가는 거야.`);
     };
     f.title = title;
     return f;
@@ -3207,7 +3211,7 @@ module.exports = {
 
   // [번역 대상] we_47_39
   we_47_39: (() => {
-    const title = '忘れ草';
+    const title = "원추리";
     /**
      * 萱草＝忘れ草。悩みを忘れる意
      * 過剰摂取は中毒の恐れ
@@ -3215,26 +3219,27 @@ module.exports = {
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (falcon, you) => {
-      await era.printAndWait(`商店街のゲリラライブ\n`);
-      await falcon.say_and_wait(`～～～♪ みんな、お疲れさま！`);
+      await era.printAndWait(`상점가에서 열린 게릴라 콘서트
+`);
+      await falcon.say_and_wait(`～～～♪ 모두 수고했어!`);
       await era.printAndWait(
-        `ダートを戦線に、いちばん前で輝き続ける${falcon.uma_sex_title}アイドル——${falcon.name}は、いまや話題の中心だ。`,
+        `더트 레이스를 주 무대로 선두에서 계속 빛나고 있는 ${falcon.uma_sex_title} 아이돌——${falcon.name}은 이제 뜨거운 화제였다.`,
       );
       await era.printAndWait(
-        `${falcon.name}の活躍をこの目で見ようと、わざわざ切符を買って来る人も多い。`,
+        `${falcon.name}의 활약상을 직접 보기 위해 일부러 표를 사서 찾아오는 사람들도 많았다.`,
       );
       await era.printAndWait(
         `大げさに言えば、ダート＝${falcon.name}は、もう実現しかかっている。`,
       );
       await you.say_as_passer_by_and_wait(`ファン`, `ファル子！ ファル子！`);
       await era.printAndWait(
-        `……名声が大きいほど試練も大きい。${falcon.name}が望んで広告を駆け回っているとはいえ、忙しいときはトレーニングまで止まるのは、${you.name}にとって笑えない。`,
+        `……유명세만큼이나 큰 시련이 따르는 법. 비록 ${falcon.name}が望んで広告を駆け回っているとはいえ、忙しいときはトレーニングまで止まるのは、${you.name}은(는) 웃음이 나오지 않았다.`,
       );
       await you.say_and_wait(
-        `……いまの契約が終わったら、ファル子とちゃんと話さないと。`,
+        `……지금 계약 기간이 끝나면 팔코와 진지하게 이야기를 좀 해봐야겠어.`,
       );
       await era.printAndWait(
-        `${falcon.name}の意志を尊重しているつもりでも、それを自由と呼べるのか。`,
+        `${falcon.name}의 의사를 존중한다고는 하지만, 이게 정말 자유로운 상태라고 할 수 있을까?`,
       );
       await you.say_as_passer_by_and_wait(
         `熱狂的ファンA`,
@@ -3254,9 +3259,9 @@ module.exports = {
       await you.say_and_wait(
         `……いまの人は、心の拠り所を探すのが、ますます強くなっているのかもしれない。`,
       );
-      await era.printAndWait(`とりあえず、その理由で自分を慰めた。`);
+      await era.printAndWait(`일단은 이런 이유로 스스로를 다독였다.`);
       await era.printAndWait(
-        `少し離れたステージでファンと触れ合う${falcon.teen_sex_title}を見る。精神も、もう限界だろう。`,
+        `少し離れたステージでファンと触れ合う${falcon.teen_sex_title}를 보니, 정신적으로도 이미 한계에 다다른 게 아닐까 싶었다.`,
       );
     };
     f.title = title;
@@ -3265,7 +3270,7 @@ module.exports = {
 
   // [번역 대상] we_95_10
   we_95_10: (() => {
-    const title = '目眩';
+    const title = "현기증";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
@@ -3273,47 +3278,47 @@ module.exports = {
      */
     const f = async (falcon, you, callname) => {
       await falcon.print_and_wait(`トレーナー室\n`);
-      await falcon.print_and_wait(`気が乗らない。`);
+      await falcon.print_and_wait(`의욕이 생기지 않았다.`);
       await falcon.print_and_wait(
-        `${falcon.name}の決然とした態度のせいか、どこから手をつけていいかわからない。`,
+        `어쩌면 ${falcon.name}의 단호한 태도 때문에, 어떤 방면에서 접근해야 할지 알 수 없었기 때문일지도 모른다.`,
       );
       await falcon.print_and_wait(
         `${falcon.name}に嫌われたのか。ライブを見に行きたいと言っても、${falcon.name}は理由をつけて断る。`,
       );
-      await falcon.print_and_wait(`でも——`);
+      await falcon.print_and_wait(`하지만——`);
       await falcon.print_and_wait(`断られるほど、パニックは増す。`);
-      await you.say_and_wait(`くそ！`);
+      await you.say_and_wait(`빌어먹을!`);
       await falcon.print_and_wait(`机を強く叩いて、胸の熱を吐く。`);
       await falcon.print_and_wait(
-        `${falcon.sex}に伝えたい。アイドルとして自分の幸せを追うことは、何も間違っていない、と。`,
+        `${falcon.sex}에게 말해주고 싶었다. 아이돌로서 자신의 행복을 추구하는 것은 아무런 문제가 없다고.`,
       );
       era.drawLine();
-      await falcon.print_and_wait(`ありがとう、みんな！`);
+      await falcon.print_and_wait(`모두 고마워!`);
       await falcon.print_and_wait(
-        `いつもの二時間ライブのあと、さらに三曲を一気に歌った。`,
+        `정기적인 2시간 콘서트가 끝난 후, 또 단숨에 세 곡을 연달아 불렀어.`,
       );
-      await falcon.print_and_wait(`少し休めば、そのまま三時間は歌える。`);
-      await falcon.print_and_wait(`でも、どうしても気が乗らない。`);
-      await falcon.print_and_wait(`ファンに、この気の乗らない顔を見られたら。`);
-      await falcon.print_and_wait(`自分でも、自分を許さないだろう。`);
-      await falcon.print_and_wait(`${callname}に悩みを話せば——`);
-      await falcon.print_and_wait(`疲れた体が、弱い言葉を出す。`);
+      await falcon.print_and_wait(`조금만 쉬면, 다시 단숨에 3시간은 더 노래할 수 있어.`);
+      await falcon.print_and_wait(`하지만, 도저히 의욕이 나질 않아.`);
+      await falcon.print_and_wait(`만약 팬분들에게 이렇게 의욕 없는 모습을 보인다면.`);
+      await falcon.print_and_wait(`아마 팔코 스스로도 자신을 용서할 수 없겠지.`);
+      await falcon.print_and_wait(`${callname}에게 고민을 털어놓는다면——`);
+      await falcon.print_and_wait(`지친 몸에서 나약한 말이 흘러나왔다.`);
       await falcon.say_and_wait(
-        `ファル子は、大事な${callname}を、もう危険に遭わせられない。`,
+        `팔코는 이제 소중한 ${callname}을 위험하게 만들 순 없어.`,
         true,
       );
       await falcon.print_and_wait(`傷を押さえて、血の中に立つ${callname}。`);
-      await falcon.print_and_wait(`ダメだ。これ以上、考えちゃいけない。`);
+      await falcon.print_and_wait(`안 돼, 더 이상 생각하면 안 돼.`);
       await falcon.print_and_wait(
-        `${falcon.name}は${falcon.uma_sex_title}アイドルとして、もう失格だ。`,
+        `${falcon.name}은 ${falcon.uma_sex_title} 아이돌로서 이미 실격이야.`,
       );
-      await falcon.print_and_wait(`でも——`);
+      await falcon.print_and_wait(`하지만——`);
       await falcon.print_and_wait(
-        `胸の疑問を無理に押し込む。完璧な${falcon.uma_sex_title}アイドルに、傷は一つも許されない。`,
+        `마음속의 의문을 억지로 짓눌렀다. 완벽한 ${falcon.uma_sex_title} 아이돌에게는 어떤 흠집도 있어서는 안 된다.`,
       );
-      await falcon.say_and_wait(`ファル子、ファイト！`);
+      await falcon.say_and_wait(`팔코, 힘내자!`);
       await falcon.print_and_wait(
-        `もう一度自分を鼓舞して、${falcon.uma_sex_title}アイドルの${falcon.name}は楽屋からステージへ戻った。`,
+        `다시 스스로를 다독이며, ${falcon.uma_sex_title} 아이돌로서의 ${falcon.name}は楽屋からステージへ戻った。`,
       );
     };
     f.title = title;
@@ -3803,7 +3808,7 @@ module.exports = {
 
   // [번역 대상] we_95_32
   we_95_32: (() => {
-    const title = '夏合宿終了';
+    const title = "여름 합숙 종료";
     /**
      * @param {CharaTalk} falcon スマートファルコン
      * @param {CharaTalk} you プレイヤー
@@ -3811,20 +3816,20 @@ module.exports = {
      */
     const f = async (falcon, you, callname) => {
       await era.printAndWait(`${falcon.name}のシニア級夏合宿が終わった。`);
-      await falcon.say_and_wait(`トップアイドルへの道、止まらず進むよ♪`);
+      await falcon.say_and_wait(`톱 아이돌의 길을 향해 한순간도 멈추지 않고 전진♪`);
       await era.printAndWait(
-        `夏合宿終了の宴会で、飲みすぎたと言って抜けた${you.name}は、同じく席を外した${falcon.teen_sex_title}と出会った。`,
+        `夏合宿終了の宴会で、飲みすぎたと言って抜けた${you.name}은(는) 똑같이 파티에서 나온 ${falcon.teen_sex_title}와 마주쳤다.`,
       );
       await you.say_and_wait(
-        `有名アイドルのファル子が、宴会を抜けるなんて珍しいね。`,
+        `유명 아이돌인 팔코가 이렇게 파티에서 자리를 비우는 건 드문 일이네.`,
       );
       await falcon.say_and_wait(
-        `ファン1号がいないと、アイドル活動も急に暗くなるからね。`,
+        `결국 1호 팬이 없으면, 아이돌 활동도 갑자기 빛이 바래버리니까.`,
       );
-      await era.printAndWait(`なるほど。`);
-      await you.say_and_wait(`ファル子は、もう孤独が怖くない？`);
-      await falcon.say_and_wait(`……正直、まだ怖い。でも前ほどじゃない。`);
-      await falcon.say_and_wait(`${callname}が、ずっとそばにいるから。`);
+      await era.printAndWait(`과연 그렇군.`);
+      await you.say_and_wait(`팔코는 이제 고독이 두렵지 않아?`);
+      await falcon.say_and_wait(`……솔직히 말하면 여전히 무서워. 하지만 예전만큼은 아니야.`);
+      await falcon.say_and_wait(`결국 ${callname}이 항상 내 곁에 있어 주니까.`);
       await you.say_and_wait(`……それが、ファル子の答えなんだ。`, true);
       await era.printAndWait(
         `${falcon.name}が少し前に傾き、右手の人差し指を唇の真ん中に立てて、右目を閉じる。`,
@@ -3836,47 +3841,47 @@ module.exports = {
         `そのときは……ファル子……ちがう、${falcon.name}は何も言ってないよ⭐`,
       );
       await era.printAndWait(
-        `${falcon.sex}の隠しきれない笑顔を見ると、幸せなことを思い浮かべたのだろう。`,
+        `${falcon.sex}의 숨길 수 없는 미소로 보아, 행복한 일을 생각하고 있는 모양이었다.`,
       );
       await era.printAndWait(
         `そのために頑張る一日一日が、この夢を叶えるための時間だ。`,
       );
       await falcon.say_and_wait(
-        `歩いてきた道のまわりに、見渡す限りの草原が見えてきた。`,
+        `우리가 걸어온 길 주위로 어느새 끝없는 초원이 보이기 시작했어.`,
       );
       await you.say_and_wait(
-        `トップアイドルになるなら、次のレースも気を抜かない！`,
+        `톱 아이돌이 되기 위해 다음 레이스도 소홀히 할 수 없지!`,
       );
-      await falcon.say_and_wait(`ちがう！`);
-      await era.printAndWait(`${falcon.name}の言葉に、${you.name}は驚いた。`);
-      await you.say_and_wait(`ファル子の言う意味は？`);
+      await falcon.say_and_wait(`아니야!`);
+      await era.printAndWait(`${falcon.name}은 ${you.name}을(를) 놀라게 하는 말을 꺼냈다.`);
+      await you.say_and_wait(`무슨 소리야?`);
       await falcon.say_and_wait(
-        `${callname}が前に言ったとおり、選択には自分で責任を持つ。`,
+        `${callname}이 예전에 말했던 것처럼, 누구나 자신의 선택에 책임을 져야 해.`,
       );
       await falcon.say_and_wait(
-        `ファル子は心の天秤を${callname}に傾けたけど、${falcon.uma_sex_title}アイドルとしての責任は変わらない。`,
+        `팔코가 마음의 저울을 ${callname}に傾けたけど、${falcon.uma_sex_title}アイドルとしての責任は変わらない。`,
       );
       await falcon.say_and_wait(
         `どれだけ経っても、約束を聞いた人が忘れても、それは変わらない。`,
       );
       await falcon.say_and_wait(
-        `だから、過労で倒れるまで、引退するまで、ファル子は${falcon.uma_sex_title}アイドルの責任を担う。`,
+        `그러니까 팔코가 과로로 쓰러지기 전까지는, 팔코는 ${falcon.uma_sex_title} 아이돌로서의 책임을 다할 거야. 은퇴할 때까지 말이야.`,
       );
-      await falcon.say_and_wait(`それが、ファル子の出した答え。`);
+      await falcon.say_and_wait(`이게 팔코가 내린 답이야.`);
       await era.printAndWait(
-        `隣の${falcon.teen_sex_title}は、すっとした顔をしている。${falcon.sex}は覚悟した。`,
+        `곁에 있는 ${falcon.teen_sex_title}는 홀가분한 표정을 지었다. ${falcon.sex}は覚悟した。`,
       );
       era.printButton(`いちばん近いところで、それを見届けさせて。`, 1);
       await era.input();
-      await falcon.say_and_wait(`ふふふ。`);
+      await falcon.say_and_wait(`후후후.`);
       await era.printAndWait(
-        `${falcon.name}が突然笑い出し、涙が出るまで笑った。`,
+        `${falcon.name}은 갑자기 웃기 시작하더니, 눈물이 흐를 정도로 한참을 웃었다.`,
       );
-      era.printButton(`ファル子？`, 1);
+      era.printButton(`팔코?`, 1);
       await era.input();
-      await era.printAndWait(`それから${you.name}をきつく抱きしめた。`);
+      await era.printAndWait(`그리고는 ${you.name}을(를) 꽉 껴안았다.`);
       await falcon.say_and_wait(`ありがとう、${callname}。`);
-      await era.printAndWait(`${falcon.name}は、もうひとりじゃない。`);
+      await era.printAndWait(`${falcon.name}은 이제 더 이상 혼자가 아니었다.`);
     };
     f.title = title;
     return f;
@@ -4315,7 +4320,7 @@ module.exports = {
 
   // [번역 대상] we_95_45
   we_95_45: (() => {
-    const title = 'モアッサナイト';
+    const title = "모이사나이트";
     /**
      * 約束を破っても、心が狂っても、
      * アイドルである以上、ファンの期待には真剣に応える
@@ -4327,43 +4332,43 @@ module.exports = {
       await falcon.print_and_wait(
         `${callname}を見送ったあと、スマートファルコンはひとり、トレーナー室のソファに座っていた。`,
       );
-      await falcon.print_and_wait(`無邪気な仮面を外して、静かな一瞬を味わう。`);
+      await falcon.print_and_wait(`천진난만한 가면을 벗어 던지고, 고요한 순간을 즐겼다.`);
       await falcon.say_and_wait(`……`);
-      await falcon.print_and_wait(`トレセンの夜は、思ったより静かだ。`);
-      await falcon.say_and_wait(`そういえば`);
+      await falcon.print_and_wait(`트레센의 밤은 생각보다 훨씬 조용했다.`);
+      await falcon.say_and_wait(`그러고 보니`);
       await falcon.print_and_wait(
-        `東京大賞典が終わったら、${callname}との契約も終わる。`,
+        `도쿄 대상전이 끝나면, ${callname}과의 계약도 끝이 나네.`,
       );
       await falcon.print_and_wait(
-        `状況次第で理事長に延長を出せるけど、なぜか、やる気が起きない。`,
+        `상황에 따라 이사장님께 계약 연장을 신청할 수도 있겠지만, 어쩐지 의욕이 나질 않아.`,
       );
       await falcon.print_and_wait(
-        `何か足りない。まだ気づいていないところがある。`,
+        `무언가 부족해. 팔코가 아직 깨닫지 못한 무언가가 있어.`,
       );
-      await falcon.print_and_wait(`胸の痛みが、その答えを探させる。`);
-      await falcon.say_and_wait(`今日の月、思ったよりきれい。`);
+      await falcon.print_and_wait(`가슴 속에서 전해지는 통증이 팔코에게 그 정답을 찾으라고 재촉하고 있어.`);
+      await falcon.say_and_wait(`오늘 달은, 생각보다 더 아름답네.`);
       await falcon.print_and_wait(
         `トレーナー室の窓から入る、触れれば裂けそうな、かすんだ月の光。`,
       );
       await falcon.print_and_wait(
-        `白い絹が伸びるほうへ視線が落ち、幻想の果てに冷たい黒い固体がある。`,
+        `시선은 하얀 비단이 펼쳐진 방향을 따라 내려갔고, 환상의 끝에는 차가운 검은 물체가 있었다.`,
       );
       await falcon.print_and_wait(
         `……使いすぎて、役目を早く終えたマイク${you.adult_sex_title}かな。`,
       );
-      await falcon.say_and_wait(`あなたも、役目を果たしたね。`);
-      await falcon.print_and_wait(`黒い固体は、黙ったまま自分を見ている。`);
-      await falcon.say_and_wait(`ああ、もう。`);
-      await falcon.print_and_wait(`なんでそんな悲しい目で見るの。`);
-      await falcon.say_and_wait(`……そうだね。ファル子には、もう何もない。`);
+      await falcon.say_and_wait(`너도 자신의 사명을 다했구나.`);
+      await falcon.print_and_wait(`검은 물체는 아무 말 없이 자신을 바라보고 있었다.`);
+      await falcon.say_and_wait(`아아, 정말이지.`);
+      await falcon.print_and_wait(`왜 그렇게 슬픈 눈으로 팔코를 쳐다보는 거야.`);
+      await falcon.say_and_wait(`……그래, 팔코에게는 이제 아무것도 없어.`);
       await falcon.say_and_wait(
-        `相容れないふたつを握ろうとして、最後は全部失った。`,
+        `서로 공존할 수 없는 두 가지를 모두 쥐려다가, 결국 전부 잃어버렸어.`,
       );
       await falcon.say_and_wait(
-        `ファンとの距離を整えるために、${callname}への恋心を、深く埋めた。`,
+        `ファンとの距離を整えるために、${callname}에 대한 연심을 마음속 깊이 묻어두었는데.`,
       );
       await falcon.say_and_wait(
-        `それでも、ファル子を応援してくれたファンのみんなには、ひびの入ったダイヤは、昔の光には届かない。`,
+        `그런데도 팔코를 응원해주는 팬 여러분에게, 균열이 생긴 다이아몬드는 결코 이전의 빛을 내지 못해.`,
       );
       await falcon.print_and_wait(
         `マイク${you.adult_sex_title}の問いに、真剣に答える。`,
@@ -4372,16 +4377,16 @@ module.exports = {
         `願いが耐えられない代価で叶っても、ステージに立って、その瞬間の誕生をこの目で見たい。`,
       );
       await falcon.say_and_wait(
-        `ファル子はずっと、輝く瞬間を求めてアイドルの道に乗った。`,
+        `팔코는 처음부터 끝까지 반짝이는 순간을 쫓기 위해 아이돌의 길을 택했으니까.`,
       );
       await falcon.print_and_wait(`最初の渇望は、もう大半が。`);
       await falcon.print_and_wait(
-        `誰かのためじゃない。自分の願いを叶えるためだけ。`,
+        `누군가를 위해서가 아니라, 오직 자신의 소원을 이루기 위해서.`,
       );
       await falcon.print_and_wait(
         `${falcon.uma_sex_title}アイドルとして、応援してくれたファンに、いちばん満足できる絵を捧げる。`,
       );
-      await falcon.print_and_wait(`だから、出発しよう！`);
+      await falcon.print_and_wait(`그러니, 이대로 출발하자!`);
       await falcon.print_and_wait(
         `ダートの大レースの支持が、芝の十分の一でも。`,
       );
@@ -4389,9 +4394,9 @@ module.exports = {
         `ファル子はダイヤより輝かせて、火彩をもっと鮮やかにする！`,
       );
       await falcon.print_and_wait(
-        `ファル子が${falcon.uma_sex_title}アイドルである覚悟を賭ける！`,
+        `ファル子が${falcon.uma_sex_title} 아이돌로서의 각오를 걸고!`,
       );
-      await falcon.print_and_wait(`そのまま一気に、ゴールまで輝く！`);
+      await falcon.print_and_wait(`이대로 단숨에 결승점까지 빛나는 거야!`);
     };
     f.title = title;
     return f;

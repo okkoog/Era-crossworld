@@ -242,7 +242,9 @@
   - 복구 완료: good_morning, o_r_walking, o_s_ktv, o_s_movie, o_s_restaurant, o_s_shopping, office_cook, office_rest, office_study, s_a_dating, s_a_tree_hollow, s_r_lunch, select
 
 - [kojo/103000-Rice-Shower/edu-30.js](files/sources/erauma/ere/i18n/ko-KR/kojo/103000-Rice-Shower/edu-30.js)
-  - 번역 대상: arim_kin_win_s, begin_race_win, kiku_sho_lose, kiku_sho_win, nikk_sho_end, oc_95_1, or_letter, os_95_21, os_dance, race_end_5, race_end_lose, race_end_love, race_end_win, race_start, race_start_moti_add, sa_47_46, sa_teach, sprg_sta_lose, sprg_sta_win, takz_kin_lose_s, takz_kin_win_s, tenn_spr_win, toky_yus_lose, toky_yus_win, train, train_fail, ts_add, ts_content, we_15, we_47_32, we_95_14, we_95_32, ws_47_1, ws_47_29, ws_95_14, ws_95_24, ws_95_29, ws_95_41, ws_95_48, ws_95_6, ws_beginning, ws_palace, ws_stay
+  - 번역 대상: begin_race_win, kiku_sho_win, oc_95_1, os_95_21, race_end_lose, race_end_love, race_start, sa_47_46, takz_kin_win_s, tenn_spr_win, toky_yus_win, ts_add, we_95_14, ws_47_1, ws_47_29, ws_95_24, ws_beginning, ws_palace, ws_stay
+
+  - 복구 완료: arim_kin_win_s, kiku_sho_lose, nikk_sho_end, or_letter, os_dance, race_end_5, race_end_win, race_start_moti_add, sa_teach, sprg_sta_lose, sprg_sta_win, takz_kin_lose_s, toky_yus_lose, train, train_fail, ts_content, we_15, we_47_32, we_95_32, ws_95_14, ws_95_29, ws_95_41, ws_95_48, ws_95_6
 
 - [kojo/103000-Rice-Shower/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/103000-Rice-Shower/entry.js)
   - 번역 대상: 없음 — 연결/보조 파일
@@ -298,7 +300,9 @@
   - 복구 완료: office_prepare, office_gift, good_morning, good_night_normal, o_c_pray, o_r_walking, o_s_arcade, o_s_dating, o_s_ktv, office_game, office_rest, s_a_dating, select, talk_about_falcon_and_gacha, talk_about_gacha
 
 - [kojo/103700-Eishin-Flash/edu-37.js](files/sources/erauma/ere/i18n/ko-KR/kojo/103700-Eishin-Flash/edu-37.js)
-  - 번역 대상: arim_kin_lose_c, arim_kin_win_c, before_arim_kin_c, before_arim_kin_s, before_begin_race, before_japa_cup_c, before_keis_hai, before_kiku_sho, before_sank_hai, before_sats_sho, before_tenn_sho_s, before_tenn_spr, before_toky_yus, begin_race_win, japa_cup_lose_c, japa_cup_win_c, os_95_6, os_black_treasure, sats_sho_end, tenn_sho_win_s, toky_yus_win, train_fail, train_fumble, train_in_fat, ts_add, we_47_32, we_95_32, ws_47_1, ws_47_13, ws_47_16, ws_47_17, ws_47_18, ws_47_18_end, ws_47_21, ws_47_23, ws_47_29, ws_95_1, ws_95_14, ws_95_23, ws_95_29
+  - 번역 대상: arim_kin_lose_c, arim_kin_win_c, before_arim_kin_c, before_arim_kin_s, before_japa_cup_c, before_keis_hai, before_sats_sho, before_tenn_sho_s, before_tenn_spr, before_toky_yus, begin_race_win, japa_cup_lose_c, japa_cup_win_c, os_95_6, os_black_treasure, sats_sho_end, tenn_sho_win_s, toky_yus_win, train_fail, train_fumble, ts_add, we_47_32, we_95_32, ws_47_1, ws_47_13, ws_47_16, ws_47_17, ws_47_18, ws_47_18_end, ws_47_21, ws_47_23, ws_47_29, ws_95_1, ws_95_14, ws_95_23, ws_95_29
+
+  - 복구 완료: before_begin_race, before_kiku_sho, before_sank_hai, train_in_fat
 
 - [kojo/103700-Eishin-Flash/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/103700-Eishin-Flash/entry.js)
   - 번역 대상: derby, derby_desc, distracted, distracted_desc, duty, duty_desc, notify_black_treasure, weak, week_desc
@@ -336,6 +340,7 @@
 
 - [kojo/104600-Smart-Falcon/edu-46.js](files/sources/erauma/ere/i18n/ko-KR/kojo/104600-Smart-Falcon/edu-46.js)
   - 번역 대상: be_crazy_fan, before_begin_race, before_cham_cup_s, before_febr_sta, before_japa_dir, before_jbc_cls_c, before_jbc_cls_s, before_sats_sho, before_teio_sho, before_toky_dai_c, before_toky_dai_s, begin_race_win, beginning, cham_cup_win_s, curiosity_girl, deadline_fight, febr_sta_win, get_ts_content, idol_ice_cream, japa_dir_win, jbc_cls_win_c, jbc_cls_win_s, loneliness_girl, next_beginning, oc_95_1, petrichor_girl, rooftop_idol, sats_sho_lose, sats_sho_win, shine_girl, teio_sho_win, toky_dai_win_c, toky_dai_win_s, train_fail, train_fumble, ts_add, we_34, we_47_15, we_47_21, we_47_32, we_47_39, we_95_10, we_95_17, we_95_23, we_95_32, we_95_37, we_95_38, we_95_40, we_95_45, we_95_47, ws_18, ws_24, ws_30, ws_40, ws_47_1, ws_47_15, ws_47_29, ws_47_30, ws_47_40, ws_47_41, ws_47_42, ws_47_48, ws_47_6, ws_47_9, ws_9, ws_95_14, ws_95_18, ws_95_29, ws_95_30, ws_95_48, ws_95_6, ws_95_9
+
 
 - [kojo/104600-Smart-Falcon/entry.js](files/sources/erauma/ere/i18n/ko-KR/kojo/104600-Smart-Falcon/entry.js)
   - 번역 대상: 없음 — 연결/보조 파일
