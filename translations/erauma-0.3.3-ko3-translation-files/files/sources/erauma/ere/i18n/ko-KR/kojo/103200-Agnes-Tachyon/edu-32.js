@@ -1736,9 +1736,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_hope_sta
+  // [번역 완료] before_hope_sta
   before_hope_sta: (() => {
-    const title = '課題研究の推進';
+    const title = '연구 과제의 진전';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -1746,95 +1746,95 @@ module.exports = {
      * @param {PrintedSpan} hope_sta ホープフルステークス（着色名）
      */
     const f = async (tachyon, you, callname, hope_sta) => {
-      await era.printAndWait('ついに、この日が来た');
+      await era.printAndWait('마침내 그날이 왔다');
       await era.printAndWait([
         hope_sta,
-        '——デビューしたての',
+        '——이제 막 데뷔한 ',
         tachyon.uma_sex_title,
-        'たちにとって、下半期で最も重要なレースと言っていい',
+        '들에게 하반기 가장 중요한 레이스라고 해도 과언이 아니다.',
       ]);
-      await era.printAndWait('三冠路線を目指すなら、なおさらだ');
+      await era.printAndWait('삼관 노선을 목표로 한다면 더욱 그렇다.');
       await era.printAndWait([
-        'ジュニア級唯一の中距離G1。才能ある',
+        '주니어급 유일의 중거리 G1. 재능 있는 ',
         tachyon.uma_sex_title,
-        'が夢の旅へ踏み出す、最初の一歩。',
+        '가 꿈을 향한 여정에 내딛는 첫걸음.',
       ]);
       era.println();
       await era.printAndWait([
-        'それほど大事な一日なのに、',
+        '그토록 중요한 날인데도 ',
         you.get_colored_name(),
-        ' の担当',
+        '을(를) 담당하는 ',
         tachyon.uma_sex_title,
         ' ',
         tachyon.get_colored_name(),
-        ' は……',
+        '은(는)……',
       ]);
       era.println();
-      await you.say_and_wait('あれ？');
+      await you.say_and_wait('어라?');
       era.println();
       await era.printAndWait([
-        'どこかで走り回っていると思っていた ',
+        '어디선가 뛰어다니고 있을 줄 알았던 ',
         tachyon.get_colored_name(),
-        ' が、今日は珍しく控え室で大人しくしていた',
+        '가 오늘은 드물게 대기실에서 얌전히 있었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait(['おや、', callname, '、来ましたわね']);
+      await tachyon.say_and_wait(['오호, ', callname, '왔는가.']);
       era.println();
       await era.printAndWait([
-        '控え室で、なにかのスプレーを脚に吹きかけている ',
+        '대기실에서 다리에 어떤 스프레이를 뿌리고 있던 ',
         tachyon.get_colored_name(),
-        ' は、',
+        '은(는) ',
         you.get_colored_name(),
-        ' を一度見上げただけで、また手元のスプレーに集中した',
+        '을(를) 한 번 올려다보더니 다시 손에 든 스프레이에 집중했다.',
       ]);
 
-      era.printButton('「それが、言っていた薬か？」', 1);
+      era.printButton('「그게 전에 말했던 약이야?」', 1);
       await era.input();
-      await tachyon.say_and_wait('ええ、このレースで役立てばいいですわ……');
+      await tachyon.say_and_wait('그렇네. 이번 레이스에 도움이 되면 좋겠군……');
       await tachyon.say_and_wait(
-        '今さら隠す意味もありませんわ。これは、脚の筋肉をほぐす薬……',
+        '이제 와서 숨길 필요도 없지. 이건 다리 근육을 풀어 주는 약으로……',
       );
       await tachyon.say_and_wait(
-        '冷却スプレーに近いものですわね。レース後の怪我を防ぐための事前使用。今回の実験が成功すれば……',
+        '냉각 스프레이와 비슷한 물건일세. 레이스 후 부상을 예방하려고 미리 쓰는 거지. 이번 실험이 성공한다면……',
       );
       era.println();
-      await era.printAndWait('なるほど');
+      await era.printAndWait('그렇군.');
       await era.printAndWait([
-        'それを聞いて、',
+        '그 말을 들은 ',
         you.get_colored_name(),
-        ' は思わず息を吐いた',
+        '은(는) 저도 모르게 숨을 내쉬었다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' を信じているつもりでも、胸の奥にはどうしても一抹の不安が残る',
+        '을(를) 믿고는 있지만 마음 한구석에 불안이 남는 건 어쩔 수 없었다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' 本人への疑念ではない。',
+        '본인을 의심하는 건 아니다.',
         tachyon.get_colored_name(),
-        ' の薬が毎回正確に効くわけではない、という話だ……でなければ、今も全身が光っているはずがない',
+        '의 약이 매번 정확히 작용하는 것은 아니라는 얘기다…… 그렇지 않다면 지금도 온몸에서 빛이 나고 있을 리 없으니까.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'よろしい、準備は万全ですわ。',
+        '좋아, 준비는 완벽하네. ',
         callname,
-        '、行きましょう',
+        '출발하세.',
       ]);
       era.println();
-      await era.printAndWait('声が高ぶっているのは、会場の空気のせいだろうか');
-      await era.printAndWait('目が輝いているのは、ライバルへの期待だろうか');
-      await era.printAndWait('それとも……');
+      await era.printAndWait('들뜬 목소리는 경기장 분위기 때문일까?');
+      await era.printAndWait('반짝이는 눈은 라이벌에 대한 기대 때문일까?');
+      await era.printAndWait('아니면……');
       era.println();
       await tachyon.say_and_wait(
-        '今日の相手が、薬効を最大限まで引き出してくれますように',
+        '오늘 상대들이 약효를 최대한 끌어내 주기를.',
       );
       era.println();
-      await era.printAndWait('やはり、実験のためか');
+      await era.printAndWait('역시 실험 때문이었군.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、いつものままの',
+        '은(는) 언제나처럼 행동하는 ',
         tachyon.sex,
-        'がコースへ向かうのを見送った',
+        '가 코스로 향하는 모습을 지켜보았다.',
       ]);
     };
     f.title = title;
