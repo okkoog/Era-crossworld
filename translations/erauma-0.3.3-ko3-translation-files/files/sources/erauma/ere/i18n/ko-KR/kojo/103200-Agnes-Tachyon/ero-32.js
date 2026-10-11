@@ -2924,119 +2924,119 @@ module.exports = {
     await you.print_and_wait('이미 충분히 익은 과실이다. 이제 맛보기 시작해도 좋겠지.');
   },
 
-  // [번역 대상] prepare_anal
+  // [번역 완료] prepare_anal
   async prepare_anal(tachyon, you, callname, y_call_t) {
     if (era.get('abl:32:肛门耐性') >= 3) {
       await tachyon.say_and_wait(
-        '早く……この下品に疼く淫らな尻穴を、罰してくださいまし❤️',
+        '빨리…… 이 천박하게 욱신거리는 음란한 뒤쪽을 벌해 주게나❤️',
       );
       era.println();
       await you.print_and_wait([
-        '菊座を懸命に拡げる ',
+        '항문을 열심히 벌리고 있는 ',
         y_call_t,
-        ' が、欲しがる言葉を吐き、肉棒の挿入をせき立てる。',
+        '은(는) 원하는 말을 내뱉으며 남근을 넣어 달라고 재촉했다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         callname,
-        ' に開発された……',
+        '이(가) 개발해 준……',
         callname,
-        ' の好みでどう使ってもいい尻穴……早く、入れてくださいまし❤️',
+        '이(가) 원하는 대로 어떻게든 써도 좋은 항문…… 빨리 넣어 주게나❤️',
       ]);
-      await tachyon.say_and_wait([callname, ' の太い肉棒で、強く……突いて❤️']);
+      await tachyon.say_and_wait([callname, '의 굵은 남근으로 세게…… 찔러 주게❤️']);
       await tachyon.say_and_wait([
-        '尻穴だけで何度もいける、淫乱な',
+        '항문만으로도 몇 번이고 절정에 이르는 음란한 ',
         tachyon.uma_sex_title,
-        'に……してくださいまし❤️',
+        '이(가) 되게 해 주게❤️',
       ]);
       era.println();
       await you.print_and_wait([
-        '余裕を持って、',
+        '여유롭게 ',
         y_call_t,
-        ' が狂ったようにねだる姿を眺める。震える菊座の皺に息を吹きかけ、',
+        '이(가) 미친 듯이 애원하는 모습을 바라보았다. 떨리는 항문 주름에 숨을 불어 넣고 ',
         y_call_t,
-        ' が全身を震わせる反応を見る。',
+        '이(가) 온몸을 떠는 반응을 지켜보았다.',
       ]);
       await you.print_and_wait([
-        'いつも強気な ',
+        '늘 강한 척하던 ',
         y_call_t,
-        ' がこうしてねだるのは、めったに見られない。',
+        '이(가) 이렇게 애원하는 모습은 좀처럼 볼 수 없다.',
       ]);
       await you.print_and_wait(
-        'しかも、楽しむためだけに、生殖の意味などない行為をねだっているのだ。',
+        '게다가 즐거움을 얻기 위해서만 생식과는 아무 관계없는 행위를 원하고 있었다.',
       );
       await you.print_and_wait([
-        'ただし、',
+        '다만 ',
         y_call_t,
-        ' を本気で怒らせないよう注意は要る……が、もう少しだけ、味わっておこう……',
+        '을(를) 진심으로 화나게 하지 않도록 주의해야겠지만…… 조금만 더 즐겨 보자……',
       ]);
     } else {
       await tachyon.say_and_wait([
-        '……本当に、そうなさるおつもりですの、',
+        '……정말 그렇게 할 생각인가, ',
         callname,
         '……',
       ]);
       await tachyon.say_and_wait(
-        'こんなところ……入るわけがありませんわ……絶対に……',
+        '이런 곳에…… 들어갈 리가 없네…… 절대로……',
       );
       era.println();
       await you.print_and_wait([
         y_call_t,
-        ' は言われた通り臀を押さえ、尻穴を完全に開いている。',
+        '은(는) 지시받은 대로 엉덩이를 붙잡아 항문을 완전히 벌리고 있었다.',
       ]);
-      await you.print_and_wait('だが顔には、まだ恐れが残っている。');
+      await you.print_and_wait('하지만 얼굴에는 여전히 두려움이 남아 있었다.');
       await you.print_and_wait(
-        '排泄口を性器として使うと言われて、恐れない者などいないだろう。',
+        '배설구를 성기로 사용하겠다는 말을 듣고 두려워하지 않을 사람이 있을까?',
       );
-      await you.print_and_wait('だが……');
+      await you.print_and_wait('그렇지만……');
       era.println();
-      await you.print_and_wait('気持ちよくなる。安心していい。');
-      await you.print_and_wait([y_call_t, ' の尻を軽く叩き、保証する。']);
+      await you.print_and_wait('기분 좋아질 거야. 안심해도 돼.');
+      await you.print_and_wait([y_call_t, '의 엉덩이를 가볍게 두드리며 보장했다.']);
       await you.print_and_wait(
-        '菊座の皺が一度震え、言葉に応えたかのようだった。',
+        '항문 주름이 한 번 움찔했다. 마치 그 말에 응답한 듯했다.',
       );
     }
   },
 
-  // [번역 대상] prepare_virgin
+  // [번역 완료] prepare_virgin
   async prepare_virgin(tachyon, you, callname, y_call_t) {
     if (era.get('mark:32:同心') <= 1) {
-      await tachyon.say_and_wait('……ひどいですわ……');
+      await tachyon.say_and_wait('……너무하군……');
       era.println();
       await you.print_and_wait([
-        '顔を赤くしてはいるが、拒まない以上、',
+        '얼굴을 붉히고 있지만 거절하지 않는 이상 ',
         y_call_t,
-        ' の本音は見えている。',
+        '의 속마음은 뻔히 보였다.',
       ]);
-      await you.print_and_wait('だが、これだけでは物足りない……');
-      await you.print_and_wait('ねだる言葉、聞かせてもらおうか？');
+      await you.print_and_wait('하지만 이것만으로는 부족하다……');
+      await you.print_and_wait('애원하는 말을 들려주겠나?');
       era.println();
-      await tachyon.say_and_wait('趣味が悪すぎますわ……');
+      await tachyon.say_and_wait('취미가 정말 나쁘군……');
       await tachyon.say_and_wait([
-        'どうぞ……',
+        '부디……',
         callname,
-        ' 専用の淫らな穴が、',
+        ' 전용의 음란한 구멍이 ',
         callname,
-        ' にお仕えできるように……',
+        '을(를) 섬길 수 있도록……',
       ]);
       await tachyon.say_and_wait(
-        '思う存分、いじめてくださいまし……このいやらしい穴を❤️',
+        '마음껏 괴롭혀 주게나…… 이 음란한 구멍을❤️',
       );
       era.println();
-      await you.print_and_wait('自分から言わせた言葉なのに……');
+      await you.print_and_wait('스스로 말하게 한 대사인데도……');
       await you.print_and_wait([
         y_call_t,
-        ' の様子を見るに、その淫語で自分も昂ぶっているらしい……',
+        '의 모습을 보니 그 음란한 말로 자신도 흥분하는 모양이었다……',
       ]);
     } else {
       await tachyon.say_and_wait([callname, '❤️']);
       era.println();
       await you.print_and_wait(
-        '今も滴り続ける汁が、べっとりと張りついている。',
+        '지금도 끊임없이 흘러나오는 액체가 끈적하게 달라붙어 있었다.',
       );
-      await you.print_and_wait([y_call_t, ' は、下の柔らかい口を開いた。']);
+      await you.print_and_wait([y_call_t, '은(는) 아래쪽의 부드러운 입구를 벌렸다.']);
       await you.print_and_wait(
-        '待ち焦がれたものが入ってくるのを、待っている……',
+        '오랫동안 기다려 온 것이 들어오기를 기다리고 있었다……',
       );
     }
   },
@@ -3108,29 +3108,29 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] tit_and_blow_job
+  // [번역 완료] tit_and_blow_job
   async tit_and_blow_job(tachyon, callname) {
     await tachyon.print_and_wait([
       callname,
-      ' が少し上へ突き出すと、頭だけ出ていた肉棒の先が、自分の首に当たる。',
+      '이(가) 조금 위로 밀어 올리자 머리만 나와 있던 남근 끝이 자신의 목에 닿았다.',
     ]);
     await tachyon.print_and_wait(
-      '鈴口から落ちる先走りが、肉棒の突きで顎から首へ塗り広げられ、胸の乳穴へ滑り落ち、潤滑を足す。',
+      '귀두에서 떨어진 쿠퍼액이 남근의 움직임에 따라 턱에서 목까지 퍼지고, 가슴 사이로 흘러내려 윤활을 더했다.',
     );
     await tachyon.print_and_wait(
-      '肉棒と乳房の淫らな擦れ音に、乳を打つ音が混ざる。',
+      '남근과 가슴이 비비는 음란한 소리에 가슴을 때리는 소리가 뒤섞였다.',
     );
-    await tachyon.print_and_wait('室内の精の匂いも、次第に濃くなっていく。');
+    await tachyon.print_and_wait('방 안에 퍼진 정액 냄새도 점점 짙어졌다.');
     era.println();
-    await tachyon.say_and_wait('ちゅ……ちゅちゅ……');
+    await tachyon.say_and_wait('츄…… 츄츄……');
     era.println();
-    await tachyon.print_and_wait('口が乾く……舌が渇く……');
+    await tachyon.print_and_wait('입이 말라…… 혀가 마르네……');
     await tachyon.print_and_wait(
-      'こんなに汁があるのに、流してしまっては……もったいない……',
+      '이렇게 액체가 많은데 흘려보낸다면…… 아깝지 않은가……',
     );
-    await tachyon.print_and_wait('だから、口づけて含むのは当然ですわ……');
+    await tachyon.print_and_wait('그러니 입을 맞추고 머금는 것은 당연한 일이지……');
     await tachyon.print_and_wait(
-      '亀頭が唾で濡れるにつれ、乳房の動きもさらに滑らかになる……',
+      '귀두가 침으로 젖을수록 가슴의 움직임도 한층 부드러워졌다……',
     );
   },
 
