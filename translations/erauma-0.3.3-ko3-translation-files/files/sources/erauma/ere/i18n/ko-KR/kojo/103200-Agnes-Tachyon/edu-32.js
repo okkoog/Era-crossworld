@@ -8522,7 +8522,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_47_1
+  // [번역 완료] ws_47_1
   ws_47_1: (() => {
     const title = '年度審査';
     /**
@@ -8534,9 +8534,9 @@ module.exports = {
      */
     const f = async (tachyon, you, callname, relation, hope_sta_win) => {
       await tachyon.say_and_wait([
-        'おや、',
+        '이런, ',
         callname,
-        '、それは……書き初め、ですの？',
+        ', 그건…… 새해 다짐을 쓰고 있는 건가?',
       ]);
       era.println();
       await era.printAndWait([
@@ -8563,19 +8563,19 @@ module.exports = {
       era.println();
       await you.say_and_wait('의미라기보다…… 굳이 말하자면');
       era.printButton(
-        '「タキオンが出走すると約束した……そしてタキオンは負けないと思う」',
+        '「타키온이 출전하겠다고 약속했으니까…… 그리고 난 타키온이 질 거라 생각하지 않아」',
         1,
       );
       await era.input();
       if (hope_sta_win) {
         if (relation > 0) {
           await tachyon.say_and_wait(
-            'ふんふん、よろしい。天才の私は、たしかに無敗ですわ',
+            '흐흥, 좋네. 천재인 나는 확실히 무패니까 말이야.',
           );
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は得意げに言った',
+            '은(는) 의기양양하게 말했다.',
           ]);
         } else {
           await tachyon.say_and_wait(
@@ -8584,7 +8584,7 @@ module.exports = {
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は冷たく言った',
+            '은(는) 차갑게 말했다.',
           ]);
         }
       } else {
@@ -8598,11 +8598,11 @@ module.exports = {
         era.printButton('「그래도, 타키온이 가장 강해!」', 1);
         await era.input();
         await tachyon.say_and_wait(
-          '…………それほどまでにおめでたいと、言葉がありませんわ',
+          '…………그렇게까지 태평하다니, 할 말이 없군.',
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は思わず額を押さえた',
+          '은(는) 저도 모르게 이마를 짚었다.',
         ]);
       }
       await tachyon.say_and_wait('기왕 그럴 거라면, 꿈을 좀 더 멀리 둬 보는 건 어떤가?');
@@ -8653,7 +8653,7 @@ module.exports = {
           ]);
           era.println();
           await tachyon.say_and_wait(
-            'ただし……出走するかどうかは、私の気分次第ですわよ',
+            '다만…… 출전할지는 내 기분에 달린 거라는 걸 잊지 말게.',
           );
           era.println();
           await era.printAndWait([
@@ -8717,7 +8717,7 @@ module.exports = {
             ]);
             era.println();
             await tachyon.say_and_wait(
-              'ですので、可能性に届くために、今日の薬は……',
+              '그러니 가능성에 도달하기 위해 오늘의 약은……',
             );
             era.println();
             await era.printAndWait('갑작스러운 본색 드러내기라니!?');
@@ -8752,7 +8752,7 @@ module.exports = {
             await era.printAndWait('그래, 우리의 꿈을 위해서……');
             era.println();
             await tachyon.say_and_wait(
-              'ですので、今日のおせちもお願いしますわ',
+              '그러니 오늘 오세치 요리도 잘 부탁하네.',
             );
             era.println();
             await era.printAndWait(
@@ -8851,7 +8851,7 @@ module.exports = {
               tachyon.get_colored_name(),
               '의 모습이 조금 슬퍼 보였다. 애써 평정심을 유지하고 있었지만, 왠지 모를 체념 섞인 슬픔이 느껴졌다. 역시 그런 말을 하는 게 아니었을까……',
             ]);
-            await era.printAndWait('こんなことを言うべきではなかったのか……');
+            await era.printAndWait('이런 말을 하지 말았어야 했나……');
             era.println();
             await tachyon.say_and_wait(
               '………… 아무것도 아니네. 후후, 그렇다면 자네의 소원대로 오늘은 일찍 돌아가 푹 쉬도록 하지……',
