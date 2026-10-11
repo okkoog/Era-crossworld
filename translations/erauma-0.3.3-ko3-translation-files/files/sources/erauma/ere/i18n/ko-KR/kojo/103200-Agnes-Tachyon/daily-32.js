@@ -1085,189 +1085,189 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] event_talk_black_tea
+  // [번역 완료] event_talk_black_tea
   async event_talk_black_tea(tachyon, you, callname) {
-    await tachyon.say_and_wait([callname, '、丁度いいわ']);
-    await tachyon.say_and_wait('今日の新薬、試してくださいな');
+    await tachyon.say_and_wait([callname, ', 마침 잘 왔네.']);
+    await tachyon.say_and_wait('오늘 만든 신약을 시험해 주게.');
     era.println();
     await era.printAndWait([
-      'いつものように今日の薬を飲んだ……ん？ 紅茶の味がする',
+      '평소처럼 오늘의 약을 마셨다…… 응? 홍차 맛이 난다.',
     ]);
     await era.printAndWait([
       you.get_colored_name(),
-      ' は手元の試験管を怪訝に見た。怪しげな光を放ち、一目で ',
+      '은(는) 손에 든 시험관을 미심쩍게 바라봤다. 수상한 빛을 뿜는 것만 봐도 ',
       tachyon.get_colored_name(),
-      ' 製とわかる薬だ。なのになぜ……',
+      '가 만든 약이라는 걸 알 수 있다. 그런데 왜……',
     ]);
     era.println();
-    await tachyon.say_and_wait('いかがです？');
+    await tachyon.say_and_wait('어떤가?');
     era.println();
     await era.printAndWait([
-      '戸惑いながら感想を訊かれ、',
+      '당황한 채 감상을 묻는 질문을 듣자 ',
       you.get_colored_name(),
-      ' は反射で紅茶の味を評してしまった',
+      '은(는) 반사적으로 홍차의 맛을 평가해 버렸다.',
     ]);
     await era.printAndWait([
-      '答え終えてから ',
+      '대답을 마친 뒤에야 ',
       you.get_colored_name(),
-      ' は思い出した。これは薬であって紅茶ではない。しまった、酷評される……',
+      '은(는) 떠올렸다. 이건 홍차가 아니라 약인데. 큰일이다, 혹평을 듣겠어……',
     ]);
     era.println();
     await tachyon.say_and_wait(
-      '……香りが足りない、甘すぎる、それに色……そう。ええ……参考になる答えですわ……',
+      '……향이 부족하고, 너무 달고, 색깔도…… 그렇군. 흠…… 참고할 만한 의견이네……',
     );
     era.println();
-    await era.printAndWait('え？ これで通ったのか？');
+    await era.printAndWait('응? 이걸로 넘어간 건가?');
     era.println();
     await tachyon.say_and_wait(
-      '……そういえば、あなたの身体能力も上がっていますから、今後は毎日の薬を一剤増やしますわ、',
+      '……그러고 보니 자네의 신체 능력도 좋아졌으니, 앞으로 매일 마시는 약을 한 종류 더 늘리겠네.',
     );
     await tachyon.say_and_wait(
-      '従来の薬に加え、この剤も……あとであなたが文句を言えない味に改良してあげます',
+      '기존 약에 이것까지 더해서…… 나중엔 자네가 불평할 수 없을 만큼 맛있게 개량해 주지.',
     );
-    era.printButton('「まさか……」', 1);
-    era.printButton('「……まさか……」', 2);
+    era.printButton('「설마……」', 1);
+    era.printButton('「……설마……」', 2);
     const ret = await era.input();
-    await era.printAndWait('紅茶の味');
-    await era.printAndWait('味の考察と改良');
-    await era.printAndWait('つまり、そういうことだ');
+    await era.printAndWait('홍차의 맛');
+    await era.printAndWait('맛에 대한 고찰과 개량');
+    await era.printAndWait('즉, 그런 뜻이었다.');
     era.println();
     if (ret === 1) {
       await era.printAndWait(
-        'よく考えると、甘いのは確かだが、香り以外、その「薬剤」は外見を無視すれば……',
+        '가만히 생각하면 확실히 달긴 했지만 향을 제외하고, 겉모습만 무시한다면 그 『약』은……',
       );
       await era.printAndWait([
-        'いや、',
+        '아니, ',
         tachyon.sex,
-        'が紅茶を淹れるだけでどうしてあの色になるのかは疑問だが、',
+        '가 홍차를 우리기만 했는데 왜 저런 색이 되는지는 의문이지만, ',
       ]);
       await era.printAndWait([
-        'よく考えれば、それは',
+        '생각해 보니 그것은 ',
         tachyon.sex,
-        'が普段いちばん好む紅茶の味ではないか？',
+        '가 평소 가장 좋아하는 홍차의 맛이 아닌가?',
       ]);
       era.println();
-      await tachyon.say_and_wait('楽しみにしておきなさい！');
+      await tachyon.say_and_wait('기대하고 있게!');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は少し負け惜しみのように言った',
+        '은(는) 약간 오기를 부리듯 말했다.',
       ]);
       await era.printAndWait([
-        'そのとき ',
+        '그때 ',
         you.get_colored_name(),
-        ' は思い出した。かつて',
+        '은(는) 떠올렸다. 예전에 ',
         tachyon.sex,
-        'に弁当を出し、酷評されたときも、同じように負け惜しみていた',
+        '에게 도시락을 내놓았다가 혹평을 들었을 때도 똑같이 오기를 부렸었지.',
       ]);
       await era.printAndWait([
-        'よく考えれば、あのときの',
+        '그러고 보니 그때의 ',
         tachyon.sex,
-        'は何と答えたか？',
+        '은(는) 뭐라고 대답했더라?',
       ]);
-      era.printButton('「楽しみにしているよ、研究者君」', 1);
+      era.printButton('「기대하고 있을게, 연구자 양반.」', 1);
       await era.input();
-      await tachyon.say_and_wait('……たかがモルモットが');
+      await tachyon.say_and_wait('……한낱 모르모트 주제에.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の小さな独り言を聞き、つい笑った',
+        '의 작은 혼잣말을 듣고 그만 웃음이 나왔다.',
       ]);
     } else {
       await era.printAndWait([
-        '今さら',
+        '이제 와서 ',
         tachyon.sex,
-        'は自分で試薬するだけでは足りず、魔の手を他人へ伸ばそうとしている！',
+        '는 자기 몸으로 약을 시험하는 것으로도 모자라, 마수를 다른 사람에게까지 뻗치려 하고 있다!',
       ]);
       await era.printAndWait([
-        '今まさに紅茶味の薬を作ろうとしている。',
+        '당장 홍차 맛이 나는 약을 만들려고 하고 있지 않은가.',
         tachyon.sex,
-        'が色まで紅茶にする方法を見つけたら、それこそ大変だ！',
+        '가 색깔까지 홍차처럼 만드는 방법을 찾는다면 정말 큰일이다!',
       ]);
-      era.printButton('「タキオン！」', 1);
+      era.printButton('「타키온!」', 1);
       await era.input();
-      await era.printAndWait([you.get_colored_name(), ' は抑えきれず叫んだ']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 참지 못하고 소리쳤다.']);
       era.println();
-      await tachyon.say_and_wait([callname, '？ 何を……']);
-      era.printButton('「どんな薬でもいい、いくらでも来い！」', 1);
-      era.printButton('「一つだけ、約束してくれ」', 2);
+      await tachyon.say_and_wait([callname, '? 무슨 일인가……']);
+      era.printButton('「어떤 약이든 좋아, 얼마든지 가져와!」', 1);
+      era.printButton('「딱 하나만 약속해 줘.」', 2);
       await era.input();
       await tachyon.say_and_wait([
-        'ええ……ちょっと、',
+        '에에…… 잠깐, ',
         callname,
-        '……あなた、何か勘違いを……',
+        '……자네, 뭔가 오해하고 있는 것 같은데……',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は何か言おうとしたが、',
+        '은(는) 무언가 말하려 했지만 ',
         you.get_colored_name(),
-        ' に容赦なく遮られた',
+        '에게 가차 없이 말이 끊겼다.',
       ]);
       await era.printAndWait(
-        'そうだ……何があっても、これだけは今、口に出さなければならない',
+        '그렇다…… 무슨 일이 있어도 이것만큼은 지금 확실히 말해야 한다.',
       );
       era.printButton(
-        '「俺だけが、永遠に、唯一の（実）モルモット（験体）だ」',
+        '「나만이 영원한 유일무이한 모르모트(실험체)야!」',
         1,
       );
       await era.input();
-      await era.printAndWait('そうだ……今の味は、もう紅茶に限りなく近い');
+      await era.printAndWait('그렇다…… 지금도 그 맛은 홍차에 한없이 가까웠다.');
       await era.printAndWait([
         '万一、',
         tachyon.sex,
-        'が他人の飲み物、あるいはもっと悪いことに飲料水へ混ぜたら……想像したくない',
+        '가 그것을 다른 사람의 음료에, 아니면 더 끔찍하게도 식수에 섞는다면…… 상상도 하기 싫다.',
       ]);
       await era.printAndWait([
-        'だからここで自分の立場を強調し、',
+        '그러니 여기서 자신의 입장을 분명히 해서 ',
         tachyon.sex,
-        'に他人を実験体にする妄想を諦めさせなければならない',
+        '가 다른 사람을 실험체로 삼으려는 생각을 포기하게 만들어야 한다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……あなた……やはり勘違い…………でも……ん……');
+      await tachyon.say_and_wait('……자네…… 역시 오해를………… 그래도…… 음……');
       era.println();
       await era.printAndWait([
-        'なぜか ',
+        '어째서인지 ',
         tachyon.get_colored_name(),
-        ' は狼狽して背を向けた。',
+        '은(는) 당황해서 등을 돌렸다.',
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'が振り向く前に、真っ赤な顔を見た',
+        '가 돌아서기 전에 새빨개진 얼굴을 보았다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……私のモルモットは最初から最後まであなた一匹ですわ……とにかく毎日試薬に来なさい！ モルモットなら黙って薬を飲むのが本職でしょう！',
+        '……내 모르모트는 처음부터 끝까지 자네 한 마리뿐일세…… 아무튼 매일 약을 시험하러 오게! 모르모트라면 군말 없이 약을 마시는 게 본업 아닌가!',
       );
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はぷんぷんして去り、実験室の後始末は ',
+        '은(는) 씩씩거리며 떠났고, 실험실 뒷정리는 ',
         you.get_colored_name(),
-        ' 一人に残された',
+        ' 혼자에게 남겨졌다.',
       ]);
       era.println();
       await era.printAndWait([
-        '……なぜ怒ったのだろう。',
+        '……왜 화를 낸 걸까.',
         you.get_colored_name(),
-        ' には見当もつかない',
+        '으로서는 짐작도 가지 않았다.',
       ]);
       await era.printAndWait([
-        'ただ……',
+        '다만……',
         tachyon.sex,
-        'が他の実験者を見つけたら、その瞬間、',
+        '가 다른 실험체를 찾아낸다면 그 순간 ',
         you.get_colored_name(),
-        ' の胸は、その可能性だけで少し縮んだ',
+        '의 가슴은 그 가능성만으로도 조금 철렁했다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'が自分のモルモットは自分だけだと言ったとき、その緊張は跡形もなく消えた',
+        '가 자신의 모르모트는 오직 자신뿐이라고 말했을 때 그 긴장감은 흔적도 없이 사라졌다.',
       ]);
       era.println();
-      await era.printAndWait('まさか……薬に依存しているのだろうか');
+      await era.printAndWait('설마…… 약에 의존하게 된 걸까?');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は慌てて首を振り、その恐ろしい可能性を振り払った',
+        '은(는) 황급히 고개를 저으며 그 무시무시한 가능성을 떨쳐 냈다.',
       ]);
     }
     return [];
