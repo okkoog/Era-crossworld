@@ -3725,140 +3725,140 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ws_cook14
+  // [번역 완료] ws_cook14
   async ws_cook14(tachyon, amazon, tama, akebono, taste, you, callname) {
     await era.printAndWait([
-      '今朝、',
+      '오늘 아침, ',
       you.get_colored_name(),
-      ' が学園に着いた瞬間から、おかしかった',
+      '이(가) 학원에 도착한 순간부터 무언가 이상했다.',
     ]);
-    await era.printAndWait('学園全体が、焦燥の空気に包まれている');
+    await era.printAndWait('학원 전체가 초조한 분위기에 휩싸여 있었다.');
     await era.printAndWait(
-      'その空気は昼休みに極まり、昼食時の食堂で頂点に達した',
+      '그 분위기는 점심시간이 되자 한층 고조되어 식당에서 절정에 달했다.',
     );
     era.println();
-    await you.say_as_passer_by_and_wait('通りすがりのトレーナーA', [
-      '全員の',
+    await you.say_as_passer_by_and_wait('지나가던 트레이너 A', [
+      '모든 ',
       tachyon.uma_sex_title,
-      'が暴走してる！',
+      '들이 폭주하고 있어!',
       tachyon.couple_title,
-      'がいきなり担当トレーナーに弁当をせがみ始めたんだ！',
+      '들이 갑자기 담당 트레이너에게 도시락을 달라고 조르기 시작했다고!',
     ]);
-    await you.say_as_passer_by_and_wait('通りすがりのトレーナーA', [
-      '手製じゃないとダメだって！ ちくしょう、',
+    await you.say_as_passer_by_and_wait('지나가던 트레이너 A', [
+      '직접 만든 게 아니면 안 된다더군! 젠장, ',
       tachyon.couple_title,
-      'はどうやってトレーナー製かどうか見分けるんだ！',
+      '들은 대체 트레이너가 직접 만든 도시락인지 어떻게 구별하는 거야!',
     ]);
     era.println();
     await era.printAndWait([
-      'モブのトレーナーは、なぜかトレーナー室に押し入ると現状解説のようにそう言い終え、戸口から飛び込んできた担当',
+      '지나가던 트레이너는 어째서인지 트레이너실에 들이닥쳐 상황을 설명하듯 떠들어 댔고, 이내 문에서 뛰어 들어온 담당 ',
       tachyon.uma_sex_title,
-      'に引きずり出された',
+      '에게 끌려 나갔다.',
     ]);
-    era.printButton('「い、いったい……何が……」', 1);
+    era.printButton('「대, 대체…… 무슨 일이……」', 1);
     await era.input();
-    await tachyon.say_and_wait('おや、事情を訊く方がいらっしゃいましたわね？');
+    await tachyon.say_and_wait('오호, 사정을 궁금해하는 사람이 있군?');
     await era.printAndWait([
-      '突然、',
+      '갑자기 ',
       you.get_colored_name(),
-      ' の背後から聞き慣れた声がした。だが ',
+      '의 뒤에서 익숙한 목소리가 들렸다. 하지만 ',
       you.get_colored_name(),
-      ' は、',
+      '은(는) ',
       tachyon.sex,
-      'がいつトレーナー室に入ったのかすらわからなかった',
+      '이(가) 언제 트레이너실에 들어왔는지조차 알지 못했다.',
     ]);
     era.println();
     await tachyon.say_and_wait(
-      'そこまで誠心誠意訊くのですから、慈悲深く教えてあげますわ',
+      '그렇게나 진심으로 물어보니 자비롭게 알려 주도록 하지.',
     );
     await tachyon.say_and_wait([
       tachyon.uma_sex_title,
-      'と弁当の悪を貫くため、愛らしく魅惑的な狂気の科学者',
+      '와 도시락의 악행을 관철하고자 하는, 사랑스럽고 매혹적인 광기의 과학자……',
     ]);
     await tachyon.say_and_wait([
-      '長すぎるので以下略。要するにアグネスタキオンですわ。さあ、',
+      '너무 길어지니 이하 생략. 요컨대 아그네스 타키온일세. 자, ',
       callname,
-      '、おとなしく弁当を出しなさい',
+      ', 얌전히 도시락을 내놓게.',
     ]);
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は ',
+      '은(는) ',
       you.get_colored_name(),
-      ' の座っている椅子の背に寄りかかり、座ったままの ',
+      '이(가) 앉아 있는 의자의 등받이에 기대어, 아직 앉아 있는 ',
       you.get_colored_name(),
-      ' を見下ろして、侵略性の強い笑みを浮かべた',
+      '을(를) 내려다보며 무언가를 정복하려는 듯한 미소를 지었다.',
     ]);
-    era.printButton('「また何をした」', 1);
+    era.printButton('「또 무슨 짓을 한 거야?」', 1);
     await era.input();
     await tachyon.say_and_wait(
-      'おや、ひどいですわ。すぐに私を疑うなんて。被害者かもしれませんのに',
+      '이런, 너무하군. 곧바로 날 의심하다니. 나도 피해자일지 모르는데 말일세.',
     );
     era.println();
-    await era.printAndWait([tachyon.sex, 'はあわれっぽい声で言った']);
-    era.printButton('「今自分で認めただろう」', 1);
+    await era.printAndWait([tachyon.sex, '은(는) 가련한 목소리로 말했다.']);
+    era.printButton('「방금 스스로 인정했잖아.」', 1);
     await era.input();
-    await tachyon.say_and_wait('ええ……たしかに、そんなこともありましたわね');
-    await era.printAndWait('そんな些事は気にしないで');
-    await era.printAndWait([tachyon.sex, 'は袖をひらりと振って言った']);
+    await tachyon.say_and_wait('음…… 확실히 그런 말을 한 것 같기도 하군.');
+    await era.printAndWait('그런 사소한 일은 신경 쓰지 말게.');
+    await era.printAndWait([tachyon.sex, '은(는) 소매를 가볍게 흔들며 말했다.']);
     era.println();
     await tachyon.say_and_wait([
-      '重要なのは、',
+      '중요한 것은 ',
       callname,
-      '、弁当を出すことですわ',
+      ', 도시락을 내놓는 거라네.',
     ]);
-    era.printButton('「こんな強制で、おとなしく従うと思うか？」', 1);
+    era.printButton('「이렇게 강요하면 순순히 따를 줄 알아?」', 1);
     await era.input();
     await tachyon.say_and_wait(
-      '…………ふふ、もちろんですわ。最終的には、おとなしく弁当を捧げますもの',
+      '…………후후, 물론이지. 자네는 결국 얌전히 도시락을 바치게 될 테니까.',
     );
     era.println();
     await era.printAndWait([
       tachyon.get_colored_name(),
-      ' は謎めいた笑みを浮かべ、',
+      '은(는) 의미심장한 미소를 지었고, ',
       you.get_colored_name(),
-      ' は思わず後ろめたくなった',
+      '은(는) 자신도 모르게 뜨끔했다.',
     ]);
     await era.printAndWait([
-      '今日、',
+      '오늘, ',
       you.get_colored_name(),
-      ' はたしかに ',
+      '은(는) 분명히 ',
       tachyon.get_colored_name(),
-      ' の弁当を作った。だが仕事が忙しく、本当に忘れてしまった',
+      '의 도시락을 만들어 놓았다. 하지만 일이 바빠 정말로 깜빡하고 말았다.',
     ]);
     await era.printAndWait(
-      'だがここは譲れない。トレーナーとしての尊厳のため！ 自由のため！ ……のためだ',
+      '그래도 여기서 물러설 수는 없다. 트레이너로서의 존엄을 위해! 자유를 위해! ……아무튼 뭔가를 위해서다.',
     );
     era.println();
     await taste.say_and_wait([
-      '発表します！ 未知の要因により、学園内の全',
+      '알려 드립니다! 원인 불명의 현상으로 학원 내 모든 ',
       tachyon.uma_sex_title,
-      'が、トレーナー手製の弁当への不明な執着に陥っています、',
+      '들이 트레이너가 직접 만든 도시락에 설명하기 어려운 집착을 보이고 있습니다.',
     ]);
     await taste.say_and_wait([
-      '各トレーナーは直ちに愛馬の弁当を作ってください。料理ができないトレーナーは、事務局長、家庭科の先生、および ',
+      '각 트레이너는 즉시 담당 우마무스메의 도시락을 만들어 주시기 바랍니다. 요리를 못하는 트레이너는 사무국장님, 가정과 선생님 또는 ',
       tama.get_colored_name(),
       '、',
       amazon.get_colored_name(),
-      ' または ',
+      ' 또는 ',
       akebono.get_colored_name(),
-      ' に支援を求めてください',
+      '에게 도움을 요청해 주세요.',
     ]);
     era.printButton('「……」', 1);
     await era.input();
     await era.printAndWait([
-      '得意満面の ',
+      '의기양양한 ',
       tachyon.get_colored_name(),
-      ' を見て、',
+      '을(를) 보고 ',
       you.get_colored_name(),
-      ' は苦笑するしかなかった',
+      '은(는) 쓴웃음을 지을 수밖에 없었다.',
     ]);
     await era.printAndWait([
-      'やはり',
+      '역시 ',
       tachyon.sex,
-      'には勝てない。',
+      '에게는 이길 수 없다. ',
       you.get_colored_name(),
-      ' はおとなしく弁当を差し出した',
+      '은(는) 얌전히 도시락을 내밀었다.',
     ]);
   },
 
