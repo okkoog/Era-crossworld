@@ -163,277 +163,277 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] 74-2
+  // [번역 완료] 74-2
   async '74-2'(nature, you, callname, call_55) {
     const ret = [];
-    await nature.say_and_wait('はぁ～～～～');
+    await nature.say_and_wait('하아～～～～');
     await nature.print_and_wait([
-      'トレーナー室で、',
+      '트레이너실에서 ',
       nature.get_colored_name(),
-      ' は今日何度目かのため息をつく',
+      '는 오늘만 몇 번째인지 모를 한숨을 내쉬었다.',
     ]);
     await nature.print_and_wait([
-      '原因は、',
+      '원인은 ',
       nature.sex,
-      'の手にある一枚の便箋だ',
+      '의 손에 들린 편지지 한 장이었다.',
     ]);
     await nature.print_and_wait(
-      'ピンクの封筒にハートのシール。誰が見てもラブレターだとわかる。',
+      '분홍색 봉투에 하트 스티커까지 붙어 있었다. 누가 보아도 러브레터라는 걸 알 수 있었다.',
     );
     await nature.print_and_wait([
-      '今朝、名前も知らない',
+      '오늘 아침 이름도 모르는 ',
       nature.uma_sex_title,
-      'から渡されたものだ、と',
+      '에게 건네받은 것이라고 ',
       nature.sex,
-      'は言う。',
+      '는 말했다.',
       callname,
-      'に渡してください、と。',
+      '에게 전해 달라면서.。',
     ]);
     await nature.print_and_wait([
-      '頼まれた以上、',
+      '부탁받은 이상 ',
       you.sex,
-      'に渡すしかない。恋する',
+      '에게 전해 줄 수밖에 없다. 사랑에 빠진 ',
       nature.uma_sex_title,
       nature.child_sex_title,
-      'の気持ちは、',
+      '의 마음은 ',
       nature.get_colored_name(),
-      ' 自身がいちばんよく知っている',
+      ' 자신이 누구보다 잘 알고 있었다.',
     ]);
-    await nature.say_and_wait('でも……それでも', true);
+    await nature.say_and_wait('하지만…… 그래도', true);
     await nature.say_and_wait(
-      'トレーナーとその子が、もしうまくいっちゃったら——',
+      '트레이너와 그 애가 만약 잘되기라도 한다면——',
       true,
     );
     await nature.say_and_wait(
       [
-        'いっそ捨てちゃおうか…いや、いや、そんなの無理。でも ',
+        '차라리 버려 버릴까…… 아니, 그럴 순 없어. 하지만 ',
         callname,
-        ' を取られたくないよ…',
+        '를 빼앗기고 싶지는 않아……',
       ],
       true,
     );
     await nature.print_and_wait([
-      '赤毛の',
+      '붉은 머리의 ',
       nature.teen_sex_title,
-      'は何度も考える。正しい答えを必死に探すが、見つからない',
+      '는 몇 번이고 고민했다. 올바른 답을 필사적으로 찾아보지만 도무지 나오지 않았다.',
     ]);
-    nature.say(['はぁ～～～', callname, '……']);
-    era.printButton('「なに、ネイチャ、どうしたの？」', 1);
+    nature.say(['하아～～～', callname, '……']);
+    era.printButton('「왜 그래, 네이처? 무슨 일 있어?」', 1);
     await era.input();
-    nature.say(['あ、', callname, '、聞いてよ、実はね……']);
+    nature.say(['아, ', callname, ', 들어 봐. 사실은 말이야……']);
     await nature.print_and_wait([
       nature.get_colored_name(),
-      ' は言いかけて何かにはっとし、悲鳴を上げて飛びのいた。',
+      '는 말을 꺼내다 무언가 깨달은 듯 비명을 지르며 펄쩍 뛰었다.',
     ]);
-    await nature.say_and_wait('あああああああ！？');
+    await nature.say_and_wait('으아아아아아!?');
     nature.say([
       callname[0],
       callname[0],
       callname[0],
       callname,
-      '！ いつからいたの！？',
+      '! 언제부터 거기 있었던 거야!?',
     ]);
-    era.printButton('「今来たところ。ん？ その手紙は……？」', 1);
+    era.printButton('「방금 왔어. 응? 그 편지는……?」', 1);
     await era.input();
     await nature.say_and_wait(
-      'いまさら隠しても遅い。こんなデザイン、すぐラブレターだとバレる……',
+      '이제 와서 숨겨 봤자 늦었다. 이런 디자인이면 러브레터라는 걸 금방 알아챌 텐데……',
       true,
     );
-    era.printButton('「かわいい便箋だね。ファンレター？」', 1);
+    era.printButton('「예쁜 편지지네. 팬레터야?」', 1);
     await era.input();
-    await nature.say_and_wait('まさか、気づいてない。', true);
-    await nature.say_and_wait('ちがう、ファンレターじゃなくて……');
-    era.printButton('「違うの？ じゃあ何の手紙？」', 1);
+    await nature.say_and_wait('설마, 눈치채지 못했어.', true);
+    await nature.say_and_wait('아니야, 팬레터가 아니라……');
+    era.printButton('「아니라고? 그럼 무슨 편지인데?」', 1);
     await era.input();
     await nature.print_and_wait([
       you.get_colored_actual_name(),
-      ' から二球目の直球を投げられ、',
+      '에게 두 번째 직구를 맞고 ',
       nature.get_colored_name(),
-      ' は、さっき反射で否定した自分を後悔する。もう逃げ場がない',
+      '는 방금 반사적으로 부정했던 자신을 후회했다. 더는 도망칠 곳이 없었다.',
     ]);
-    await nature.say_and_wait('うん、これは……');
+    await nature.say_and_wait('응, 이건……');
     await nature.say_and_wait(
-      [you.sex, 'に、こんな形で渡すことになるなんて'],
+      [you.sex, '에게 이런 식으로 전해 주게 될 줄은 몰랐어.'],
       true,
     );
     await nature.print_and_wait([
-      '自業自得、と',
+      '자업자득이라고 ',
       nature.teen_sex_title,
-      'は思いつつも、覚悟を決めて手紙を ',
+      '는 생각하면서도 각오를 다지고 편지를 ',
       callname,
-      ' に渡した。',
+      '에게 건넸다.',
     ]);
-    await nature.say_and_wait('その……ラブレター……');
-    era.printButton('「え？ ラブレター？ やっぱりネイチャはモテるなあ。」', 1);
+    await nature.say_and_wait('그게…… 러브레터야……');
+    era.printButton('「어? 러브레터? 역시 네이처는 인기 많구나.」', 1);
     await era.input();
     await nature.say_and_wait([
-      'ちょっと！ 男の子がこんな便箋でラブレター書くわけないでしょ？ ',
+      '잠깐! 남자애가 이런 편지지로 러브레터를 쓸 리 없잖아! ',
       callname,
-      ' 宛、あなたへの！',
+      ' 앞으로 온 거야, 너한테!',
     ]);
     await nature.print_and_wait([
       nature.get_colored_name(),
-      ' は混乱しすぎて、手紙を卓に乱暴に置いてしまった。',
+      '는 너무 당황한 나머지 편지를 책상 위에 거칠게 내려놓았다.',
     ]);
-    era.printButton('「僕への……ラブレター？」', 1);
+    era.printButton('「나한테 온…… 러브레터?」', 1);
     await era.input();
     await nature.print_and_wait([
       you.get_colored_actual_name(),
-      ' は便箋を丁寧に見つめ、その顔に浮かんだ笑顔が、',
+      '는 편지지를 찬찬히 들여다보았다. 얼굴에 떠오른 미소가 ',
       nature.get_colored_name(),
-      ' の胸を締めつける',
+      '의 가슴을 조여 왔다.',
     ]);
-    era.printButton('「ありがとう、すごく嬉しい。」', 1);
+    era.printButton('「고마워. 정말 기쁘다.」', 1);
     await era.input();
-    await nature.say_and_wait('やっぱり、こういうの貰うと嬉しいんだ？');
+    await nature.say_and_wait('역시 이런 편지를 받으면 기쁜 거구나?');
     era.printButton(
-      `「可愛い${nature.uma_sex_title}${nature.child_sex_title}、できれば好きな${nature.uma_sex_title}${nature.child_sex_title}からなら、すごく嬉しいよ。」`,
+      `「귀여운 ${nature.uma_sex_title}${nature.child_sex_title}, 가능하다면 내가 좋아하는 ${nature.uma_sex_title}${nature.child_sex_title}에게 받는 편지라면 정말 기쁘지.」`,
       1,
     );
     await era.input();
     await nature.say_and_wait(
-      ['好きな', nature.uma_sex_title, nature.child_sex_title, '……そうなんだ'],
+      ['좋아하는 ', nature.uma_sex_title, nature.child_sex_title, '……그렇구나'],
       true,
     );
     await nature.say_and_wait(
       [
         callname,
-        ' の好きな',
+        '가 좋아하는 ',
         nature.uma_sex_title,
         nature.child_sex_title,
-        'が',
+        '가',
         nature.sex,
-        'にラブレターを渡した。お互いの気持ちを知ったふたりは両想い……',
+        '에게 러브레터를 건넸다. 서로의 마음을 확인한 두 사람은 맺어지고……',
       ],
       true,
     );
     await nature.say_and_wait(
-      '最初から、あたしに勝ち目なんてなかったんだ……',
+      '애초에 나한테는 승산 같은 게 없었구나……',
       true,
     );
     await nature.print_and_wait([
       nature.get_colored_name(),
-      ' の胸の痛みは限界だが、それでも会話を続ける……',
+      '의 가슴이 한계까지 아팠지만 그래도 대화를 이어 갔다……',
     ]);
     await nature.say_and_wait([
-      'そっか、',
+      '그렇구나, ',
       callname,
-      '、好きな',
+      ', 좋아하는 ',
       nature.uma_sex_title,
       nature.child_sex_title,
       '、',
       nature.sex,
-      'も可愛いんだし、お似合いじゃない？',
+      '도 귀여우니까 둘이 잘 어울리는 거 아니야?',
     ]);
     era.println();
 
     era.printButton(
-      '「え……？ このラブレター、ネイチャがくれたんじゃないの？」（関係を進める）',
+      '「어……? 이 러브레터, 네이처가 준 거 아니었어?」 (관계 진전)',
       1,
     );
     era.printButton(
-      '「いたらいいんだけどね。残念、今はそういう相手はいないよ。」（まだ進めない）',
+      '「그런 사람이 있으면 좋겠지만, 아쉽게도 지금은 없어.」 (관계 진전 없음)',
       2,
     );
     ret.push((ret.update = await era.input()));
     if (ret.update === 1) {
-      await nature.say_and_wait('は？');
+      await nature.say_and_wait('뭐?');
       await nature.print_and_wait([
         you.get_colored_actual_name(),
-        ' の言葉に、',
+        '의 말에 ',
         nature.get_colored_name(),
-        ' は一瞬、頭が真っ白になる。',
+        '는 순간 머릿속이 새하얘졌다.',
       ]);
       await nature.say_and_wait(
-        [callname, '、あたしが書いたラブレターだと思ってる？'],
+        [callname, ', 내가 쓴 러브레터라고 생각했던 거야?'],
         true,
       );
       await nature.say_and_wait(
-        [callname, '、ラブレターをもらって喜んでる？'],
+        [callname, ', 러브레터를 받아서 기쁜 거야?'],
         true,
       );
       await nature.say_and_wait(
         [
           callname,
-          ' は、好きな',
+          '는 자신이 좋아하는 ',
           nature.uma_sex_title,
           nature.child_sex_title,
-          'からのラブレターだと思って、嬉しいって？',
+          '에게 온 러브레터라고 생각해서 기뻐했던 거야?',
         ],
         true,
       );
       await nature.say_and_wait(
         [
-          '——つまり、',
+          '——그 말은, ',
           callname,
-          ' の好きな',
+          '가 좋아하는 ',
           nature.uma_sex_title,
           nature.child_sex_title,
-          'は……',
+          '는……',
         ],
         true,
       );
       await nature.print_and_wait([
-        '前後の筋をようやくつなぎ合わせた ',
+        '앞뒤 상황을 겨우 맞춰 본 ',
         nature.get_colored_name(),
-        ' は、一瞬で顔を真っ赤にした。',
+        '는 순식간에 얼굴이 새빨개졌다.',
       ]);
       await nature.say_and_wait([
-        'あー！ そういえば、',
+        '아! 그러고 보니 ',
         call_55,
-        ' が用事あるんだった～！ ごめん！',
+        '에게 볼일이 있었지~! 미안!',
         callname,
-        '！ ちょっと行ってくる！ 今夜ご飯作るから、そんとき会お！',
+        '! 잠깐 다녀올게! 저녁 만들어 줄 테니까 그때 보자!',
       ]);
       await nature.print_and_wait([
         you.get_colored_actual_name(),
-        ' の言葉を遮り、',
+        '의 말을 끊고 ',
         nature.get_colored_name(),
-        ' はトレーナー室から飛び出した',
+        '는 트레이너실에서 뛰쳐나갔다.',
       ]);
       await nature.print_and_wait(
-        '走って走って、商店街で足が止まり、力なく座り込む',
+        '정신없이 달리다가 상점가에서 멈춰 선 뒤 힘없이 주저앉았다.',
       );
       await nature.say_and_wait(
-        'あたしバカ？ なんで逃げるの？ 受け止めればよかったのに？ あー！ さっき夜ご飯作るって言っちゃったし！',
+        '나 바보야? 왜 도망쳤지? 그냥 받아들이면 됐잖아! 아아! 아까 저녁도 만들어 준다고 해 버렸는데!',
       );
       await nature.print_and_wait([
         nature.get_colored_name(),
-        ' は頭をかきむしる。この流れで夜に ',
+        '는 머리를 쥐어뜯었다. 이런 상황에서 밤에 ',
         you.get_colored_actual_name(),
-        ' に会いに戻ったら、答えの準備ができてるってことになる……',
+        '를 만나러 돌아가면 대답할 준비가 됐다는 뜻이 되어 버리잖아……',
       ]);
       await nature.say_and_wait([
-        'もう、振り返らない。前に進もう。',
+        '이제 뒤돌아보지 말자. 앞으로 나아가는 거야.',
         callname,
-        ' がくれた全部に、報いるために。',
+        '가 내게 준 모든 것에 보답하기 위해.',
       ]);
       await nature.print_and_wait([
         nature.get_colored_name(),
-        ' は覚悟を決める…立ち上がり、文具店へ向き直った。',
+        '는 각오를 다졌다. 몸을 일으켜 문구점을 향해 돌아섰다.',
       ]);
-      await nature.print_and_wait('自分の気持ちを乗せる便箋を買うために。');
+      await nature.print_and_wait('자신의 진심을 담을 편지지를 사기 위해.');
       await nature.say_and_wait(
-        'それから……念のため、下着も替えとこう……た、ただの念のためだから……',
+        '그리고…… 혹시 모르니까 속옷도 갈아입자…… 저, 정말 만약을 위해서야……',
       );
     } else {
-      await nature.say_and_wait('えっ？ そうなの？');
+      await nature.say_and_wait('어? 정말?');
       await nature.print_and_wait([
         you.get_colored_actual_name(),
-        ' の答えは ',
+        '의 대답은 ',
         nature.get_colored_name(),
-        ' の予想外で、胸の締めつけが一気に緩んだ。',
+        '의 예상을 벗어났고, 조이던 가슴이 단숨에 풀어졌다.',
       ]);
-      await nature.say_and_wait('そっか……えへへ、じゃあ……まだチャンスあるね。');
-      era.printButton('「ん？ 何のチャンス？」', 1);
+      await nature.say_and_wait('그렇구나…… 에헤헤, 그럼…… 아직 기회는 있겠네.');
+      era.printButton('「응? 무슨 기회?」', 1);
       await era.input();
-      await nature.say_and_wait('ひみつ！');
+      await nature.say_and_wait('비밀!');
       await nature.print_and_wait([
         nature.get_colored_name(),
-        ' は悪戯っぽい笑顔に切り替え、軽く跳ねるようにトレーナー室を出ていった',
+        '는 장난스러운 미소를 띠고 가볍게 뛰듯 트레이너실을 나갔다.',
       ]);
       await nature.say_and_wait(
-        'でも、これじゃ悠長にしてられない。動かないと……',
+        '하지만 이대로 느긋하게 있을 수는 없지. 움직여야 해……',
       );
     }
     return ret;
