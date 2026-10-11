@@ -6771,153 +6771,153 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ts_add_high_rel
+  // [번역 완료] ts_add_high_rel
   ts_add_high_rel: (() => {
-    const title = '追いかけっこ';
+    const title = '술래잡기';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname アグネスタキオンがプレイヤーを呼ぶ名
      */
     const f = async (tachyon, you, callname) => {
-      await tachyon.say_and_wait([callname, '！ ', tachyon.sex, 'を止めて！']);
+      await tachyon.say_and_wait([callname, '! ', tachyon.sex, '를 막아 줘!']);
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の今日のトレーニングは終わったばかりだった',
+        '의 오늘 훈련은 막 끝난 참이었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が手を振って ',
+        '은(는) 손을 흔들며 ',
         tachyon.get_colored_name(),
-        ' を呼び寄せようとした瞬間、',
+        '을(를) 부르려던 순간, ',
         tachyon.get_colored_name(),
-        ' がある',
+        '가 무언가를 ',
         tachyon.uma_sex_title,
-        'を追って ',
+        '을(를) 뒤쫓아 ',
         you.get_colored_name(),
-        ' のほうへ走ってくるのが見えた',
+        ' 쪽으로 달려오는 모습이 보였다.',
       ]);
       era.println();
       await you.say_as_passer_by_and_wait(
         `${tachyon.uma_sex_title}A`,
-        'た、助けて！',
+        '사, 살려 줘!',
       );
       await tachyon.say_and_wait(
-        '怖がらないで……大丈夫ですわ！ 少し時間を借りて、調査をいくつか、質問をいくつか、それから……それから……薬も少し試せたら……！',
+        '겁내지 말게…… 괜찮네! 잠깐 시간만 빌려서 조사 몇 가지, 질문 몇 가지, 그리고…… 그리고 약도 조금만 시험해 보면……!',
       );
       era.println();
       await era.printAndWait([
-        'その',
+        '그 ',
         tachyon.uma_sex_title,
-        'は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' にどんどん近づいてくる',
+        '에게 점점 다가오고 있었다.',
       ]);
-      era.print([you.get_colored_name(), ' は決めた……']);
-      era.printButton('二人を通す', 1);
-      era.printButton('タキオンを止める', 2);
+      era.print([you.get_colored_name(), '은(는) 결심했다……']);
+      era.printButton('두 사람을 통과시킨다', 1);
+      era.printButton('타키온을 막는다', 2);
       const ret = await era.input();
       if (ret === 1) {
         await you.say_as_passer_by_and_wait(`${tachyon.uma_sex_title}A`, [
-          'トレーナー',
+          '트레이너',
           you.adult_sex_title,
-          '、なぜ見ているだけなんです！？',
+          ', 왜 보고만 있는 건가요!?',
         ]);
         await tachyon.say_and_wait([
           callname,
-          '、なぜ',
+          ', 어째서 ',
           tachyon.sex,
-          'を止めてくれないの！？',
+          '를 막아 주지 않는 건가!',
         ]);
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は身を引いて、二人を通した',
+          '은(는) 몸을 비켜 두 사람을 지나가게 했다.',
         ]);
         await era.printAndWait(
-          '二人同時に詰問の声が上がった。だが中身は正反対だ',
+          '두 사람에게서 동시에 따지는 목소리가 터져 나왔다. 하지만 그 내용은 정반대였다.',
         );
-        await era.printAndWait([you.get_colored_name(), ' は肩をすくめた']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 어깨를 으쓱했다.']);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' のやり方がよくないのはわかっている。だが',
+          '의 방식이 옳지 않다는 건 안다. 하지만 ',
           tachyon.sex,
-          'のモルモットである以上、実験も手伝わねばならない',
+          '의 모르모트인 이상 실험에도 협조해야 한다.',
         ]);
-        await era.printAndWait('……板挟みだ');
+        await era.printAndWait('……진퇴양난이다.');
         await era.printAndWait([
-          'だから ',
+          '그래서 ',
           you.get_colored_name(),
-          ' は考えるのをやめ、どちらにも与しないことにした',
+          '은(는) 생각하기를 포기하고 어느 편도 들지 않기로 했다.',
         ]);
         era.drawLine();
         await era.printAndWait([
           '翌日、',
           you.get_colored_name(),
-          ' が実験室へ来ると、いつもの机に並ぶ自分用の薬が倍になっていた',
+          '이(가) 실험실에 도착하니 평소 책상에 놓인 자신의 약이 두 배로 늘어나 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' を見ると、',
+          '을(를) 바라보자, ',
           tachyon.sex,
-          'は無表情のまま ',
+          '은(는) 무표정한 채 ',
           you.get_colored_name(),
-          ' を見つめている',
+          '을(를) 바라보고 있었다.',
         ]);
-        await era.printAndWait('…………被害者は、結局自分だった');
+        await era.printAndWait('…………결국 피해자는 자신이었다.');
       } else {
-        await era.printAndWait('実験の是非はひとまず置く');
+        await era.printAndWait('실험의 옳고 그름은 일단 제쳐 두자.');
         await era.printAndWait([
-          '今日のトレーニングで ',
+          '오늘 훈련에서 ',
           tachyon.get_colored_name(),
-          ' はもう十分走っている。これ以上は身体を傷めかねない',
+          '은(는) 이미 충분히 달렸다. 더 했다간 몸을 다칠 수도 있다.',
         ]);
         era.println();
         await you.say_as_passer_by_and_wait(`${tachyon.uma_sex_title}A`, [
-          'トレーナー',
+          '트레이너',
           you.adult_sex_title,
-          '！ ありがとうございます！',
+          '! 감사합니다!',
         ]);
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          ' 은(는) ',
           tachyon.get_colored_name(),
-          ' を捕まえた',
+          '을(를) 붙잡았다.',
         ]);
         await era.printAndWait([
-          '年下の',
+          '연하의 ',
           tachyon.uma_sex_title,
-          'は遠ざかり、',
+          '은(는) 멀어졌고, ',
           tachyon.get_colored_name(),
-          ' はもう追いつける見込みがないと悟ると、恨めしげに ',
+          '은(는) 더는 따라잡기 어렵다는 걸 깨닫고 원망스럽게 ',
           you.get_colored_name(),
-          ' を睨んだ',
+          '을(를) 노려보았다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' の胸に、不吉な予感がよぎった',
+          '의 가슴에 불길한 예감이 스쳤다.',
         ]);
         era.drawLine();
         await era.printAndWait([
           '翌日、',
           you.get_colored_name(),
-          ' が実験室へ来ると、いつもの机に並ぶ自分用の薬が倍になっていた',
+          '이(가) 실험실에 도착하니 평소 책상에 놓인 자신의 약이 두 배로 늘어나 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' を見ると、',
+          '을(를) 바라보자, ',
           tachyon.sex,
-          'は無表情のまま ',
+          '은(는) 무표정한 채 ',
           you.get_colored_name(),
-          ' を見つめている',
+          '을(를) 바라보고 있었다.',
         ]);
-        await era.printAndWait('……………昨日の予感は正しかった');
+        await era.printAndWait('……………어제의 예감은 옳았다.');
       }
       return [ret];
     };
