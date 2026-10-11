@@ -72,7 +72,6 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 74
   // [번역 완료] 49-2
   '49-2': (() => {
     const title = 'La fée(평범한 인간을 사랑한 요정)';
