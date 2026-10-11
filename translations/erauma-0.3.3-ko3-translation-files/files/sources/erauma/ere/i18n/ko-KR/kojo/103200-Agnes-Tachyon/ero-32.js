@@ -188,14 +188,14 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ask_blow_job
+  // [번역 완료] ask_blow_job
   async ask_blow_job(tachyon) {
-    await tachyon.say_and_wait('まったく……仕方ありませんわね……');
+    await tachyon.say_and_wait('정말이지…… 어쩔 수 없군……');
     await tachyon.say_and_wait(
-      'いらっしゃい……私の口に、あなたの印を残すつもりで……',
+      '오게나…… 내 입에 자네의 흔적을 남긴다는 생각으로……',
     );
     await tachyon.say_and_wait(
-      '存分に、食道も胃も、あなたの因子で満たしてくださいまし❤️',
+      '식도도 위도 자네의 인자로 마음껏 채워 주게나❤️',
     );
   },
 
@@ -225,45 +225,45 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] ask_fuck
+  // [번역 완료] ask_fuck
   async ask_fuck(tachyon, you, callname, y_call_t) {
-    await tachyon.say_and_wait([callname, '……早く、早く❤️']);
-    await tachyon.say_and_wait('強く……私の雌穴を満たしてくださいまし❤️');
+    await tachyon.say_and_wait([callname, '……빨리, 빨리❤️']);
+    await tachyon.say_and_wait('세게…… 내 안을 가득 채워 주게나❤️');
     era.println();
-    await you.print_and_wait([y_call_t, ' は尻を上げ、腰を揺らし続ける。']);
-    await you.print_and_wait('豊かな尻が淫らに踊り、情欲を煽る……');
+    await you.print_and_wait([y_call_t, '은(는) 엉덩이를 들고 계속 허리를 흔들었다.']);
+    await you.print_and_wait('풍만한 엉덩이가 요염하게 움직이며 욕정을 자극했다……');
   },
 
-  // [번역 대상] ask_hand_job
+  // [번역 완료] ask_hand_job
   async ask_hand_job(tachyon) {
-    await tachyon.say_and_wait('まったく……');
-    await tachyon.say_and_wait('どうせ、顔に出すおつもりでしょう❤️');
+    await tachyon.say_and_wait('정말이지……');
+    await tachyon.say_and_wait('어차피 얼굴에 뿌릴 생각 아닌가❤️');
     await tachyon.say_and_wait(
-      'いいですわ……私の顔を、モルモット君の臭い精液で覆って……',
+      '좋네…… 이 얼굴을 모르모트 군의 진한 정액으로 뒤덮어 주게……',
     );
-    await tachyon.say_and_wait('濃い匂いですわ❤️');
-    await tachyon.say_and_wait('存分に、私にかけてくださいまし❤️');
+    await tachyon.say_and_wait('진한 냄새로군❤️');
+    await tachyon.say_and_wait('마음껏 내게 뿌려 주게나❤️');
     if (era.get('tcvar:32:喜欢责骂') || era.get('tcvar:32:喜欢痛苦')) {
       await tachyon.say_and_wait(
-        '雑巾のように、好きに拭き取っても構いませんわ❤️',
+        '걸레처럼 마음대로 닦아 내도 상관없네❤️',
       );
     }
   },
 
-  // [번역 대상] ask_non_penetrative
+  // [번역 완료] ask_non_penetrative
   async ask_non_penetrative(tachyon) {
-    await tachyon.say_and_wait('ふふ、猿のようですわ……');
+    await tachyon.say_and_wait('후후, 원숭이 같군……');
     await tachyon.say_and_wait(
-      'いいえ、こうして腰ばかり振るのは……子犬のほうが近いですわね❤️',
+      '아니, 그렇게 허리만 흔드는 모습은…… 강아지에 더 가깝겠군❤️',
     );
   },
 
-  // [번역 대상] ask_stimulate_glans_by_virgin
+  // [번역 완료] ask_stimulate_glans_by_virgin
   async ask_stimulate_glans_by_virgin(tachyon, you) {
-    await tachyon.say_and_wait('ひどいですわ……');
+    await tachyon.say_and_wait('너무하군……');
     era.println();
     await you.print_and_wait(
-      'ひどいと叫びながらも、正直な蜜穴はちゅ、とさらに締まり、非協力運動中の肉棒さんへ全方位の奉仕を味わわせようとする……',
+      '너무하다고 외치면서도 솔직한 안쪽은 더욱 조여들어, 저항하는 남근을 온 사방에서 감싸며 봉사하려 한다……',
     );
   },
 
@@ -1762,14 +1762,14 @@ module.exports = {
     }
   },
 
-  // [번역 대상] ero_end_cuckold_coffee
+  // [번역 완료] ero_end_cuckold_coffee
   async ero_end_cuckold_coffee(tachyon, callname) {
     await tachyon.say_and_wait([
       callname,
-      ' の精液と愛液をコーヒーに混ぜる？ それでおいしくなりますの？',
+      '의 정액과 애액을 커피에 섞는다고? 그렇게 하면 더 맛있어지나?',
     ]);
     await tachyon.say_and_wait(
-      'それとも、屈辱と敗北の味だけを味わっているのですの？',
+      '아니면 굴욕과 패배의 맛만 음미하고 있는 건가?',
     );
   },
 
@@ -1804,16 +1804,16 @@ module.exports = {
     }
   },
 
-  // [번역 대상] ero_start_cuckold_coffee
+  // [번역 완료] ero_start_cuckold_coffee
   async ero_start_cuckold_coffee(tachyon, callname, t_call_c) {
-    await tachyon.say_and_wait([t_call_c, '、いらっしゃい']);
+    await tachyon.say_and_wait([t_call_c, ', 어서 오게.']);
     await tachyon.say_and_wait([
-      'ええ、よく濡らして。そうしないと、あとで ',
+      '그래, 충분히 적셔 두게. 그러지 않으면 나중에 ',
       callname,
-      ' が入りにくいでしょう',
+      '이(가) 들어오기 힘들 테니까.',
     ]);
     await tachyon.say_and_wait(
-      'よくできたら、終わったあとでもう一度舐めさせてあげますわ',
+      '잘 해내면 끝난 뒤에 한 번 더 핥게 해 주겠네.',
     );
   },
 
@@ -2320,15 +2320,15 @@ module.exports = {
     }
   },
 
-  // [번역 대상] force_deep_blow_job
+  // [번역 완료] force_deep_blow_job
   async force_deep_blow_job(you, y_call_t) {
     await you.print_and_wait([
-      '強引な行為なのに、',
+      '억지스러운 행위인데도 ',
       y_call_t,
-      ' も自ら合わせて吸ってくる。',
+      '도 스스로 움직임에 맞춰 빨아들였다.',
     ]);
-    await you.print_and_wait('舌で肉棒を絡め、喉の奥へ導く。');
-    await you.print_and_wait('恍惚の表情が、虐げたい欲を何度も煽る……');
+    await you.print_and_wait('혀로 남근을 휘감아 목구멍 깊숙이 이끌었다.');
+    await you.print_and_wait('황홀한 표정이 괴롭히고 싶은 욕구를 몇 번이고 부추겼다……');
   },
 
   // [번역 대상] fuck_tit
@@ -2481,46 +2481,46 @@ module.exports = {
     }
   },
 
-  // [번역 대상] hug_standing
+  // [번역 완료] hug_standing
   async hug_standing(tachyon) {
-    await tachyon.say_and_wait('好きですわ❤️');
-    await tachyon.say_and_wait('実験動物のように、ただ交わる快楽❤️');
+    await tachyon.say_and_wait('좋아하네❤️');
+    await tachyon.say_and_wait('실험동물처럼 그저 몸을 섞는 쾌락이라니❤️');
     await tachyon.say_and_wait(
-      '早く、早く、獣のように、私の性処理のいやらしい穴を満たしてくださいまし❤️',
+      '빨리, 빨리, 짐승처럼 내 음란한 구멍을 채워 주게나❤️',
     );
   },
 
-  // [번역 대상] kiss
+  // [번역 완료] kiss
   async kiss(tachyon, you, y_call_t) {
-    await you.print_and_wait([y_call_t, ' の柔らかな唇が、自分の唇に重なる。']);
-    await tachyon.say_and_wait('んちゅ……ちゅぱ……ちゅ……');
+    await you.print_and_wait([y_call_t, '의 부드러운 입술이 자신의 입술과 맞닿았다.']);
+    await tachyon.say_and_wait('음츄…… 츄릅…… 츄……');
     await you.print_and_wait(
-      'はじめは軽い啄みだった接触が、やがて舌を絡め合うものへ変わっていく……',
+      '처음에는 가볍게 입을 맞추던 것이 이윽고 서로 혀를 얽는 입맞춤으로 바뀌어 갔다……',
     );
   },
 
-  // [번역 대상] lure
+  // [번역 완료] lure
   async lure(tachyon, you, callname, y_call_t, is_success) {
-    await you.print_and_wait(['手を伸ばし、', y_call_t, ' の尻を撫でる……']);
+    await you.print_and_wait(['손을 뻗어 ', y_call_t, '의 엉덩이를 쓰다듬었다……']);
     if (is_success || era.get('tcvar:32:发情') > 0) {
       era.println();
-      await tachyon.say_and_wait(['ん……', callname, '❤️']);
+      await tachyon.say_and_wait(['으음……', callname, '❤️']);
       era.println();
       await you.print_and_wait([
-        '撫でられやすいように、',
+        '쓰다듬기 쉽도록 ',
         y_call_t,
-        ' は自ら尻を突き出した。',
+        '은(는) 스스로 엉덩이를 내밀었다.',
       ]);
-      await you.print_and_wait('掌いっぱいに、臀の感触が伝わる……');
+      await you.print_and_wait('손바닥 가득 엉덩이의 감촉이 전해졌다……');
     }
   },
 
-  // [번역 대상] lure_by_tachyon
+  // [번역 완료] lure_by_tachyon
   async lure_by_tachyon(tachyon, you, y_call_t) {
-    await you.print_and_wait([y_call_t, ' が、艶のある眼差しでこちらを誘う。']);
+    await you.print_and_wait([y_call_t, '이(가) 요염한 눈빛으로 이쪽을 유혹했다.']);
     if (tachyon.sex_code > 0 && era.get('tcvar:32:发情') > 0) {
       await you.print_and_wait(
-        '開いた唇も、下の口も、汁を滴らせて満たされるのを待っている……',
+        '벌어진 입술도 아래쪽도 액체를 흘리며 채워지기를 기다리고 있었다……',
       );
     }
   },
@@ -2838,32 +2838,32 @@ module.exports = {
     }
   },
 
-  // [번역 대상] missionary
+  // [번역 완료] missionary
   async missionary(tachyon, you, callname, y_call_t, is_first) {
     if (is_first) {
-      await tachyon.say_and_wait(['わあ、', callname, '、待ち……❤️']);
+      await tachyon.say_and_wait(['와앗, ', callname, ', 잠깐……❤️']);
       era.println();
-      await you.print_and_wait(['堪えきれず、', y_call_t, ' を地へ押し倒す。']);
+      await you.print_and_wait(['참지 못하고 ', y_call_t, '을(를) 바닥에 밀어 넘어뜨렸다.']);
       await you.print_and_wait([
         tachyon.sex,
-        'の尻と太腿が、挿入とともに痙攣し続ける……',
+        '의 엉덩이와 허벅지가 삽입과 함께 계속 경련했다……',
       ]);
     } else {
       await you.print_and_wait(
-        '入れる前から過敏だった穴は、襲われてから小さな絶頂を何度も繰り返している。',
+        '삽입하기 전부터 예민했던 안쪽은 자극을 받은 뒤로 작은 절정을 몇 번이고 반복했다.',
       );
       await you.print_and_wait([
-        '突くたびに ',
+        '찌를 때마다 ',
         y_call_t,
-        ' は制御できず震えながらも、肉棒を離さず締め続ける……',
+        '은(는) 제어할 수 없이 떨면서도 남근을 놓치지 않고 계속 조였다……',
       ]);
     }
   },
 
-  // [번역 대상] orgasm_non_penetrative
+  // [번역 완료] orgasm_non_penetrative
   async orgasm_non_penetrative(tachyon, callname) {
-    await tachyon.say_and_wait('いく……いきますわ❤️');
-    await tachyon.say_and_wait([callname, ' 専属の雌犬になりますわおおおお❤️']);
+    await tachyon.say_and_wait('가네…… 가 버리겠네❤️');
+    await tachyon.say_and_wait([callname, ' 전용 암캐가 되겠네에에에❤️']);
   },
 
   // [번역 대상] pet_anal
@@ -3089,22 +3089,22 @@ module.exports = {
     }
   },
 
-  // [번역 대상] stimulate_g_spot
+  // [번역 완료] stimulate_g_spot
   async stimulate_g_spot(tachyon, callname) {
-    await tachyon.say_and_wait('あっ❤️');
+    await tachyon.say_and_wait('아앗❤️');
     await tachyon.say_and_wait(
-      'だめですわ❤️頭が壊れます❤️気持ちよいですわ❤️いく❤️いくわ❤️脳みそごと出してしまいますわ❤️',
+      '안 되네❤️ 머리가 망가질 것 같아❤️ 기분 좋아❤️ 가네❤️ 가 버리겠네❤️ 뇌까지 녹아 버릴 것 같아❤️',
     );
     era.println();
     await tachyon.print_and_wait(
-      '深く突いてGスポットに当たるたび、頭が真っ白になる。',
+      '깊이 찔러 G스폿에 닿을 때마다 머릿속이 새하얘졌다.',
     );
     await tachyon.print_and_wait([
-      '考えられるもの、感じられるものは、',
+      '생각하고 느낄 수 있는 것이라고는 ',
       callname,
-      ' との交尾と、',
+      '와의 교미와 ',
       callname,
-      ' に強く犯される快感だけ……',
+      '에게 격렬하게 범해지는 쾌락뿐이었다……',
     ]);
   },
 
@@ -3152,16 +3152,16 @@ module.exports = {
     await you.print_and_wait('これ以上気持ちいいことなど、あるだろうか？');
   },
 
-  // [번역 대상] use_love_eggs_in_anal
+  // [번역 완료] use_love_eggs_in_anal
   async use_love_eggs_in_anal(tachyon, you, y_call_t) {
-    await tachyon.say_and_wait('おおっ❤️尻穴が❤️だめですわ❤️');
+    await tachyon.say_and_wait('오옷❤️ 항문이❤️ 안 되겠네❤️');
     era.println();
     await you.print_and_wait([
-      'ローターを入れた瞬間、腸内の振動で ',
+      '로터를 넣는 순간, 장 안쪽의 진동에 ',
       y_call_t,
-      ' は思わず頭を反らした。',
+      '은(는) 무심코 고개를 뒤로 젖혔다.',
     ]);
     era.println();
-    await tachyon.say_and_wait('だめですわ❤️体が❤️おかしくなりますわ❤️');
+    await tachyon.say_and_wait('안 되겠네❤️ 몸이❤️ 이상해지겠네❤️');
   },
 };
