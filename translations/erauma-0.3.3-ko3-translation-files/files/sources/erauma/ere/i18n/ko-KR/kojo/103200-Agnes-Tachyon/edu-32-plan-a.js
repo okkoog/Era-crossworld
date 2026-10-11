@@ -621,9 +621,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_kiku_sho_low_rel
+  // [번역 완료] before_kiku_sho_low_rel
   before_kiku_sho_low_rel: (() => {
-    const title = '別の可能性';
+    const title = '또 다른 가능성';
     /**
      * 菊花賞前 - 低好感
      * Plan A 専用（Plan B は菊花賞出走不可）
@@ -633,107 +633,107 @@ module.exports = {
      */
     const f = async (tachyon, you, callname) => {
       await era.printAndWait([
-        'あの夜、',
+        '그날 밤 ',
         you.get_colored_name(),
-        ' は夢を見た',
+        '은(는) 꿈을 꾸었다.',
       ]);
       await era.printAndWait([
-        '超光速粒子と呼ばれる',
+        '초광속 입자라고 불리는 ',
         tachyon.sex,
-        'が、レース場で翼を折る夢',
+        '이(가) 경기장에서 날개가 꺾이는 꿈이었다.',
       ]);
       await era.printAndWait([
-        'ガラスの両脚が砕け、飛び散った瑠璃の破片が ',
+        '유리로 된 두 다리가 산산이 부서지고 사방으로 튄 유리 조각이 ',
         you.get_colored_name(),
-        ' の両目に刺さる',
+        '의 두 눈에 박혔다.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は夢から飛び起き、長いあいだ落ち着かなかった',
+        '은(는) 꿈에서 벌떡 깨어나 한동안 진정하지 못했다.',
       ]);
       await era.printAndWait([
-        'あまりに生々しく、',
+        '너무도 생생한 꿈이어서 ',
         you.get_colored_name(),
-        ' は余韻に縛られた',
+        '은(는) 좀처럼 그 여운에서 벗어나지 못했다.',
       ]);
       await era.printAndWait([
-        '残りの夜、',
+        '남은 밤 동안 ',
         you.get_colored_name(),
-        ' は寝返りを打ち続け、朝まで眠れなかった',
+        '은(는) 계속 뒤척이다가 결국 날이 밝도록 잠들지 못했다.',
       ]);
       era.drawLine();
       await era.printAndWait([
-        '空が白み始めるころ、',
+        '하늘이 희미하게 밝아 오자 ',
         you.get_colored_name(),
-        ' は急いでトレーナー寮を出た',
+        '은(는) 서둘러 트레이너 기숙사를 나섰다.',
       ]);
       await era.printAndWait([
-        'レース前、',
+        '레이스 전에 ',
         tachyon.sex,
-        'の体調は何度も確認している',
+        '의 몸 상태를 몇 번이나 확인했었다.',
       ]);
       await era.printAndWait(
-        '夢のように派手に砕けるはずもない。それでも心配で、怖くて',
+        '꿈에서처럼 처참하게 부서질 리가 없다. 그래도 걱정되고 두려웠다.',
       );
       await era.printAndWait([
-        '自分の目で',
+        '내 눈으로 직접 ',
         tachyon.sex,
-        'を見なければ、夢が現実でないと確信できない',
+        '을(를) 확인하지 않으면 그 꿈이 현실이 아니라는 확신이 들지 않았다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'おや、',
+        '오호, ',
         callname,
-        '？ 今日は随分早いですわね',
+        '? 오늘은 상당히 일찍 왔군.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' が研究室に飛び込んだとき、朝から悠然と紅茶を飲んでいる ',
+        '이(가) 연구실로 뛰어 들어갔을 때 아침부터 여유롭게 홍차를 마시고 있던 ',
         tachyon.get_colored_name(),
-        ' がいた',
+        '이(가) 보였다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'まあ、今日は三冠の最後ですもの……緊張するのも普通ですわ',
+        '뭐, 오늘은 삼관의 마지막 경기니까…… 긴장하는 것도 당연하지.',
       );
       await era.printAndWait([
-        '菊花賞。最強の',
+        '국화상. 최강의 ',
         tachyon.uma_sex_title,
-        'だけが勝ち取るレース',
+        '만이 승리할 수 있는 레이스다.',
       ]);
       await era.printAndWait([
-        '不意に、',
+        '문득 ',
         you.get_colored_name(),
-        ' は言葉を失った',
+        '은(는) 말을 잃었다.',
       ]);
-      await era.printAndWait('自分の選択は、本当に正しかったのか');
+      await era.printAndWait('내 선택은 정말 옳았던 걸까?');
       await era.printAndWait([
-        'もし',
+        '만약 ',
         tachyon.sex,
-        'が、夢のように砕けてしまったら',
+        '이(가) 꿈에서처럼 산산조각이 난다면?',
       ]);
-      await era.printAndWait('自分は、平然と向き合えるのか');
+      await era.printAndWait('나는 그 일을 태연하게 받아들일 수 있을까?');
       era.println();
-      await tachyon.say_and_wait([callname, '？ どうかしましたか？']);
+      await tachyon.say_and_wait([callname, '? 무슨 일인가?']);
       era.println();
-      await era.printAndWait('衝動のまま研究室へ飛び込んだというのに');
-      await era.printAndWait([tachyon.sex, 'を見た瞬間、何も言えなくなった']);
-      era.printButton('「……なんでもない。菊花賞、絶対勝つ」', 1);
+      await era.printAndWait('충동적으로 연구실에 뛰어 들어왔건만 ');
+      await era.printAndWait([tachyon.sex, '을(를) 보는 순간 아무 말도 할 수 없었다.']);
+      era.printButton('「……아무것도 아니야. 국화상, 반드시 이기자.」', 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、自分を慰めるにも足りない言葉しか出せなかった',
+        '은(는) 자기 자신을 위로하기에도 부족한 말밖에 꺼내지 못했다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……ええ、必ず勝ちますわ');
+      await tachyon.say_and_wait('……그래, 반드시 이기겠네.');
       era.println();
       await era.printAndWait('無言');
-      await era.printAndWait('今日の菊花賞、どうか無事でありますように');
+      await era.printAndWait('오늘 국화상에서는 제발 아무 일도 일어나지 않기를.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は神に、仏に、光に祈った',
+        '은(는) 신에게, 부처에게, 그리고 빛에게 기도했다.',
       ]);
     };
     f.title = title;
