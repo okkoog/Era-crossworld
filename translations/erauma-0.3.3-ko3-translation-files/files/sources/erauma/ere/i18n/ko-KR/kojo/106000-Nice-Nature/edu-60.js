@@ -651,77 +651,77 @@ module.exports = {
 
   // [번역 대상] kiku_sho
   kiku_sho: (() => {
-    const title = '自分のレース';
+    const title = '나만의 레이스';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (nature, you) => {
       await era.printAndWait(
-        '観客「ナイスネイチャ、お疲れさま──！ いい走りだったよ──！」',
+        '관객 「나이스 네이처, 수고했어──! 멋진 달리기였어──!」',
       );
       await era.printAndWait(
-        'レース後、観客席からの声は、ナイスネイチャが『自分のレース』を走れた証だ。そして──',
+        '레이스가 끝난 뒤 관중석에서 들려오는 목소리는 나이스 네이처가 『자신만의 레이스』를 달렸다는 증거였다. 그리고──',
       );
       await nature.say_and_wait(
-        'トレーナー、あたし……勝った……ちゃんと自分のレースを走れた……よね？',
+        '트레이너, 나…… 이겼어…… 내 레이스를 제대로 달린 거…… 맞지?',
       );
-      era.printButton('「うん！」', 1);
+      era.printButton('「응!」', 1);
       await era.input();
-      await nature.say_and_wait('よかった……えへへ。');
+      await nature.say_and_wait('다행이다…… 에헤헤.');
       await nature.say_and_wait(
-        '『菊花賞』でこの結果、申し分ない！ あたし、ほんと頑張った！',
+        '『국화상』에서 이런 성적이라니, 더 바랄 게 없어! 나, 정말 열심히 했어!',
       );
-      await nature.say_and_wait('今日も……いびつなトロフィー、用意してある？');
-      era.printButton('「もちろん、『頑張った賞』だよ！」', 1);
+      await nature.say_and_wait('오늘도…… 모양이 좀 찌그러진 트로피, 준비해 뒀어?');
+      era.printButton('「물론이지. 『열심히 했어요 상』이야!」', 1);
       await era.input();
-      await nature.say_and_wait('あ……トレーナーの手づくりトロフィー！');
+      await nature.say_and_wait('아…… 트레이너가 직접 만든 트로피!');
       await era.printAndWait(
-        `『小倉記念』のとき、ナイスネイチャに自信を持たせるため、${you.name} は折り紙のトロフィーを作って渡した。前回${nature.sex}が楽しみにしていたから、${you.name} は今回も作った……`,
+        `『고쿠라 기념』 때 나이스 네이처에게 자신감을 심어 주기 위해 ${you.name}은(는) 종이접기 트로피를 만들어 건넸다. 지난번 ${nature.sex}가 기대하고 있었기에 ${you.name}은(는) 이번에도 만들었다……`,
       );
       await nature.say_and_wait(
-        '……ほんとに作ったんだ。えへへ、相変わらずいびつ。',
+        '……진짜 또 만들었구나. 에헤헤, 여전히 모양이 엉성해.',
       );
-      await nature.say_and_wait('いいねいいね。あとで授賞式しよ。');
+      await nature.say_and_wait('좋아, 좋아. 나중에 시상식도 하자.');
       await nature.say_and_wait(
-        `ネイチャ${nature.sex_code === 1 ? '' : 'さん'}の活躍を祝って♪`,
+        `네이처${nature.sex_code === 1 ? '' : ' 씨'}의 활약을 축하하며♪`,
       );
       await nature.say_and_wait(
-        `……今は調子乗れてるけど、テイオーも出てたら、こんなにうまくいかなかったかも……テイオー${nature.sex}、大丈夫かな。怪我、どれくらいなんだろ。`,
+        `……지금은 좀 들떠 있지만, 테이오도 출전했다면 이렇게 잘되진 않았을지도…… 테이오 ${nature.sex}, 괜찮으려나. 부상은 얼마나 심한 걸까.`,
       );
-      era.printButton(`「${nature.sex}なら大丈夫だよ」`, 1);
+      era.printButton(`「${nature.sex}라면 괜찮을 거야」`, 1);
       await era.input();
-      await nature.say_and_wait('うん……そうだね。');
+      await nature.say_and_wait('응…… 그렇겠지.');
       await nature.say_and_wait(
-        `だって${nature.sex}はテイオーだもん。すぐ復活して、『ボクは無敵だよ！』とか言いそう。`,
+        `왜냐면 ${nature.sex}는 테이오잖아. 금방 복귀해서 『나는 무적이야!』라고 말할 것 같아.`,
       );
-      await nature.say_and_wait('……その前に、あたしももう少し強くならないと。');
-      era.printButton('「まだ大一番が残ってる」', 1);
+      await nature.say_and_wait('……그 전에 나도 조금 더 강해져야겠지.');
+      era.printButton('「아직 중요한 승부가 남았어」', 1);
       await era.input();
       await nature.say_and_wait(
-        'なに？ 冬も近いのに、最近まだ大一番？……あ！ もしかして……',
+        '뭐? 이제 겨울도 가까운데 중요한 승부가 또 있다고? ……아! 설마……',
       );
-      era.printButton('「『有馬記念』、挑戦しない？」', 1);
+      era.printButton('「『아리마 기념』에 도전하지 않을래?」', 1);
       await era.input();
       await era.printAndWait(
-        `ナイスネイチャには厚いファンがいて、『菊花賞』でも実力を出せた。今の${
+        `나이스 네이처에게는 열성적인 팬들이 있고, 『국화상』에서도 실력을 발휘했다. 지금의 ${
           nature.sex
-        }なら『有馬記念』に挑める！ それだけでなく、『有馬記念』の出走者は今年注目の${nature.uma_sex_title}たちだ。${
+        }라면 『아리마 기념』에 도전할 수 있다! 게다가 『아리마 기념』의 출전자들은 올해 주목받는 ${nature.uma_sex_title}들이다. ${
           nature.couple_title
-        }と走ることで、さらに成長できるはず。`,
+        }와 함께 달리면서 더욱 성장할 수 있을 것이다.`,
       );
-      await nature.say_and_wait('『有馬記念』か……');
+      await nature.say_and_wait('『아리마 기념』인가……');
       await nature.say_and_wait(
-        'いつもの応援に報いるなら、いちばんいい舞台……だよね？',
+        '늘 응원해 주는 팬들에게 보답하려면 최고의 무대…… 맞지?',
       );
       await nature.say_and_wait(
-        '……できないかもしれない。出ても全然力を出せないかも。でも……',
+        '……해내지 못할지도 몰라. 출전해도 힘을 전혀 발휘하지 못할 수도 있어. 하지만……',
       );
-      await nature.say_and_wait('──『有馬記念』に出たい！');
-      era.printButton('「じゃあ、挑もう！」', 1);
+      await nature.say_and_wait('──『아리마 기념』에 나가고 싶어!');
+      era.printButton('「그럼 도전하자!」', 1);
       await era.input();
       await era.printAndWait(
-        `こうして、${you.name} とナイスネイチャはクラシック級最後の挑戦を『有馬記念』に決めた！`,
+        `이렇게 ${you.name}와 나이스 네이처는 클래식급 마지막 도전 무대를 『아리마 기념』으로 정했다!`,
       );
       if (era.get('love:60') >= 75) {
         era.printButton('「それから……これも祝いだ」', 1);
