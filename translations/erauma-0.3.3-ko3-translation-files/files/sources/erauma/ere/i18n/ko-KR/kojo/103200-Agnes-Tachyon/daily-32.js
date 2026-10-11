@@ -922,164 +922,164 @@ module.exports = {
     }
   },
 
-  // [번역 대상] event_station
+  // [번역 완료] event_station
   event_station: (() => {
-    const title = 'ネタバラシ';
+    const title = '비밀 폭로';
     /**
-     * 日常ランダムイベント - 駅前デートでネタバラシ
+     * 日常ランダムイベント - 駅前デートで비밀 폭로
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (tachyon, you) => {
       await era.printAndWait([
-        '今日は ',
+        '오늘은 ',
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' が一緒に出かけてデートする日だ',
+        '이(가) 함께 외출해 데이트하는 날이다.',
       ]);
       await era.printAndWait([
-        '今日の商店街ではマジックのパレードがあるらしい。だから、ついでに',
+        '오늘 상점가에서 마술 퍼레이드가 열린다고 한다. 그래서 겸사겸사 ',
         tachyon.sex,
-        'を連れて賑わいを見せようと思っていた',
+        '을(를) 데리고 가서 그 북적이는 모습을 보여 줄 생각이었다.',
       ]);
-      await era.printAndWait('ところが……');
+      await era.printAndWait('그런데……');
       era.println();
-      await tachyon.say_and_wait('あのマジック棒は袖の中ですわ');
+      await tachyon.say_and_wait('저 마술봉은 소매 속에 숨겨져 있군.');
       await tachyon.say_and_wait(
-        'あの鳩は最初から挟みに隠してあるだけ、大したことありませんわ',
+        '저 비둘기는 처음부터 장치 속에 숨겨 둔 것뿐이야. 별거 아니군.',
       );
       await tachyon.say_and_wait(
-        'マグネシウムの酸化燃焼ですわ。研究室でも見せてあげられますわよ',
+        '마그네슘의 산화 연소일세. 연구실에서도 보여 줄 수 있지.',
       );
       era.println();
       await era.printAndWait([
-        '手品の種は毎回、',
+        '마술의 비밀은 매번 ',
         tachyon.get_colored_name(),
-        ' が大きすぎず小さすぎず、周囲に聞こえる声量で即座に暴いてしまう',
+        '이(가) 주위 사람들에게 적당히 들릴 만큼의 목소리로 곧장 폭로해 버렸다.',
       ]);
       await era.printAndWait([
-        '飽きたならまだしも、言い終わるたび熱い目で ',
+        '지루해서 그러는 것도 아니었다. 말을 마칠 때마다 반짝이는 눈으로 ',
         you.get_colored_name(),
-        ' を見つめて、褒められたいみたいだ',
+        '을(를) 바라보는 것이 칭찬을 기다리는 듯했다.',
       ]);
       await era.printAndWait([
-        '褒められたがりの子犬か……',
+        '칭찬받고 싶어 하는 강아지라도 되나……',
         you.get_colored_name(),
-        ' は頭に浮かんだ絵を振り払った',
+        '은(는) 머릿속에 떠오른 광경을 떨쳐 냈다.',
       ]);
       await era.printAndWait([
-        'とにかく、二人を睨んでいるマジシャンが堪忍袋の緒を切って舞台から降りて殴りかかる前に、',
+        '아무튼 두 사람을 노려보는 마술사가 참다못해 무대에서 내려와 주먹을 휘두르기 전에 ',
         tachyon.get_colored_name(),
-        ' を連れて離れよう',
+        '을(를) 데리고 여길 벗어나야겠다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('え～～もう行くんですの？');
+      await tachyon.say_and_wait('에에~~ 벌써 가는 건가?');
       era.println();
       await era.printAndWait([
-        'だが、',
+        '하지만 ',
         tachyon.get_colored_name(),
-        ' はまだ不満そうだった',
+        '은(는) 여전히 불만스러운 표정이었다.',
       ]);
-      await era.printAndWait([tachyon.sex, 'の気をそらすものが要る……あった！']);
-      era.printButton('「変色野菜ジュース？」', 1);
+      await era.printAndWait([tachyon.sex, '의 관심을 다른 데로 돌릴 것이 필요하다…… 찾았다!']);
+      era.printButton('「색이 변하는 채소 주스?」', 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は驚いたふりをして屋台の目玉商品を読み上げ、',
+        '은(는) 놀란 척하며 노점의 인기 상품을 소리 내어 읽고 ',
         tachyon.get_colored_name(),
-        ' の気をそらそうとした',
+        '의 시선을 돌리려 했다.',
       ]);
       await era.printAndWait(
-        '店主が手の紫の液体をカップへ注ぐと、液体は一瞬で赤になった',
+        '점주가 손에 든 보라색 액체를 컵에 붓자 액체는 순식간에 붉게 변했다.',
       );
       await era.printAndWait(
-        '……中学の教科書の、酸塩基反応の紫キャベツ汁じゃないか',
+        '……중학교 교과서에 나오는 산·염기 반응을 이용한 적양배추 즙이잖아.',
       );
       await era.printAndWait([
-        'もういい。',
+        '어쩔 수 없다. ',
         tachyon.get_colored_name(),
-        ' の気を引くためなら、少し演技するしかない',
+        '의 관심을 끌기 위해서라면 조금 연기하는 수밖에 없다.',
       ]);
-      era.printButton('「すごいな、あれ！」', 1);
+      era.printButton('「대단한데, 저거!」', 1);
       await era.input();
       await era.printAndWait([
-        '案の定、',
+        '예상대로 ',
         you.get_colored_name(),
-        ' の大げさな声は、',
+        '의 과장된 목소리는 ',
         tachyon.get_colored_name(),
-        ' を手品から引き戻した',
+        '의 주의를 마술에서 돌려놓았다.',
       ]);
       await tachyon.say_and_wait('………………');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はキャベツ汁が色を変える様子を見つめ、何か考えているようだった',
+        '은(는) 양배추 즙의 색이 바뀌는 모습을 보며 무언가 생각하는 것 같았다.',
       ]);
       await era.printAndWait([
-        'おかしいな。',
+        '이상하군. ',
         tachyon.get_colored_name(),
-        ' は見たことがないのか？',
+        '은(는) 이런 걸 본 적이 없나?',
       ]);
       await era.printAndWait([
-        '……いや、さすがにそれはないだろう。もっとも基礎的な酸塩基指示薬だ。',
+        '……아니, 설마 그럴 리가. 가장 기본적인 산·염기 지시약인데. ',
         tachyon.get_colored_name(),
-        ' が知らないはずがない',
+        '이(가) 모를 리 없다.',
       ]);
       await era.printAndWait([
-        'だがもし、',
+        '하지만 만약 ',
         tachyon.sex,
-        'が本当に触れたことがないなら……',
+        '이(가) 정말 접해 본 적이 없다면……',
       ]);
-      era.printButton('「なんだか不思議……だな？」', 1);
+      era.printButton('「정말 신기하……네?」', 1);
       await era.input();
-      await era.printAndWait('だめだ。褒める言葉がもう出てこない');
+      await era.printAndWait('안 되겠다. 칭찬할 말이 더는 떠오르지 않는다.');
       await era.printAndWait([
-        'だが ',
+        '그런데 ',
         tachyon.get_colored_name(),
-        ' の意識は、もう完全にこちらへ移っている',
+        '의 관심은 이미 완전히 이쪽으로 옮겨졌다.',
       ]);
-      await era.printAndWait('これなら問題ないはず……');
+      await era.printAndWait('이제 괜찮겠지……');
       era.println();
-      await tachyon.say_and_wait('…………こんなもの');
+      await tachyon.say_and_wait('…………이런 것 따위를');
       era.println();
-      await era.printAndWait('え');
+      await era.printAndWait('응?');
       era.println();
       await tachyon.say_and_wait(
-        '…………こんなものを褒めるくらいなら、私を褒めてくれないんですの？',
+        '…………이런 걸 칭찬할 바에야 나를 칭찬해 줄 수는 없었나?',
       );
       era.println();
-      await era.printAndWait([tachyon.get_colored_name(), ' は怒った']);
+      await era.printAndWait([tachyon.get_colored_name(), '은(는) 화를 냈다.']);
       await era.printAndWait([
-        '理由は分からないが、',
+        '이유는 알 수 없지만 ',
         tachyon.get_colored_name(),
-        ' は明らかに怒っている',
+        '은(는) 분명히 화가 났다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'もっと色の多い薬だって、光る薬だって、私なら作れるのに……',
+        '색이 더 많이 바뀌는 약도, 빛나는 약도 나한테는 만들 수 있는데……',
       );
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はわけもなく泣いた',
+        '은(는) 느닷없이 울음을 터뜨렸다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は慌てて',
+        '은(는) 허둥지둥 ',
         tachyon.sex,
-        'を慰めるしかなかった',
+        '을(를) 달랠 수밖에 없었다.',
       ]);
       era.println();
       await era.printAndWait([
-        '翌日、',
+        '다음 날, ',
         tachyon.get_colored_name(),
-        ' は256RGBの色彩を含む薬剤を作ってみせた',
+        '은(는) 256 RGB 색상을 담은 약품을 만들어 보였다.',
       ]);
       await era.printAndWait(
-        '……どうやって256色を同じ薬剤の中で分割して並べたのだろう',
+        '……대체 어떻게 하나의 약품 속에 256가지 색상을 나누어 배열한 걸까?',
       );
-      await era.printAndWait('モルモットは思わず疑問を抱いた');
+      await era.printAndWait('모르모트는 저도 모르게 그런 의문을 품었다.');
     };
     f.title = title;
     return f;
