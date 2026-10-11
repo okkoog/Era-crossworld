@@ -2955,9 +2955,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_b_cf_japa_cup
+  // [번역 완료] we_b_cf_japa_cup
   we_b_cf_japa_cup: (() => {
-    const title = '限界を超えて';
+    const title = '한계를 넘어서';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -2968,43 +2968,43 @@ module.exports = {
     const f = async (tachyon, coffee, you, callname, call_25) => {
       await you.say_as_passer_by_and_wait('実況', [
         coffee.get_colored_name(),
-        '！ ジャパンカップの記録を破った……いいえ！ 世界記録だ！ 世界2400mの記録は、数ヶ月前に ',
+        '! 재팬컵 기록을 경신했습니다…… 아니, 세계 기록입니다! 불과 몇 달 전 ',
         tachyon.get_colored_name(),
-        ' が破ったばかり。その記録を、漆黒の幻影が再び超えた！',
+        '이(가) 세운 세계 2400m 기록을 칠흑의 환영이 다시 넘어섰습니다!',
       ]);
       era.println();
-      await tachyon.print_and_wait('本当に超えましたわ');
-      await tachyon.print_and_wait(['', call_25, ' がゴールを駆け抜けた瞬間']);
-      await tachyon.print_and_wait('自分も、他の者と同じように興奮している');
+      await tachyon.print_and_wait('정말로 넘어섰군.');
+      await tachyon.print_and_wait(['', call_25, '이(가) 결승선을 통과하는 순간,']);
+      await tachyon.print_and_wait('나도 다른 사람들처럼 흥분하고 있었다.');
       era.println();
-      await tachyon.print_and_wait('当然ですわ');
+      await tachyon.print_and_wait('당연한 일이지.');
       await tachyon.print_and_wait([
-        '少々自賛になりますが、',
+        '조금 자화자찬 같지만 ',
         tachyon.sex,
-        'は自分が最も限界を超えられると見た',
+        '은(는) 스스로 한계에 가장 가까이 다가간 ',
         tachyon.uma_sex_title,
-        'です',
+        '라고 생각했으니까.',
       ]);
       await tachyon.print_and_wait(
-        '最も近いことと、超えられることには、大きな差があります',
+        '한계에 가장 가깝다는 것과 그 한계를 넘어선다는 것은 큰 차이가 있지.',
       );
       await tachyon.print_and_wait([
-        'ですが……',
+        '하지만……',
         tachyon.sex,
-        'は本当にやり遂げましたわ！',
+        '은(는) 정말 해냈네!',
       ]);
       await tachyon.print_and_wait(
-        'なぜか走りには、よくわからない違和感がありますが、それも構いません',
+        '왠지 달리는 모습에서 설명하기 힘든 위화감이 느껴지지만, 이제 그런 건 상관없네.',
       );
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は限界の',
+        '은(는) 한계에 도달한 ',
         tachyon.uma_sex_title,
-        '。そして ',
+        '였지. 그리고 ',
         coffee.get_colored_name(),
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'いま、限界を超えた',
+        '지금 그 한계를 넘어섰네.',
       ]);
       era.println();
       await tachyon.say_and_wait([
@@ -3013,27 +3013,27 @@ module.exports = {
         callname,
         '！',
         call_25,
-        ' は',
+        '은(는) ',
         tachyon.sex,
         '……',
       ]);
       era.println();
-      await tachyon.print_and_wait('興奮して、傍の人と喜びを分けたい');
-      await tachyon.print_and_wait('あらゆる辛苦の研究が、いま結果を出した');
-      await tachyon.print_and_wait('ところが');
+      await tachyon.print_and_wait('너무 흥분해서 곁에 있는 사람과 이 기쁨을 나누고 싶었다.');
+      await tachyon.print_and_wait('온갖 고생을 감수한 연구가 마침내 성과를 낸 것이다.');
+      await tachyon.print_and_wait('그런데……');
       era.println();
       await tachyon.say_and_wait(['……', callname, '？']);
       era.println();
-      await tachyon.print_and_wait('返事はない');
+      await tachyon.print_and_wait('대답이 없다.');
       await tachyon.print_and_wait([
-        '傍の',
+        '곁에 있는 ',
         you.sex,
-        'も、スタンドの観客も、すべての焦点が',
+        '도, 관중석의 관객들도 모두 시선을 ',
       ]);
-      await tachyon.print_and_wait(['中央の', tachyon.sex, 'に集まっている']);
+      await tachyon.print_and_wait(['중앙의 ', tachyon.sex, '에게 집중하고 있었다.']);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' の呼びかけは、耳を劈く歓声と喝采に呑まれた',
+        '의 외침은 귀가 찢어질 듯한 환호와 박수갈채에 묻혀 버렸다.',
       ]);
     };
     f.title = title;
