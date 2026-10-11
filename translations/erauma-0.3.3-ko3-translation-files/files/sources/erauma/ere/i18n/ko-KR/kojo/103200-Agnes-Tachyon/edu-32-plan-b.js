@@ -2867,7 +2867,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_b_95_36
+  // [번역 완료] we_b_95_36
   we_b_95_36: (() => {
     const title = '決意';
     /**
@@ -2877,78 +2877,78 @@ module.exports = {
      * @param {PrintedSpan} prix_lat 凱旋門賞（着色名）
      */
     const f = async (tachyon, you, callname, prix_lat) => {
-      await tachyon.say_and_wait('はあっ……はあっ……');
+      await tachyon.say_and_wait('하아…… 하아……');
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' はフランスのトレーニング場を走っている',
+        '은(는) 프랑스의 훈련장을 달리고 있다.',
       ]);
       await tachyon.print_and_wait([
-        'ここ数日は、',
+        '요 며칠은 ',
         callname,
-        ' が日本へ戻る日です',
+        '이(가) 일본으로 돌아가는 날이다.',
       ]);
       era.println();
-      await tachyon.say_and_wait(['次は、世界の最高峰、凱旋門賞……']);
+      await tachyon.say_and_wait(['다음은 세계 최고봉인 개선문상……']);
       era.println();
       await tachyon.print_and_wait([
-        '今の',
+        '지금의 ',
         you.sex,
-        'は、まだ迷っているでしょう',
+        '은(는) 아직도 망설이고 있을 테지.',
       ]);
-      await tachyon.print_and_wait(['なぜ凱旋門賞を選んだのか']);
+      await tachyon.print_and_wait(['어째서 개선문상을 선택했는가.']);
       await tachyon.print_and_wait([
-        '限界の彼方へ届くこと。それが ',
+        '한계 너머에 도달하는 것. 그것이 ',
         tachyon.get_colored_name(),
-        ' の夢',
+        '의 꿈이었다.',
       ]);
       await tachyon.print_and_wait([
         tachyon.sex,
-        'はずっと、この目標にすべてを賭けられると思っていた。届きさえすれば、その人が自分でなくても構わない、と',
+        '은(는) 줄곧 그 목표에 모든 것을 걸 수 있으리라 믿었다. 목표에 닿기만 한다면 그게 자신이 아니더라도 괜찮다고.',
       ]);
       await tachyon.print_and_wait([
-        '……ですが、',
+        '……하지만 ',
         tachyon.sex,
-        'は自分が思うほど、どうでもよくはありませんでした',
+        '은(는) 스스로 생각한 것만큼 무관심하지는 않았네.',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        '本質では、',
+        '본질적으로 ',
         tachyon.sex,
-        'は走りたい',
+        '은(는) 달리고 싶은 ',
         tachyon.uma_sex_title,
-        'です',
+        '이라네.',
       ]);
       await tachyon.print_and_wait([
-        'ですが',
+        '그러나 ',
         tachyon.sex,
-        'は、限界を超える夢も捨てたくない',
+        '은(는) 한계를 뛰어넘겠다는 꿈도 버리고 싶지 않다.',
       ]);
-      await tachyon.print_and_wait('では、どうすればいい。両方を得る方法は');
+      await tachyon.print_and_wait('그렇다면 어떻게 해야 하는가? 두 가지를 모두 얻을 방법은?');
       await tachyon.print_and_wait([
-        '簡単ですわ。',
+        '간단하네. ',
         tachyon.get_colored_name(),
-        ' が「限界」になればいい',
+        '이(가) 스스로 『한계』가 되면 되지.',
       ]);
       era.println();
-      await tachyon.print_and_wait(['だから ', prix_lat, ' を選んだ']);
-      await tachyon.print_and_wait('世界の最高峰、限界を最もよく表す競走を');
+      await tachyon.print_and_wait(['그래서 ', prix_lat, '를 선택했네.']);
+      await tachyon.print_and_wait('세계 최고봉이자 한계를 가장 잘 나타내는 레이스를.');
       await tachyon.print_and_wait([
-        'この舞台で、自身をもって、',
+        '그 무대에서 스스로 ',
         tachyon.uma_sex_title,
-        'の限界を定義する',
+        '의 한계를 정의하는 것이다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……ふふ');
+      await tachyon.say_and_wait('……후후.');
       era.println();
-      await tachyon.print_and_wait('衆を超え、限界そのものになることを思うと');
-      await tachyon.print_and_wait('体が、我慢できずに熱を持ちます');
+      await tachyon.print_and_wait('남들을 뛰어넘어 한계 그 자체가 된다고 생각하니');
+      await tachyon.print_and_wait('몸이 참을 수 없을 만큼 뜨거워지는군.');
       era.println();
-      await tachyon.say_and_wait('やはり、走りたいのですわ……私は');
+      await tachyon.say_and_wait('역시 달리고 싶네…… 나는.');
       era.println();
-      await tachyon.print_and_wait('決意は、すでに燃えている');
+      await tachyon.print_and_wait('결심은 이미 불타오르고 있었다.');
       await tachyon.print_and_wait(
-        'ならすべてを捨て、眼前の勝利に集中しましょう',
+        '라면 다른 것은 모두 내려놓고 눈앞의 승리에 집중하세.',
       );
     };
     f.title = title;
