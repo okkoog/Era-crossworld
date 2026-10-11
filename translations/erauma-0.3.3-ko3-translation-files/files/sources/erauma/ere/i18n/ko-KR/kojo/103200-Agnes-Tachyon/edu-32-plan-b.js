@@ -5,7 +5,7 @@ const recruit_flags = require('#/data/event/recruit-flags');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/103200-Agnes-Tachyon/edu-32-plan-b"),
 
-  // [번역 대상] before_arim_kin_b
+  // [번역 완료] before_arim_kin_b
   before_arim_kin_b: (() => {
     const title = '最終実験、準備完了';
     /**
@@ -33,100 +33,100 @@ module.exports = {
       await tachyon.print_and_wait('有馬記念');
       await tachyon.print_and_wait([
         callname,
-        ' の言葉どおり、このレースのあとに自分への答えが出る',
+        '의 말대로 이번 레이스가 끝나면 스스로에 대한 답을 얻을 것이다.',
       ]);
-      await tachyon.print_and_wait('少し恐れ、それでも少し期待している');
-      await tachyon.print_and_wait('迎える結末を恐れ');
-      await tachyon.print_and_wait('明かされる真相を期待する');
-      await tachyon.print_and_wait([you.sex, 'は、いったい何を言いたいのか']);
-      await tachyon.print_and_wait('今日の有馬で、それははっきりするのか？');
+      await tachyon.print_and_wait('조금 두렵지만 동시에 조금 기대된다.');
+      await tachyon.print_and_wait('맞이할 결말이 두렵고');
+      await tachyon.print_and_wait('밝혀질 진실이 기대된다.');
+      await tachyon.print_and_wait([you.sex, '은(는) 대체 무슨 말을 하려는 걸까?']);
+      await tachyon.print_and_wait('오늘 아리마 기념에서 그 뜻이 분명해질까?');
       era.println();
       await coffee.say_and_wait(['……', c_call_t, '？']);
       await tachyon.say_and_wait('…………');
       await coffee.say_and_wait([c_call_t, '！']);
-      await tachyon.say_and_wait('……え？');
+      await tachyon.say_and_wait('……응?');
       era.println();
       await era.printAndWait([
-        '我に返ると、目の前の ',
+        '정신을 차려 보니 눈앞의 ',
         call_25,
-        ' が困ったようにこちらを見ている',
+        '이(가) 곤란하다는 듯 이쪽을 바라보고 있었다.',
       ]);
       era.println();
       await coffee.say_and_wait(
-        '何度も呼んだのに……また、何かに気を取られてるの？',
+        '몇 번이나 불렀는데…… 또 무슨 생각에 정신이 팔려 있던 거야?',
       );
-      await tachyon.say_and_wait('……何でもありませんわ。大丈夫です');
-      await coffee.say_and_wait('……変ね');
+      await tachyon.say_and_wait('……아무것도 아닐세. 괜찮네.');
+      await coffee.say_and_wait('……이상하네.');
       await tachyon.print_and_wait([
         call_25,
-        ' のためでなければ、自分は絶対にこうはならなかった',
+        '을(를) 위해서가 아니라면 자신은 절대 이런 꼴이 되지 않았을 것이다.',
       ]);
       await tachyon.print_and_wait([
-        '最初から ',
+        '애초부터 ',
         call_25,
-        ' に力を尽くさなければよかった。少なくとも、自分は ',
+        '을(를) 위해 힘쓰지 않았다면 좋았을 텐데. 적어도 자신은 ',
         callname,
-        ' の心で一番明るい光でいられた',
+        '의 마음속에서 가장 밝게 빛나는 존재로 남았을 것이다.',
       ]);
       await tachyon.print_and_wait([
-        '……そんな考えは、ひとかけらも ',
+        '……하지만 그런 생각은 단 한 조각도 ',
         tachyon.get_colored_name(),
-        ' の頭には浮かばなかった',
+        '의 머릿속에 떠오르지 않았다.',
       ]);
       await tachyon.print_and_wait([
-        'そんな考えを持てば、かつての ',
+        '그렇게 생각한다면 과거의 ',
         tachyon.get_colored_name(),
-        ' をすべて否定することになる',
+        '을(를) 전부 부정하는 셈이니까.',
       ]);
       await tachyon.print_and_wait([
-        'まして、',
+        '무엇보다 ',
         call_25,
-        ' 自身は何も間違っていない',
+        ' 자신은 아무 잘못도 하지 않았다.',
       ]);
       await tachyon.print_and_wait(
-        'ただ……すべての成り行きが、予想とは違っただけだ',
+        '단지…… 모든 일이 예상과 다르게 흘러갔을 뿐이다.',
       );
       await tachyon.print_and_wait([
-        'だから ',
+        '그래서 ',
         tachyon.get_colored_name(),
-        ' は、極めて複雑な目で ',
+        '은(는) 몹시 복잡한 눈빛으로 ',
         call_25,
-        ' を見るしかない',
+        '을(를) 바라볼 수밖에 없었다.',
       ]);
       era.println();
-      await coffee.say_and_wait('そろそろ、出る時間よ');
-      await tachyon.say_and_wait('……ええ、頑張ってくださいまし');
-      await coffee.say_and_wait([c_call_t, '……声、少し変よ']);
+      await coffee.say_and_wait('이제 슬슬 나갈 시간이야.');
+      await tachyon.say_and_wait('……그래, 힘내게.');
+      await coffee.say_and_wait([c_call_t, '……목소리가 좀 이상한데.']);
       era.println();
       await tachyon.print_and_wait([
-        '期待しすぎたからか。',
+        '너무 많은 기대를 걸었던 탓일까. ',
         tachyon.get_colored_name(),
-        ' の声は少し掠れている',
+        '의 목소리가 조금 쉬어 있었다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '……何でもありませんわ。昨日 ',
+        '……아무것도 아닐세. 어제 ',
         callname,
-        ' と街へ出たとき、少し冷えただけです',
+        '와(과) 거리에 나갔다가 조금 추웠을 뿐이네.',
       ]);
       if (era.get('love:25') >= 75) {
         await coffee.say_and_wait(
-          '待って。あなたたち二人、クリスマスに街へ？ ……レースのあと、詳しく説明してもらうから',
+          '잠깐만. 너희 둘, 크리스마스에 거리에 나갔어? ……레이스가 끝나면 자세히 설명해 줘.',
         );
       } else {
         await coffee.say_and_wait([
-          'また ',
+          '또 ',
           callname_25,
-          ' と走り回って……今日は ',
+          '와(과) 쏘다니다니…… 오늘은 ',
           arim_kin,
-          ' なのに',
+          '인데.',
         ]);
       }
       era.println();
-      await era.printAndWait('あとの言葉は、もうどうでもよかった');
+      await era.printAndWait('그 뒤에 이어진 말은 이제 아무래도 좋았다.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は待っている。レースが終わり、謎が解ける瞬間を',
+        '은(는) 기다리고 있었다. 레이스가 끝나고 수수께끼가 풀릴 순간을.',
       ]);
     };
     f.title = title;
