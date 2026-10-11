@@ -2069,9 +2069,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_b_47_47
+  // [번역 완료] we_b_47_47
   we_b_47_47: (() => {
-    const title = 'かすんだ輝き';
+    const title = '희미해진 광채';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -2089,96 +2089,96 @@ module.exports = {
       coffee_arim_kin,
     ) => {
       await tachyon.say_and_wait([
-        'ところで、明日は有馬記念ですわね、',
+        '그나저나 내일은 아리마 기념이군, ',
         callname,
       ]);
       era.println();
       await era.printAndWait([
-        '月下でトレーニングする ',
+        '달빛 아래서 훈련하던 ',
         tachyon.get_colored_name(),
-        ' が、ふと ',
+        '이(가) 문득 ',
         you.get_colored_name(),
-        ' に言った',
+        '에게 말했다.',
       ]);
       await era.printAndWait([
-        '菊花賞が終わってから、二人はこうして夜にトレーニングと指導を続けてきた',
+        '국화상이 끝난 뒤로 두 사람은 이렇게 밤마다 훈련과 지도를 이어 왔다.',
       ]);
       await era.printAndWait([
-        'ぎこちなかった会話も、二ヶ月触れ合えば、以前の馴染みへ戻りつつある',
+        '어색하던 대화도 두 달 동안 함께하면서 예전의 친숙함을 조금씩 되찾아 갔다.',
       ]);
       await era.printAndWait(
-        '言い方が悪いが、今の状態に対する自分の気持ちを問われれば',
+        '말이 이상할지도 모르지만 지금 상황에 대한 자신의 감정을 묻는다면',
       );
-      await era.printAndWait('たぶん、楽しんでいる');
+      await era.printAndWait('아마 즐기고 있는 것 같다.');
       await era.printAndWait([
-        '昼は ',
+        '낮에는 ',
         coffee.get_colored_name(),
-        ' のために動き、夜は ',
+        '을(를) 위해 움직이고, 밤에는 ',
         tachyon.get_colored_name(),
-        ' の回復を助ける',
+        '의 회복을 돕는다.',
       ]);
       await era.printAndWait([
-        '仕事量は増えた。それでも菊花賞前の ',
+        '할 일은 늘어났지만 국화상 이전의 ',
         you.get_colored_name(),
-        ' に比べれば、心の重荷は日ごとに軽くなっている',
+        '과(와) 비교하면 마음의 짐은 나날이 가벼워졌다.',
       ]);
       await era.printAndWait([
-        '…………そのせいで、',
+        '…………그러다 보니 ',
         you.get_colored_name(),
-        ' は時間をほとんど忘れていた',
+        '은(는) 시간 가는 줄도 모르고 있었다.',
       ]);
       era.println();
       if (coffee_arim_kin) {
         await tachyon.say_and_wait([
-          '明日は、',
+          '내일은 ',
           call_25,
-          ' の今年最後のレースですわ',
+          '의 올해 마지막 레이스일세.',
         ]);
       } else {
-        await tachyon.say_and_wait('明日で、今年のシーズンは終わりですわ');
+        await tachyon.say_and_wait('내일이면 올해 시즌도 끝나는군.');
       }
       era.println();
-      await era.printAndWait(['有馬記念のあと']);
+      await era.printAndWait(['아리마 기념이 끝나면']);
       await era.printAndWait([
         you.get_colored_name(),
-        ' がずっと向き合えずにいた、来年が来る',
+        '이(가) 줄곧 마주하지 못했던 내년이 찾아온다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         '来年……',
         call_25,
-        ' が出るレースは……全力で、一つ残らずついていきますわ',
+        '이(가) 출전하는 레이스라면…… 최선을 다해 한 경기도 빠짐없이 따라가겠네.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'の瞳を見た。なかにあるのは、',
+        '의 눈동자를 바라봤다. 그 안에는 ',
         coffee.get_colored_name(),
-        ' のために燃える覚悟と熱だ',
+        '을(를) 위해 불타는 각오와 열정이 있었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……ですから、来年も、よろしくお願いいたしますわ',
+        '……그러니 내년에도 잘 부탁하네.',
       );
       era.println();
-      await era.printAndWait('光がない');
+      await era.printAndWait('빛이 보이지 않는다.');
       await era.printAndWait([
-        'ずっと ',
+        '줄곧 ',
         you.get_colored_name(),
-        ' の両目を灼いてきた、',
+        '의 양쪽 눈을 태울 듯 빛나던 ',
         tachyon.get_colored_name(),
-        ' の眼の光は、もうほとんど見えない',
+        '의 눈빛은 이제 거의 보이지 않는다.',
       ]);
-      era.printButton('「来年も……よろしく」', 1);
+      era.printButton('「내년에도…… 잘 부탁해.」', 1);
       await era.input();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は有馬記念の直後に記者会見を開く',
+        '은(는) 아리마 기념 직후 기자회견을 열 예정이다.',
       ]);
-      await era.printAndWait('復帰の発表は、世間を大きく揺らすだろう');
-      await era.printAndWait('だがその続きは、今の二人には関係ない');
+      await era.printAndWait('복귀 발표는 세상을 크게 뒤흔들 것이다.');
+      await era.printAndWait('하지만 그 뒷이야기는 지금 두 사람과는 상관없다.');
     };
     f.title = title;
     return f;
