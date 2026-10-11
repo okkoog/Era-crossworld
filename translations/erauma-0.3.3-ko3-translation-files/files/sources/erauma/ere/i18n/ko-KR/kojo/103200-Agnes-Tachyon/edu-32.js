@@ -8118,9 +8118,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_36
+  // [번역 완료] ws_36
   ws_36: (() => {
-    const title = '年度研究計画の策定';
+    const title = '연도 연구 계획 수립';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} pocket ダンツフレーム
@@ -8170,7 +8170,7 @@ module.exports = {
         tachyon.uma_sex_title,
         '들에게는 가장 중요한 레이스 중 하나였다.',
       ]);
-      await era.printAndWait('日程なら……まだ二ヶ月ある。今登録すれば間に合う');
+      await era.printAndWait('일정상 아직 두 달이나 남았다. 지금 등록하면 늦지 않을 것이다.');
       await era.printAndWait([
         '승리할 수 있을지…… 솔직히 그런 것을 고민할 필요는 없었다. 세상에서 가장 빠른 속도는 광속이고, 그 광속보다 빠른 존재가 바로 ',
         tachyon.get_colored_name(),
@@ -8183,7 +8183,7 @@ module.exports = {
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は胸の疑問をそのまま口にした',
+        '은(는) 마음속 의문을 그대로 입 밖에 냈다.',
       ]);
       era.println();
       await era.printAndWait([
@@ -8225,7 +8225,7 @@ module.exports = {
       await you.say_and_wait('아니야! 요점은 그게 아니라고!');
 
       era.printButton(
-        '「それは……少し……スポーツマンシップに……反しないか……？」',
+        '「그건…… 조금…… 스포츠 정신에 어긋나는 게 아닐까……?」',
         1,
       );
       await era.input();
@@ -8253,7 +8253,7 @@ module.exports = {
         '다만, 효과를 실험하기 위해 충분히 강력한 상대가 필요할 뿐인 약이라네.',
       );
       era.println();
-      era.print([tachyon.sex, 'の言葉を聞き、', you.get_colored_name(), '……']);
+      era.print([tachyon.sex, '의 말을 듣고 ', you.get_colored_name(), '……']);
       era.printButton('믿는다', 1);
       era.printButton('半信半疑', 2);
       if ((await era.input()) === 1) {
@@ -8286,7 +8286,7 @@ module.exports = {
           '만약 내가, 만약 그게 정말로…… 그러니까, 만약 내가 자네를 속인 거라면 어쩔 셈인가?',
         );
         era.println();
-        await era.printAndWait([tachyon.get_colored_name(), ' に騙されたら……']);
+        await era.printAndWait([tachyon.get_colored_name(), '에게 속았다면……']);
         await era.printAndWait('생각해 본 적 없는 문제였으나, 만약 그렇다 하더라도.');
 
         era.printButton('「속았다고 해도 상관없어」', 1);
@@ -8411,7 +8411,7 @@ module.exports = {
           '? 내가 말해놓고도 조금 이상하네만, 자네는 조금도 의심하지 않는 건가? 그냥 믿어버리는 거야?',
         ]);
         era.printButton(
-          '「信じない。だが薬なしでもタキオンは勝てると信じる」',
+          '「믿지는 않아. 하지만 약 없이도 타키온은 승리할 거라고 믿어」',
           1,
         );
         await era.input();
@@ -8441,79 +8441,79 @@ module.exports = {
         era.println();
         if (relation > 0 && love < 50) {
           await tachyon.say_and_wait(
-            'それが答えですの？ 私は信じないが、私の才能は信じる？ よろしい！ それこそ研究者の態度ですわ！',
+            '그게 자네의 대답인가? 나를 믿지는 않지만 내 재능은 믿는다? 훌륭하군! 그것이야말로 연구자가 갖춰야 할 태도지!',
           );
           era.println();
           await era.printAndWait([
             tachyon.sex,
-            '의 꼬리가 살랑살랑 흔들리는 것을 보니 꽤 기분이 좋은 모양이었다.',
+            '은(는) 자기 대답이 만족스러운 듯 몇 번이고 고개를 끄덕였다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            '…… 자네 그 말, 마치 나를 조금도 신뢰하지 않는 것처럼 들리는군.',
+            '그렇다면 내 승리를 믿게. 내 뒤를 따라오기만 한다면 자네가 바라던 찬란한 광경을 보여 주겠네.',
           );
           era.println();
           await era.printAndWait([
-            '은 조금 불만스러운 듯 볼을 부풀리며 고개를 획 돌렸다.',
+            '그렇게 ',
             you.get_colored_name(),
-            '은(는) 어쩔 수 없이 이마를 짚으며, 어린아이를 달래듯 ',
+            '와(과) ',
             tachyon.get_colored_name(),
-            ' の次の目標は ',
+            '의 다음 목표는 ',
             hope_sta,
-            ' に決まった',
+            '로 결정되었다.',
           ]);
           await era.printAndWait(
-            'ただ……格好いい言葉で締めたが、この出走は本当に大丈夫か。もう少し考える必要があるかもしれない',
+            '다만…… 멋진 말로 마무리했지만 정말로 이 레이스에 출전해도 괜찮을까. 조금 더 생각해 볼 필요가 있을지도 모른다.',
           );
         } else {
           if (relation <= 0) {
             await tachyon.say_and_wait(
-              '……普段から、それくらい綺麗に言えればいいのに',
+              '……평소에도 그 정도로 멋진 말을 할 수 있다면 좋을 텐데.',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は冷たく言った。だが',
+              '은(는) 차갑게 말했다. 하지만 ',
               tachyon.sex,
-              'の尻尾は揺れていて、まんざらでもなさそうだ',
+              '의 꼬리가 흔들리는 걸 보니 싫지만은 않은 모양이었다.',
             ]);
           } else {
             era.println();
             await tachyon.say_and_wait([
               callname,
-              '……その言い方、私を少しも信じていないみたいですわ',
+              '……그 말투는 나를 조금도 믿지 않는 것처럼 들리는군.',
             ]);
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は不満げに口を尖らせ、強く横を向いた',
+              '은(는) 불만스러운 듯 입술을 삐죽이고 홱 고개를 돌렸다.',
             ]);
             era.println();
-            await era.printAndWait('信じても信じなくてもだめなのか……');
+            await era.printAndWait('믿어도 안 되고 믿지 않아도 안 된다는 건가……');
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
-              ' は額を押さえ、子どもを宥めるように ',
+              '은(는) 이마를 짚고 어린아이를 달래듯 ',
               tachyon.get_colored_name(),
-              ' へ、どれほど信じ、どれほど愛しているかを話し、やっと',
+              '에게 얼마나 믿고 사랑하는지를 말해 주었고, 그제야 ',
               tachyon.sex,
-              'の機嫌を直した',
+              '의 기분이 풀렸다.',
             ]);
           }
           era.println();
           await era.printAndWait([
-            'こうして、',
+            '그렇게 ',
             you.get_colored_name(),
-            ' と ',
+            '와(과) ',
             tachyon.get_colored_name(),
-            ' の次の目標は ',
+            '의 다음 목표는 ',
             hope_sta,
-            ' に決まった',
+            '로 결정되었다.',
           ]);
           await era.printAndWait([
-            'ただ……そう言っても、こんな',
+            '다만…… 말은 그렇게 했지만 이런 상태의 ',
             tachyon.sex,
-            'を場に出して本当に大丈夫か。やはり悩む必要があるかもしれない',
+            '를 레이스에 내보내도 괜찮을까. 역시 조금 더 고민할 필요가 있을지도 모르겠다.',
           ]);
         }
       }
