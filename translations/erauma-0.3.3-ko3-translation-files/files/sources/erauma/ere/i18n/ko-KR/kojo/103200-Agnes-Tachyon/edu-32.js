@@ -5971,18 +5971,18 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] train_kiss
+  // [번역 완료] train_kiss
   async train_kiss(tachyon, callname) {
     await tachyon.say_and_wait([
       callname,
-      '、今日は珍しくやる気が出てトレーニングしたい気分ですの。こんな愛馬に、ご褒美の一つもないのはおかしいと思いませんこと？',
+      ', 오늘처럼 내가 기꺼이 훈련에 임하는 날엔, 이런 기특한 애마에게 뭔가 포상이 있어야 하지 않겠나?',
     ]);
     await tachyon.say_and_wait(
-      '……トレーニングが終わってから？ そんなに待てませんわ',
+      '……훈련이 끝나고 나서? 이런, 난 그렇게 오래 못 기다리네.',
     );
-    await tachyon.say_and_wait('ん……くちゅ……ちゅる……ちゅぽ……ちゅ……ちゅく');
+    await tachyon.say_and_wait('우읍…… 츄릅…… 할짝…… 쪽…… 츄우…… 으음.');
     await tachyon.say_and_wait(
-      'ふぅ……とりあえず合格にしておきますわ。続きは、トレーニングが終わってから❤️',
+      '후우…… 일단 합격점을 주지. 나머지는 훈련이 끝난 뒤에 계속하자고❤',
     );
   },
 
