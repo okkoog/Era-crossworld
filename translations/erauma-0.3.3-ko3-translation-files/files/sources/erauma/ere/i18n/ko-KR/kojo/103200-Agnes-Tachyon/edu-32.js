@@ -2009,9 +2009,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] begin_race_win
+  // [번역 완료] begin_race_win
   begin_race_win: (() => {
-    const title = '研究基盤と労働条件';
+    const title = '연구 기반과 근로 조건';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -2019,93 +2019,93 @@ module.exports = {
      * @param {number} relation アグネスタキオンのプレイヤーへの好感度
      */
     const f = async (tachyon, you, callname, relation) => {
-      era.printButton('「最高の走りだった！ 光みたいだ！」', 1);
+      era.printButton('「최고의 달리기였어! 마치 빛 같았어!」', 1);
       await era.input();
       await tachyon.say_and_wait([
-        '実験の検算にすぎないのに、そんなに喜んで。',
+        '실험 결과를 검산했을 뿐인데 그렇게 기뻐하다니.',
         callname,
-        '、おめでたいですわ……あっ！',
+        ', 참 태평하군…… 앗!',
       ]);
-      era.printButton('どうした！', 1);
+      era.printButton('무슨 일이야!', 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は突然声を上げた ',
+        '이(가) 갑자기 소리를 지른 ',
         tachyon.get_colored_name(),
-        ' を見て、胸が緊った',
+        '을(를) 보고 가슴이 철렁했다.',
       ]);
-      await you.say_and_wait('レースのあと……まさか、脚が……', true);
+      await you.say_and_wait('레이스가 끝나고…… 설마 다리가……', true);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は慌てて ',
+        '은(는) 황급히 ',
         tachyon.get_colored_name(),
-        ' の脚を確かめようとしたが……',
+        '의 다리를 확인하려 했지만……',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'だめだめ！ ゲートに付けた、スタート速度を記録する装置を回収し忘れていますわ！',
+        '잠깐! 게이트에 설치한 출발 속도 기록 장치를 회수하는 걸 깜빡했네!',
       );
       era.println();
       if (relation > 225) {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は息を吐いた。それが理由か',
+          '은(는) 한숨을 내쉬었다. 그것 때문이었나.',
         ]);
-        era.printButton('「問題ない。スタート速度はもう記録してある」', 1);
+        era.printButton('「걱정 마. 출발 속도는 이미 기록해 뒀어.」', 1);
         await era.input();
         await era.printAndWait([
-          '心が通じているとまでは言えない。だが ',
+          '서로 마음이 통한다고까지 할 수는 없지만, ',
           tachyon.get_colored_name(),
-          ' のトレーナーとして',
+          '의 트레이너로서 ',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'が欲しいデータはだいたいわかる。そもそも場を走る',
+          '이(가) 필요로 하는 데이터는 대략 안다. 애초에 직접 레이스를 뛰는 ',
           tachyon.sex,
-          'が気にすることではない',
+          '이(가) 신경 쓸 일도 아니다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'おお！ よくやりましたわ、',
+          '오오! 잘했네, ',
           callname,
-          '！ 今すぐ確認しましょう！',
+          '! 당장 확인해 보세!',
         ]);
         era.println();
         await era.printAndWait([
-          '得たばかりの勝利も、これから始まる Winning Live も、二人の目には入らない。さっきレースを走ったのではなく、ただの研究だったかのようだ',
+          '막 얻은 승리도 곧 시작될 위닝 라이브도 두 사람의 눈에 들어오지 않았다. 조금 전 레이스를 뛴 것이 아니라 그저 연구를 진행한 듯했다.',
         ]);
         era.println();
         await era.printAndWait([
-          '記録したデータを何度も見返し、仮説を重ね、Winning Live が始まり外から慌ただしいノックが聞こえて、やっと我に返った',
+          '기록한 데이터를 몇 번이고 다시 살펴보고 가설을 세우던 두 사람은 위닝 라이브가 시작되고 밖에서 다급하게 문을 두드리는 소리가 들리고서야 정신을 차렸다.',
         ]);
       } else {
-        await era.printAndWait('な、何だそれは！？');
+        await era.printAndWait('뭐, 뭐라고!?');
         await era.printAndWait(
-          'ゲートで発走を待っているあいだに、そんなことをする余裕があったのか？',
+          '출발을 기다리는 동안 그런 장치를 설치할 여유가 있었다고?',
         );
         await era.printAndWait(
-          'いや、そもそもゲートに勝手にセンサーを付けるな',
+          '아니, 애초에 게이트에 멋대로 센서를 달지 말라고!',
         );
-        await era.printAndWait([you.get_colored_name(), ' は胃が痛んだ']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 속이 쓰렸다.']);
         era.println();
         await era.printAndWait([
-          'その後、機材回収のため ',
+          '그 후 장치를 회수하기 위해 ',
           you.get_colored_name(),
-          ' と ',
+          '와(과) ',
           tachyon.get_colored_name(),
-          ' は競馬場へ潜入した……',
+          '은(는) 경마장에 몰래 들어갔다……',
         ]);
         await era.printAndWait([
-          '言うまでもなく URA に見つかり、何度も詫びた末、',
+          '물론 URA에게 들켰고 몇 번이고 사과한 끝에 ',
           tachyon.get_colored_name(),
-          ' は機材を回収できた。すべては順調だ',
+          '은(는) 장치를 되찾을 수 있었다. 모든 일이 순조로웠다.',
         ]);
         await era.printAndWait([
-          '……ただし回収中、職員たちの視線が少し痛かっただけだ',
+          '……회수하는 내내 직원들의 따가운 시선을 감수해야 했다는 점만 빼면.',
         ]);
         era.println();
-        await era.printAndWait('【名声が下がった！】');
+        await era.printAndWait('【명성이 하락했다!】');
       }
     };
     f.title = title;
