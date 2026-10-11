@@ -2881,9 +2881,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 74-reject-2
+  // [번역 완료] 74-reject-2
   '74-reject-2': (() => {
-    const title = '時が戻る';
+    const title = '시간이 되돌아가다';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} taste 秋川やよい / ノーザンテースト
@@ -2891,53 +2891,53 @@ module.exports = {
      * @param {CharaTalk} you プレイヤー
      */
     const f = async (tachyon, taste, minoru, you) => {
-      await era.printAndWait('順当であるかのように');
+      await era.printAndWait('마치 당연한 수순인 것처럼');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、なぜか馴染みのある栗毛の',
+        '은(는) 어째서인지 낯익은 밤색 털의 ',
         tachyon.uma_sex_title,
         '———',
         tachyon.get_colored_name(),
-        ' と契約を結んだ',
+        '와(과) 담당 계약을 맺었다',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は契約の登記をしなければと思い、',
+        '은(는) 계약을 등록해야겠다고 생각해 ',
         minoru.get_colored_name(),
-        ' と ',
+        '와(과) ',
         taste.get_colored_name(),
-        ' のもとへ向かう',
+        '을(를) 찾아갔다',
       ]);
       await era.printAndWait([
-        '…………なぜ',
+        '…………어째서 ',
         minoru.couple_title,
-        'は、あんな悲しい眼で自分を見ているのか',
+        '은(는) 저토록 슬픈 눈으로 자신을 바라보는 걸까',
       ]);
-      await minoru.say_and_wait('分かります。また、あの子の薬でしょう……');
-      await era.printAndWait('どういう意味だ。あの子とは誰だ？');
+      await minoru.say_and_wait('알겠어요. 또 그 아이의 약 때문이겠죠……');
+      await era.printAndWait('무슨 뜻이지? 그 아이라는 건 누구를 말하는 거야?');
       await taste.say_and_wait([
-        'ご愁傷様です！ ',
+        '안타깝게 됐군요! ',
         you.actual_name,
-        ' トレーナーなら、すぐに記憶を取り戻すと信じていますよ',
+        ' 트레이너라면 곧 기억을 되찾을 거라고 믿어요',
       ]);
       await era.printAndWait([
-        'これはまたどういう意味だ……',
+        '이건 또 무슨 뜻이지……',
         minoru.couple_title,
-        'は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' が記憶を失ったことを知っている？ まさか ',
+        '이(가) 기억을 잃었다는 사실을 알고 있는 건가? 설마 ',
         you.get_colored_name(),
-        ' の記憶喪失や同程度の事故は、よくあることなのか？',
+        '이(가) 기억상실이나 그와 비슷한 사고를 겪는 일이 흔하다는 건가?',
       ]);
       era.println();
-      await era.printAndWait('訳が分からない……まあ、そういうことにしておこう');
+      await era.printAndWait('도무지 영문을 모르겠어…… 뭐, 일단 그런 걸로 해 두자');
       await era.printAndWait([
-        'とにかく、',
+        '어쨌든 ',
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' の育成が始まる！',
+        '의 육성이 시작된다!',
       ]);
     };
     f.title = title;
