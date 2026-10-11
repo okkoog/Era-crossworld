@@ -4468,251 +4468,251 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_a_47_31
+  // [번역 완료] ws_a_47_31
   ws_a_47_31: (() => {
-    const title = '夏のデータ採取';
+    const title = '여름 데이터 수집';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname アグネスタキオンのプレイヤーへの呼び方
      */
     const f = async (tachyon, you, callname) => {
-      await tachyon.say_and_wait('はぁ……はぁ……はぁ……');
+      await tachyon.say_and_wait('하아…… 하아…… 하아……');
       era.println();
       await era.printAndWait([
         '合宿中、',
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' は菊花賞に向けて特訓を重ねていた。労逸を組み合わせたメニューのおかげで、成果は着実に出ている',
+        '은(는) 국화상을 목표로 거듭 특훈을 진행하고 있었다. 훈련과 휴식을 적절히 조합한 일정 덕분에 성과도 착실히 나타났다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('データ……どうです？');
+      await tachyon.say_and_wait('데이터는…… 어떤가요?');
 
       era.printButton(
-        '「走り方を変える前のスピードまで戻った……この調子なら菊花賞は絶対大丈夫だ！」',
+        '「주법을 바꾸기 전의 속도까지 회복했어…… 이대로라면 국화상도 문제없겠어!」',
         1,
       );
       await era.input();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の脚への負荷を最小限にするよう改良した走りは、いまや大成しつつある。二人の努力があれば、菊花賞はきっと……',
+        '의 다리에 가해지는 부담을 최소화하도록 개선한 주법이 이제 결실을 맺고 있었다. 두 사람의 노력이면 국화상에서도 분명……',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' が ',
+        '이(가) ',
         tachyon.get_colored_name(),
-        ' の未来に思いを馳せていると、息を整えた ',
+        '의 미래를 생각하고 있을 때, 숨을 고른 ',
         tachyon.get_colored_name(),
-        ' が口を開いた',
+        '이(가) 입을 열었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'よろしい。私の分のトレーニングは終わりですわ。次はあなたです',
+        '좋아요. 제 훈련은 끝났으니 다음은 당신 차례예요.',
       );
       era.println();
-      await era.printAndWait('…………来るものは、来る');
+      await era.printAndWait('…………올 것이 왔구나.');
       await era.printAndWait([
-        '労逸の実体はこうだ。',
+        '훈련과 휴식을 병행한다는 것의 진상은 이랬다.',
         tachyon.get_colored_name(),
-        ' がトレーニングしているあいだ ',
+        '이(가) 훈련할 때 ',
         you.get_colored_name(),
-        ' は休み、',
+        '은(는) 쉬고, ',
         tachyon.get_colored_name(),
-        ' が休むあいだ……当然、',
+        '이(가) 쉴 때는…… 당연히 ',
         you.get_colored_name(),
-        ' の番になる',
+        '의 차례가 된다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の薬の助けで、いまの ',
+        '의 약 덕분에 지금 ',
         you.get_colored_name(),
-        ' の瞬発力は、オープン級の',
+        '의 순간적인 힘은 오픈급 ',
         tachyon.uma_sex_title,
-        'にも負けない、',
+        '에게도 뒤지지 않을 정도였다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の薬物実験データを測ることも、',
+        '의 약물 실험 데이터를 측정하는 것 역시 ',
         tachyon.get_colored_name(),
-        ' が合宿中きちんとトレーニングするための前提のひとつだった',
+        '이(가) 합숙 중 제대로 훈련하기 위한 조건 중 하나였다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '今日は慈悲をかけて、自分で選ばせてあげますわ、',
+        '오늘은 자비를 베풀어 직접 고르게 해 드리죠, ',
         callname,
-        '……パワートレーニングとスタミナトレーニング、どちらにします？',
+        '……파워 훈련과 스태미나 훈련, 어느 쪽이 좋나요?',
       ]);
       era.println();
-      await era.printAndWait('む……どちらも大差ない気がするが');
-      era.printButton('パワートレーニング（パワー＆根性+10）', 1);
-      era.printButton('スタミナトレーニング（スタミナ＆パワー+10）', 2);
-      era.printButton('スピードトレーニング（スピード＆賢さ+10）', 3);
+      await era.printAndWait('으음…… 어느 쪽이든 별 차이가 없을 것 같은데.');
+      era.printButton('파워 훈련(파워＆근성 +10)', 1);
+      era.printButton('스태미나 훈련(스태미나＆파워 +10)', 2);
+      era.printButton('스피드 훈련(스피드＆지능 +10)', 3);
       const ret = await era.input();
       switch (ret) {
         case 1:
-          await era.printAndWait('かくかくしかじか');
+          await era.printAndWait('이러쿵저러쿵.');
           await era.printAndWait([
-            'こうして ',
+            '그리하여 ',
             you.get_colored_name(),
-            ' は、人の三倍はある巨大タイヤを砂浜で引きずっている',
+            '은(는) 사람 키의 세 배는 될 법한 거대한 타이어를 모래사장에서 끌고 있었다.',
           ]);
           await era.printAndWait(
-            'こんなタイヤ、何の車用だ。横に寝かせても人の三倍の高さがある',
+            '대체 무슨 차에 쓰는 타이어지? 옆으로 눕혀도 사람 키의 세 배나 된다.',
           );
           await era.printAndWait([
-            'そのあいだ、',
+            '그동안 ',
             tachyon.get_colored_name(),
-            ' はずっとタイヤの上に座り、',
+            '은(는) 줄곧 타이어 위에 앉아 ',
             you.get_colored_name(),
-            ' に声援を……',
+            '에게 응원을……',
           ]);
           era.println();
-          await tachyon.say_and_wait(['早く歩きなさい、', callname]);
+          await tachyon.say_and_wait(['어서 걸으세요, ', callname]);
           await tachyon.say_and_wait(
-            '遅すぎますわ。スピード、スピードですわよ',
+            '너무 느려요. 스피드, 스피드를 내라고요!',
           );
           await tachyon.say_and_wait(
-            'いっそ服を破いてハルクにでもなりなさいな',
+            '차라리 옷을 찢고 헐크라도 되는 게 어떨까요?',
           );
           era.println();
           await era.printAndWait('声援……？');
           era.println();
           await era.printAndWait([
-            '応援というより耐圧試験の掛け声のなかで、',
+            '응원이라기보다 압력 시험을 독촉하는 듯한 구호 속에서 ',
             you.get_colored_name(),
-            ' は今日のトレーニングを終えた',
+            '은(는) 오늘의 훈련을 마쳤다.',
           ]);
           break;
         case 2:
           era.println();
-          await tachyon.say_and_wait('入りなさい');
+          await tachyon.say_and_wait('들어가세요.');
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は目を丸くして ',
+            '은(는) 눈이 휘둥그레져 ',
             tachyon.get_colored_name(),
-            ' を見た。厳しいメニューだからではない。むしろ……',
+            '을(를) 바라보았다. 훈련이 혹독해서가 아니었다. 오히려……',
           ]);
-          era.printButton('「……泳いでくるだけでいいのか？」', 1);
+          era.printButton('「……그냥 수영만 하면 된다고?」', 1);
           await era.input();
           await tachyon.say_and_wait(
-            'ええ。いつもどおりの周回を泳ぎ切ればよろしいですわ～～',
+            '네. 평소처럼 정해진 거리를 끝까지 헤엄치면 된답니다~~',
           );
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' の顔には明らかに企みがある。だが、何なのか思いつかない……',
+            '의 얼굴에는 분명 무언가 꿍꿍이가 있었다. 하지만 뭔지 짐작이 가지 않았다……',
           ]);
           await era.printAndWait([
-            'いや、',
+            '아니, ',
             tachyon.sex,
-            'がやりそうなことは多すぎて、どれを使ったのか見当がつかないのだ',
+            '라면 벌일 만한 일이 너무 많아 어느 수를 쓴 것인지 도무지 알 수 없었다.',
           ]);
           await era.printAndWait([
-            'ここで待っていても始まらない。',
+            '여기서 기다린다고 달라질 건 없다. ',
             you.get_colored_name(),
-            ' は先に水へ入った',
+            '은(는) 먼저 물속으로 들어갔다.',
           ]);
           era.println();
-          await era.printAndWait('冷たい！');
+          await era.printAndWait('차가워!');
           await era.printAndWait(
-            '海水の温度が、いつもの冷たさとは明らかに違う。例えるなら……',
+            '바닷물의 온도가 평소와는 확연히 달랐다. 비유하자면……',
           );
           await era.printAndWait([
             '以前、',
             tachyon.get_colored_name(),
-            ' が耐寒の薬を試すために飛び込ませた、氷のプールそのものだ',
+            '이(가) 내한성 약을 시험하려고 들어가게 했던 얼음 수영장 그 자체였다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は慌てて周りを見回すが、他の生徒はいつもどおり海で遊んでいる',
+            '은(는) 황급히 주위를 둘러봤지만 다른 학생들은 평소처럼 바다에서 놀고 있었다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            'ふふっ、今は特別に冷たいでしょう。入水前に飲ませた薬の効果ですわ。知覚を高める薬——ええ、対〇忍に出てくる、あれですわよ！',
+            '후후, 유난히 차갑죠? 물에 들어가기 전에 먹인 약의 효과예요. 감각을 예민하게 만드는 약——네, 대○인에 나오는 바로 그 약이랍니다!',
           );
           era.println();
-          await era.printAndWait('対魔〇の話はするな！？');
+          await era.printAndWait('대마○ 얘기는 꺼내지 마!?');
           await era.printAndWait(
-            '奇妙なのは、体感温度が冬の氷風呂並みになった以外、特別な感覚がないことだ。対魔〇なら今頃は……',
+            '이상하게도 체감 온도가 겨울의 얼음 목욕 수준이 된 것 외에는 특별한 감각이 없다. 대마○이라면 지금쯤……',
           );
           era.println();
           await tachyon.say_and_wait(
-            'もちろん、まだ半製品ですわ。主に寒冷への神経感度を上げているだけ。では、指定の距離をきちんと泳ぎ切りなさい',
+            '물론 아직 미완성 약이에요. 주로 추위에 대한 신경의 민감도만 높였거든요. 자, 정해진 거리를 제대로 헤엄치세요.',
           );
           era.println();
-          await era.printAndWait('寒い……');
+          await era.printAndWait('추워……');
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' に指示されずとも、寒さに追い立てられた ',
+            '이(가) 재촉하지 않아도 추위에 쫓긴 ',
             you.get_colored_name(),
-            ' は熱を出そうと必死に体を動かし、ようやく泳ぎの目標を達成した',
+            '은(는) 몸에 열을 내려고 필사적으로 움직였고 간신히 수영 목표를 달성했다.',
           ]);
           era.drawLine({ content: '余談' });
           await tachyon.say_and_wait([
-            '……神経の感度を上げただけなのに、どうして風邪まで引くのですか、',
+            '……신경을 예민하게 만들었을 뿐인데 어째서 감기까지 걸린 건가요, ',
             callname,
           ]);
           era.println();
-          await you.say_and_wait('……それ、お前に聞くことだろ？');
+          await you.say_and_wait('……그건 내가 아니라 네가 대답해야 할 질문 아니야?');
           break;
         case 3:
-          await era.printAndWait('どれも悪気ありありだ……');
+          await era.printAndWait('어느 쪽이든 악의가 잔뜩 담겨 있잖아……');
           await era.printAndWait([
-            '機転の利く ',
+            '기지를 발휘한 ',
             you.get_colored_name(),
-            ' は選ぶ',
+            '은(는) 선택했다.',
           ]);
           era.printButton(
-            '「……寮のガスコンロ、消し忘れた気がする！ 先に戻る！」',
+            '「……기숙사 가스레인지를 안 끈 것 같아! 먼저 돌아갈게!」',
             1,
           );
           await era.input();
-          await era.printAndWait('逃げるが勝ち！');
+          await era.printAndWait('도망치는 게 상책이다!');
           era.println();
           await tachyon.say_and_wait([
-            'ほほう、私と競争するおつもり？ 最近の体力向上で少し増長したようですわね、',
+            '호오, 저와 달리기 시합이라도 하시겠다는 건가요? 최근 체력이 좋아졌다고 조금 우쭐해진 모양이군요, ',
             callname,
             '。',
           ]);
           await tachyon.say_and_wait(
-            '構いませんわ。十秒あげます。追いつかれたら、今日の薬は倍ですのよ。',
+            '좋아요. 10초를 드리죠. 따라잡히면 오늘 먹을 약은 두 배예요.',
           );
           await tachyon.say_and_wait(
-            'さあ、私を楽しませなさい。あはははははは！',
+            '자, 저를 즐겁게 해 보세요. 아하하하하하!',
           );
           era.println();
           await era.printAndWait([
-            '十秒が切れた瞬間、',
+            '10초가 지나자마자 ',
             tachyon.get_colored_name(),
-            ' の足音が耳元に迫った',
+            '의 발소리가 귓가까지 다가왔다.',
           ]);
           await era.printAndWait(
-            '急げ、急げ。こんなとき、トレーナー養成校では何と教えた',
+            '빨리, 빨리! 이런 상황에서 트레이너 양성 학교는 뭐라고 가르쳤지?',
           );
           await you.say_and_wait(
-            ['障害物を使って', tachyon.uma_sex_title, 'の動きを妨げろ！'],
+            ['장애물을 이용해 ', tachyon.uma_sex_title, '의 움직임을 방해하라!'],
             true,
           );
           await era.printAndWait(
-            'よし、急いで………ここ砂浜だぞ、障害物なんかあるかああああ！！！',
+            '좋아, 서둘러…… 잠깐, 여긴 모래사장이잖아! 장애물이 어디 있어어어어!!!',
           );
           era.println();
           era.println();
           await tachyon.say_and_wait([
-            'ちっちっ、遅すぎますわ ',
+            '쯧쯧, 너무 느리군요, ',
             callname,
-            '。では今日は二本……よろしい、もう一度。同じく十秒、また追いついたら四本ですわ……続きですわよ～～',
+            '. 그럼 오늘은 약 두 병…… 좋아요, 다시 한번! 똑같이 10초예요. 이번에도 잡히면 네 병…… 계속하자고요~~',
           ]);
-          await you.say_and_wait('まだやるのか！？');
+          await you.say_and_wait('아직도 하는 거야!?');
           await era.printAndWait([
             '結局、',
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             tachyon.get_colored_name(),
-            ' に四度追われ四度放たれ、合計十六本の薬を飲まされた',
+            '에게 네 번 쫓기고 네 번 풀려났으며 결국 총 열여섯 병의 약을 먹어야 했다.',
           ]);
       }
       return [ret];
