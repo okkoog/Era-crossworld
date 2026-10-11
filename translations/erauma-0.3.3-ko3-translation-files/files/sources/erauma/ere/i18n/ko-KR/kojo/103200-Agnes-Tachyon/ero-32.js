@@ -1773,33 +1773,33 @@ module.exports = {
     );
   },
 
-  // [번역 대상] ero_start_cuckold
+  // [번역 완료] ero_start_cuckold
   async ero_start_cuckold(tachyon, callname, t_call_c) {
     if (era.get('cflag:25:招募状态') === 1 && Math.random() < 0.5) {
       await tachyon.say_and_wait([
         '……',
         callname,
-        '、あの、',
+        '저기, ',
         t_call_c,
-        ' を……一緒に呼びませんの？',
+        '을(를)…… 함께 부르지 않을 건가?',
       ]);
-      await tachyon.say_and_wait('今日は私だけと……ああ、そうですか。');
+      await tachyon.say_and_wait('오늘은 나하고만…… 아아, 그런가.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は、なぜか少し寂しそうだった。',
+        '은(는) 어째서인지 조금 외로워 보였다.',
       ]);
     } else {
       await tachyon.say_and_wait([
-        '……ごめんなさい、',
+        '……미안하네, ',
         callname,
-        '、ごめんなさい。',
+        ', 미안하네.',
       ]);
       era.println();
       await era.printAndWait([
-        'なぜか、床へ入る前から ',
+        '어째서인지 잠자리에 들기 전부터 ',
         tachyon.get_colored_name(),
-        ' は何度も謝っていた。',
+        '은(는) 몇 번이고 사과하고 있었다.',
       ]);
     }
   },
@@ -2707,132 +2707,132 @@ module.exports = {
     }
   },
 
-  // [번역 대상] mark_pain
+  // [번역 완료] mark_pain
   async mark_pain(tachyon, callname, level, love) {
     switch (level) {
       case 1:
         if (love < 75) {
           await tachyon.say_and_wait([
-            '痛い！？ 主人にこんなことをするなんて、',
+            '아프잖나!? 주인에게 이런 짓을 하다니, ',
             callname,
-            '、何をお考えですの！',
+            ', 무슨 생각을 하는 건가!',
           ]);
         } else {
           await tachyon.say_and_wait([
-            '痛い！？ ',
+            '아프잖나!? ',
             callname,
-            '……もう少し、乱暴にしないでいただけます？',
+            '……조금만 덜 거칠게 다뤄 주겠나?',
           ]);
         }
         break;
       case 2:
         if (love < 75) {
-          await tachyon.say_and_wait('やめて……止めて！ 痛い……もう弄らないで！');
+          await tachyon.say_and_wait('그만…… 멈추게! 아프네…… 더는 건드리지 말게!');
         } else {
           await tachyon.say_and_wait([
             callname,
-            '！？ わ、私が何か間違えたのですの……どうして、どうしてこんなことを……',
+            '!? 내, 내가 뭔가 잘못했나…… 어째서, 어째서 이런 짓을……',
           ]);
         }
         break;
       case 3:
         if (love < 75) {
           await tachyon.say_and_wait(
-            '痛い……怖い……ごめんなさい……私が悪かった……私が悪かった……もう弄らないで……痛い、痛い……',
+            '아프네…… 무서워…… 미안하네…… 내 잘못이야…… 내 잘못이야…… 더는 건드리지 말게…… 아파, 아프다고……',
           );
         } else {
           await tachyon.say_and_wait([
-            '痛い……',
+            '아파……',
             callname,
-            '……どうして……どうしてこんなことを……理解できませんわ……',
+            '……어째서…… 왜 이런 짓을…… 이해할 수 없군……',
           ]);
           await tachyon.say_and_wait(
-            'これが愛ですの？ どうして自分の恋人を、こんなふうに扱うの……分かりませんわ……',
+            '이게 사랑이라는 건가? 어째서 자신의 연인을 이렇게 대하는 거지…… 이해할 수 없네……',
           );
         }
     }
   },
 
-  // [번역 대상] mark_pleasure
+  // [번역 완료] mark_pleasure
   async mark_pleasure(tachyon, callname, level, love) {
     switch (level) {
       case 1:
         if (love < 75) {
           await tachyon.say_and_wait(
-            'ん……熱くて、むずむずしますわ……体が少し辛い……薬の副作用ですの？',
+            '으음…… 뜨겁고 간질간질하군…… 몸이 조금 힘드네…… 약의 부작용인가?',
           );
         } else {
-          await tachyon.say_and_wait('ん……熱くて、むずむず……');
+          await tachyon.say_and_wait('으음…… 뜨겁고 간질간질해……');
           await tachyon.say_and_wait(
-            'いいえ、気分が悪いわけでは……ん……試してみましょう、もう少し……不思議な感じですわ……',
+            '아니, 기분이 나쁜 건 아니지만…… 으음…… 조금만 더 시험해 보세…… 이상한 기분이군……',
           );
         }
         break;
       case 2:
         if (love < 75) {
           await tachyon.say_and_wait(
-            'だめ……ホルモンの作用なだけ……体の正常な反応なだけ……なのに、なのに……どうして……こんなに気持ちよい……',
+            '안 돼…… 그저 호르몬의 작용일 뿐…… 정상적인 신체 반응일 뿐인데…… 그런데도…… 왜 이렇게 기분이 좋은 거지……',
           );
         } else {
           await tachyon.say_and_wait(
-            '待って……中がまだ落ち着いていない……これ以上気持ちよくなったら……ひっ！',
+            '잠깐…… 안쪽이 아직 진정되지 않았네…… 더 이상 기분이 좋아지면…… 힉!',
           );
           await tachyon.say_and_wait(
-            'だめ、続けてはいけないと分かっているのに、体が自分で……頭が……考えられませんわ',
+            '안 돼, 계속하면 안 된다는 걸 아는데도 몸이 멋대로…… 머리가…… 생각할 수 없네……',
           );
         }
         break;
       case 3:
         if (love < 75) {
           await tachyon.say_and_wait([
-            'もう……考えられませんわ……気持ちよい……もっと……もっと、',
+            '이제…… 생각할 수 없군…… 기분 좋아…… 더…… 더, ',
             callname,
-            '……ください……まだ欲しい……',
+            '……주게…… 아직 원하네……',
           ]);
         } else {
           await tachyon.say_and_wait([callname, '❤️', callname, '❤️']);
           await tachyon.say_and_wait(
-            'もっと……もっとください……内も外も、完全に満たして……❤️',
+            '더…… 더 주게…… 안팎 모두 완전히 채워 주게❤️',
           );
           await tachyon.say_and_wait(
-            'こうなったのはあなたのせいですわ……だから、もっと❤️この賢い頭が、肉体の交わり以外を考えられなくなるまで❤️',
+            '이렇게 된 건 자네 탓이네…… 그러니 더❤️ 이 영리한 머리가 몸을 섞는 것 외에는 생각할 수 없을 때까지❤️',
           );
         }
     }
   },
 
-  // [번역 대상] mark_shame
+  // [번역 완료] mark_shame
   async mark_shame(tachyon, callname, level) {
     switch (level) {
       case 1:
-        await tachyon.say_and_wait('こんなこと……恥ずかしすぎますわ', true);
+        await tachyon.say_and_wait('이런 짓…… 너무 부끄럽군.', true);
         await tachyon.say_and_wait(
-          '平常心……平常心……実験だと思えばいい、ええ、実験',
+          '평정심…… 평정심…… 실험이라고 생각하면 돼. 그래, 실험이라네.',
           true,
         );
         break;
       case 2:
         await tachyon.say_and_wait(
-          'だめですわ……もう実験ではごまかせません',
+          '안 되겠네…… 이제는 실험이라는 말로 얼버무릴 수 없어.',
           true,
         );
         await tachyon.say_and_wait(
-          'この私だって、社会の一部ですもの……こんなことで恥を感じますわ',
+          '나도 사회의 일원인걸…… 이런 일은 부끄럽단 말이지.',
           true,
         );
         await tachyon.say_and_wait(
-          'くっ……なのに……どうして気持ちよいの……私の体は、どうなってしまったの……',
+          '큭…… 그런데도…… 어째서 기분이 좋은 거지…… 내 몸이 어떻게 된 거야……',
           true,
         );
         break;
       case 3:
-        await tachyon.say_and_wait('はは……あはは……', true);
+        await tachyon.say_and_wait('하하…… 아하하……', true);
         await tachyon.say_and_wait(
-          '狂った科学者として、他人の目など気にしたことはありませんでしたのに……自分がこうなる日が来るとは、思ってもみませんでしたわ',
+          '미친 과학자로 살면서 남의 시선 따위 신경 쓴 적 없는데…… 내게 이런 날이 오리라고는 생각도 못했네.',
           true,
         );
         await tachyon.say_and_wait(
-          'いいですわ、どうなっても……もう、考えるのはやめます……',
+          '좋네, 어떻게 되든…… 이제 더는 생각하지 않겠네……',
           true,
         );
     }
@@ -3041,49 +3041,49 @@ module.exports = {
     }
   },
 
-  // [번역 대상] self_finger_fuck
+  // [번역 완료] self_finger_fuck
   async self_finger_fuck(tachyon, you, callname, y_call_t, is_lubrication) {
     if (Math.random() < 0.5) {
-      await tachyon.say_and_wait(['見てくださいまし……', callname, '……']);
-      await tachyon.say_and_wait('私の穴、どう見えますの❤️');
+      await tachyon.say_and_wait(['보게나……', callname, '……']);
+      await tachyon.say_and_wait('내 안쪽, 어떻게 보이나❤️');
       era.println();
       await you.print_and_wait([
         y_call_t,
-        ' の器用な指が自分の穴を弄り、快感を与えている。',
+        '의 능숙한 손가락이 자기 안쪽을 자극하며 쾌감을 주고 있었다.',
       ]);
       await you.print_and_wait(
-        '両脚を左右に開き、誘うように指が穴の奥へ、奥へと進む。',
+        '두 다리를 좌우로 벌리고 유혹하듯 손가락을 더 깊이 밀어 넣었다.',
       );
       await you.print_and_wait([
         tachyon.sex,
-        'の指先が光の下で輝き、穴から淫らな糸を引く。',
+        '의 손끝이 불빛 아래 반짝이며 안쪽에서 음란한 실을 끌어냈다.',
       ]);
       if (is_lubrication) {
         era.println();
         await tachyon.say_and_wait(
-          'もう準備はできていますわ……入ってこないんですの❤️',
+          '이미 준비는 끝났네…… 들어오지 않겠나❤️',
         );
         era.println();
         await you.print_and_wait(
-          '愛液に浸された下は、いつでも交われる状態になっている……',
+          '애액에 젖은 아래쪽은 언제든 몸을 섞을 수 있는 상태였다……',
         );
       }
     } else {
       await tachyon.say_and_wait([callname, '……❤️']);
-      await tachyon.say_and_wait('早く……入れてくださいまし❤️');
+      await tachyon.say_and_wait('빨리…… 넣어 주게❤️');
       era.println();
-      await you.print_and_wait([y_call_t, ' は自ら臀を拡げた。']);
+      await you.print_and_wait([y_call_t, '은(는) 스스로 엉덩이를 벌렸다.']);
       await you.print_and_wait(
-        '濡れきった穴と、微かに開閉する尻穴が、眼前の雌から服従に近い姿勢で差し出される。',
+        '충분히 젖은 안쪽과 미세하게 열리고 닫히는 항문을 복종하는 듯한 자세로 내밀었다.',
       );
       if (is_lubrication) {
         era.println();
-        await you.print_and_wait('ぐぽ……');
+        await you.print_and_wait('꾸뽁……');
         await you.print_and_wait(
-          '穴が濡れた音を立て、二本の指に何度も拡げられ、閉じる。',
+          '젖은 소리를 내며 두 손가락에 몇 번이고 벌어졌다가 오므라들었다.',
         );
         await you.print_and_wait(
-          '色情じみた汁が、開かれた穴肉からゆっくり流れ出す……',
+          '음란한 액체가 벌어진 안쪽 살에서 천천히 흘러나왔다……',
         );
       }
     }
@@ -3134,22 +3134,22 @@ module.exports = {
     );
   },
 
-  // [번역 대상] tit_job
+  // [번역 완료] tit_job
   async tit_job(tachyon, you, callname, y_call_t, is_you_erect) {
     if (is_you_erect) {
       await you.print_and_wait([
         y_call_t,
-        ' の乳で、痛いくらい硬い肉棒を包む。',
+        '의 가슴으로 아플 만큼 단단해진 남근을 감쌌다.',
       ]);
     }
-    await you.print_and_wait([y_call_t, ' は両手で自分の双乳を支える。']);
-    await you.print_and_wait('乳穴が大きく肉棒の竿を包み、揉みほぐす。');
-    await you.print_and_wait('溢れた先走りが、乳穴の動きを滑らかにする。');
+    await you.print_and_wait([y_call_t, '은(는) 두 손으로 자신의 양쪽 가슴을 받쳤다.']);
+    await you.print_and_wait('가슴 사이가 남근을 크게 감싸며 문질렀다.');
+    await you.print_and_wait('흘러넘친 쿠퍼액이 가슴 사이의 움직임을 부드럽게 해 주었다.');
     era.println();
-    await tachyon.say_and_wait([callname, '……気持ちよいですの？❤️']);
+    await tachyon.say_and_wait([callname, '……기분이 좋은가?❤️']);
     era.println();
-    await you.print_and_wait('答える必要があるだろうか？');
-    await you.print_and_wait('これ以上気持ちいいことなど、あるだろうか？');
+    await you.print_and_wait('대답할 필요가 있을까?');
+    await you.print_and_wait('이보다 더 기분 좋은 일이 있을까?');
   },
 
   // [번역 완료] use_love_eggs_in_anal
