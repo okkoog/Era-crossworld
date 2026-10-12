@@ -5213,7 +5213,7 @@ module.exports = {
 
   // [번역 대상] train_fail
   train_fail: (() => {
-    const title = '立て直し＆再出発';
+    const title = '재정비 & 재출발';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -5236,35 +5236,35 @@ module.exports = {
     ) => {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は場を走る ',
+        '은(는) 경기장에서 훈련 중인 ',
         tachyon.get_colored_name(),
-        ' を見ていた',
+        '을(를) 바라보았다.',
       ]);
       await era.printAndWait([
-        'なぜか、',
+        '어쩐지 ',
         you.get_colored_name(),
-        ' はずっと落ち着かない',
+        '은(는) 줄곧 가슴 한구석이 불안했다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の走りに見た目の問題はない。それでも心配が消えない',
+        '의 주법에는 겉보기에 아무런 문제가 없었다. 그래도 걱정이 가시지 않았다.',
       ]);
       await era.printAndWait([
-        '事故だけは起きないでくれ、と ',
+        '제발 사고만은 나지 않기를 바라며 ',
         you.get_colored_name(),
-        ' は祈った',
+        '은(는) 간절히 기도했다.',
       ]);
       era.println();
-      await era.printAndWait('だが、案の定、こういうときの事故は起きる');
+      await era.printAndWait('그러나 늘 그렇듯 이런 순간에 예기치 못한 사고가 벌어졌다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' の眼前で、',
+        '의 눈앞에서 ',
         tachyon.get_colored_name(),
-        ' の足取りがふらついた',
+        '의 발걸음이 돌연 비틀거렸다.',
       ]);
-      era.print('このままでは転びそうだ————');
-      era.printButton('「タキオン！ 止まれ！」（失敗を受け入れる）', 1);
-      era.printButton('—————！（挽回を試みる）', 2);
+      era.print('금방이라도 고꾸라질 것 같은 찰나————');
+      era.printButton('「타키온! 당장 멈춰!」(실패를 받아들인다)', 1);
+      era.printButton('—————!(만회하려고 시도한다)', 2);
       const ret = await era.input();
       if (ret === 1) {
         if (era.get('love:32') >= 50) {
