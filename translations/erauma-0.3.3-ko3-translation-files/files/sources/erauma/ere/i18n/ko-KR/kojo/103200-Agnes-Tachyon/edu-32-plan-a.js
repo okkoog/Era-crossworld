@@ -3243,7 +3243,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] we_a_95_43
+  // [번역 완료] we_a_95_43
   we_a_95_43: (() => {
     const title = '완전히 타오른 승부욕';
     /**
@@ -3830,59 +3830,59 @@ module.exports = {
           await era.printAndWait([
             '약간 젖은 머리카락과 숨을 고르느라 붉어진 뺨이 ',
             you.get_colored_name(),
-            ' の視覚を刺激する',
+            '의 시선을 끌었다.',
           ]);
           await era.printAndWait([
-            '思わず、',
+            '자기도 모르게 ',
             you.get_colored_name(),
-            ' は手を抑えきれなくなる',
+            '은 손을 뻗고 싶은 충동을 참지 못했다.',
           ]);
           era.println();
           await coffee.say_and_wait([
             callname_25,
-            '……ここで？ ',
+            '……여기서요? ',
             c_call_t,
-            ' の前で……？',
+            '의 앞에서……?',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は、芝に伏してまだ息を乱す ',
+            '은 잔디 위에 엎드린 채 아직 숨을 고르는 ',
             tachyon.get_colored_name(),
-            ' を見て、我に返った',
+            '을 보고 그제야 정신을 차렸다.',
           ]);
           await coffee.say_and_wait([
             callname_25,
-            '、さっきの……よければ、あとで……',
+            ', 방금 그…… 괜찮으시다면 나중에……',
           ]);
           await era.printAndWait([
             coffee.get_colored_name(),
-            ' は曖昧な言葉を残して去った',
+            '은 애매한 말만 남기고 떠났다.',
           ]);
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は ',
+            '은 ',
             you.get_colored_name(),
-            ' を強く睨んだ',
+            '을 매섭게 노려보았다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は視線を逸らし、',
+            '은 시선을 돌린 채 ',
             tachyon.sex,
-            'を直視できない',
+            '를 똑바로 바라보지 못했다.',
           ]);
         }
         era.println();
         await era.printAndWait([
           coffee.get_colored_name(),
-          ' が去ったあとでも、',
+          '이(가) 떠난 뒤에도 ',
           tachyon.get_colored_name(),
-          ' は芝から起き上がらない',
+          '은 잔디에서 일어나지 않았다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、芝に伏す ',
+          '은 잔디 위에 엎드려 있는 ',
           tachyon.get_colored_name(),
-          ' を心配そうに見た',
+          '을 걱정스럽게 바라보았다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
@@ -3890,98 +3890,98 @@ module.exports = {
           callname,
           '……',
           call_25,
-          ' は本当に……想像を、超えて伸びていましたわ……',
+          '은 정말…… 상상 이상으로 성장했더군……',
         ]);
         await tachyon.say_and_wait([
-          '私はまだ……元の態度のまま',
+          '나는 아직도…… 예전과 똑같은 태도로 ',
           tachyon.sex,
-          'に接していた……',
+          '를 대하고 있었어……',
         ]);
       }
-      await tachyon.say_and_wait('……まったく……恥ずかしいですわ……');
+      await tachyon.say_and_wait('……이런…… 부끄럽군……');
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'が息を切らして口にした言葉は、今日まで ',
+        '이(가) 숨을 몰아쉬며 내뱉은 말은 오늘까지 ',
         tachyon.get_colored_name(),
-        ' が言うとは思えなかったものだ',
+        '이(가) 하리라고는 생각하지도 못했던 말이었다.',
       ]);
       if (invincible) {
         await era.printAndWait([
-          '敗北を知らなかった ',
+          '패배를 모르던 ',
           tachyon.get_colored_name(),
-          ' が、その瞬間、敗北の可能性を本当に味わった',
+          '이(가) 그 순간 처음으로 패배의 가능성을 뼈저리게 느꼈다.',
         ]);
       } else {
         await era.printAndWait(
-          '以前負けたレースでさえ、これほどの圧迫はなかった',
+          '예전에 패했던 레이스에서도 이 정도의 압박은 없었다.',
         );
       }
       era.println();
       if (ret === 1) {
         await tachyon.say_and_wait([
-          'もし……もしさっき、本当に ',
+          '만약…… 만약 아까 정말 ',
           call_25,
-          ' に負けていたら',
+          '에게 졌더라면……',
         ]);
         await tachyon.say_and_wait(
-          'その可能性を思うだけで、全身が震えますわ……私は拒んでいる。その可能性を拒んでいる',
+          '그 가능성을 생각하는 것만으로 온몸이 떨려…… 나는 거부하고 있어. 그 가능성을 거부하고 있다고.',
         );
       } else {
         await tachyon.say_and_wait([
-          'もし……もしさっき、',
+          '만약…… 만약 아까 ',
           call_25,
-          ' に勝っていたら',
+          '를 이겼더라면……',
         ]);
         await tachyon.say_and_wait(
-          'その可能性を思うだけで、全身が震えますわ……私は渇望している。その可能性を渇望している',
+          '그 가능성을 생각하는 것만으로 온몸이 떨려…… 나는 갈망하고 있어. 그 가능성을 갈망하고 있다고.',
         );
       }
       await tachyon.say_and_wait([
         call_25,
-        ' には負けたくない……',
+        '에게는 지고 싶지 않아……',
         call_25,
-        ' に負けたのが悔しい',
+        '에게 졌다는 게 분해.',
       ]);
       await tachyon.say_and_wait([
-        'なのに……胸はまだ燃えている。また ',
+        '그런데도…… 가슴은 여전히 타오르고 있어. 다시 ',
         call_25,
-        ' と勝負したい。正面から、徹底して',
+        '와 겨뤄 보고 싶어. 정면에서, 철저하게.',
         tachyon.sex,
-        'を打ち負かしたい',
+        '를 꺾어 버리고 싶어.',
       ]);
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'は顔を上げ、',
+        '는 고개를 들어 ',
         you.get_colored_name(),
-        ' の目を見た',
+        '의 눈을 바라보았다.',
       ]);
       await era.printAndWait([
-        '以前の、狂おしく惹きつける光子のような眼差しより、いまの',
+        '예전에 광자처럼 강렬하게 마음을 사로잡던 시선보다 지금의 ',
         tachyon.sex,
-        'の両目は感情の揺らぎで満ちている',
+        '의 두 눈에는 감정의 동요가 가득했다.',
       ]);
       await era.printAndWait([
-        '燃える炬火のようだ。だがその旺盛な火は、揺らぎのない光子より眩しく、',
+        '타오르는 횃불 같았다. 하지만 그 왕성한 불꽃은 흔들림 없는 광자보다 더 눈부시게 ',
         you.get_colored_name(),
-        ' の視線をより強く捉える',
+        '의 시선을 사로잡았다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('これが……ライバルの感触、ですの？');
+      await tachyon.say_and_wait('이게…… 라이벌이라는 감각인가?');
       await tachyon.say_and_wait([
-        '負けたことが悔しいのではない……『',
+        '패배 자체가 분한 게 아니야…… 『',
         coffee.get_colored_name(),
-        '』に負けたことが悔しい',
+        '』에게 졌다는 사실이 분한 거지.',
       ]);
-      await tachyon.say_and_wait('そうとしか説明できませんわ。この熱さは……');
+      await tachyon.say_and_wait('이 뜨거운 감정은…… 달리 설명할 길이 없군.');
       await tachyon.say_and_wait([
-        '……今すぐ戻りましょう！',
+        '……지금 당장 돌아가세!',
         callname,
-        '！ これですわ！ これです！ 欠けていた最後のものですわ！',
+        '! 바로 이거야! 이거라고! 마지막으로 부족했던 요소가 이것이었어!',
       ]);
       era.println();
-      await era.printAndWait(['年の瀬が近い。次は、有馬記念だ']);
+      await era.printAndWait(['한 해가 저물어 간다. 다음은 아리마 기념이다.']);
       return [];
     };
     f.title = title;
