@@ -4789,38 +4789,38 @@ module.exports = {
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は早口で言い終えると実験室へ戻ろうとしたが、力の抜けた膝が折れ、',
+          '은(는) 말을 마치고 급히 실험실로 돌아가려 했지만, 다리에 힘이 풀리며 ',
           you.get_colored_name(),
-          ' の胸へ倒れ込んだ',
+          '의 품 안으로 쓰러졌다.',
         ]);
         await era.printAndWait([
-          '今の二人は、まともなトレーニング中のトレーナーと',
+          '지금의 두 사람은 평범하게 훈련 중인 트레이너와 ',
           tachyon.uma_sex_title,
-          'には見えなかった。恋人の胸に甘える彼女と、優しく',
+          '로 보이지 않았다. 연인의 품에 안겨 어리광을 부리는 그녀와 다정하게 ',
           tachyon.sex,
-          'を抱く伴侶——そう見えたはずだ',
+          '을(를) 안아 주는 연인처럼 보였을 것이다.',
         ]);
         await era.printAndWait([
-          '人に恐れられる狂気の科学者は、今は小鳥のように ',
+          '남들이 두려워하는 광기 어린 과학자는 지금은 작은 새처럼 ',
           you.get_colored_name(),
-          ' に寄りかかっている',
+          '에게 기대어 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、思わず誇りと得意を覚えた',
+          '은(는) 자신도 모르게 자부심과 뿌듯함을 느꼈다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('……実験室へ連れていって。今すぐ');
+        await tachyon.say_and_wait('……실험실로 데려다주게. 지금 당장.');
         era.println();
         await era.printAndWait([
-          'だが直後、科学者の睨みが ',
+          '하지만 곧바로 이어진 과학자의 날카로운 눈빛은 ',
           you.get_colored_name(),
-          ' を従順なモルモットへ戻した',
+          '을(를) 다시 고분고분한 모르모트 군으로 되돌렸다.',
         ]);
         await era.printAndWait([
-          'こうして二人は、周囲の',
+          '그렇게 두 사람은 주변 ',
           tachyon.uma_sex_title,
-          'たちから半分は感心、半分は羨望の視線を浴びながら、実験室へ戻っていった',
+          '들의 감탄과 부러움 섞인 시선을 받으며 천천히 실험실로 돌아갔다.',
         ]);
       }
       return ret;
