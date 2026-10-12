@@ -387,235 +387,235 @@ module.exports = {
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait([
-      '栗東寮のある寝室で、一人の',
+      '릿토 생활관의 어느 침실에서 한 명의 ',
       tachyon.uma_sex_title,
-      'が枕で口を塞ぎ、低い声で曖昧な音を漏らしている',
+      '가 베개에 얼굴을 묻고 낮은 목소리로 무언가를 웅얼거리고 있었다.',
     ]);
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait(
-      '普段なら、この部屋でこうした場面が起きるのも珍しくはない。',
+      '평소 같으면 이 방에서 이런 광경이 벌어지는 것도 딱히 특별할 일은 아니었다.',
     );
     await tachyon.print_and_wait([
-      '大概は、某ピンク髪の',
+      '대개 어느 분홍색 머리의 ',
       tachyon.uma_sex_title,
-      'が枕を抱えて、',
+      '가 베개를 껴안고 ',
       tachyon.uma_sex_title,
-      'への想いを低く語る',
+      '를 향한 사랑을 조용히 속삭이곤 했으니까.',
     ]);
     era.println();
     await tachyon.say_and_wait(callname);
     era.println();
-    await tachyon.print_and_wait('だが今日の主役は、少し違う');
+    await tachyon.print_and_wait('하지만 오늘의 주인공은 평소와 조금 달랐다.');
     era.println();
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait([
-      'ピンク髪の',
+      '분홍색 머리의 ',
       tachyon.uma_sex_title,
-      'と同室の栗毛の',
+      '와 같은 방을 쓰는 밤색 머리의 ',
       tachyon.uma_sex_title,
-      'が、かつてのルームメイトがしていた、当時は自分をひどく困惑させた行いを、今している',
+      '가 과거 룸메이트에게서 보고는 당황했던 행동을 지금 그대로 따라 하고 있었다.',
     ]);
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait([
-      '当時の',
+      '당시의 ',
       tachyon.sex,
-      'は、そんな行為は余計だと思っていた',
+      '는 그런 행위가 그저 쓸데없는 짓이라고만 생각했다.',
     ]);
-    await tachyon.print_and_wait('本当に言いたいなら、なぜ恥じる？');
-    await tachyon.print_and_wait('恥じるなら、口にしなければいいではないか？');
+    await tachyon.print_and_wait('정말로 하고 싶은 말이라면 어째서 부끄러워하는 거지?');
+    await tachyon.print_and_wait('부끄럽다면 차라리 입 밖으로 내뱉지 않으면 그만 아닌가?');
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait([
-      '今になって',
+      '지금에 와서야 ',
       tachyon.sex,
-      'は、その行為の理由を理解した',
+      '는 비로소 그 행동의 이유를 깨달았다.',
     ]);
-    await tachyon.print_and_wait('恥じるのは、言葉に乗った愛情のため');
+    await tachyon.print_and_wait('부끄러움을 느끼는 건 말속에 담긴 애정 때문이며,');
     await tachyon.print_and_wait(
-      '口にしなければならないのは、言わなければ内側の火のやり場がないから',
+      '굳이 말을 내뱉는 건 그렇게 하지 않으면 마음속의 뜨거운 감정이 해소되지 않기 때문이다.',
     );
     era.println();
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait([
-      'だから今の',
+      '그리하여 지금의 ',
       tachyon.sex,
-      'も、枕に向かい、ルームメイトが遠征でCMに出て不在の空いた部屋で、一人で胸の内を漏らすしかない',
+      '도 베개를 향해 진심을 털어놓을 수밖에 없었다. 룸메이트가 원정 촬영으로 자리를 비워 방 안에는 아무도 없었다.',
     ]);
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait([
-      '……そうは言っても、この感情の根源が何か、',
+      '……그렇다 해도 이런 감정이 어디서 비롯되는지 ',
       tachyon.sex,
-      'は今もはっきり分かっていないのだが',
+      '는 여전히 확실히 알지 못했다.',
     ]);
-    await tachyon.print_and_wait('ただ、自分に唯々諾々と従う——');
+    await tachyon.print_and_wait('그저 자신에게 순순히 따르는——');
     await tachyon.print_and_wait([
-      '同時に、今の苛立ちの元凶でもある——',
+      '동시에 지금 이 초조함의 원인이기도 한——',
       you.sex,
-      'の名前を、呼び続けるしかない',
+      '의 이름을 계속 부를 뿐이었다.',
     ]);
     era.println();
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait(
-      '初対面では、純粋に実験体への興味で付けた呼び方',
+      '처음 만났을 때는 순전히 실험체에 대한 흥미로 붙였던 호칭.',
     );
     await tachyon.print_and_wait(
-      '始まりは、興味の中に評価と冷淡が混じった呼び方',
+      '처음에는 분석과 냉소만이 담겨 있었던 호칭.',
     );
     era.println();
     await tachyon.say_and_wait(callname);
     era.println();
     await tachyon.print_and_wait(
-      '今は複雑な感情を帯び、口にするたび胸が震える呼び方になった',
+      '그것이 지금은 복잡한 감정이 섞여 입에 올릴 때마다 가슴을 떨리게 하는 호칭으로 변해 있었다.',
     );
     era.println();
     await tachyon.say_and_wait([callname, '……']);
     era.println();
-    await tachyon.print_and_wait('この感情は、何なのでしょう');
-    await tachyon.print_and_wait('甘く、苦く、温かく、それでいて恐ろしい');
-    await tachyon.print_and_wait('矛盾した性質が、一つの感情に集まっている');
-    await tachyon.print_and_wait('奇妙。熱い。怖……い？');
+    await tachyon.print_and_wait('이 감정은 대체 무엇이란 말인가.');
+    await tachyon.print_and_wait('달콤하면서도 쓰고, 따뜻하면서도 두려웠다.');
+    await tachyon.print_and_wait('서로 모순되는 속성들이 하나의 감정 안에 모여 있었다.');
+    await tachyon.print_and_wait('이상하다. 뜨겁다. 그리고…… 무섭다?');
     era.println();
     await tachyon.say_and_wait([callname, '……']);
     era.println();
-    await tachyon.print_and_wait('未知への態度は、これまで期待と喜悦だった');
+    await tachyon.print_and_wait('미지의 영역을 대하는 자신의 태도는 언제나 기대와 희열뿐이었다.');
     await tachyon.print_and_wait(
-      'どうしてこの未知の感情だけが、恐れを生むのでしょう',
+      '그런데 어째서 이 미지의 감정만큼은 두려움을 불러일으키는 걸까?',
     );
     await tachyon.print_and_wait([
-      '何を恐れるの。この感情？ それとも ',
+      '무엇이 무서운 거지? 이 감정이? 아니면 ',
       callname,
       '？',
     ]);
-    await tachyon.print_and_wait(['私が恐れる……', callname, ' を？']);
+    await tachyon.print_and_wait(['내가 두려워한다니…… ', callname, ' を？']);
     era.println();
     await tachyon.say_and_wait([callname, '……']);
     era.println();
-    await tachyon.print_and_wait('より震える内側が、答えを明かす');
-    await tachyon.print_and_wait(['私は ', callname, ' を恐れている？']);
-    await tachyon.print_and_wait([you.sex, 'の、何を？']);
-    await tachyon.print_and_wait(['所詮はただの ', callname, ' ']);
-    await tachyon.print_and_wait('だが……純粋な恐れでもない');
-    await tachyon.print_and_wait('この複雑な感情は、また何なのでしょう');
+    await tachyon.print_and_wait('더욱 크게 요동치는 내면이 해답을 내놓았다.');
+    await tachyon.print_and_wait(['내가 ', callname, ' を恐れている？']);
+    await tachyon.print_and_wait([you.sex, '의 무엇을?']);
+    await tachyon.print_and_wait(['고작 ', callname, ' ']);
+    await tachyon.print_and_wait('하지만…… 순수한 공포와는 다른 감정이었다.');
+    await tachyon.print_and_wait('이 복잡한 감정의 정체는 또 무엇일까?');
     await tachyon.print_and_wait('緊張、焦燥、不安、興奮、喜悦、恐怖、混乱');
     await tachyon.print_and_wait(
-      'どの感情にも触れているようで、どの感情にも属さない',
+      '어떤 감정에도 닿아 있는 듯하면서 어느 하나에도 속하지 않는 것.',
     );
-    await tachyon.print_and_wait(['所詮はただの ', callname, ' ']);
+    await tachyon.print_and_wait(['고작 ', callname, ' ']);
     era.println();
     await tachyon.say_and_wait(['……', callname]);
     era.println();
-    await tachyon.print_and_wait('……いいえ、推測するまでもないでしょう');
-    await tachyon.print_and_wait([you.sex, 'の名前を呼ぶたび、内側を走る電流']);
-    await tachyon.print_and_wait([you.sex, 'の声を聞くたび、胸が急く鼓動']);
+    await tachyon.print_and_wait('……아니, 사실 굳이 추측할 필요도 없지 않은가?');
+    await tachyon.print_and_wait([you.sex, '의 이름을 부를 때마다 내면을 훑고 지나가는 전류.']);
+    await tachyon.print_and_wait([you.sex, '의 목소리를 들을 때마다 가슴속에서 치밀어 오르는 고동.']);
     await tachyon.print_and_wait([
       you.sex,
-      'の笑顔を見るたび、勝手に迷走する頭',
+      '의 미소를 볼 때마다 정신없이 뒤엉키는 사고.',
     ]);
     era.println();
     await tachyon.say_and_wait('……………');
     await tachyon.say_and_wait([callname, '♡']);
     era.println();
-    await tachyon.print_and_wait('ああ、やはり');
+    await tachyon.print_and_wait('아아, 역시나.');
     await tachyon.say_and_wait([callname, '♡']);
     era.println();
-    await tachyon.print_and_wait('いいえ、想像以上ですわ');
+    await tachyon.print_and_wait('아니, 상상 그 이상이었다.');
     era.println();
     await tachyon.say_and_wait([callname, '♡']);
     await tachyon.say_and_wait([callname, '♡']);
     await tachyon.say_and_wait([callname, '♡']);
     era.println();
-    await tachyon.print_and_wait('思わなかった');
-    await tachyon.print_and_wait('「愛情」を乗せて呼ぶだけで');
-    await tachyon.print_and_wait('気持ちが、これほど変わるなんて');
+    await tachyon.print_and_wait('설마 했던 일이다.');
+    await tachyon.print_and_wait('그저 「애정」을 담아 이름을 불렀을 뿐인데,');
+    await tachyon.print_and_wait('심경이 이토록 극적으로 변하다니.');
     era.println();
-    await tachyon.print_and_wait('焦りは、享受へ変わった');
-    await tachyon.print_and_wait('混乱は、安心へ変わった');
-    await tachyon.print_and_wait('焦燥は、喜悦へ変わった');
-    await tachyon.print_and_wait('恐れは……');
+    await tachyon.print_and_wait('초조함은 기쁨으로 변했고,');
+    await tachyon.print_and_wait('혼란은 안도감으로 변했다.');
+    await tachyon.print_and_wait('불안감은 환희로 변했다.');
+    await tachyon.print_and_wait('하지만 공포는……');
     era.println();
     await tachyon.say_and_wait('…………');
     era.println();
-    await tachyon.print_and_wait('どうして、どうして恐れは残っているの');
-    await tachyon.print_and_wait('認めたはずでしょう');
+    await tachyon.print_and_wait('어째서, 어째서 공포만은 남아 있는 거지?');
+    await tachyon.print_and_wait('분명 스스로 인정하지 않았나.');
     await tachyon.print_and_wait([
-      '私はもう ',
+      '이미 내가 ',
       callname,
-      ' を愛しているはずでしょう',
+      '을 사랑하고 있다는 걸 말이다.',
     ]);
-    await tachyon.print_and_wait('どうしてまだ怖い');
-    await tachyon.print_and_wait('どうしてまだ恐い');
+    await tachyon.print_and_wait('그런데 왜 여전히 무서운 거지?');
+    await tachyon.print_and_wait('왜 여전히 두려운 거지?');
     era.println();
-    await tachyon.print_and_wait('ああ……');
-    await tachyon.print_and_wait('答えは明らかでしょう');
-    await tachyon.print_and_wait('この喜悦が愛から生まれるなら');
-    await tachyon.print_and_wait('恐れる理由は');
-    await tachyon.print_and_wait('もちろん、「愛されない」ことへの恐れですわ');
-    era.println();
-    await tachyon.print_and_wait([
-      you.sex,
-      'が自分を好きでなかったら、どうする',
-    ]);
-    await tachyon.print_and_wait([you.sex, 'が自分を嫌ったら、どうする']);
-    await tachyon.print_and_wait([
-      you.sex,
-      'が他の誰かを好きになったら、どうする',
-    ]);
-    await tachyon.print_and_wait([
-      'もし……',
-      you.sex,
-      'の好きなのが「自分」ではなかったら、どうする',
-    ]);
+    await tachyon.print_and_wait('아아……');
+    await tachyon.print_and_wait('답은 너무나도 명백하지 않은가.');
+    await tachyon.print_and_wait('이 환희가 사랑으로 인해 태어난 것이라면,');
+    await tachyon.print_and_wait('두려움을 느끼는 원인 또한');
+    await tachyon.print_and_wait('당연히 「사랑받지 못함」에 대한 공포일 테니까.');
     era.println();
     await tachyon.print_and_wait([
-      '走り、可能性……',
       you.sex,
-      'が見ているのは ',
+      '가 나를 좋아하지 않는다면 어쩌지?',
+    ]);
+    await tachyon.print_and_wait([you.sex, '가 나를 싫어하게 된다면 어쩌지?']);
+    await tachyon.print_and_wait([
+      you.sex,
+      '가 다른 누군가를 사랑하게 된다면 어쩌지?',
+    ]);
+    await tachyon.print_and_wait([
+      '만약…… ',
+      you.sex,
+      '가 사랑하는 게 「나 자신」이 아니라면 어쩌지?',
+    ]);
+    era.println();
+    await tachyon.print_and_wait([
+      '주법, 가능성…… ',
+      you.sex,
+      '가 바라보고 있는 건 과연 ',
       tachyon.get_colored_name(),
-      ' という',
+      '이라는 ',
       tachyon.uma_sex_title,
-      'か。それとも「それを持つ某',
+      '일까, 아니면 「그것들을 가진 어떤 ',
       tachyon.uma_sex_title,
-      'A」か？',
+      'A」일까?',
     ]);
     await tachyon.print_and_wait([
-      '逆に言えば、それら以外に、',
+      '반대로 말하자면 그런 것들 말고 ',
       tachyon.get_colored_name(),
-      ' という',
+      '이라는 ',
       tachyon.uma_sex_title,
-      'は、',
+      '가 ',
       you.sex,
-      'に何の魅力があるのでしょう？',
+      '에게 대체 어떤 매력이 있다는 걸까?',
     ]);
     era.println();
-    await tachyon.print_and_wait([you.sex, 'の狂った眼を思い出す']);
+    await tachyon.print_and_wait([you.sex, '의 그 광기 어린 눈빛이 떠올랐다.']);
     await tachyon.print_and_wait([
       you.sex,
-      'が魅せられたのは ',
+      '가 매료된 것은 ',
       tachyon.get_colored_name(),
-      ' ではなく、',
+      '이 아니라, ',
       tachyon.get_colored_name(),
-      ' の走り',
+      '의 주법이었다.',
     ]);
     await tachyon.print_and_wait([
       you.sex,
-      'が助けたいのは ',
+      '가 도와주고 싶은 것은 ',
       tachyon.get_colored_name(),
-      ' ではなく、',
+      '이 아니라, ',
       tachyon.get_colored_name(),
-      ' の夢',
+      '의 꿈이었다.',
     ]);
     era.println();
     await tachyon.say_and_wait([callname, '…………']);
     era.println();
     await tachyon.print_and_wait([
       tachyon.get_colored_name(),
-      '……付属物にすぎない',
+      '……그저 부속품에 불과하다.',
     ]);
     await tachyon.print_and_wait([
       '自分が死にかけたら、',
