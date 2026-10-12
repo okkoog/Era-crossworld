@@ -764,7 +764,7 @@ module.exports = {
     return ret;
   },
 
-  // [번역 대상] 74
+  // [번역 완료] 74
   74: (() => {
     const title = '마녀의 고백';
     /**
@@ -887,207 +887,207 @@ module.exports = {
         '처음에 공주는 모르모트 군에게 아무런 감정도 없었네. 그저 재미있는 실험 대상이 생겼다고 생각했을 뿐이지.',
       );
       await tachyon.say_and_wait(
-        '彼でさまざまな実験をしました。増殖、発光、分身、性転換………ふふ',
+        '그를 대상으로 각종 실험을 했지. 증식, 발광, 분신, 성별 전환…… 후후.',
       );
       await tachyon.say_and_wait(
-        'だが、無邪気な姫は、変わったのはモルモット君だけだと思っていました。',
+        '하지만 순진한 공주는 변한 건 모르모트 군뿐이라고 생각했네.',
       );
       await tachyon.say_and_wait(
-        'いちばん大事な基本定理を忘れていたのです————反応は、相互である、と。',
+        '가장 중요한 기본 원리를 잊고 있었던 걸세—— 반응은 상호작용이라는 사실을.',
       );
-      await tachyon.say_and_wait('化学でも、人間関係でも、同じですわ');
+      await tachyon.say_and_wait('화학에서나 인간관계에서나 똑같지.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はため息をつき、眼には限りない名残と懐かしさが乗っている。まだ夢に溺れているかのようだ',
+        '는 한숨을 내쉬었다. 눈에는 끝없는 미련과 그리움이 서려 있었다. 여전히 꿈속에 잠겨 있는 듯했다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'モルモット君は姫を連れて、実験の名目でさまざまなものを見せました。',
+        '모르모트 군은 실험을 핑계로 공주에게 세상의 여러 모습을 보여 주었네.',
       );
       await tachyon.say_and_wait(
-        'イッカクと一緒に狩りをし、弱肉強食を知り、シロナガスクジラが死んで海底へ落ちるのを見て、生老病死の意味を味わい、',
+        '일각고래와 함께 사냥하며 약육강식을 배우고, 흰긴수염고래가 죽어 해저로 가라앉는 모습을 보며 생로병사의 의미를 깨달았지.',
       );
       await tachyon.say_and_wait(
-        'イルカの求愛と交尾を見て、二人とも顔を赤らめました',
+        '돌고래들의 구애와 짝짓기를 보고는 두 사람 모두 얼굴을 붉혔다네.',
       );
       await tachyon.say_and_wait(
-        '次第に姫は理解しました。実験以外の世界が、これほど美しいということを',
+        '차츰 공주는 실험 바깥의 세상이 이토록 아름답다는 걸 깨달았지.',
       );
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'は静かに語り、美しく、あるいは壮大な絵を一枚また一枚と描く。',
+        '는 조용히 이야기하며 아름답고 때로는 장대한 풍경을 하나씩 그려 나갔다.',
       ]);
       await era.printAndWait(
-        '口調はなお柔らかだが、細い糸のような名残が乗っている———まるで、美しい夢が覚めようとしているように',
+        '말투는 여전히 부드러웠지만 가느다란 실 같은 아쉬움이 묻어났다—— 마치 아름다운 꿈에서 깨어나려는 사람처럼.',
       );
       era.println();
-      await tachyon.say_and_wait('そして、ついに、ある日');
+      await tachyon.say_and_wait('그러다 마침내 어느 날.');
       await tachyon.say_and_wait(
-        '姫は気づきました。もう実験に集中できない、と',
+        '공주는 자신이 더는 실험에 집중할 수 없다는 걸 깨달았다네.',
       );
       await tachyon.say_and_wait(
-        '心を落ち着けて研究しようとするたび、研究の成果より、',
+        '마음을 가라앉히고 연구하려 할 때마다 연구 성과보다',
       );
       await tachyon.say_and_wait(
-        '新しい研究を聞いたときのモルモット君の顔のほうが、楽しみになっていました。',
+        '새 연구 이야기를 들은 모르모트 군의 표정을 더 기대하게 되었지.',
       );
       await tachyon.say_and_wait(
-        '海面でデータを集めようとするたび、海面の人間たちより、',
+        '해수면에서 자료를 수집하려 할 때마다 그곳의 인간들보다',
       );
       await tachyon.say_and_wait(
-        '海底で待っているモルモット君に会いたくなっていました。',
+        '해저에서 기다리는 모르모트 군이 보고 싶어졌네.',
       );
-      await tachyon.say_and_wait('新しい薬を作ろうとするたび、薬の効果より、');
+      await tachyon.say_and_wait('새 약을 만들 때마다 약효보다');
       await tachyon.say_and_wait(
-        'モルモット君が薬を飲んだ反応のほうが、楽しみになっていました',
+        '약을 마신 모르모트 군이 어떤 반응을 보일지가 더 기대되었지.',
       );
       era.println();
       await era.printAndWait([
-        'ようやく、',
+        '그제야 ',
         tachyon.get_colored_name(),
-        ' の表情がはっきりと戻る。美しい夢から、やっと覚めたかのようだ',
+        '의 표정이 또렷해졌다. 마치 아름다운 꿈에서 드디어 깨어난 듯했다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '彼女は恐れ始めました。いつか、モルモット君と過ごす時間に完全に溺れてしまうのではないか、と。',
+        '그녀는 두려워지기 시작했네. 언젠가는 모르모트 군과 함께하는 시간에 완전히 빠져 버리지 않을까 하고.',
       );
       await tachyon.say_and_wait(
-        'いつか……両脚を得るという目標まで、空疎な一言になってしまうのではないか、と',
+        '언젠가…… 두 다리를 얻겠다는 목표마저 텅 빈 말로 변해 버리지 않을까 하고.',
       );
       await tachyon.say_and_wait(
-        'そうなった彼女は、ただの科学者にはなれるでしょう。だが、もう研究者ではいられません……',
+        '그렇게 된 공주는 평범한 과학자는 될 수 있을지 모르지. 하지만 더는 진정한 연구자로 남을 수 없을 걸세……',
       );
       era.println();
-      await tachyon.say_and_wait('そのとき、魔女が現れました');
+      await tachyon.say_and_wait('그때 마녀가 나타났네.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は椅子から立ち上がり、',
+        '은(는) 의자에서 일어나 ',
         you.get_colored_name(),
-        ' へ歩み寄る',
+        '에게 다가갔다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の手が、',
+        '의 손이 ',
         you.get_colored_name(),
-        ' の手を覆う……だが握りしめはしない。',
+        '의 손을 덮었다…… 하지만 꽉 쥐지는 않았다.',
         tachyon.sex,
-        'が撫でているのは、',
+        '가 쓰다듬고 있는 건 ',
         you.get_colored_name(),
-        ' の手の中の試験管だ',
+        '의 손에 들린 시험관이었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'もともと、最初から最後まで、魔女は姫の心の中にいました。魔女は、姫そのもの！',
+        '처음부터 끝까지 마녀는 공주의 마음속에 있었네. 마녀는 바로 공주 자신이었던 걸세!',
       );
       await tachyon.say_and_wait(
-        '内側の理性面である魔女は姫に告げました。今のすべての源は、あのモルモット。彼がいなくなれば、すべては元に戻る、と',
+        '공주의 이성적인 면인 마녀가 속삭였지. 지금 이 모든 변화의 근원은 그 모르모트다. 그가 사라지면 모든 게 원래대로 돌아갈 거라고.',
       );
       await tachyon.say_and_wait(
-        'もしそのモルモットが去る……いいえ、去るだけでは足りません。余韻を残してはいけません……',
+        '만약 모르모트가 떠난다면…… 아니, 떠나는 것만으로는 부족하네. 여운조차 남겨서는 안 되지……',
       );
       await tachyon.say_and_wait(
-        'あのモルモットを『消す』こと。そうすれば姫は元に戻り、実験に集中する姫へ戻れる',
+        '모르모트를 『없애는』 걸세. 그러면 공주는 원래대로 돌아가 실험에 전념하던 공주가 될 수 있네.',
       );
       era.println();
       await tachyon.say_and_wait(
-        '…………ええ、『元に戻る』だけ。誰も保証できません。',
+        '…………그래, 『원래대로 돌아가는 것』뿐이지. 아무도 보장하지 못하네.',
       );
       await tachyon.say_and_wait(
-        '元に戻った姫が、実験で両脚を得られるかどうか。分かるのは『その可能性がある』ということだけ',
+        '원래대로 돌아간 공주가 연구로 두 다리를 얻을 수 있을지는 말이야. 알 수 있는 건 『그럴 가능성이 있다』는 것뿐.',
       );
       await tachyon.say_and_wait(
-        '逆に、モルモット君と一緒にい続けたら……その可能性は、',
+        '반대로 모르모트 군과 계속 함께한다면…… 그 가능성은',
       );
       await tachyon.say_and_wait(
-        '二度と取り戻せません。魔女はそう言い終え、ある薬を、姫の手を通して作らせました',
+        '영영 되찾을 수 없다고 마녀가 말했지. 그리고 공주의 손을 움직여 약을 만들게 했네.',
       );
       await tachyon.say_and_wait(
-        '彼女は姫に告げました。いつものように、モルモットにこの薬を飲ませれば、',
+        '마녀는 공주에게 말했네. 늘 그랬듯 모르모트에게 이 약을 먹이기만 하면',
       );
-      await tachyon.say_and_wait('すべて終わり、元の生活へ戻れる、と');
+      await tachyon.say_and_wait('모든 것이 끝나고 예전의 삶으로 돌아갈 수 있다고.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はそこまで言い、',
+        '는 거기까지 이야기하고 ',
         you.get_colored_name(),
-        ' の手から再び薬を引き抜く',
+        '의 손에서 다시 약을 가져갔다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('だが……');
+      await tachyon.say_and_wait('하지만……');
       era.println();
-      await era.printAndWait('薬を握る手が、不意に少し震える');
+      await era.printAndWait('약을 쥔 손이 문득 조금 떨렸다.');
       era.println();
       await tachyon.say_and_wait(
-        '臆病な姫は、すべてをモルモット君に打ち明けました',
+        '겁 많은 공주는 모르모트 군에게 모든 사실을 털어놓았네.',
       );
       await tachyon.say_and_wait(
-        '……愛情からでも、憐れみからでも、忍びなさからでもありません',
+        '……애정 때문도, 연민 때문도, 차마 못할 짓이라는 생각 때문도 아닐세.',
       );
-      await tachyon.say_and_wait('臆病、気弱、意気地なし');
+      await tachyon.say_and_wait('겁쟁이, 소심하고 배짱 없는 사람이었던 게지.');
       await tachyon.say_and_wait(
-        '姫を善良だなどと思わないでください。所詮、魔女は彼女の内側の一面。本質は、あの冷酷で無情な魔女ですわ',
+        '공주를 선량한 사람이라고 생각하지 말게. 결국 마녀는 공주의 내면일 뿐. 그녀의 본성은 바로 그 냉혹하고 무정한 마녀이니까.',
       );
       await tachyon.say_and_wait(
-        'そう口にした姫の目的は…………ただ、責任を取りたくないだけ',
+        '공주가 그런 말을 한 목적은………… 그저 책임지고 싶지 않았기 때문일세.',
       );
       era.println();
       await era.printAndWait([
-        'それから、',
+        '그리고 ',
         tachyon.get_colored_name(),
-        ' は再び手の薬を掲げる',
+        '는 다시 손에 든 약을 치켜들었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('愛する者を殺す罪を、負いたくない');
-      await tachyon.say_and_wait('恋い慕う者を手にかける責任を、負いたくない');
+      await tachyon.say_and_wait('사랑하는 사람을 죽였다는 죄를 짊어지고 싶지 않았던 거지.');
+      await tachyon.say_and_wait('연모하는 사람을 제 손으로 해쳤다는 책임도 지고 싶지 않았던 걸세.');
       await tachyon.say_and_wait(
-        '消そうとしているモルモットに、姫のために自己犠牲してほしいという、身勝手',
+        '없애려는 모르모트에게 공주를 위해 자신을 희생해 달라고 요구하는 이기심이지.',
       );
       era.println();
-      await era.printAndWait('薬が、再び差し出される');
+      await era.printAndWait('약이 다시 내밀어졌다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' には、俯く ',
+        '은(는) 고개를 숙인 ',
         tachyon.get_colored_name(),
-        ' の今の顔が、どんな表情か見えない',
+        '의 표정이 지금 어떤지 알 수 없었다.',
       ]);
-      await era.printAndWait('泣いているのか？ 愛する者の死のために？');
+      await era.printAndWait('울고 있는 걸까? 사랑하는 사람의 죽음이 슬퍼서?');
       await era.printAndWait(
-        '嘲笑しているのか？ 自分を縛る鎖が外れようとしているから？',
+        '아니면 자신을 옭아매던 사슬이 끊어질 생각에 비웃고 있는 걸까?',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' は黙って、相手が言い終えるのを待つ',
+        '는 아무 말 없이 상대가 이야기를 마치기를 기다렸다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'だから……',
+        '그러니……',
         callname,
-        '、この身勝手な研究者のために、選んでくださいまし',
+        ', 이 이기적인 연구자를 위해 선택해 주게.',
       ]);
       era.println();
       await era.printAndWait([
-        'このとき',
+        '그때 ',
         tachyon.sex,
-        'が言ったのは、たしかに、ひどく身勝手な言葉だ',
+        '가 내뱉은 말은 분명 지독하게 이기적인 말이었다.',
       ]);
-      await era.printAndWait('相手に、自分のために犠牲になってほしい');
-      await era.printAndWait('しかも「可能性」のためで、絶対ですらない');
+      await era.printAndWait('상대에게 자신을 위해 희생해 달라고 바라는 것이니까.');
+      await era.printAndWait('그것도 확실한 결과가 아니라 단지 『가능성』을 위해서.');
       await era.printAndWait(
-        '言い換えれば、「私のために死んでくれ。だが死んでも成功するかは分からない」——本当に、無責任な言葉だ',
+        '다시 말해 『나를 위해 죽어 줘. 하지만 죽어도 성공할지는 몰라』라는 뜻이었다. 참으로 무책임한 말이다.',
       );
       era.println();
-      era.print(['だから、', you.get_colored_name(), ' は選ぶ…………']);
-      era.printButton('飲まない（関係を進める）', 1);
-      era.printButton('飲む（まだ進めない）', 2);
-      era.printButton('タキオンに薬を飲ませる【！】', 3);
+      era.print(['그러니 ', you.get_colored_name(), '은(는) 선택한다…………']);
+      era.printButton('마시지 않는다 (관계 진전)', 1);
+      era.printButton('마신다 (관계 보류)', 2);
+      era.printButton('타키온에게 약을 먹인다 【!】', 3);
       era.print(
         [
-          '【警告：この選択肢を選ぶと、',
+          '【경고: 이 선택지를 고르면 ',
           tachyon.get_colored_name(),
-          ' との関係は取り戻せません！トレセン学園は、担当を捨てる行為を許しません！】',
+          '와의 관계는 되돌릴 수 없습니다! 트레센 학원은 담당을 버리는 행위를 용납하지 않습니다!】',
         ],
         {
           color: buff_colors[3],
