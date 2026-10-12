@@ -4573,7 +4573,7 @@ module.exports = {
 
   // [번역 대상] tr_incm_cmb
   tr_incm_cmb: (() => {
-    const title = '不完全燃焼';
+    const title = '불완전 연소';
     /**
      * やる気低、体力<45%、男T×ウマ娘
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -4581,51 +4581,51 @@ module.exports = {
      * @param {string} callname アグネスタキオンがプレイヤーを呼ぶ名
      */
     const f = async (tachyon, you, callname) => {
-      await tachyon.say_and_wait('今日の目標は……');
+      await tachyon.say_and_wait('오늘의 목표……는……');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は心配そうに ',
+        '은(는) 걱정스러운 눈빛으로 ',
         tachyon.get_colored_name(),
-        ' の様子を見た',
+        '의 모습을 바라보았다.',
       ]);
       await era.printAndWait([
-        '今日も',
+        '오늘도 ',
         tachyon.sex,
-        'は限界突破のための実験——言い換えれば、トレーニング——を続けている',
+        '는 한계를 돌파하기 위한 실험, 즉 훈련을 계속하고 있었다.',
       ]);
       await era.printAndWait([
-        'もし',
+        '만약 ',
         tachyon.sex,
-        'の体力が十分で、調子だけが悪いなら、',
+        '의 체력이 충분하고 단지 컨디션만 좋지 않다면 ',
         you.get_colored_name(),
-        ' は心を鬼にして実験へ押しやるだろう。厳しさも、時には必要だからだ',
+        '은(는) 마음을 독하게 먹고 실험을 강행했을 것이다. 때로는 엄격함도 필요한 법이니까.',
       ]);
       await era.printAndWait([
-        'もし',
+        '만약 ',
         tachyon.sex,
-        'の体力が足りなくても、調子がやけに良いなら、',
+        '의 체력이 부족하더라도 컨디션이 유난히 좋다면 ',
         you.get_colored_name(),
-        ' は考えた末、',
+        '은(는) 고민 끝에 ',
         tachyon.sex,
-        'に鍛錬を続けさせるだろう、',
+        '가 단련을 계속하도록 독려했을 것이다.',
       ]);
       await era.printAndWait([
-        '先輩トレーナーたちも言っていた。',
+        '선배 트레이너들도 말했었다. ',
         tachyon.uma_sex_title,
-        'の心に寄り添うことこそ、トレーナーの最も大切な仕事だと',
+        '의 마음 곁에 있어 주는 것이 트레이너에게 가장 중요한 일이라고.',
       ]);
-      await era.printAndWait('だが……');
+      await era.printAndWait('하지만……');
       era.println();
       era.print([
-        '体力が明らかに持たず、意識も上の空な',
+        '체력이 눈에 띄게 떨어지고 정신도 멍한 ',
         tachyon.sex,
-        'に、',
+        '에게 ',
         you.get_colored_name(),
-        ' は本当に鬼になれるのか？',
+        '은(는) 정말로 매정해질 수 있을까?',
       ]);
-      era.printButton('「……続けよう」（従順因子+100）', 1);
-      era.printButton('「……休もう」（やる気上昇）', 2);
+      era.printButton('「……계속하자」(순종 인자 +100)', 1);
+      era.printButton('「……쉬자」(컨디션 상승)', 2);
       const ret = await era.input();
       if (ret === 1) {
         await era.printAndWait([
