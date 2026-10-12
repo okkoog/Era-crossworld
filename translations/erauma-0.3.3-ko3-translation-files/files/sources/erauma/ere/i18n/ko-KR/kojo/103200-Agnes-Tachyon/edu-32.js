@@ -7133,7 +7133,7 @@ module.exports = {
 
   // [번역 대상] ws_15
   ws_15: (() => {
-    const title = '実験課題の策定';
+    const title = '실험 과제 책정';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -7142,64 +7142,64 @@ module.exports = {
      * @param {number} love アグネスタキオンのプレイヤーへの恋慕値
      */
     const f = async (tachyon, you, callname, relation, love) => {
-      await tachyon.say_and_wait('走りたいレース、ですの？');
+      await tachyon.say_and_wait('나가고 싶은 레이스?');
       era.println();
       await era.printAndWait([
-        'かつての理科準備室、すなわち ',
+        '옛 이과 준비실, 곧 ',
         tachyon.get_colored_name(),
-        ' の実験室で、',
+        '의 실험실에서 ',
         you.get_colored_name(),
-        ' は小さなソファに座り、実験机の前の ',
+        '은(는) 작은 소파에 앉아 실험대 앞에 있는 ',
         tachyon.get_colored_name(),
-        ' に頷いた',
+        '에게 고개를 끄덕였다.',
       ]);
       await era.printAndWait([
         tachyon.uma_sex_title,
-        'と契約した初日に聞くべきことだった。だが当時の ',
+        '와 계약한 첫날에 물어봤어야 할 일이었지만 당시의 ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' に魅了されすぎて、ほぼ完全に忘れていた',
+        '에게 너무 매료된 나머지 이를 거의 완전히 잊고 있었다.',
       ]);
       await era.printAndWait([
-        'いずれにせよ、トゥインクル・シリーズに出るなら日程の設計は必須だ。',
+        '어찌 됐든 트윙클 시리즈에 참가하려면 레이스 일정 계획은 반드시 필요하다. ',
         tachyon.sex,
-        'の選択を聞いてこそ、',
+        '의 선택을 들어야 ',
         tachyon.sex,
-        '向けのトレーニング方針が立てられる',
+        '에게 더 적합한 훈련 방향을 정할 수 있기 때문이다.',
       ]);
-      await era.printAndWait('三冠路線か、牝馬三冠か、あるいはマイルか');
+      await era.printAndWait('클래식 삼관 노선일까, 아니면 티아라? 그것도 아니면 마일?');
       await era.printAndWait([
-        '短距離……たぶん無理だろう。申し訳ないが、',
+        '단거리는…… 아마 안 되겠지. 미안하지만 ',
         tachyon.get_colored_name(),
-        ' にその適性はないはずだ',
+        '에게는 그쪽 적성이 없을 것이다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……レース？ 興味ありませんわ');
+      await tachyon.say_and_wait('……레이스? 흥미 없네.');
       await tachyon.say_and_wait(
-        'そもそも私の研究は自身の可能性のため。他人がどうあろうと関係ありません。強弱の比較など、子どもの遊びですわ',
+        '애당초 내 연구는 나 자신의 가능성을 위한 것. 남이야 어찌 되든 상관없네. 강약을 겨루는 건 어린애들의 놀이에 불과해.',
       );
       await era.printAndWait([
-        'いかにも ',
+        '매우 ',
         tachyon.get_colored_name(),
-        ' らしい答えだ',
+        '다운 대답이었다.',
       ]);
       await era.printAndWait([
-        '正直、',
+        '솔직히 말해서 ',
         tachyon.sex,
-        'がそう答えることに驚きはない',
+        '가 그렇게 대답할 것은 충분히 예상한 바였다.',
       ]);
-      await era.printAndWait('だがトレーナーとして、果たすべき責務はある');
+      await era.printAndWait('하지만 트레이너로서 다해야 할 책임이 있었다.');
       await era.printAndWait([
-        'それに……',
+        '게다가…… ',
         tachyon.sex,
-        'に視線を奪われたファンとして、自分の推しがより大きな舞台で輝くのを見たいのも、当然ではないか？',
+        '에게 마음을 빼앗긴 팬으로서 자신이 응원하는 우마무스메가 더 큰 무대에서 빛나길 바라는 건 당연하지 않은가?',
       ]);
       era.println();
       await era.printAndWait([
-        'だから ',
+        '그리하여 ',
         you.get_colored_name(),
-        ' は言葉を整え、口を開いた',
+        '은(는) 말을 정리하고 입을 열었다.',
       ]);
       era.println();
       if (love >= 50 && relation <= 225 && tachyon.sex_code !== 1) {
