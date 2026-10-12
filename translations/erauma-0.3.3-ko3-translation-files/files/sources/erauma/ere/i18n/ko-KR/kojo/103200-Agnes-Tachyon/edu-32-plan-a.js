@@ -3245,7 +3245,7 @@ module.exports = {
 
   // [번역 대상] we_a_95_43
   we_a_95_43: (() => {
-    const title = '燃え切った勝負心';
+    const title = '완전히 타오른 승부욕';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -3272,130 +3272,130 @@ module.exports = {
       invincible,
       beat_c,
     ) => {
-      await tachyon.say_and_wait('ふう……ふう……');
+      await tachyon.say_and_wait('후우…… 후우……');
       era.println();
       await era.printAndWait([
-        '神戸新聞杯のあと今日まで、',
+        '고베 신문배가 끝난 후부터 오늘까지, ',
         tachyon.get_colored_name(),
-        ' のトレーニングは良好な状態を保っていた',
+        '의 훈련은 양호한 상태를 유지하고 있었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……今日も、同じですわね');
+      await tachyon.say_and_wait('……오늘도, 역시 마찬가지군.');
       era.println();
-      await era.printAndWait('だが……維持は、進歩がないということでもある');
+      await era.printAndWait('그러나…… 유지한다는 것은, 곧 진보가 없다는 뜻이기도 했다.');
       await era.printAndWait([
-        '有馬が近づくにつれ、',
+        '아리마 기념이 다가올수록, ',
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         tachyon.get_colored_name(),
-        ' の気持ちも、焦りを帯びてきた',
+        '의 기색에는 어쩔 수 없는 초조함이 깃들기 시작했다.',
       ]);
       await you.say_as_passer_by_and_wait(
         tachyon.uma_sex_title + 'A',
-        'タキオン先輩！ 今日も来ました！',
+        '타키온 선배! 오늘도 제가 왔어요!',
       );
       era.println();
       await era.printAndWait([
-        'そのとき二人を癒したのは、神戸新聞杯のときの後輩',
+        '그때 두 사람의 긴장을 풀어준 것은, 고베 신문배 때의 그 후배 ',
         tachyon.uma_sex_title,
-        'だった',
+        '였다.',
       ]);
       await era.printAndWait([
-        'その後輩の',
+        '그 후배 ',
         tachyon.uma_sex_title,
-        'は、いまではよく ',
+        '는 요즘 들어 자주 ',
         tachyon.get_colored_name(),
-        ' についてトレーニングしている',
+        '과 함께 훈련에 참여하곤 했다.',
       ]);
       await era.printAndWait([
-        'トレーナーである ',
+        '트레이너인 ',
         you.get_colored_name(),
-        ' も、ときどき',
+        ' 역시 때때로 ',
         tachyon.sex,
-        'に助言する',
+        '에게 조언을 건네주었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が退屈そうに相手を見ていたとき、見慣れた顔が眼前に浮かんだ',
+        '이(가) 멍하니 상대를 바라보고 있을 때, 눈앞에 갑자기 익숙한 얼굴이 나타났다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'どうしましたの？ そんなに熱心に見て、あの子に気がある、ですの？',
+        '왜 그러나? 남의 애를 그렇게 열심히 쳐다보다니, 설마 저 아이에게 마음이라도 있는 건 아니겠지?',
       );
       era.println();
-      await era.printAndWait([you.get_colored_name(), ' は慌てて首を振った']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 황급히 고개를 저었다.']);
       era.println();
       if (relation >= 0) {
         await tachyon.say_and_wait(
-          'くふふ……あの子には、確かにかなりの可能性がありますわ',
+          '후후…… 저 아이는 확실히 상당한 가능성을 지니고 있지.',
         );
         await tachyon.say_and_wait([
-          '……以前の私なら、',
+          '……예전의 나였다면, 아마 ',
           tachyon.sex,
-          'を Plan B の候補にしたかもしれませんわね',
+          '를 플랜 B의 예비 후보로 삼았을지도 몰라.',
         ]);
         await tachyon.say_and_wait(
-          'ですが Plan B はすべて、Plan A が成り立たないときの備え',
+          '하지만 플랜 B는 어디까지나 플랜 A가 불가능할 때를 대비한 대체품일 뿐이야.',
         );
-        await tachyon.say_and_wait(['本末転倒は困りますわよ、', callname]);
+        await tachyon.say_and_wait(['본질을 잊고 지엽적인 것에 매달리지 말게나, ', callname]);
       } else {
         await tachyon.say_and_wait(
-          '私が気にかけている後輩を、そんな目で見ないでくださいませ',
+          '내가 지켜보는 후배를 그런 눈으로 쳐다보지 말게.',
         );
         await tachyon.say_and_wait(
-          '……あなたの類は、他人を巻き込む資格がありませんわ',
+          '……자네 같은 녀석은, 다른 사람까지 망치지 않는 게 좋아.',
         );
         await tachyon.say_and_wait(
-          '私の傍にいること自体が、あなたへの最大の慈悲ですわ',
+          '내 곁에 있게 해주는 것만으로도 자네에게는 과분한 자비니.',
         );
       }
       if (love >= 75) {
         era.println();
         await tachyon.say_and_wait(
-          '忘れるようなら、もう一度、あなたの目を灼いて差し上げますわ……',
+          '만약 잊어버린다면, 다시 한번 자네의 눈을 멀게 해주지……',
         );
         await tachyon.say_and_wait([
-          '今度は、目が眩むほどに……他の',
+          '이번에는 눈부시다 못해 타버릴 정도로…… 다시는 다른 ',
           tachyon.uma_sex_title,
-          'の姿など、見えなくなるまで',
+          '의 모습 따위는 보이지 않을 때까지 말이야.',
         ]);
       }
       era.println();
       await era.printAndWait([
-        'これは、ある意味で ',
+        '이것은 어떤 의미에서 ',
         tachyon.get_colored_name(),
-        ' の独占欲だろうか',
+        '의 독점욕인 것일까?',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は苦笑するしかなかった',
+        '은(는) 쓴웃음을 지으며 넘길 수밖에 없었다.',
       ]);
       era.println();
       await era.printAndWait([
-        'だが今日の来客は、後輩の',
+        '그러나 오늘의 손님은 후배 ',
         tachyon.uma_sex_title,
-        'だけではなかった',
+        '뿐만이 아니었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……おや');
+      await tachyon.say_and_wait('……이런.');
       await coffee.say_and_wait([c_call_t, '……']);
       era.println();
       await era.printAndWait([
         coffee.get_colored_name(),
         '。',
         tachyon.get_colored_name(),
-        ' の Plan B の本命',
+        '의 플랜 B의 주요 핵심 인물이었다.',
       ]);
       if (era.get('cflag:25:招募状态') === recruit_flags.yes) {
         await era.printAndWait([
           you.get_colored_name(),
-          ' の担当',
+          '이(가) 담당하는 ',
           tachyon.uma_sex_title,
-          'でもある',
+          '이기도 했다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' と誓い、友人に追いつくと決めた大切な担当',
+          '과(와) 함께 친구를 따라잡겠다고 맹세한, 소중한 담당이었다.',
         ]);
       }
       era.println();
@@ -3407,102 +3407,102 @@ module.exports = {
       era.println();
       await tachyon.say_and_wait([
         call_25,
-        '？ 私の実験を受けに、ですの？ いつでも大歓……',
+        '? 내 실험을 받으러 온 건가? 원한다면 언제든지 환영……',
       ]);
       await coffee.say_and_wait(
-        '違う……ただ、模擬レースを……お願いできないかと思って',
+        '아뇨…… 그게 아니라, 저와 모의 레이스를 한 번 해주시겠어요?',
       );
-      await tachyon.say_and_wait('……模擬レース？');
-      await coffee.say_and_wait('ええ……どうしても、お願いしたい');
+      await tachyon.say_and_wait('……모의 레이스라고?');
+      await coffee.say_and_wait('네…… 어떻게 해서든, 부디 꼭 부탁드립니다.');
       era.println();
-      await era.printAndWait('……模擬レースの申請は簡単だ');
+      await era.printAndWait('……모의 레이스 신청 절차는 아주 간단했다.');
       if (era.get('cflag:25:招募状态') === recruit_flags.yes) {
         await era.printAndWait([
-          'まして ',
+          '무엇보다 ',
           you.get_colored_name(),
-          ' は',
+          '이(가) ',
           tachyon.couple_title,
-          '二人のトレーナーだ',
+          '들 두 사람 모두의 트레이너였기 때문이다.',
         ]);
       }
-      await era.printAndWait('特別な手配すら要らず、場を借りれば足りる');
+      await era.printAndWait('특별한 수배도 필요 없이, 그저 경기장을 대여하기만 하면 그만이었다.');
       era.println();
-      await era.printAndWait('申請の手続きは、ほどなく下りた');
+      await era.printAndWait('신청 서류는 얼마 지나지 않아 승인되었다.');
       await era.printAndWait([
-        '二人だけのコースで、',
+        '단둘만이 서 있는 코스 위에서, ',
         you.get_colored_name(),
-        ' がスタートの宣告役として柵の外に立つ',
+        '은(는) 출발 신호원으로서 코스 옆에 섰다.',
       ]);
-      await era.printAndWait('胸の内は、不安とざわめきだった');
+      await era.printAndWait('마음속에는 불안과 떨림이 교차했다.');
       await era.printAndWait([
         tachyon.get_colored_name(),
         '。',
         tachyon.sex,
-        'の目標は、',
+        '의 목표는 ',
         tachyon.uma_sex_title,
-        'の限界を超えること',
+        '의 한계를 뛰어넘는 것.',
       ]);
       await era.printAndWait([
         coffee.get_colored_name(),
         '。',
         coffee.sex,
-        'の目標は、友人の歩みに追いつくこと',
+        '의 목표는 친구의 발자취를 따라잡는 것.',
       ]);
       era.println();
-      await era.printAndWait('運命の配役か、悪趣味な偶然か。');
-      await era.printAndWait(['二人とも、最終目標を有馬記念に置いている']);
+      await era.printAndWait('운명의 장난인지 혹은 악취미 같은 우연인지,');
+      await era.printAndWait(['이 두 사람 모두 최종 목표를 아리마 기념으로 잡고 있었다.']);
       await era.printAndWait(
-        '今日の模擬レース……理由は不明でも、あの日の予行と見ていいだろう',
+        '오늘의 모의 레이스는…… 이유는 알 수 없으나, 아마도 그날의 예행연습이라고 봐도 무방할 것이다.',
       );
       await era.printAndWait([
-        '複雑な気持ちを抱えたまま、',
+        '복잡한 심경을 뒤로하고, ',
         you.get_colored_name(),
-        ' は旗を振り下ろした',
+        '은(는) 깃발을 내렸다.',
       ]);
       era.drawLine();
-      await tachyon.print_and_wait('第3コーナー、それから……最後の直線');
-      await tachyon.print_and_wait([call_25, ' は左？ いいえ、右']);
+      await tachyon.print_and_wait('제3코너, 그리고…… 마지막 직선.');
+      await tachyon.print_and_wait([call_25, '이 왼쪽에? 아니, 오른쪽인가.']);
       await tachyon.print_and_wait([
         call_25,
-        ' の走りは相変わらず……捉えきれない',
+        '의 주법은 여전하군…… 종잡을 수가 없어.',
       ]);
-      await tachyon.print_and_wait('ですが、法則なら、掴めるはずですわ');
+      await tachyon.print_and_wait('하지만, 규칙성만 있다면 충분히 파악할 수 있다.');
       era.println();
-      await tachyon.say_and_wait('今ですわ……っ！？');
+      await tachyon.say_and_wait('바로 여기…… 뭐!?');
       era.println();
-      await tachyon.print_and_wait('認めねばなりませんわ');
-      await tachyon.print_and_wait('レース前の自分は、確かに油断していた');
-      await tachyon.print_and_wait('Plan B の代替として');
+      await tachyon.print_and_wait('인정해야만 했다.');
+      await tachyon.print_and_wait('레이스 전의 자기 자신이 확실히 방심하고 있었다는 것을.');
+      await tachyon.print_and_wait('플랜 B를 위한 대용품.');
       if (beat_c) {
-        await tachyon.print_and_wait('そのうえ、かつての敗北者として');
+        await tachyon.print_and_wait('게다가 이미 한 번 꺾어본 적이 있는 패배자.');
       }
-      await tachyon.print_and_wait('口ではいくら綺麗に言っても');
+      await tachyon.print_and_wait('입으로는 아무리 그럴듯하게 떠들어댔어도.');
       await tachyon.print_and_wait([
         coffee.get_colored_name(),
-        ' は独立した個体だ、などと',
+        '는 독립적인 개체라느니.',
       ]);
       await tachyon.print_and_wait([
         coffee.get_colored_name(),
-        ' には自分に劣らぬ才能がある、などと',
+        '는 나에게 뒤지지 않는 재능을 가지고 있다느니.',
       ]);
       await tachyon.print_and_wait(
-        '胸の裡では、傲慢と呼ぶのもおこがましい軽視が生まれていた',
+        '마음 한구석에서는 오만이라고조차 부를 수 없을 정도의 가벼운 경시가 싹트고 있었다.',
       );
       await tachyon.print_and_wait([
-        '偽者の',
+        '가짜인 ',
         coffee.sex,
-        'が、絶好調の本物に勝てるはずがない、と',
+        '가 어떻게 최상의 상태인 진짜를 이길 수 있겠느냐고.',
       ]);
       era.println();
-      await tachyon.say_and_wait('走りも、速度も……見知らぬものですわ');
+      await tachyon.say_and_wait('주법도, 속도도…… 낯설어.');
       era.println();
-      await tachyon.print_and_wait('当然ですわ');
+      await tachyon.print_and_wait('그것도 당연한 일이다.');
       await tachyon.print_and_wait([
         '前回、',
         tachyon.get_colored_name(),
-        ' が ',
+        '이 ',
         coffee.get_colored_name(),
-        ' の走りと速度を仔細に見たのは、一年前の七月のことですから',
+        '의 주법과 속도를 자세히 관찰했던 것은 이미 1년 전 7월의 일이었으니까.',
       ]);
       era.println();
       await tachyon.print_and_wait(
