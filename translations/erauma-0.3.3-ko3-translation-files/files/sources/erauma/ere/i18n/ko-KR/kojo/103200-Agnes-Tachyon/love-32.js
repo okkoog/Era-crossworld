@@ -5,7 +5,7 @@ const buff_colors = require('#/data/color-const')["buff_colors"];
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/103200-Agnes-Tachyon/love-32"),
 
-  // [번역 대상] 25
+  // [번역 완료] 25
   25: (() => {
     const title = (tachyon) => [
       '「',
@@ -264,116 +264,116 @@ module.exports = {
         coffee.get_colored_name(),
         '의 말대로라면, 자신과 ',
         callname,
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'の眼にはそう見えているのだろう',
+        '의 눈에 그렇게 보인다는 뜻이었다.',
       ]);
-      await tachyon.print_and_wait('だが、おかしいでしょう');
+      await tachyon.print_and_wait('하지만 그건 이상하지 않은가?');
       await tachyon.print_and_wait(
-        '恩愛の見せびらかしとは、恋人、あるいは恋慕の関係にある二人が、他人の目を気にせず睦まじさを見せること',
+        '염장질이란 연인이나 서로 연모하는 두 사람이 타인의 시선도 아랑곳하지 않고 애정을 과시하는 것을 말한다.',
       );
       await tachyon.print_and_wait([
-        '自分と ',
+        '하지만 자신과 ',
         callname,
-        ' は、そんな関係ではない',
+        '은(는) 그런 관계가 아니었다.',
       ]);
-      await tachyon.print_and_wait('恋人、あるいは恋慕……');
+      await tachyon.print_and_wait('연인, 혹은 연모하는 관계……');
       await tachyon.print_and_wait([
-        '周囲の眼に映る自分と ',
+        '주변 사람들 눈에 비친 자신과 ',
         callname,
-        ' は、そういうものだったのか？',
+        '은(는) 정말 그런 사이였던 건가?',
       ]);
-      await tachyon.print_and_wait([callname, ' と私……恋愛……']);
+      await tachyon.print_and_wait([callname, '과 내가…… 연애……']);
       era.println();
       await tachyon.say_and_wait('………！？');
       era.println();
       await tachyon.print_and_wait(
-        'その考えが浮かんだ瞬間、心臓は強心剤を打たれたように打ち始め、血が過剰に回り、頬まで熱くなる',
+        '그 생각이 뇌리를 스친 순간 심장에 강심제를 주입한 듯 고동이 거세졌고, 지나친 혈류 탓에 뺨이 뜨겁게 달아올랐다.',
       );
-      await tachyon.print_and_wait('こ……これはまるで……自分が………');
+      await tachyon.print_and_wait('이…… 이건 마치…… 내가………');
       era.println();
       await tachyon.say_and_wait([
-        'あ、あ、あ、ありえませんわ……実験動物にすぎない……そうですわ！ 所詮',
+        '그그그그럴 리가 없지 않나…… 그저 실험동물일 뿐…… 그래! 애당초 ',
         you.sex,
-        'はただのモルモットですもの！',
+        '는 고작 모르모트 군에 불과하다고!',
       ]);
       await tachyon.say_and_wait([
-        'どうして私が、',
+        '내가 왜 ',
         you.sex,
-        'の好きなのがこの私なのか、走りなのか、可能性なのか、気にする必要がありますの！',
+        '가 좋아하는 게 나라는 존재인지, 아니면 나의 주법이나 가능성인지 신경 써야 하는 거지!',
       ]);
       era.println();
       await tachyon.print_and_wait(
-        'ええ、モルモットなら、同じ目標を持っていればいい',
+        '그래, 모르모트라면 그저 같은 목표를 공유하기만 하면 되는 것이다.',
       );
       await tachyon.print_and_wait([
-        '余計な感情など要らない。感情など、実験では邪魔になるだけだ',
+        '불필요한 감정 따위를 섞을 필요는 없다. 감정은 실험에 방해만 될 뿐이다.',
       ]);
       await tachyon.print_and_wait([
-        '二人の関係は研究者とモルモット、トレーナーと',
+        '두 사람의 관계는 연구자와 모르모트, 트레이너와 ',
         tachyon.uma_sex_title,
       ]);
-      tachyon.print('それ以外の関係など、要らない');
-      era.printButton('本当に、そうなの？', 1);
-      era.printButton('ええ、その通り', 2);
+      tachyon.print('그 이상의 관계는 필요 없다.');
+      era.printButton('정말로 그런가?', 1);
+      era.printButton('맞아, 그럴 뿐이야.', 2);
       if ((await era.input()) === 1) {
-        await tachyon.print_and_wait('ええ、そうであるはずなのに');
-        await tachyon.print_and_wait('どうして');
+        await tachyon.print_and_wait('그렇다. 분명 그럴 터였다.');
+        await tachyon.print_and_wait('그런데 어째서');
         await tachyon.print_and_wait(
-          '恋人扱いされたことに、胸の高鳴りと昂ぶりが抑えられない',
+          '연인 취급을 받았다는 사실에 마음 깊은 곳에서 솟구치는 기쁨과 고양감을 억누를 수 없는 것인가.',
         );
         await tachyon.print_and_wait([
           you.sex,
-          'が ',
+          '가 ',
           coffee.get_colored_name(),
-          ' に弁当を作ったことに、嫉妬と怒りが収まらない',
+          '에게 도시락을 만들어 줬다는 사실에 질투와 분노가 가라앉지 않는 것인가.',
         ]);
         await tachyon.print_and_wait([
           '…………',
           coffee.get_colored_name(),
-          ' の言う、相手が自分を見ていないという話に、恐慌と恐れが手放せない',
+          '가 말한 대로 상대가 나라는 존재를 바라보고 있지 않다는 사실에 왜 이토록 두려움을 느끼는 것인가.',
         ]);
         era.println();
-        await tachyon.say_and_wait('…………私は、どうしてしまったのですの');
-        await tachyon.say_and_wait('まるで……まるで');
+        await tachyon.say_and_wait('…………나에게 대체 무슨 일이 일어난 거지.');
+        await tachyon.say_and_wait('이건 마치…… 마치……');
         era.println();
         await tachyon.print_and_wait([
-          'まるで、私が ',
+          '마치 내가 ',
           callname,
-          ' を好きなようですわ',
+          '을 좋아하는 것 같지 않은가.',
         ]);
         era.println();
         await tachyon.print_and_wait(
-          '当人すら分からない感情が、熱を帯びた吐息に混じり、天井へ舞い、孤独な実験室の中で消える',
+          '당사자조차 갈피를 잡지 못하는 감정이 뜨거운 숨결에 섞여 천장으로 흩어졌고, 이내 고독한 실험실 속으로 사라져 갔다.',
         );
       } else {
-        await tachyon.print_and_wait('ええ');
-        await tachyon.print_and_wait('その通り');
+        await tachyon.print_and_wait('그렇다.');
+        await tachyon.print_and_wait('그걸로 충분하다.');
         await tachyon.print_and_wait(
-          '二人は純粋なモルモットと研究者でいればいい',
+          '두 사람은 그저 순수한 모르모트와 연구자로 남으면 된다.',
         );
-        await tachyon.print_and_wait('このままの生活を続ければいい');
+        await tachyon.print_and_wait('그저 지금처럼 계속해서 생활해 나가면 된다.');
         await tachyon.print_and_wait(
-          '勝手な天才科学者、そして文句も言わず働く助手兼実験体',
+          '제멋대로인 천재 과학자와 묵묵히 따르는 조수 겸 실험체.',
         );
-        await tachyon.print_and_wait('二人の関係は、このままでいい');
-        await tachyon.print_and_wait('いつまで……続けるのでしょう');
+        await tachyon.print_and_wait('두 사람의 관계는 그저 지금 이대로 유지되면 된다.');
+        await tachyon.print_and_wait('유지된다라…… 언제까지?');
         await tachyon.print_and_wait(
-          '一年？ 二年？ 卒業まで？ 大学まで？ 社会に出るまで？',
+          '1년? 2년? 졸업할 때까지? 대학에 진학할 때까지? 사회에 나가기 전까지?',
         );
         await tachyon.print_and_wait(
-          'この関係は、そこまで保てるのでしょうか？',
+          '이런 관계를 그때까지 유지할 수 있을까?',
         );
         era.println();
-        await tachyon.say_and_wait('はあ……');
+        await tachyon.say_and_wait('하아……');
         era.println();
         await tachyon.print_and_wait(
-          'だが、どちらにせよ自分は選んだ。だから今は、これでいい',
+          '하지만 어찌 됐든 선택은 내려졌다. 그러니 지금은 이걸로 됐다.',
         );
       }
       era.println();
       await tachyon.say_and_wait([
-        '早く戻ってきてくださいまし、',
+        '빨리 돌아오게나, ',
         callname,
         '……',
       ]);
