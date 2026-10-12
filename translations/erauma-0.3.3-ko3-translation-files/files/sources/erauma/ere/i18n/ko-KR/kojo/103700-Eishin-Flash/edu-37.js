@@ -1083,7 +1083,7 @@ module.exports = {
 
   // [번역 대상] os_95_6
   os_95_6: (() => {
-    const title = '出会いの花';
+    const title = "만남의 꽃";
     /**
      * @param {CharaTalk} flash エイシンフラッシュ
      * @param {CharaTalk} you プレイヤー
@@ -1091,126 +1091,126 @@ module.exports = {
      */
     const f = async (flash, you, callname) => {
       await era.printAndWait(
-        `バレンタインが近い。今年の新作チョコレートを見るため、エイシンフラッシュは ${you.name} を近くの菓子店へ誘った。`,
+        `발렌타인데이가 다가오자, 올해 새로 출시된 초콜릿들을 구경하기 위해 에이신 플래시는 ${you.name}을(를) 근처 디저트 가게로 초대했다.`,
       );
-      await era.printAndWait('だが……');
+      await era.printAndWait("하지만……");
       await you.say_as_passer_by_and_wait(
-        `客`,
+        `손님`,
         `待って、私のほうが先——痛っ、${you.name}、ぶつかった！`,
       );
       await you.say_as_passer_by_and_wait(
-        '店員',
-        '『チョコレート年輪ケーキ』をご希望のお客様はこちらへ。あ！ お客様、店内は走らないでください。',
+        "점원",
+        "『초콜릿 바움쿠헨』을 구매하실 고객님은 이쪽으로 줄을 서 주세요. 아! 손님, 매장 내에서는 뛰시면 안 됩니다.",
       );
-      await flash.say_and_wait('本当に……混乱していますね。');
+      await flash.say_and_wait("정말이지…… 아수라장이네요.");
       await era.printAndWait(
-        '店内の押し合う人混みを見て、エイシンフラッシュは眉を寄せた。',
+        "북적이며 서로 밀치는 인파를 보며 에이신 플래시는 미간을 찌푸렸다.",
       );
       await flash.say_and_wait(
-        'これではショーケースの菓子を丁寧に調べられません。少し困ります……',
+        "이래서야 진열장 안의 디저트들을 자세히 조사할 수가 없겠어요. 조금 곤란하네요……",
       );
-      era.printButton('「店を変えるか？」', 1);
+      era.printButton("「다른 가게로 갈까?」", 1);
       await era.input();
       await era.printAndWait(`${you.name} はそう提案した。`);
       await flash.say_and_wait(
-        '……バレンタイン前ですから、ほかも似たようなものでしょう。',
+        "……발렌타인이 코앞이라 아마 다른 곳도 상황은 비슷하겠죠.",
       );
-      await era.printAndWait('そこでエイシンフラッシュは小さく息をついた。');
+      await era.printAndWait("그렇게 말하며 에이신 플래시는 가볍게 한숨을 내쉬었다.");
       await flash.say_and_wait(
-        'まあ、欲しい品はネットで先に買えています。現場で実物を調べられなくても、大きな問題ではありません。',
+        "뭐, 사실 원하는 상품은 이미 인터넷으로 미리 구매해 두었으니까요. 현장에서 실제 상태를 확인하지 못하는 게 아주 큰 문제는 아니에요.",
       );
-      await flash.say_and_wait('ですから、今は戻りましょう。');
+      await flash.say_and_wait("그러니 지금은 일단 돌아가죠.");
       era.drawLine();
       await flash.say_and_wait(
-        '実は、日本に来てから毎年、バレンタインに贈り物で言い争う光景を見ると、少し不思議に思います。',
+        "사실 일본에 온 뒤로 매년 발렌타인 때마다 선물을 주고받느라 사람들이 다투는 광경을 볼 때면 조금 신기하다는 생각이 들어요.",
       );
       await era.printAndWait(
-        'トレセン学園へ戻る道で、エイシンフラッシュは突然、そう漏らした。',
+        "트레센 학원으로 돌아가는 길에 에이신 플래시가 문득 감상을 털어놓았다.",
       );
-      era.printButton('「ドイツには、そういう習慣はないのか？」', 1);
+      era.printButton("「독일에는 그런 풍습이 없어?」", 1);
       await era.input();
       await era.printAndWait(`${you.name} は少し不思議に思った。`);
       await flash.say_and_wait(
         '正確にはあります。ですがチョコレートより、主流は花です。',
       );
       await era.printAndWait(
-        `そう言ってエイシンフラッシュは一本指を立て、${you.name} に説明し始めた。`,
+        `말을 이어가며 에이신 플래시는 검지 손가락 하나를 펴서 ${you.name}에게 설명하기 시작했다.`,
       );
       await flash.say_and_wait(
-        'さらに言えば、贈る相手も、恋人以外にはなりません。',
+        "그리고 더 나아가서, 혹여나 선물을 준다고 해도 대상이 연인이 아닌 경우는 거의 없답니다.",
       );
       await flash.say_and_wait('つまり、いわゆる義理の贈り物はありません。');
-      era.printButton('「なるほど。」', 1);
+      era.printButton("「그렇구나.」", 1);
       await era.input();
       await era.printAndWait(
-        'つまり贈るなら、受け取る相手は、とても大切な存在だということだ。',
+        "바꿔 말하면, 선물을 준다는 건 그 선물을 받는 대상이 분명 아주 소중한 존재라는 뜻이겠네.",
       );
-      await era.printAndWait(`${you.name} はわかったようにうなずいた。`);
+      await era.printAndWait(`${you.name}은(는) 납득했다는 듯 고개를 끄덕였다.`);
       await flash.say_and_wait(
         '身近な例で言えば、毎年バレンタインに、父が母へ薔薇の花束を贈るのを見ます。',
       );
       await flash.say_and_wait('………');
-      await era.printAndWait('そこで、なぜかエイシンフラッシュは黙り込んだ。');
+      await era.printAndWait("거기까지 말하더니 왠지 모르게 에이신 플래시는 갑자기 침묵에 빠졌다.");
       await era.printAndWait(
         `${you.name} は、${flash.sex}の視線がわずかに ${you.name} のほうへ向いた気がした。`,
       );
-      era.printButton('「どうした？」', 1);
+      era.printButton("「왜 그래?」", 1);
       await era.input();
-      await flash.say_and_wait('……いえ、なんでもありません。');
+      await flash.say_and_wait("……아니요, 아무것도 아니에요.");
       await era.printAndWait(
-        '再び口を開いたエイシンフラッシュは、小さく首を振った。',
+        "다시 입을 연 에이신 플래시는 가볍게 고개를 저었다.",
       );
       await flash.say_and_wait(
-        'とにかく、ドイツでは告白を理由に贈り物はしません。',
+        "어쨌든 독일에서는 고백을 목적으로 선물을 주는 일은 없어요.",
       );
-      await flash.say_and_wait('そうするなら、双方はもっと深い関係だけです。');
+      await flash.say_and_wait("그렇게 한다면, 그건 이미 두 사람이 훨씬 깊은 관계라는 뜻이니까요.");
       await flash.say_and_wait(
-        'ですからその意味では、日本でバレンタインに告白する習慣があるほうが、私には意外です。',
+        "그런 관점에서 보면 오히려 일본에 발렌타인 날 고백하는 풍습이 있다는 게 저에게는 더 놀라워요.",
       );
-      era.printButton('「流れに乗る口実、みたいなものだろう？」', 1);
+      era.printButton("「일종의 분위기에 편승한 핑계 아닐까?」", 1);
       await era.input();
       await era.printAndWait(
-        '告白には勇気が要る。バレンタイン告白という、祭日の習わしを理由に、成否どちらでも関係が変わる行為をするのは、ちょうどいい。',
+        "고백은 용기가 필요한 행동이니까. 발렌타인 고백이라는 전통적인 풍습을 빌미 삼아, 성공하든 실패하든 관계를 변화시키는 그런 행위를 하기에 딱 적당한 거지.",
       );
       await flash.say_and_wait(
         '本当の気持ちを隠すのに、ふさわしい理由が要る、ですか……',
       );
       await flash.say_and_wait('ふふっ……悪くない考えですね。');
       await era.printAndWait(
-        '何か閃いたように、エイシンフラッシュは考え込むようにうなずいた。',
+        "무언가 영감을 얻은 듯 에이신 플래시는 생각에 잠긴 표정으로 고개를 끄덕였다.",
       );
       await flash.say_and_wait(
-        `あ、学園の正門が見えました。では、このあと用事がありますので、ここで失礼します、${callname}。`,
+        `아, 학원 정문이 보이네요. 그럼 전 다음에 처리해야 할 일이 있어서 이만 작별 인사를 드릴게요, ${callname}.`,
       );
-      era.printButton('「気をつけて。」', 1);
+      era.printButton("「조심해서 가.」", 1);
       await era.input();
       era.drawLine({ content: 'バレンタイン当日' });
       await flash.say_and_wait(`Guten Morgen、${callname}。`);
       await era.printAndWait(
         `トレーナールームの扉を開けると、${you.name} は見た。みずみずしい青い花が、机の横の花瓶に立っている。`,
       );
-      era.printButton('「この花は？」', 1);
+      era.printButton("「이 꽃은 뭐야?」", 1);
       await era.input();
       await flash.say_and_wait('青いヤグルマギクです。ドイツの国花です。');
       await era.printAndWait(
-        `エイシンフラッシュは微笑んで ${you.name} に紹介した。`,
+        `에이신 플래시는 미소 지으며 ${you.name}에게 설명했다.`,
       );
       await flash.say_and_wait(
-        '先日お別れしたあと、帰り道でよく考えました。今いる国が日本なら、伝統の祭日も、郷に従ってよい、と。',
+        "지난번에 당신과 헤어진 뒤 돌아가는 길에 곰곰이 생각해 봤어요. 결국 지금 있는 곳은 일본이니까, 전통적인 명절 부분에서는 로마에 가면 로마법을 따라야 한다고 느꼈거든요.",
       );
-      era.printButton('「つまり、これがバレンタインの贈り物か？」', 1);
+      era.printButton("「그럼 이게 네 발렌타인 선물이야?」", 1);
       await era.input();
       await flash.say_and_wait(
-        `はい。${callname} は花を飾りにする習慣がありませんから、これを贈り物にすれば、周囲の環境もよくなります。それに……`,
+        `네. ${callname}은(는) 평소에 생화로 장식하는 습관이 없으시니까, 이걸 선물로 드리면 주변 환경도 화사해질 테고, 또……`,
       );
-      era.printButton('「それに？」', 1);
+      era.printButton("「또?」", 1);
       await era.input();
       await flash.say_and_wait(
-        'ふとしたときにこの花を見て、贈った人を思い出すかもしれません。',
+        "또 무심코 이 꽃을 보셨을 때, 어쩌면 이 꽃을 준 사람을 떠올리게 될지도 모르니까요.",
       );
-      await flash.say_and_wait('ふふふ——');
+      await flash.say_and_wait("후후훗——");
       await era.printAndWait(
-        '言い終えると、エイシンフラッシュは口元を覆って小さく笑った。とても嬉しそうだった。',
+        "그 말을 마치고 에이신 플래시는 입을 가리고 웃었다. 꽤 즐거워 보이는 모습이었다.",
       );
     };
     f.title = title;
@@ -1219,7 +1219,7 @@ module.exports = {
 
   // [번역 대상] os_black_treasure
   os_black_treasure: (() => {
-    const title = '漆黒の至宝';
+    const title = "칠흑의 보물";
     /**
      * @param {CharaTalk} flash エイシンフラッシュ
      * @param {CharaTalk} you トレーナー
@@ -1227,94 +1227,94 @@ module.exports = {
      */
     const f = async (flash, you, callname) => {
       await era.printAndWait(
-        `一人でショッピングモールの生活用品を買っていたとき、${you.name} は近くで、沈んだ顔のエイシンフラッシュを見かけた。`,
+        `혼자 쇼핑몰에서 생활용품을 사려던 중, ${you.name}은(는) 문득 근처에서 잔뜩 시무룩한 표정을 짓고 있는 에이신 플래시를 발견했다.`,
       );
-      era.printButton('「どうした？」', 1);
+      era.printButton("「무슨 일이야?」", 1);
       await era.input();
       await era.printAndWait(`それを見て、${you.name} は気になって訊いた。`);
-      await flash.say_and_wait(`ああ、${callname}。`);
+      await flash.say_and_wait(`아, ${callname}.`);
       await era.printAndWait(
-        `声の主が ${you.name} だと分かると、エイシンフラッシュは少し驚いた。`,
+        `목소리의 주인이 ${you.name}인 것을 알아채자 에이신 플래시는 조금 놀란 듯했다.`,
       );
-      await flash.say_and_wait('いいえ、何でもありません。');
-      await era.printAndWait(`次の瞬間、${flash.sex}はまた首を振った。`);
+      await flash.say_and_wait("아니요, 아무것도 아니에요.");
+      await era.printAndWait(`그러더니 다음 순간, ${flash.sex}는 다시 고개를 저었다.`);
       await flash.say_and_wait(
-        '故郷で食べた料理が急に恋しくなって、日本でも材料を探して再現してみようと思っただけです。',
+        "그저 고향에서 먹었던 요리가 갑자기 생각나서, 일본에서 식재료를 찾아 재현해 보려고 했거든요.",
       );
-      await flash.say_and_wait('ただ……');
+      await flash.say_and_wait("다만……");
       await era.printAndWait(
-        'そこまで言って、エイシンフラッシュの顔に一瞬、迷いが走った。',
+        "거기까지 말하자 에이신 플래시의 얼굴에 순식간에 고민하는 기색이 스쳤다.",
       );
-      era.printButton('「高いのか？」', 1);
+      era.printButton("「많이 비싸?」", 1);
       await era.input();
       await era.printAndWait(
-        `その様子を鋭く捉えた ${you.name} は、${flash.sex}が沈んでいる理由を察した。`,
+        `그 상황을 예민하게 포착한 ${you.name}은(는) ${flash.sex}의 기분이 저조한 이유가 대충 짐작이 갔다.`,
       );
-      await flash.say_and_wait('……はい。');
+      await flash.say_and_wait("……네.");
       await era.printAndWait(
-        `それを聞いて、${flash.sex}はしばし黙り、それからゆっくり頷いた。`,
+        `그 말에 ${flash.sex}는 잠시 침묵하더니, 이내 천천히 고개를 끄덕였다.`,
       );
       await flash.say_and_wait(
-        '料理に使う高級キャビアが、こちらの店では今月の小遣いの範囲を超えてしまって。',
+        "요리를 만드는 데 필요한 고급 캐비아의 가격이, 제가 이번 달에 쓸 수 있는 용돈 범위를 초과해 버렸어요.",
       );
       await flash.say_and_wait(
-        'もっと安いブランドで代用することもできますが、それでは最初に懐かしんでいた味にはなりません。',
+        "다른 더 저렴한 브랜드로 대체할 수도 있겠지만, 그렇게 하면 제가 처음에 그리워했던 그 맛이 나질 않거든요.",
       );
       await era.printAndWait(
-        `言い終えると、${you.name} は${flash.sex}が小さく息をつくのを見た。`,
+        `말을 마친 뒤, ${you.name}은(는) ${flash.sex}가 가볍게 한숨 쉬는 것을 보았다.`,
       );
       await era.printAndWait(
         `しょんぼりしたエイシンフラッシュを前に、${you.name} は——`,
       );
-      era.printButton('「成り行きに任せる」', 1);
+      era.printButton("「순리에 맡긴다」", 1);
       if (era.get('flag:当前马币') > 50) {
-        era.printButton(`「${flash.sex}にお金を貸す」`, 2);
+        era.printButton(`「${flash.sex}에게 돈을 빌려준다」`, 2);
       }
       const ret = await era.input();
       if (ret === 1) {
         await era.printAndWait(
-          `${you.name} の心には、目の前の人の代わりに買ってあげようという考えがよぎった。だがよく考えると、エイシンフラッシュの性格では、きっと承諾しない。`,
+          `${you.name}의 마음속에 눈앞의 상대를 위해 상품을 대신 구매해 줄까 하는 생각도 스쳤지만, 곰곰이 생각해보면 에이신 플래시의 성격상 그런 제안을 받아들일 리 없었다.`,
         );
         await era.printAndWait(
           `結局、${you.name} は${flash.sex}が困った顔のまま店を出ていくのを見送るしかなかった。`,
         );
       } else {
         await era.printAndWait(
-          `${you.name} の心には、目の前の人の代わりに買ってあげようという考えがよぎった。だがよく考えると、エイシンフラッシュの性格では、きっと承諾しない。`,
+          `${you.name}의 마음속에 눈앞의 상대를 위해 상품을 대신 구매해 줄까 하는 생각도 스쳤지만, 곰곰이 생각해보면 에이신 플래시의 성격상 그런 제안을 받아들일 리 없었다.`,
         );
-        await flash.say_and_wait('えっ？');
-        await era.printAndWait('とはいえ、解決策がないわけでもない。');
+        await flash.say_and_wait("에?");
+        await era.printAndWait("하지만 그렇다고 방법이 없는 것은 아니었다.");
         await flash.say_and_wait(
-          `${callname} の仰ることは……私の分を払う、ということですか？`,
+          `${callname}, 그 말씀은…… 당신이 대신 지불해주시겠다는 뜻인가요?`,
         );
         await era.printAndWait(
-          `${you.name} の提案を聞いて、エイシンフラッシュは数秒、固まった。`,
+          `${you.name}의 제안에 에이신 플래시는 몇 초간 멍해졌다.`,
         );
         await flash.say_and_wait(
-          'お気持ちはありがたいのですが、このようなことはやはり……',
+          "호의는 감사하지만, 역시 그런 일은 좀……",
         );
         await era.printAndWait(
           `すぐ理解した${flash.sex}は、きっぱり首を振り、はっきりと拒んだ。`,
         );
-        era.printButton('「未来の小遣いを、先に前借りするだけだ。」', 1);
+        era.printButton("「그저 네 미래의 용돈을 미리 가불하는 것뿐이야.」", 1);
         await era.input();
         await era.printAndWait(
-          `それを見て、${you.name} はエイシンフラッシュに「貸す」と「おごる」の違いを改めて伝えた。`,
+          `그 모습에 ${you.name}은(는) 에이신 플래시에게 「빌려주는 것」과 「그냥 주는 것」의 차이를 거듭 강조했다.`,
         );
         await era.printAndWait(
           `ただ貰うより、こちらのほうが公平で、${flash.sex}も受け入れやすいと ${you.name} は思った。`,
         );
-        await flash.say_and_wait('む……');
+        await flash.say_and_wait("으음……");
         await era.printAndWait(
-          `案の定、${you.name} の言葉を聞くと、${flash.sex}の顔に迷いが浮かんだ。`,
+          `과연 ${you.name}의 말을 듣자 ${flash.sex}의 얼굴에 망설이는 기색이 떠올랐다.`,
         );
-        await flash.say_and_wait('……分かりました。');
+        await flash.say_and_wait("……알겠습니다.");
         await era.printAndWait(
-          `何度も考えた末、${flash.sex}は頷き、${you.name} の助けを受け入れた。`,
+          `결국 재차 고민한 끝에 ${flash.sex}는 고개를 끄덕이며 ${you.name}의 도움을 받아들였다.`,
         );
-        await flash.say_and_wait('このご恩は、忘れません。');
-        await era.printAndWait(`${flash.sex}は改まった口調で言った。`);
-        await flash.say_and_wait('約束します。');
+        await flash.say_and_wait("이 은혜는 꼭 잊지 않을게요.");
+        await era.printAndWait(`${flash.sex}가 정중하게 말했다.`);
+        await flash.say_and_wait("약속하겠습니다.");
       }
       return [ret];
     };
@@ -2031,7 +2031,7 @@ module.exports = {
 
   // [번역 대상] we_47_32
   we_47_32: (() => {
-    const title = '胸の内・二';
+    const title = "마음을 나누는 대화 · 2";
     /**
      * @param {CharaTalk} flash エイシンフラッシュ
      * @param {CharaTalk} you プレイヤー
@@ -2043,248 +2043,248 @@ module.exports = {
         '合宿が終わる日にお答えします。このあいだは、予定どおりに進めましょう。',
       );
       await era.printAndWait(
-        'トレセンの合宿は短い。始まりから終わりまで、ひと月しかない。',
+        "트레센의 합숙 활동은 매우 짧아서 시작부터 끝까지 겨우 한 달의 기간뿐이다.",
       );
       await era.printAndWait(
-        `そのあいだ、${you.name} はエイシンフラッシュの調子が、秩序なく上下するのを感じた。時に固く、時に揺れ、時に ${you.name} に微笑み、時に空を見て迷う。`,
+        `그리고 그동안 ${you.name}은(는) 에이신 플래시의 상태가 끊임없이 요동치는 것을 느낄 수 있었다. 때로는 확신에 차고, 때로는 흔들리고. 때로는 ${you.name}을(를) 보며 활짝 웃다가도, 때로는 하늘을 보며 망연히 생각에 잠겼다.`,
       );
       await era.printAndWait(
         `それでも ${you.name} は信じた。最後には理性で決める、と。どんな厳しいトレーニングにも文句を言わない相手にとって、これは取るに足らないことだ。`,
       );
       await flash.say_and_wait(
-        `${callname}、本日の十七時から十八時、ご予定はありますか？`,
+        `${callname}, 혹시 오늘 저녁 17시부터 18시 사이에 시간 괜찮으신가요?`,
       );
       await era.printAndWait(
-        `そして ${you.name} の期待を裏切らず、エイシンフラッシュは、完璧な答えを出した。`,
+        `${you.name}의 기대에 부응하듯 에이신 플래시는 완벽한 답안지를 제출했다.`,
       );
       era.drawLine();
       await flash.say_and_wait(
-        '実は、十年前の子どものころ、私は今のような、何事も正確を求める癖はありませんでした。',
+        "사실 10년 전 어릴 때는 지금처럼 모든 일에 정확함을 추구하는 성미가 아니었어요.",
       );
-      await era.printAndWait('月末、合宿の宿のそばの浜辺。');
+      await era.printAndWait("월말, 합숙소 근처의 해변.");
       await era.printAndWait(
-        `エイシンフラッシュと ${you.name} は、海の縁を歩いていた。`,
+        `에이신 플래시와 ${you.name}은(는) 함께 바닷가를 거닐고 있었다.`,
       );
-      await era.printAndWait('今、夕陽が向こうの果てへ、ゆっくり沈んでいく。');
+      await era.printAndWait("지금 저편 끝자락으로 석양이 서서히 가라앉고 있었다.");
       await era.printAndWait(
-        '残光が金色に輝き、海岸線を一枚の壮麗な絵に染めていた。',
+        "노을의 잔광이 찬란한 금빛을 뿜어내며 해안선 전체를 장엄한 화폭으로 물들였다.",
       );
       await flash.say_and_wait(
         '七歳のクリスマス前夜まで。その日、家に帰ると、父が Stollen を用意していました。ドイツのクリスマスの伝統パンです。',
       );
       await era.printAndWait(
-        'そう言ってエイシンフラッシュは振り返り、無言でその絶景を見た。',
+        "말을 하며 에이신 플래시는 뒤돌아 이 절경을 묵묵히 바라보았다.",
       );
-      await era.printAndWait(`しばらくして、${flash.sex}はまた口を開いた。`);
+      await era.printAndWait(`잠시 후, ${flash.sex}는 다시 입을 열었다.`);
       await flash.say_and_wait(
-        '……作る過程で、一グラムの誤差も許さない真剣さでした。当時の私は理解できず、好奇心から尋ねました。',
+        "……만드는 과정에서 단 1그램의 오차도 허용하지 않는 아버지의 엄격하고 진지한 태도를 보게 됐어요. 당시엔 이해가 안 가서 궁금한 마음에 여쭤봤었죠.",
       );
       await flash.say_and_wait(
-        '『パパ、どうしてそんなに正確じゃなきゃいけないの？ 砂糖がレシピと少し違っても、味は変わらないでしょう。』',
+        "『아빠, 왜 그렇게까지 정확해야 해요? 설탕 양이 레시피랑 조금 달라도 맛은 별 차이 없을 텐데.』",
       );
-      era.printButton('「意外な発言だな。」', 1);
+      era.printButton("「정말 의외의 발언이네.」", 1);
       await era.input();
       await era.printAndWait(
         `${you.name} の知る相手からは、そんな投げやりな言葉は想像しにくい。`,
       );
       await flash.say_and_wait(
-        'はい。だからこそ、父が次に言った言葉が、私の人生の軌跡を変えました。',
+        "그렇죠. 그래서 그다음에 아버지가 해주신 말씀이 제 인생의 궤도를 바꿔놓았답니다.",
       );
       await era.printAndWait(
-        `エイシンフラッシュはうなずいた。${flash.sex}の声に、懐かしさが混じっていた。`,
+        `에이신 플래시는 고개를 끄덕였다. ${flash.sex}의 말투에는 그리움 섞인 감회가 담겨 있었다.`,
       );
       await flash.say_and_wait(
-        '『もちろん品質だよ、フラッシュ。今日この誤差で基準を緩めたら、明日は？ 明後日は？』',
+        "『당연히 품질 때문이란다, 플래시. 만약 오늘 이 정도의 오차를 눈감아주고 기준을 낮춘다면, 내일은 어떨까? 모레는?』",
       );
       await flash.say_and_wait(
-        '一度の緩みが次の緩みを呼び、ついには取り返しのつかない結果になる……わかりやすい道理ですよね。',
+        "한 번의 방심이 계속된 나태함으로 이어지고, 결국 돌이킬 수 없는 결과를 낳는다는…… 아주 단순하고 명쾌한 원리였죠, 안 그런가요?",
       );
       await flash.say_and_wait(
-        '父は、それを私に知らせたかっただけだと思っていました。ですが次の言葉は、当時の私の理解をはるかに超えていました。',
+        "저는 아버지가 그저 그런 사실을 가르쳐주려 하시는 줄로만 알았어요. 하지만 그 뒤에 이어진 말씀은 당시의 제 이해 범위를 훨씬 뛰어넘는 것이었답니다.",
       );
       await era.printAndWait(
-        'そこでエイシンフラッシュはうつむき、手を胸に当てた。',
+        "거기까지 말하고 에이신 플래시는 고개를 숙여 손을 가슴에 얹었다.",
       );
       await flash.say_and_wait(
-        '『だが品質が一番大事なわけじゃない。レシピさえあれば、誰でも完璧な菓子は作れる。』',
+        "『하지만 품질이 가장 중요한 건 아니란다. 레시피만 있다면 누구나 완벽한 디저트를 만들 수 있으니까.』",
       );
       await flash.say_and_wait(
-        '『だから肝心なのは、この心だ。菓子を通して、私たちの真心を感じてもらう。それがいちばんだ。』',
+        "『가장 핵심적인 건 바로 이 마음이란다. 다른 사람이 디저트를 통해 우리의 정성을 느끼게 하는 것, 그것이야말로 가장 중요한 일이란다.』",
       );
-      era.printButton('「大事なのは、込められた気持ちか？」', 1);
+      era.printButton("「중요한 건 그 안에 담긴 진심이라는 거네?」", 1);
       await era.input();
       await flash.say_and_wait(
-        'ですが心は調味料ではありません。食べ物をよりおいしくはできません。',
+        "하지만 마음은 조미료가 아니기에 음식을 더 맛있게 만들어 주지는 못해요.",
       );
       await era.printAndWait(
-        'エイシンフラッシュは小さく息をつき、静かな瞳に、はっきりした揺らぎが走った。',
+        "에이신 플래시가 가볍게 탄식했고, 호수처럼 고요하던 눈동자에 뚜렷한 동요가 일었다.",
       );
       await flash.say_and_wait(
-        '当時の私は、父にそう答えました。父は、まだ幼いからと詳しくは説明せず、あとで自然にわかる、と言っただけでした。',
+        "당시의 저는 아버지께 그렇게 대답했어요. 아버지는 제가 너무 어리다는 이유로 자세히 설명해 주지 않으셨고, 그저 나중에 시간이 흐르면 자연스럽게 이해하게 될 거라고만 하셨죠.",
       );
-      era.printButton('「人生の経験と結びつく、ということか。」', 1);
+      era.printButton("「인생의 연륜과 맞닿아 있는 부분이네.」", 1);
       await era.input();
       await flash.say_and_wait(
-        'はい。ですが幼い私は負けず嫌いで、あとまで待つ必要はないと思いました。',
+        "네. 하지만 어린 시절의 저는 지기 싫어하는 마음이 앞서서 나중까지 기다릴 필요 없다고 생각했죠.",
       );
       await flash.say_and_wait(
-        '親は子どものいちばんの手本だ、と言われます。当時の私は、二人のやり方を真似すれば、その言葉も理解できるのではないか、と考えました。',
+        "부모님은 아이에게 가장 존경스러운 롤모델이잖아요. 그래서 부모님의 행동 방식을 흉내 내기만 하면 그 말씀을 쉽게 이해할 수 있을 거라 믿었어요.",
       );
       await flash.say_and_wait(
-        'ふふふ……現実離れした考えですね。今になっても、父のその言葉を、私はまだ完全には通じていません。',
+        "후후. 참 비현실적인 생각이었죠. 결국 지금까지도 아버지의 그 말씀을 완전히 깨닫지는 못했으니까요.",
       );
       await era.printAndWait(
-        'エイシンフラッシュは自分をからかうように小さく笑った。過去の幼さを、少し滑稽に思っているようだった。',
+        "에이신 플래시는 자조 섞인 가벼운 웃음을 터뜨렸다. 과거 자신의 유치했던 행동이 꽤나 우습게 느껴지는 모양이었다.",
       );
       await flash.say_and_wait(
         'ですが真似て学ぶうち、何事も厳密に、正しく、精密にやる難しさがわかり、それを日常にしている父と母を、ますます尊敬するようになりました。',
       );
       await flash.say_and_wait(
-        'だからこそ、二人に誇ってもらいたいという思いが、胸の底から生まれました。',
+        "그렇기에 부모님이 저를 자랑스러워하셨으면 좋겠다는 마음이 자연스럽게 가슴 깊이 자리 잡게 된 거고요.",
       );
-      era.printButton('「それが、すべての始まりか？」', 1);
+      era.printButton("「그게 모든 일의 시작이었구나?」", 1);
       await era.input();
-      await flash.say_and_wait('はい。それが、すべての始まりです。');
+      await flash.say_and_wait("맞아요, 그게 모든 일의 시작이었죠.");
       await era.printAndWait(
         '言い終えると、エイシンフラッシュは後ろから、銀黒の勲章を取り出した。',
       );
       await flash.say_and_wait(
-        'それから私はここに来て、あなたと出会いました。',
+        "그리고 저는 이곳에 왔고, 당신과 만났어요.",
       );
       await era.printAndWait(
-        `${flash.sex}はそれを長く見つめた。落日が光を収めるまで、口を開かなかった。`,
+        `${flash.sex}는 그것을 한참 동안 응시했다. 석양이 마지막 빛을 거둘 때가 되어서야 그녀는 다시 입을 열었다.`,
       );
       await flash.say_and_wait(
-        `……${flash.uma_sex_title}として生まれ、コースを走れるのは誇らしいことだ、と聞きます。だから私はここで栄誉を得て、故郷へ帰りたいと願いました。`,
+        `……${flash.uma_sex_title}로 태어나 경기장에서 달릴 수 있다는 건 정말 자랑스러운 일이라고 들었어요. 그래서 저는 이곳에서 영광을 쟁취하고, 당당하게 고향으로 돌아가고 싶었죠.`,
       );
       await flash.say_and_wait(
-        'それが走る原動力であり、私がここまでこだわってきた理由です。',
+        "그것이 제가 달리는 원동력이었고, 지금까지 줄곧 집착해온 이유였어요.",
       );
-      await flash.say_and_wait('ですが……');
+      await flash.say_and_wait("하지만……");
       await flash.say_and_wait('………');
       await era.printAndWait(
-        `エイシンフラッシュは急に黙った。同時に ${you.name} は、${flash.sex}の手が力なく落ちるのを見た。`,
+        `에이신 플래시는 잠시 침묵했고, 동시에 ${you.name}은(는) ${flash.sex}의 손이 힘없이 늘어지는 것을 보았다.`,
       );
       await flash.say_and_wait(
-        '実行の途中で、その思いは、少しずつ偏った意志へ歪んでいきました。',
+        "실제로 그 길을 걷는 도중에, 그 마음은 조금씩 비뚤어진 의지로 변질되어 갔어요.",
       );
       await era.printAndWait(`${flash.sex}は静かに言った。`);
       await flash.say_and_wait(
-        '合宿の初日、あなたの言葉で、はっと気づきました。私の夢は、ずっと私ひとりのものではなかった、と。',
+        "합숙 첫날, 당신이 해주신 말씀을 듣고 문득 깨달았어요. 제 꿈은 사실 예전부터 저 혼자만의 것이 아니었다는 걸요.",
       );
       await flash.say_and_wait(
-        '昔の私は、それがわかりませんでした……自分だけ前へ進み、あなたの考えを、一度も気にかけなかった。',
+        "예전의 저는 그걸 이해하지 못했어요…… 그래서 늘 앞만 보고 혼자 달려가느라 당신의 생각은 안중에도 없었죠.",
       );
       await flash.say_and_wait(
-        'あなたの助けは、替えがきかないのに。私たちは一心同体であるはずなのに。',
+        "저에게 주시는 당신의 도움은 그 무엇으로도 대체할 수 없는데. 우리는 당연히 일심동체의 관계여야만 했는데.",
       );
-      era.printButton('「フラッシュ……」', 1);
+      era.printButton("「플래시……」", 1);
       await era.input();
       await flash.say_and_wait(
-        'よく思い返すと、私はあなたに、多くの恩を欠いています。',
+        "돌이켜보면 당신에게 진 빚이 너무 많아요.",
       );
       await flash.say_and_wait(
-        '皐月賞前の熱も、日本ダービー後の脚の傷も、あなたが一歩先にいちばん深いところまで考え、私の健康を最優先に計画を組み直してくれました。',
+        "사츠키상 전의 발열 때도, 일본 더비 후의 다리 부상 때도, 당신은 저보다 한발 앞서 가장 깊은 곳까지 고려해 주셨죠. 제 건강을 최우선으로 스케줄을 다시 짜주셨고요.",
       );
       await flash.say_and_wait(
-        '滑稽なことに、私はその緻密な計画を顧みず、未来の話ばかりしていました。',
+        "그런데 우습게도 저는 당신이 정성껏 준비한 그 모든 것을 무시하고, 오직 미래만을 떠들고 있었어요.",
       );
       await flash.say_and_wait(
-        '……健康な身体がなければ、どんな夢も、意味のない空想になるというのに……',
+        "……건강한 몸이 뒷받침되지 않는다면, 어떤 꿈도 그저 허망한 공상에 불과할 뿐인데……",
       );
       await era.printAndWait(
         'そこでエイシンフラッシュは顔を上げ、まだ暗くなりきらない空へ、静かなため息をついた。',
       );
-      era.printButton('「無事に回復できたのは、お前自身の努力だ。」', 1);
+      era.printButton("「무사히 회복한 건 네 스스로의 노력 덕분이야.」", 1);
       await era.input();
       await era.printAndWait(
         `それを見て ${you.name} は眉を寄せた。${you.name} はこの様子を見たくない。エイシンフラッシュの言い方は、${flash.sex}自身の努力まで否定しているようだった。`,
       );
       await flash.say_and_wait(
-        'ふ……こんなときまで慰めてくださるのですね。やはり、とても優しい方です。',
+        "후훗…… 당신은 이런 상황에서도 저를 위로해 주시는군요. 정말 다정한 분이에요.",
       );
       await era.printAndWait(
-        `${flash.sex}は ${you.name} の言葉を聞き、${you.name} に小さく微笑んだ。`,
+        `${flash.sex}는 ${you.name}의 말을 듣고 ${you.name}에게 살짝 미소 지었다.`,
       );
-      era.printButton('「事実だ。」', 1);
+      era.printButton("「사실을 말했을 뿐이야.」", 1);
       await era.input();
-      await era.printAndWait(`${you.name} はもう一度強調した。`);
-      await flash.say_and_wait('私の言葉も、事実です。');
+      await era.printAndWait(`${you.name}이(가) 다시 한번 강조했다.`);
+      await flash.say_and_wait("제 말도 사실인걸요.");
       await era.printAndWait(
         `エイシンフラッシュは首を振り、その話題には深入りしなかった。${flash.sex}は手を伸ばし、月初に ${you.name} が${flash.sex}に渡した銀黒の勲章を、また ${you.name} へ戻した。`,
       );
       era.printButton('「………」', 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} はうつむいて勲章を見、また顔を上げて${flash.sex}を見た。`,
+        `${you.name}은(는) 고개를 숙여 훈장을 한 번 보고, 다시 고개를 들어 ${flash.sex}를 보았다.`,
       );
       await flash.say_and_wait(
-        'クラシック三冠に挑むのは夢を叶えるためです。ですが夢を叶える道は、クラシック三冠だけではありません。',
+        "클래식 3관에 도전하는 목적은 꿈을 이루기 위해서지만, 꿈을 이루는 길이 클래식 3관 하나만 있는 건 아니었어요.",
       );
       await flash.say_and_wait(
-        '本当はとっくにわかっているべきでした。なのに自分の固執に縛られ、ひとりで袋小路に入っていました。',
+        "사실 진작 깨달았어야 했는데, 스스로의 고집에 얽매여서 혼자 막다른 골목에 빠져 있었네요.",
       );
       era.printButton(
-        '「お前が前から決めていた計画だ。こだわるのはわかる。」',
+        "「네가 오랫동안 준비해온 계획이었으니, 그만큼 집착하는 것도 이해해.」",
         1,
       );
       await era.input();
       await flash.say_and_wait(
-        'ですが計画は変えられます。意固地になることこそ、未熟の現れです。',
+        "하지만 계획은 유동적이어야 하죠. 고집만 부리는 건 오히려 미성숙함의 증거일 뿐이에요.",
       );
-      await flash.say_and_wait('……あるいは……');
+      await flash.say_and_wait("……어쩌면……");
       await era.printAndWait(
         `そこで ${you.name} は、エイシンフラッシュが考え込むようにうなずくのを見た。`,
       );
       await flash.say_and_wait(
         'こんなに長くかかって、この道理に気づいた私は、やっと父と母に近づけたでしょうか。',
       );
-      era.printButton('「ご両親も、お前が自分の道を歩くのを喜ぶはずだ。」', 1);
+      era.printButton("「너의 부모님도 네가 너만의 길을 개척하는 모습을 기쁘게 봐주실 거야.」", 1);
       await era.input();
-      await flash.say_and_wait('おっしゃるとおりです。');
-      await flash.say_and_wait(`ですから、${callname}。`);
-      await flash.say_and_wait('ふぅ……');
+      await flash.say_and_wait("당신 말씀이 맞아요.");
+      await flash.say_and_wait(`그러니까, ${callname}.`);
+      await flash.say_and_wait("후우……");
       await era.printAndWait(
-        '次の言葉の前に、エイシンフラッシュは深く息を吸った。今日いちばん大事な本題が、ここから始まるらしい。',
+        "다음 대화를 시작하기 전, 에이신 플래시는 깊게 숨을 들이마셨다. 이것은 지금부터 이어질 내용이 오늘 가장 중요한 본론임을 의미했다.",
       );
-      await flash.say_and_wait('今年のジャパンカップに、出走したいです。');
-      era.printButton('「！」', 1);
+      await flash.say_and_wait("저, 올해의 재팬 컵에 출주하고 싶어요.");
+      era.printButton("「!」", 1);
       await era.input();
       await era.printAndWait(
-        `${flash.sex}は ${you.name} の目を見て、一字一句、自分の考えを言った。`,
+        `${flash.sex}는 ${you.name}의 눈을 똑바로 응시하며 한 자 한 자 자신의 생각을 전했다.`,
       );
       await flash.say_and_wait(
-        `もし身体の都合で、同世代で最も強い${flash.uma_sex_title}だけが勝つ菊花賞に挑めないなら、目標をその上に置けばいい。`,
+        `만약 몸 상태 때문에 동세대 최강의 ${flash.uma_sex_title}들만이 이길 수 있는 국화상에 도전하지 못한다면, 그보다 더 높은 목표를 두어도 좋겠죠.`,
       );
       await flash.say_and_wait(
-        '私は自分の絶頂で、私より経験の豊かな先輩に挑みたいのです。',
+        "저의 최고의 상태로, 저보다 훨씬 경험이 많은 선배들에게 도전해 보고 싶어요.",
       );
       await flash.say_and_wait(
         `日本ダービーに勝った自分が、${flash.couple_title}に勝てるか、試したいのです。`,
       );
-      era.printButton('「お前なら、できる。」', 1);
+      era.printButton("「너라면 분명 해낼 수 있을 거야.」", 1);
       await era.input();
-      await flash.say_and_wait('ふふっ。');
+      await flash.say_and_wait("후훗~");
       await era.printAndWait(
         `${you.name} のためらいのない支持を聞き、エイシンフラッシュは優しく笑った。`,
       );
       await flash.say_and_wait(
-        'ええ。あなたがそばで支えてくださるなら、私はきっとできます。',
+        "그러게요, 당신이 곁에서 지지해 주신다면 저는 분명 해낼 수 있겠죠.",
       );
       await era.printAndWait(
-        `夜の帳が下り始めた浜辺で、異国の${flash.teen_sex_title}は穏やかな顔で ${you.name} に左手を差し出した。`,
+        `밤의 장막이 드리우기 시작한 해변에서, 이국에서 온 ${flash.teen_sex_title}는 부드러운 표정으로 ${you.name}에게 왼손을 내밀었다.`,
       );
-      await flash.say_and_wait('これから、これを目標に頑張りましょう！');
+      await flash.say_and_wait("이제, 그 목표를 향해 노력해 나가요!");
       await era.printAndWait(
-        `${flash.sex}の声には、とても深い感情があった。天が崩れても動かない信頼だ。`,
+        `${flash.sex}의 어조에는 아주 깊은 신뢰가 담겨 있었다. 그것은 설령 하늘이 무너져도 결코 흔들리지 않을 굳건한 믿음이었다.`,
       );
-      era.printButton('「ああ。」', 1);
+      era.printButton("「응.」", 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} はうなずき、自然に${flash.sex}の手を取った。`,
+        `${you.name}은(는) 고개를 끄덕이며 자연스럽게 ${flash.sex}의 손을 맞잡았다.`,
       );
       await era.printAndWait(
-        `疑いなく、この夏合宿を経て、${you.name} たちの未来は、より鮮やかな火花を散らすだろう。`,
+        `의심할 여지 없이 이번 여름 합숙을 거치며 ${you.name}들의 미래는 더욱 찬란하고 멋진 불꽃을 피워낼 것이다.`,
       );
       era.println();
       await era.printAndWait([
@@ -2300,38 +2300,38 @@ module.exports = {
 
   // [번역 대상] we_95_32
   we_95_32: (() => {
-    const title = '未来のこと・三';
+    const title = "미래의 일 · 3";
     /**
      * @param {CharaTalk} flash エイシンフラッシュ
      * @param {CharaTalk} you トレーナー
      * @param {string} callname エイシンフラッシュのトレーナーへの呼び方
      */
     const f = async (flash, you, callname) => {
-      await era.printAndWait('夏の日々は、あっという間に過ぎた。');
+      await era.printAndWait("여름의 시간은 눈 깜짝할 새 흘러갔다.");
       await era.printAndWait(
-        `最後の夏合宿で、${you.name} はエイシンフラッシュの実力が着実に伸びていくのを見ていた。`,
+        `이 마지막 여름 합숙 기간 동안 ${you.name}은(는) 에이신 플래시의 실력이 착실히 강해지는 것을 지켜보았다.`,
       );
       await era.printAndWait(
-        `最後の欠片をはめ込んだ鏡のように、今の${flash.sex}は状態がほぼ完璧で、出せる力もここ数年の頂点にある。`,
+        `마치 마지막 조각을 채워 넣은 거울처럼, 지금의 ${flash.sex}는 상태가 완벽에 가까웠고 발휘할 수 있는 저력 또한 지난 몇 년 중 정점에 달해 있었다.`,
       );
-      era.printButton('（これなら、天皇賞（秋）の走りも問題ないはずだ。）', 1);
+      era.printButton("（이 정도라면 가을 텐노상에서의 활약도 문제없겠어.）", 1);
       await era.input();
       await era.printAndWait(
-        `それを見て、${you.name} は満足げに頷いた。${flash.sex}の夢がもうすぐ叶う喜びが、胸の内に湧いてくる。`,
+        `${you.name}은(는) 만족스럽게 고개를 끄덕였다. ${flash.sex}가 곧 꿈을 이룰 수 있게 되었다는 기쁨이 가슴 깊은 곳에서 차올랐다.`,
       );
-      await flash.say_and_wait(`${callname}？`);
-      era.printButton('「どうした？」', 1);
+      await flash.say_and_wait(`${callname}?`);
+      era.printButton("「왜 그래?」", 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} の表情が妙だったのか、一通りのトレーニングを終えたエイシンフラッシュが、${you.name} の前に立ち、首を傾けて訊いた。`,
+        `${you.name}의 표정이 평소와 조금 다른 것을 눈치챘는지, 훈련의 한 세션을 마친 에이신 플래시가 ${you.name}의 앞에 서서 고개를 갸웃하며 물었다.`,
       );
       await flash.say_and_wait(
-        '最近、私を見つめるあなたの目に、いつもとは違う感情が宿っている気がしまして。',
+        "요즘 당신이 저를 바라보시는 눈빛 속에 왠지 평소와는 다른 감정이 담겨 있는 것 같아서요.",
       );
-      era.printButton('「使命が、もうすぐ果たせるからかもしれない。」', 1);
+      era.printButton("「나의 사명이 곧 달성될 것 같아서 그런가 봐.」", 1);
       await era.input();
-      await flash.say_and_wait('使命を、果たす？');
-      era.printButton('「お前の夢が叶うところを、見届けることだ。」', 1);
+      await flash.say_and_wait("사명을 달성한다고요?");
+      era.printButton("「네 꿈이 이루어지는 걸 지켜보는 것.」", 1);
       await era.input();
       await era.printAndWait(
         `トレーナーとは、${flash.uma_sex_title}を助け、導き、管理し、最終的に${
@@ -2342,114 +2342,114 @@ module.exports = {
       await era.printAndWait(
         `だが意外なことに、${you.name} の言葉を聞いても、エイシンフラッシュは嬉しそうな顔をせず、考え込んでしまった。`,
       );
-      await flash.say_and_wait('では、そのあとは？');
-      await era.printAndWait(`しばらくして、${flash.sex}は言った。`);
-      era.printButton('「そのあと？」', 1);
+      await flash.say_and_wait("그럼 그 후에는요?");
+      await era.printAndWait(`한참 뒤에야 ${flash.sex}가 입을 열었다.`);
+      era.printButton("「그 후에?」", 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} は瞬きした。エイシンフラッシュがそう訊く意図が分からない。`,
+        `${you.name}은(는) 눈을 깜빡이며 에이신 플래시가 왜 이런 질문을 하는지 이해하지 못했다.`,
       );
-      await flash.say_and_wait('言い換えると、あなたの夢は何ですか？');
-      era.printButton('「もちろん、お前の夢を叶えることだ。」', 1);
+      await flash.say_and_wait("바꿔 말하면, 당신의 꿈은 무엇인가요?");
+      era.printButton("「당연히 네 꿈을 이루어주는 거지.」", 1);
       await era.input();
-      await era.printAndWait(`それを聞いて、${you.name} は反射的に答えた。`);
-      await flash.say_and_wait('ふふっ。');
+      await era.printAndWait(`${you.name}은(는) 반사적으로 대답했다.`);
+      await flash.say_and_wait("후후.");
       await era.printAndWait(
         `${you.name} の答えを聞いて、エイシンフラッシュは小さく笑った。そう返すだろうと、分かっていたように。`,
       );
-      await flash.say_and_wait('いいえ。知りたいのは、あなたの夢です。');
-      await era.printAndWait(`次の瞬間、${flash.sex}は首を振った。`);
-      await flash.say_and_wait('その件を除いたうえで、あなた自身の本音を。');
+      await flash.say_and_wait("아니요, 제가 알고 싶은 건 당신만의 꿈이에요.");
+      await era.printAndWait(`다음 순간, ${flash.sex}는 고개를 저었다.`);
+      await flash.say_and_wait("그런 사명 같은 걸 제외한, 당신의 진실한 마음요.");
       await era.printAndWait(
-        `そう言いながら、エイシンフラッシュは ${you.name} を見つめた。紺碧の瞳に、二ヶ月前にも ${you.name} が読み取れなかった揺らぎが、再び走っていた。`,
+        `그렇게 말하는 에이신 플래시는 ${you.name}을(를) 뚫어지게 바라보았다. 그 푸른 눈동자 속에는 두 달 전 ${you.name}이(가) 이해하지 못했던 그 감정의 일렁임이 다시금 번뜩이고 있었다.`,
       );
       era.printButton('「………」', 1);
       await era.input();
       await era.printAndWait(
-        `だが今は、目の前の人の細かな表情の変化を見ているうちに、${you.name} にも別の考えが浮かび始めていた。`,
+        `하지만 지금, 눈앞의 상대가 짓는 미세하게 변화하는 표정을 관찰하던 ${you.name}에게는 문득 새로운 생각이 떠올랐다.`,
       );
-      era.printButton('「もう少し、考えさせてくれ。」', 1);
+      era.printButton("「조금만 더 생각할 시간을 줘.」", 1);
       await era.input();
-      await era.printAndWait(`最終的に、${you.name} はそう言った。`);
+      await era.printAndWait(`${you.name}은(는) 결국 그렇게 대답했다.`);
       era.drawLine();
       await flash.say_and_wait('………');
-      era.printButton('「フラッシュ？」', 1);
+      era.printButton("「플래시?」", 1);
       await era.input();
       await era.printAndWait(
-        `トレセン学園へ戻る車の中で、${you.name} はエイシンフラッシュの視線が、ずっとどこかを見つめていることに気づいた。`,
+        `트레센 학원으로 돌아가는 차 안에서 ${you.name}은(는) 에이신 플래시가 줄곧 한곳을 응시하고 있는 것을 발견했다.`,
       );
       await flash.say_and_wait(
         '何でもありません。合宿の場所を見ていただけです。',
       );
       era.printButton('「合宿の場所？」', 1);
       await era.input();
-      await flash.say_and_wait('はい。こちらで、たくさん学びましたから。');
+      await flash.say_and_wait("네, 저기서 정말 많은 것을 배웠으니까요.");
       await flash.say_and_wait(
-        `たとえば ${callname} と一緒に、多くのトレーニングを重ねて、自分の力をさらに伸ばせたこと。`,
+        `예를 들면 ${callname} 당신과 함께 많은 훈련을 겪으며 제 실력을 한층 더 끌어올렸던 것처럼요.`,
       );
-      era.printButton('「そうか。」', 1);
+      era.printButton("「그렇구나.」", 1);
       await era.input();
       await flash.say_and_wait(
-        'だから、ここへ来るのはこれが最後かもしれないと思うと、どうしても名残惜しくなってしまいます。',
+        "그래서 이게 이곳에 오는 마지막일 수도 있다고 생각하니, 마음 한구석에 아쉬움이 남네요.",
       );
-      era.printButton('「その大切な思い出を、胸に刻もう。」', 1);
+      era.printButton("「이 소중한 추억을 가슴에 깊이 새겨두자.」", 1);
       await era.input();
       await era.printAndWait(
         `エイシンフラッシュの微妙な表情を見て、${you.name} は慰めの言葉をかけた。`,
       );
-      await flash.say_and_wait('はい。');
+      await flash.say_and_wait("네.");
       await era.printAndWait(
-        `${flash.sex}は頷き、それから ${you.name} のほうへ振り返った。`,
+        `${flash.sex}는 고개를 끄덕이고는 바로 몸을 돌려 ${you.name}을(를) 보았다.`,
       );
-      await flash.say_and_wait(`ところで、${callname}。`);
-      era.printButton('「どうした？」', 1);
+      await flash.say_and_wait(`그러고 보니, ${callname}.`);
+      era.printButton("「왜 그래?」", 1);
       await era.input();
       await flash.say_and_wait(
-        '夢を叶えたあと、私が日本に残るとしたら、あなたはどう思いますか？',
+        "만약 제가 꿈을 이룬 뒤에도 계속 일본에 남기로 한다면, 당신은 어떻게 생각하실 건가요?",
       );
-      era.printButton('「……えっ？」', 1);
+      era.printButton("「……어?」", 1);
       await era.input();
       await era.printAndWait(
-        `エイシンフラッシュの突然の問いが、${you.name} を不意打ちにした。`,
+        `에이신 플래시의 갑작스러운 질문에 ${you.name}은(는) 허를 찔린 듯 당황했다.`,
       );
       await flash.say_and_wait(
-        '両親のケーキ店を継ぐことは決まっていますが、その計画を進める途中で、なにかの理由で日本にしばらく滞在することもあるかもしれません。',
+        "부모님의 케이크 가게를 물려받는 건 이미 정해진 일이지만, 그 계획을 실현하는 도중에 어떤 이유로 일본에 한동안 머물게 될지도 모르니까요.",
       );
       await era.printAndWait(
-        `自分の質問が唐突すぎると分かっていたのか、続けて${flash.sex}は説明した。`,
+        `자신의 질문이 너무 뜬금없었다는 걸 아는지 ${flash.sex}가 곧바로 부연 설명을 덧붙였다.`,
       );
-      era.printButton('「嬉しいと思う。」', 1);
+      era.printButton("「정말 기쁠 것 같아.」", 1);
       await era.input();
-      await flash.say_and_wait('！');
+      await flash.say_and_wait("!");
       await era.printAndWait(
         `次の瞬間、${you.name} の率直な言葉に、${flash.sex}はわずかに目を見開いた。`,
       );
-      await flash.say_and_wait('嬉しい……、ですか？');
-      era.printButton('「お前が走る姿を、まだ見続けられるからな。」', 1);
+      await flash.say_and_wait("기쁘다…… 고요?");
+      era.printButton("「너의 달리는 모습을 계속 지켜볼 수 있을 테니까.」", 1);
       await era.input();
       await era.printAndWait(
-        `${you.name} は頷き、エイシンフラッシュに優しい笑みを向けた。`,
+        `${you.name}은(는) 고개를 끄덕이며 에이신 플래시에게 다정한 미소를 지어 보였다.`,
       );
-      await flash.say_and_wait('……そう、ですか。');
+      await flash.say_and_wait("……그렇군요.");
       await era.printAndWait(
-        `エイシンフラッシュは黙り込んだ。${you.name} は、${flash.sex}が視線を逸らしたのに気づいた。`,
+        `에이신 플래시는 침묵에 빠졌고, ${you.name}은(는) ${flash.sex}가 자신과 마주 보던 시선을 슬쩍 피하는 것을 보았다.`,
       );
-      era.printButton('「……フラッシュ？」', 1);
+      era.printButton("「……플래시?」", 1);
       await era.input();
-      await flash.say_and_wait('……いいえ、何でもありません。');
+      await flash.say_and_wait("……아니요, 아무것도 아니에요.");
       await era.printAndWait(
-        `しばらくして、再び口を開いた${flash.sex}は首を振った。`,
+        `잠시 후, 다시 입을 연 ${flash.sex}는 고개를 저었다.`,
       );
       await flash.say_and_wait(
-        'その話は、あとにしましょう。今は、天皇賞（秋）が最優先です。',
+        "그런 이야기는 나중에 다시 하도록 하죠. 어쨌든 지금 가장 중요한 건 가을 텐노상이에요.",
       );
       await era.printAndWait(
-        `そう言いながら、${flash.sex}の表情はすぐに覚悟へと切り替わった。`,
+        `말을 마치는 ${flash.sex}의 얼굴에는 빠르게 확고한 의지가 서렸다.`,
       );
-      await flash.say_and_wait('父と母が、あそこで待っています。だから——');
-      era.printButton('「胸を張って、進もう。」', 1);
+      await flash.say_and_wait("아버지와 어머니가 그곳에서 저를 기다리고 계시니까요——");
+      era.printButton("「가슴을 펴고 나아가자.」", 1);
       await era.input();
-      await flash.say_and_wait('はい！');
+      await flash.say_and_wait("네!");
     };
     f.title = title;
     return f;
@@ -2998,7 +2998,7 @@ module.exports = {
 
   // [번역 대상] ws_47_18
   ws_47_18: (() => {
-    const title = '経験の話・三';
+    const title = "경험담 · 3";
     /**
      * @param {CharaTalk} flash エイシンフラッシュ
      * @param {CharaTalk} mr_cb ミスターシービー
@@ -3007,33 +3007,33 @@ module.exports = {
     const f = async (flash, mr_cb, you) => {
       await flash.say_and_wait(`三冠の${mr_cb.uma_sex_title}、ですか……`);
       await flash.say_and_wait(
-        'いえ、怖くはありません。おっしゃるとおり、得難い機会です。掴まなければなりません。',
+        "아뇨, 두렵지 않아요. 당신 말대로 이건 흔치 않은 기회이고, 저는 반드시 이 기회를 잡아야만 합니다.",
       );
-      await flash.say_and_wait('それに……より強い者との対決、私も楽しみです。');
-      era.drawLine({ content: '約束の日' });
+      await flash.say_and_wait("게다가... 저도 기대되는걸요. 더 강한 상대와의 대결이.");
+      era.drawLine({ content: "약속 당일" });
       await era.printAndWait(
-        `${you.name} とエイシンフラッシュは、トレセン学園のグラウンドへ向かった。`,
+        `${you.name}과(와) 에이신 플래시는 함께 트레센 학원의 운동장으로 향했다.`,
       );
-      await mr_cb.say_and_wait('準備できたら、始めようか。');
+      await mr_cb.say_and_wait("그럼 준비됐으면 시작해 볼까.");
       await flash.say_and_wait(
-        'はい。よろしくお願いいたします、シービーさん。',
+        "네, 잘 부탁드립니다, 미스터 시비 양.",
       );
       await era.printAndWait(
-        'ミスターシービーは、とうに待っていた様子だった。',
+        "미스터 시비는 이미 오래전부터 기다리고 있었던 모양이었다.",
       );
       await era.printAndWait(
-        `それを見て、${you.name} はエイシンフラッシュの肩を励ますように叩いた。`,
+        `이 광경을 보며 ${you.name}은(는) 격려하듯 에이신 플래시의 어깨를 두드려 주었다.`,
       );
       era.printButton('「行ってこい！」', 1);
       await era.input();
-      await flash.say_and_wait('はい！');
+      await flash.say_and_wait("네!");
       await mr_cb.say_and_wait(
         `ふふっ。いいね。三冠の${mr_cb.uma_sex_title}なんて肩書き、全然気にしてない。`,
       );
       await era.printAndWait(
-        'エイシンフラッシュの、退かない落ち着いた様子に、ミスターシービーは感心してうなずいた。',
+        "전혀 물러서지 않고 침착하고 의연한 모습을 보이는 에이신 플래시를 보며 미스터 시비는 칭찬하듯 고개를 끄덕였다.",
       );
-      await mr_cb.say_and_wait('楽しいレースになりそうだ。手は抜かないよ。');
+      await mr_cb.say_and_wait("아주 즐거운 레이스가 될 것 같네. 나도 봐주지는 않을 거야.");
     };
     f.title = title;
     return f;
@@ -3053,161 +3053,161 @@ module.exports = {
     ]);
     if (rank === 1) {
       await era.printAndWait(
-        'だがレースの勝ちは、そんな表面の要素だけでは決まらない。',
+        "그럼에도 불구하고 레이스의 승리는 결코 그런 겉으로 드러난 요소만으로 결정되는 것이 아니었다.",
       );
-      await flash.say_and_wait('ふぅ……私……勝ちました？');
-      era.printButton('「よくやった！」', 1);
+      await flash.say_and_wait("후우... 제가... 이겼나요?");
+      era.printButton("「멋지게 해냈어!」", 1);
       await era.input();
       await era.printAndWait([
-        'レースの途中、',
+        "레이스 도중 ",
         flash.get_colored_name(),
-        ' は強い勝ちへの執念を見せた。',
+        "는 매우 강렬한 승부욕을 보여주었다. 설령 도중에 ",
         mr_cb.get_colored_name(),
         ' に詰められ、絡まれ、何度か交わされても、',
         flash.sex,
-        'は諦めずに攻めを組み直し、その粘りが、望み薄に見えた結果を書き換え、勝利を手にした。',
+        "는 굴하지 않고 다시 공세를 가다듬었다. 결국 그 끈질긴 정신력이 가망 없어 보였던 결과를 뒤집고 승리를 거머쥐게 한 것이다.",
       ]);
-      await mr_cb.say_and_wait('はっはっは、本当に面白かった。');
+      await mr_cb.say_and_wait("하하하하, 정말 재미있었어.");
       await era.printAndWait([
         mr_cb.get_colored_name(),
-        ' は大笑した。負けたのに、',
+        "는 크게 웃음을 터뜨렸다. 비록 패배했지만 ",
         mr_cb.sex,
-        'は前より興奮しているように見えた。',
+        "는 이전보다 더욱 흥분한 기색이었다.",
       ]);
     } else {
       await era.printAndWait(
-        `だから後者の敗戦は、最初から ${you.name} の想定内だった。`,
+        `그렇기에 플래시의 패배는 시작부터 어느 정도 ${you.name}의 예상 범위 안에 있었다.`,
       );
-      await flash.say_and_wait('ふぅ……私の負けです。');
-      era.printButton('「お疲れ。」', 1);
+      await flash.say_and_wait("후우... 제가 졌네요.");
+      era.printButton("「고생했어.」", 1);
       await era.input();
       await era.printAndWait([
-        'それでも、途中で ',
+        "하지만 레이스 도중 ",
         mr_cb.get_colored_name(),
-        ' に交わされたあと、',
+        "에게 추월당한 뒤에도 ",
         flash.get_colored_name(),
-        ' は最後まで追い続け、勝利を自分の手に戻そうとした。その粘りに、',
+        "가 보여준 그 끈질김, 최후의 결과가 나오기 전까지 포기하지 않고 승리를 되찾으려 했던 강인한 정신은 ",
         you.name,
-        ' は胸を打たれた。',
+        "을(를) 꽤 감동시켰다.",
       ]);
-      await mr_cb.say_and_wait('ははは。');
-      await era.printAndWait(`おそらく、${you.name} だけではない。`);
+      await mr_cb.say_and_wait("하하하.");
+      await era.printAndWait(`심지어 그것은 ${you.name}뿐만이 아니었을지도 모른다.`);
     }
-    await mr_cb.say_and_wait('勝ちたい気持ち、かなり強いね。');
+    await mr_cb.say_and_wait("이 이기고자 하는 갈망, 정말 강렬하네.");
     await mr_cb.say_and_wait(
-      `こっちまで伝わってきた……やっぱりエイシンフラッシュ、君は楽しいよ。`,
+      `나한테까지 전해졌어... 역시 에이신 플래시, 넌 나를 정말 즐겁게 해주는구나.`,
     );
-    await flash.say_and_wait('楽しい……ですか。');
+    await flash.say_and_wait("즐겁게... 인가요.");
     await flash.say_and_wait(
-      '……とにかく、本日はありがとうございました、シービーさん。',
+      "......어찌 됐든, 오늘 도와주셔서 정말 감사합니다, 미스터 시비 양.",
     );
     await era.printAndWait(
-      `エイシンフラッシュは何度か息を整え、${flash.sex}は目の前のミスターシービーにうなずいて礼を述べた。`,
+      `에이신 플래시는 숨을 몰아쉬며 상태를 가다듬은 뒤, ${flash.sex}는 눈앞의 미스터 시비에게 고개를 끄덕이며 감사의 뜻을 표했다.`,
     );
-    await mr_cb.say_and_wait(`ねえ、どうしてそんなに勝ちを欲しがるの？`);
-    await flash.say_and_wait('え。');
+    await mr_cb.say_and_wait(`있잖아, 나한테 말해줄 수 있어? 왜 그렇게 승리를 갈구하는 거지?`);
+    await flash.say_and_wait("엣.");
     await era.printAndWait(
       `次の瞬間、いきなりの問いが${flash.sex}を少し驚かせた。`,
     );
     await flash.say_and_wait(
-      'なぜなら……勝利を目的としないレースに、意味はありません。',
+      "그건... 승리를 목적으로 하지 않는 레이스는 아무런 의미가 없으니까요.",
     );
-    await mr_cb.say_and_wait('それ以外は？');
-    await flash.say_and_wait('それ以外、ですか？');
-    await mr_cb.say_and_wait(`走るのは好き？ 君にとって、走る意味は何？`);
-    await flash.say_and_wait('…………');
+    await mr_cb.say_and_wait("그거 말고는?");
+    await flash.say_and_wait("그거 말고는요?");
+    await mr_cb.say_and_wait(`달리는 걸 좋아해? 너에게 있어서 달린다는 건 어떤 의미지?`);
+    await flash.say_and_wait("............");
     await era.printAndWait(
-      'ミスターシービーの言葉に、エイシンフラッシュは黙った。',
+      "미스터 시비의 질문에 에이신 플래시는 침묵에 빠졌다.",
     );
     await flash.say_and_wait(
-      '……申し訳ありません。シービーさんのその問いの意味が、私にはわかりません。',
+      "......죄송합니다. 저는 미스터 시비 양의 질문이 어떤 의도인지 이해하지 못하겠어요.",
     );
-    await era.printAndWait(`しばらくして、${flash.sex}は首を振った。`);
+    await era.printAndWait(`잠시 후, ${flash.sex}는 고개를 저으며 말했다.`);
     await flash.say_and_wait(
-      '私にとって、走ることは走ることです。目的を果たす手段であり、必要な行為です。',
+      "제게 있어 달리는 것은 달리는 것 그 자체일 뿐입니다. 목적을 달성하기 위한 수단이자 필요한 행위이죠.",
     );
     await flash.say_and_wait(
-      'そこに余計な感情を乗せる必要はありません。私は勝つだけです。勝ち続けて、すべてが終わる日まで。',
+      "거기에 그 이상의 감정을 담을 필요는 없다고 생각해요. 제가 해야 할 일은 이기는 것, 계속해서 이겨 나가는 것뿐입니다. 모든 것이 끝나는 그날까지요.",
     );
     await mr_cb.say_and_wait(
-      `じゃあ日本ダービーは？ ダービーの${flash.uma_sex_title}になりたいのに、日本ダービーには特別な感情がないの？`,
+      `그럼 일본 더비는? 더비 ${flash.uma_sex_title}가 되고 싶어 하면서, 정작 일본 더비에 대해서는 아무런 특별한 감정도 없는 거야?`,
     );
-    await flash.say_and_wait('はい。');
-    await mr_cb.say_and_wait('勝つために勝つだけか。つまらないね。');
-    await era.printAndWait('ミスターシービーは肩をすくめた。');
+    await flash.say_and_wait("네.");
+    await mr_cb.say_and_wait("그저 이기기 위해 이긴다라, 정말 지루하네.");
+    await era.printAndWait("미스터 시비는 어깨를 으쓱했다.");
     await mr_cb.say_and_wait(
-      'そんな考えに縛られていたら、ちっとも自由じゃない。',
+      "그런 생각에 얽매여 있으면 전혀 자유롭지 못해.",
     );
-    await flash.say_and_wait('……自由、ですか？');
+    await flash.say_and_wait("......자유요?");
     await mr_cb.say_and_wait(
-      '日本ダービーに勝つコツは、勝つことだけを考えないことだよ。',
+      "일본 더비에서 이기는 비결은, 이기는 것만 생각하지 않는 거야.",
     );
-    await flash.say_and_wait('え？');
+    await flash.say_and_wait("엣?");
     await mr_cb.say_and_wait(
-      'ただ勝つより大事な感情を見つけて、それを力にする。',
+      "단순히 이기는 것보다 더 중요한 감정을 찾아내서, 그 감정을 자신의 동력으로 삼아야 해.",
     );
     await mr_cb.say_and_wait(
-      '走って、また走る。限界も、相手も、運も、全部超えるまで。',
+      "달리고, 또 달리는 거야. 한계든, 라이벌이든, 운이든, 모든 것을 초월할 때까지.",
     );
-    await flash.say_and_wait('………');
-    await mr_cb.say_and_wait('わかる？');
-    await flash.say_and_wait('……私は……');
-    await mr_cb.say_and_wait('まあ、わからなくてもいい。');
+    await flash.say_and_wait(".........");
+    await mr_cb.say_and_wait("내 말이 무슨 뜻인지 알겠어?");
+    await flash.say_and_wait("......저는......");
+    await mr_cb.say_and_wait("뭐, 이해 못 해도 괜찮아.");
     await era.printAndWait(
-      '眉を寄せて考えるエイシンフラッシュを見て、ミスターシービーは微笑んだ。',
+      "에이신 플래시가 미간을 찌푸리며 깊은 생각에 잠긴 모습을 보자 미스터 시비는 살짝 미소 지었다.",
     );
     await mr_cb.say_and_wait(
-      `よく考えて。あとは自分だ。一生に一度の日本ダービーで、何を悟るか。`,
+      `잘 생각해보렴, 이제부터는 네 몫이니까. 일생에 단 한 번뿐인 일본 더비에서 무엇을 깨닫게 될까.`,
     );
     await mr_cb.say_and_wait(
-      'あ、でもまた相手が欲しくなったら、いつでも付き合うよ。',
+      "아, 그래도 나중에 또 상대를 해달라고 하면 언제든 환영이야.",
     );
     await mr_cb.say_and_wait(
-      '最初に言ったとおり、楽しいことなら何度でも大丈夫。',
+      "처음에 말했듯이, 나를 즐겁게 해줄 수 있는 일이라면 몇 번이라도 상관없거든.",
     );
-    era.printButton('「ありがとうございました、シービーさん。」', 1);
+    era.printButton("「정말 고마워, 미스터 시비.」", 1);
     await era.input();
     era.drawLine();
-    await flash.say_and_wait('本日は、ありがとうございました。');
+    await flash.say_and_wait("오늘 일은 정말 감사했습니다.");
     await era.printAndWait(
       `ミスターシービーと別れたあと、エイシンフラッシュは急に振り返り、${you.name} に礼を言った。`,
     );
-    era.printButton('「それが俺の仕事だ。」', 1);
+    era.printButton("「내가 당연히 해야 할 일을 한 것뿐이야.」", 1);
     await era.input();
-    await flash.say_and_wait('だからこそ、なおさら礼を述べるべきです。');
+    await flash.say_and_wait("그렇기에 더욱 감사를 표해야 한다고 생각해요.");
     await era.printAndWait(
-      'エイシンフラッシュは首を振り、少し感慨のこもった声だった。',
+      "에이신 플래시는 고개를 저으며 감회가 새로운 듯한 말투로 말했다.",
     );
     await flash.say_and_wait(
-      'シービーさんとの走りで、新しいものにたくさん触れました。',
+      "미스터 시비 양과의 레이스를 통해 많은 새로운 것들을 접할 수 있었어요.",
     );
     await flash.say_and_wait(
-      `……${flash.sex}の最後の言葉の具体的な意味は、まだよくわかりません。`,
+      `......비록 ${flash.sex}가 마지막에 하신 말씀의 구체적인 의미는 아직 이해하지 못하겠지만요.`,
     );
     await flash.say_and_wait(
-      'ですが、わかっている分だけでも、しばらく消化して学ぶのに十分です。',
+      "하지만 이미 깨달은 것들만으로도 한동안은 소화하고 배우기에 충분할 것 같습니다.",
     );
     await era.printAndWait(
-      `そう言って、${flash.sex}は手を胸に当て、${you.name} に優しい笑みを向けた。`,
+      `말을 마친 뒤, ${flash.sex}는 손을 가슴에 얹고 ${you.name}에게 부드러운 미소를 지어 보였다.`,
     );
     await flash.say_and_wait(
-      'ご助力がなければ、私ひとりでは、このようなトレーニング案には至らなかったでしょう。',
+      "당신의 도움이 없었다면 저 혼자서는 이런 훈련 방안을 떠올리지 못했을 거예요.",
     );
-    era.printButton('「それが、俺がいる意味だ。」', 1);
+    era.printButton("「그게 내가 존재하는 이유니까.」", 1);
     await era.input();
-    await flash.say_and_wait('！');
+    await flash.say_and_wait("!");
     await flash.say_and_wait(
-      '……おっしゃるとおりです。私の誤りを指摘し、正しい道へ導いてくださる方。',
+      "......당신 말씀대로예요. 저의 잘못을 지적해 주고 저를 올바른 길로 이끌어 주는 분.",
     );
     await flash.say_and_wait(
-      'あなたと、本日のシービーさんには、ずいぶん助けていただきました。',
+      "오늘은 당신과 미스터 시비 양에게 많은 도움을 받았네요.",
     );
-    await flash.say_and_wait('ですから——');
+    await flash.say_and_wait("그러니까──");
     await era.printAndWait(
-      `${you.name} はエイシンフラッシュが急に拳を握るのを見た。${flash.sex}の目に、揺がない意志が光っている。`,
+      `${you.name}은(는) 에이신 플래시가 갑자기 주먹을 불끈 쥐는 것을 보았다. ${flash.sex}의 눈빛에는 흔들림 없는 의지가 서려 있었다.`,
     );
     await flash.say_and_wait(
-      '日本ダービーに勝たなければなりません。皆さまへの報いとして。',
+      "반드시 일본 더비에서 우승해서, 모두에게 보답해야겠어요.",
     );
   },
 
