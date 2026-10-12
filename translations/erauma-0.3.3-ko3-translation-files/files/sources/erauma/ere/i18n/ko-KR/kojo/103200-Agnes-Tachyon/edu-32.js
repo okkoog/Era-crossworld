@@ -2589,7 +2589,7 @@ module.exports = {
 
   // [번역 대상] os_95_3
   os_95_3: (() => {
-    const title = '抽選と代償剤の効果';
+    const title = '경품 추첨과 대용 효과';
     /**
      * Plan A / B 共通
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -2613,158 +2613,158 @@ module.exports = {
       plan_b,
       cook_times,
     ) => {
-      await tachyon.say_and_wait('まったく……あんなに簡単に爆発するとは');
+      await tachyon.say_and_wait('정말이지…… 설마 그렇게 쉽게 폭발할 줄은 몰랐군.');
       await tachyon.say_and_wait([
         call_25,
-        ' もですわ……コーヒー粉に身体能力を上げる薬を少し足しただけですのに。なぜそこまで怒るのです……',
+        '도 참…… 커피 가루에 신체 능력을 높여주는 약을 좀 섞었을 뿐인데, 어째서 그렇게 화를 내는 건지……',
       ]);
       await tachyon.say_and_wait(
-        'やはり今回は、呪いにも耐えるビーカーを買うべきですわね？',
+        '역시 이번에는 저주를 견뎌낼 수 있는 비커를 사야 하는 걸까?',
       );
-      era.printButton('「そんなもの、どこから仕入れるんだ……」', 1);
-      era.printButton('「そもそも需要がないだろう……」', 2);
+      era.printButton('「그런 물건을 누구한테 발주한다는 거야……」', 1);
+      era.printButton('「애당초 수요조차 없을 텐데……」', 2);
       await era.input();
       await tachyon.say_and_wait([
         'ふん、',
         tachyon.sex,
-        'の呪いの原理が何であれ、結局は外力で壊すしかないのですわ',
+        '의 저주 원리가 무엇이든 간에 결국은 외부의 힘으로 파괴하는 것일 뿐이라네.',
       ]);
       await tachyon.say_and_wait(
-        'つまり、外力をどう使っても壊れない強度まで上げればいい、ということですわ',
+        '바꿔 말하면 어떤 외부의 힘으로도 파괴할 수 없을 정도로 강화하기만 하면 된다는 뜻이지.',
       );
       await tachyon.say_and_wait(
-        'ですので今回探すのは、宇宙用素材で、極寒・極熱・気圧に耐える高規格ビーカーですわよ',
+        '그래서 이번에 찾을 물건은 우주 산업 소재로 만들어져 극한의 추위와 열기, 기압을 견딜 수 있는 규격의 비커라네.',
       );
       await tachyon.say_and_wait([
-        'ああ、見つかりましたわ。',
+        '아, 찾았군. ',
         callname,
-        '、見てくださいまし',
+        ', 이것 좀 보게.',
       ]);
       era.println();
-      await era.printAndWait('本当か！ 商店街、すごいな！');
-      era.drawLine({ content: '時間を、少しだけ戻す' });
+      await era.printAndWait('진짜야?! 상점가 정말 대단한걸!');
+      era.drawLine({ content: '시간을 조금 거슬러 올라가서' });
       era.println();
       await era.printAndWait([
-        'この日、',
+        '이날, ',
         you.get_colored_name(),
         ' は ',
         tachyon.get_colored_name(),
-        ' と街へ実験器具を買いに出た',
+        '와 함께 상점가로 실험 도구를 사러 나갔다.',
       ]);
-      await era.printAndWait('買い終えて帰るとき……');
+      await era.printAndWait('구매를 마치고 돌아가려던 찰나……');
       await you.say_as_passer_by_and_wait(
         '商店街のおじさん',
-        'さあさあ！ 商店街、実験器具大放出！',
+        '골라 골라! 상점가 실험 기구 대방출!',
       );
       await you.say_as_passer_by_and_wait(
         '商店街のおじさん',
-        '宇宙特製ガラスビーカー、宇宙隕石るつぼ、ロケット燃料アルコールランプをまとめて買えば、抽選に一回参加できるぞ！',
+        '우주용 특제 유리 비커, 우주 운석 도가니, 로켓 연료 알코올램프를 한꺼번에 구매하시는 분께는 추첨 기회를 한 번 드립니다!',
       );
       await you.say_as_passer_by_and_wait(
         '商店街のおじさん',
-        '特等は温泉旅行券！ 一等は特大ニンジンハンバーグ！',
+        '특별상은 온천 여행권! 1등상은 특대 사이즈 당근 함박스테이크!',
       );
       era.println();
       await era.printAndWait(
-        'ええ……最初はともかく、後ろのいくつか、本当に買う人いるのか……',
+        '에에…… 첫 번째는 그렇다 쳐도 뒤의 물건들은 정말 사는 사람이 있긴 한 걸까……',
       );
       era.println();
-      await tachyon.say_and_wait([callname, '、抽選に行きましょう']);
-      era.printButton('「全部買ったのか！？」', 1);
+      await tachyon.say_and_wait([callname, ', 추첨하러 가세.']);
+      era.printButton('「설마 전부 다 산 거야!?」', 1);
       era.printButton(
-        '「……アルコールランプにロケット燃料は、本当に大丈夫か？」',
+        '「……알코올램프에 로켓 연료를 써도 정말 문제없는 거야?」',
         2,
       );
       if ((await era.input()) === 1) {
         await tachyon.say_and_wait(
-          '当然ですわ。研究室で補充すべきものは多いのです',
+          '그야 당연하지. 실험실에 보충해야 할 것들이 꽤 많았거든.',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は当然だと言った',
+          '은 당연하다는 듯이 말했다.',
         ]);
-        await era.printAndWait('……この商店街は、いったい何なんだ');
+        await era.printAndWait('……도대체 이 상점가는 정체가 뭐야.');
       } else {
         await tachyon.say_and_wait([
           callname,
-          '、キャッチコピーもわかりませんの？ 当然、宣伝文句ですわよ、宣伝',
+          ', 자네는 상술이라는 것도 모르는 건가? 당연히 그냥 이름만 붙인 거지.',
         ]);
         era.println();
         await era.printAndWait(
-          '……いや、前が本物なら、最後を疑うのは普通だろう',
+          '……아니, 앞의 것들이 진짜라면 마지막 것도 의심받는 게 당연하잖아.',
         );
       }
       era.printButton(
-        '「それにしても、タキオンが抽選に興味を持つのは珍しいな」',
+        '「그나저나 타키온이 이런 추첨에 관심을 보이다니 별일이네.」',
         1,
       );
       await era.input();
       await tachyon.say_and_wait(
-        'ええ……そうですわね。抽選より、賞品は金で買えますもの……私たちのレース賞金なら、この程度は困りませんわ',
+        '음…… 그렇긴 하군. 사실 이런 경품들은 추첨 대신 돈으로 직접 살 수 있는 것들이니까…… 우리 레이스 상금이라면 부족할 것도 없지.',
       );
       era.println();
-      await era.printAndWait('それなら……');
+      await era.printAndWait('그렇다면……');
       era.println();
-      await tachyon.say_and_wait('ですが目的は賞品ではありません。観察ですわ');
+      await tachyon.say_and_wait('하지만 내 목적은 경품이 아니라 관찰이라네.');
       era.println();
-      await era.printAndWait('観察……？');
+      await era.printAndWait('관찰……?');
       era.println();
       await tachyon.say_and_wait(
-        '正月に言ったのを覚えていますか？ 感情の影響を研究し始めたい、と……',
+        '지난번 새해에 했던 말 기억하나? 감정의 영향에 대해 연구해 보고 싶다고 했었지……',
       );
       await tachyon.say_and_wait(
-        'なら対照が必要ですわ。最良の対照は、ずっとそばにいるあなたです',
+        '그렇다면 당연히 대조군이 필요하고, 가장 좋은 대조군은 내 곁에 늘 붙어 있는 자네 아니겠나.',
       );
-      await tachyon.say_and_wait('見せなさい。抽選のあとの反応を');
+      await tachyon.say_and_wait('자네가 추첨한 뒤의 반응을 보여 주게나.');
       era.println();
       await era.printAndWait([
-        'こうして、',
+        '그렇게 ',
         you.get_colored_name(),
-        ' は前へ出て、抽選機を回した……',
+        '은(는) 앞으로 나가 추첨통을 돌렸다……',
       ]);
       switch (dice) {
         case 1:
-          await you.say_as_passer_by_and_wait('店主', '残念賞、ティッシュ一袋');
-          await era.printAndWait('残念賞か……惜しいが、仕方ない');
+          await you.say_as_passer_by_and_wait('店主', '꽝입니다, 티슈 한 갑.');
+          await era.printAndWait('꽝이라니…… 아쉽지만 어쩔 수 없지.');
           era.println();
           if (relation <= 225) {
-            await tachyon.say_and_wait('む……あまり反応がありませんわね');
+            await tachyon.say_and_wait('흠…… 자네 별로 반응이 없군 그래.');
             era.println();
-            await era.printAndWait('いや……最初から期待していなかったし');
+            await era.printAndWait('아니…… 애초에 별로 기대도 안 했으니까.');
             era.println();
             await tachyon.say_and_wait(
-              '期待しない、とは、最初から当たらないと思っていた、ですの？……結果を見る前に可能性を否定するやり方は、あまり好みではありませんわ',
+              '기대를 안 했다는 건 처음부터 당첨될 거라고 생각지도 않았다는 건가? ……결과를 보기도 전에 가능성을 부정하는 태도는 별로 마음에 들지 않는군.',
             );
             era.println();
             await era.printAndWait('ああ……');
             era.println();
-            await tachyon.say_and_wait('行きましょう。実験の続きですわ');
+            await tachyon.say_and_wait('가세, 돌아가서 실험을 계속해야겠군.');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' の機嫌が悪くなった',
+              '의 기분이 나빠졌다.',
             ]);
-            await era.printAndWait(['二人は黙って学園へ戻った']);
+            await era.printAndWait(['두 사람은 묵묵히 학원으로 돌아갔다.']);
           } else {
             await tachyon.say_and_wait(
-              '残念賞ですわね……まあ、どうでもいいですわ',
+              '꽝이라니…… 뭐, 사실 상관없네.',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' も相槌を打った。所詮、商店街の小さな催しだ',
+              '도 맞장구쳤다. 생각해 보면 그저 상점가의 작은 이벤트일 뿐이었다.',
             ]);
             era.println();
-            await tachyon.say_and_wait('賞品など、私たちなら買えますもの');
+            await tachyon.say_and_wait('이런 경품 따위야 우리 돈으로 얼마든지 살 수 있지 않나.');
             await tachyon.say_and_wait(
-              'それに、ティッシュも役に立ちますわ……ほら、ものを拭けますでしょう？',
+              '게다가 티슈도 사실 꽤 쓸모가 있지…… 보게나, 뭔가를 닦을 때 쓸 수도 있고 말이야.',
             );
             await tachyon.say_and_wait(
-              'それから……その温泉旅行券……当たっても、旅行する暇はありませんわよね',
+              '그리고, 그러니까…… 그 온천 여행권 같은 건…… 당첨돼도 우린 여행 갈 시간도 없지 않나.',
             );
             era.println();
-            await era.printAndWait('ん？ なぜ急にそんなに言う');
+            await era.printAndWait('음? 왜 갑자기 말이 많아진 거야.');
             await tachyon.say_and_wait([
               '……そういえば、',
               callname,
