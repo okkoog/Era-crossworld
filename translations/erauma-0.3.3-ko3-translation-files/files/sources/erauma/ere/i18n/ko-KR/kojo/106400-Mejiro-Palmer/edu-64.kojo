@@ -2407,7 +2407,7 @@ kiku_sho:
         - fontWeight: bold
           content: %CHARA%
         - 「당연히 긴장되지! 하지만 말이야, 긴장되는 것보다 훨씬 더 가슴이 벅차올라!」
-    - 素早く顔を上げて%YOU%を見、興奮して細い腕を上下に振る
+    - 재빨리 고개를 들어 %YOU%을(를) 바라보며, 흥분한 나머지 가느다란 팔을 위아래로 흔들었다
     - color: %COLOR%
       content:
         - fontWeight: bold
