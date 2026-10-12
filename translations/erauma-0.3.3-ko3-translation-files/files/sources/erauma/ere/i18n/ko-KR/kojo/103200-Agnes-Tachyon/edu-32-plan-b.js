@@ -3686,7 +3686,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_b_95_1
+  // [번역 완료] ws_b_95_1
   ws_b_95_1: (() => {
     const title = '다짐의 새해';
     /**
@@ -3798,7 +3798,7 @@ module.exports = {
         you.get_colored_name(),
         '이(가) 담당하는 또 다른 ',
         tachyon.uma_sex_title,
-        'のためだ',
+        '를 위해서였다',
       ]);
       await era.printAndWait([
         '그렇다면 한정된 선택지 속에서, 당연히 ',
@@ -3829,7 +3829,7 @@ module.exports = {
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はそこで気づいた。',
+        '은(는) 그제서야 깨달았다.',
         tachyon.get_colored_name(),
         '이 꽤 오랫동안 자신을 빤히 바라보고 있었다는 사실을 깨닫고 서둘러 정신을 차리며 무슨 일이냐고 물었다.',
       ]);
