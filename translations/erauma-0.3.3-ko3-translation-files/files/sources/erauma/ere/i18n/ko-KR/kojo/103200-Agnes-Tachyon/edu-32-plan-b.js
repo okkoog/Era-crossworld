@@ -5391,172 +5391,172 @@ module.exports = {
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が言い終える前に、店主は大きくてふわふわの綿菓子モルモットを ',
+          '이(가) 말을 마치기도 전에 가게 주인은 크고 푹신한 모르모트 모양 솜사탕을 ',
           tachyon.get_colored_name(),
-          ' の手へ押し込んだ',
+          '의 손에 쥐여 주었다.',
         ]);
         await vega.say_as_unknown_and_wait(
-          '機嫌が悪いときは覚えておきなさい。ふわふわだけは、あなたを裏切らない',
+          '기분이 좋지 않을 때는 기억해 둬. 오직 푹신푹신한 것만이 너를 배신하지 않아.',
         );
         if (era.get('cflag:33:招募状态') === recruit_flags.yes) {
-          await era.printAndWait('店主が、なぜか妙に見覚えがある');
-          await era.printAndWait('……錯覚、だろう');
+          await era.printAndWait('가게 주인이 왠지 모르게 낯이 익었다.');
+          await era.printAndWait('……아마 그냥 착각이겠지.');
         }
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はぼんやりと綿菓子モルモットを受け取り、返さず、多くも言わない',
+          '은(는) 멍하니 솜사탕 모르모트를 받아 들었고, 돌려주지도 무엇이라 말하지도 않았다.',
         ]);
         await era.printAndWait([
-          'それから',
+          '그러고는 ',
           tachyon.sex,
-          'は小さく口を開け、一口かじった',
+          '는 입술을 살짝 열어 아주 조금 베어 물었다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('……ふわふわ、ですわ');
+        await tachyon.say_and_wait('……푹신푹신하군.');
         era.println();
         await era.printAndWait([
-          'なぜか、それを聞いた店主は得意げに胸を張った',
+          '어째서인지 그 말을 들은 가게 주인은 자랑스럽게 가슴을 폈다.',
         ]);
       }
       era.println();
-      await era.printAndWait(['最後に、商店街の端まで歩いた']);
+      await era.printAndWait(['마침내 상점가 끝자락까지 걸어갔다.']);
       await era.printAndWait([
-        '路傍の書店。店内でいちばん目立つ場所に、期限切れの雑誌が数冊並んでいる',
+        '길가의 서점. 가게 안에서 가장 눈에 띄는 곳에 지난 잡지 몇 권이 진열되어 있었다.',
       ]);
-      await era.printAndWait('期限切れ……とも言い切れない');
+      await era.printAndWait('지난 잡지라고 해도…… 아주 오래된 것은 아니었다.');
       await era.printAndWait(
-        'レース情報としては古いが、時期としては二ヶ月前の雑誌にすぎない',
+        '레이스 정보로서는 유효 기간이 지났겠지만, 시간상으로는 고작 두 달 전의 잡지였다.',
       );
       await era.printAndWait([
         '————',
         tachyon.get_colored_name(),
-        ' の凱旋門賞後の取材雑誌だ',
+        '의 개선문상 우승 후 인터뷰가 실린 잡지였다.',
       ]);
-      await you.say_as_passer_by_and_wait('書店の店主', 'いらっしゃいませ！');
-      era.printButton('「これは……」', 1);
-      era.printButton('「凱旋門賞の雑誌か？」', 2);
+      await you.say_as_passer_by_and_wait('서점 주인', '어서 오세요!');
+      era.printButton('「이건……」', 1);
+      era.printButton('「개선문상 특집 잡지인가요?」', 2);
       await era.input();
       await era.printAndWait([
-        '店主は、',
+        '서점 주인은 ',
         you.get_colored_name(),
-        ' の後ろで頭を下げている ',
+        '의 뒤에서 고개를 숙이고 있는 ',
         tachyon.get_colored_name(),
-        ' に気づいていない',
+        '을(를) 눈치채지 못했다.',
       ]);
-      await era.printAndWait('雑誌を見て、自慢げに話し始める');
-      await you.say_as_passer_by_and_wait('書店の店主', [
-        'おお！ この雑誌はな、わしがわざわざここに置いてるんだ！',
+      await era.printAndWait('주인은 잡지를 보며 신나게 떠들기 시작했다.');
+      await you.say_as_passer_by_and_wait('서점 주인', [
+        '오! 이 잡지들 말인가요? 제가 특별히 여기에 진열해 둔 겁니다!',
       ]);
       if (tachyon_win_prix_lat) {
-        await you.say_as_passer_by_and_wait('書店の店主', [
-          'やっとだよ、日本の',
+        await you.say_as_passer_by_and_wait('서점 주인', [
+          '드디어 일본의 ',
           tachyon.uma_sex_title,
-          'が世界の凱旋門を取ったんだ！ 記念に置かねばならん！',
+          '가 세계의 개선문상을 제패했으니까요! 당연히 기념으로 장식해 둬야죠!',
         ]);
       }
-      await you.say_as_passer_by_and_wait('書店の店主', [
-        '外の連中は何もわかっとらん。',
+      await you.say_as_passer_by_and_wait('서점 주인', [
+        '바깥 사람들은 아무것도 몰라요. ',
         tachyon.get_colored_name(),
-        ' が一番強い！ 引退してなけりゃ、あの ',
+        '이야말로 최강이라고요! 은퇴하지만 않았어도 저 ',
         coffee.get_colored_name(),
-        ' なんぞ',
+        ' 같은 애들은 ',
         tachyon.sex,
-        'の相手にもならん！',
+        '의 상대도 안 됐을 텐데!',
       ]);
-      era.printButton('「そうとも言い切れない……」', 1);
-      era.printButton('「もちろん、タキオンが一番強い」', 2);
+      era.printButton('「그건 모르는 일이죠……」', 1);
+      era.printButton('「당연하죠, 타키온이 최강입니다.」', 2);
       if ((await era.input()) === 1) {
         ret++;
-        await era.printAndWait(['ジャパンカップ前なら、たしかにそうだ']);
+        await era.printAndWait(['재팬컵 이전이었다면 확실히 그랬을지도 모른다.']);
         await era.printAndWait([
-          'だがジャパンカップ後の ',
+          '하지만 재팬컵 이후의 ',
           coffee.get_colored_name(),
           ' は、すでに ',
           tachyon.get_colored_name(),
-          ' が認めた完成体だ',
+          '조차 인정한 완성체였다.',
         ]);
         await era.printAndWait([
-          'その状態の ',
+          '그런 상태의 ',
           coffee.get_colored_name(),
           ' が、もう一度 ',
           tachyon.get_colored_name(),
-          ' と走ったら……勝敗はわからない',
+          '와 다시 한번 승부를 겨룬다면…… 승패는 정말 알 수 없었을 것이다.',
         ]);
         await era.printAndWait([
-          'そうだ。',
+          '그렇다.',
           coffee.get_colored_name(),
-          ' が限界を超えても……自分の中では、',
+          '가 한계를 뛰어넘었다 해도…… 마음속으로는 ',
           tachyon.get_colored_name(),
           ' なら',
           tachyon.sex,
-          'と渡り合えると信じている',
+          '와 대등하게 겨룰 수 있으리라 믿고 있다.',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          '自身が言うような足枷では、絶対にない',
+          '스스로 말하던 그런 걸림돌 같은 존재는 결코 아니다.',
         ]);
         await you.say_as_passer_by_and_wait(
-          '書店の店主',
-          'ちっ、通が来たかと思ったら、何もわかっとらん奴だったか',
+          '서점 주인',
+          '쳇, 뭘 좀 아는 손님이 온 줄 알았더니 이 사람도 아무것도 모르는구먼.',
         );
         era.println();
         await era.printAndWait([
-          '店主にそう言われ、',
+          '가게 주인의 말을 들으며 ',
           you.get_colored_name(),
-          ' は苦笑するしかなかった',
+          '은(는) 쓴웃음을 지을 수밖에 없었다.',
         ]);
         await era.printAndWait([
-          'ふと、',
+          '그때 문득 ',
           you.get_colored_name(),
           ' は ',
           tachyon.get_colored_name(),
-          ' がその雑誌の山へ近づくのを見た',
+          '이(가) 잡지 더미로 다가가는 것을 보았다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('……店主、一冊くださいまし');
-        await you.say_as_passer_by_and_wait('書店の店主', [
+        await tachyon.say_and_wait('……아저씨, 이거 한 권 주세요.');
+        await you.say_as_passer_by_and_wait('서점 주인', [
           'おお、',
-          tachyon.sex_code === 1 ? '兄ちゃん' : '嬢ちゃん',
-          'は目が高いな',
+          tachyon.sex_code === 1 ? '총각' : '아가씨',
+          ', 보는 눈이 있네!',
         ]);
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はわざと声を落とし、',
+          '은(는) 일부러 목소리를 낮게 깔아 ',
           tachyon.sex,
-          '本来の音色がわからないようにしている',
+          '본래 목소리가 들키지 않도록 했다.',
         ]);
         await era.printAndWait(
-          'だがこの雑誌……当時サンプルは受け取っていたはずだ。なぜもう一度買う？',
+          '하지만 이 잡지는…… 분명 당시에 샘플을 받았을 텐데 왜 굳이 다시 사는 걸까?',
         );
         era.println();
         await tachyon.say_and_wait(
-          '……仕方ありませんわ。この雑誌の価値がわからない人がいるので、私自身で大切にするしか',
+          '……어쩔 수 없지. 이 잡지의 가치를 모르는 사람이 있으니 나라도 소중히 간직해야겠어.',
         );
         era.println();
-        await era.printAndWait('え');
+        await era.printAndWait('에?');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' がコッソリ、苛立ち混じりの目を ',
+          '은(는) 몰래 짜증 섞인 눈길을 ',
           you.get_colored_name(),
-          ' へ向ける',
+          '에게 보냈다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は思わず考える。また何か間違えたか？',
+          '은(는) 자신이 또 무엇을 잘못 말한 것인지 고민하기 시작했다.',
         ]);
       } else {
         await tachyon.say_and_wait('……！');
         era.println();
-        await era.printAndWait('聞くまでもない');
-        await era.printAndWait('もし、に意味はないとしても');
+        await era.printAndWait('그걸 굳이 물어볼 필요가 있을까?');
+        await era.printAndWait('비록 가정이 무의미하다 할지라도.');
         await era.printAndWait([
-          'それでももしを考えずにはいられない',
+          '그렇기에 더욱 가정을 멈출 수 없게 만드는 ',
           tachyon.uma_sex_title,
         ]);
         await era.printAndWait([
-          '無限の可能性と想像を連れてくる',
+          '무한한 가능성과 상상을 불러일으키는 ',
           tachyon.uma_sex_title,
         ]);
         await era.printAndWait(['それが ', tachyon.get_colored_name()]);
