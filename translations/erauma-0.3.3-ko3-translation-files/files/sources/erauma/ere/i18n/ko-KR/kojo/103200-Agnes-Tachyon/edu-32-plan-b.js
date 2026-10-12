@@ -552,7 +552,7 @@ module.exports = {
 
   // [번역 대상] hot_spring_b
   hot_spring_b: (() => {
-    const title = 'ほかの可能性';
+    const title = '또 다른 가능성';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee
@@ -572,103 +572,103 @@ module.exports = {
       chris_count,
     ) => {
       await tachyon.say_and_wait(
-        'そういえば、まだこんなものがありましたわね……',
+        '그러고 보니 이런 것도 아직 남아 있었군……',
       );
       await tachyon.say_and_wait([
-        '無駄にするのも惜しいですし、どうです、',
+        '버리기엔 아까우니 어떤가, ',
         callname,
-        '？ 一緒に行きます？',
+        '? 같이 가 보겠나?',
       ]);
       era.println();
-      await era.printAndWait('偶然、実験室を整理していたとき');
-      await era.printAndWait(['隅に隠されていた封筒を見つけた']);
+      await era.printAndWait('우연히 실험실을 정리하던 중');
+      await era.printAndWait(['구석에 숨겨진 봉투 하나를 발견했다.']);
       if (love >= 75) {
-        await era.printAndWait('ん……？');
-        await era.printAndWait('なぜか、違和感がひどく重い');
+        await era.printAndWait('응……?');
+        await era.printAndWait('어쩐지 상당한 위화감이 든다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' がよく見ると、すぐに尻尾が見えた',
+          '이(가) 자세히 살펴보자 금세 실마리가 보였다.',
         ]);
         await era.printAndWait(
-          '大掃除で見つかったはずなのに、封筒には皺ひとつなく、むしろ丁寧にしまわれていたように見える',
+          '대청소 중에 우연히 발견한 물건이라기엔 봉투에 주름 하나 없다. 오히려 누군가 소중히 보관한 듯했다.',
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が「見つけた」ものだと結びつけて、',
+          '이(가) 『발견했다』는 상황과 연결해 보니,',
           you.get_colored_name(),
-          ' はだいたい真相を察した',
+          '은(는) 대강 진상을 눈치챘다.',
         ]);
         era.println();
-        await tachyon.say_and_wait(['ん？ ', callname, '？ どうしましたの？']);
+        await tachyon.say_and_wait(['응? ', callname, '? 무슨 일인가?']);
         era.println();
-        await era.printAndWait('……言わないでおこう');
+        await era.printAndWait('……입 밖에 내지는 말자.');
         await era.printAndWait([
-          'さもなくば、',
+          '그랬다가는 ',
           tachyon.get_colored_name(),
-          ' が羞恥で怒るのはまだいい。問題は',
+          '이(가) 부끄러워서 화내는 건 둘째 치더라도 문제는',
           tachyon.sex,
-          'が怒ったあと、夜の自分が絶対に楽をしないことだ',
+          '가 화를 낸 뒤에는 오늘 밤이 절대 편하지 않으리라는 점이다.',
         ]);
       }
       era.println();
-      await era.printAndWait('ちょうど、急ぐ用事もほぼ片付いている');
+      await era.printAndWait('마침 급한 일도 거의 마무리된 참이다.');
       await era.printAndWait([
         coffee.get_colored_name(),
-        ' のURA決勝も、もう終わった',
+        '의 URA 결승도 이미 끝났다.',
       ]);
-      await era.printAndWait('機会があるなら、一緒に行こう');
+      await era.printAndWait('기회가 생겼으니 함께 가기로 하자.');
       era.drawLine();
-      await era.printAndWait('十時間近く車に揺られたあと');
+      await era.printAndWait('자동차를 타고 거의 열 시간을 달린 끝에');
       await era.printAndWait([
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' は、ようやく温泉宿に着いた',
+        '은(는) 마침내 온천 여관에 도착했다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('ふう……やっと着きましたわ');
-      await tachyon.say_and_wait('ねえ……本当に、道を間違えていませんの？');
-      era.printButton('「……地図には、たしかにここだと書いてある」', 1);
+      await tachyon.say_and_wait('후우…… 드디어 도착했군.');
+      await tachyon.say_and_wait('이보게…… 정말 길을 잘못 든 건 아닌가?');
+      era.printButton('「……지도에는 분명 여기라고 적혀 있어.」', 1);
       await era.input();
-      await era.printAndWait(['二人がためらうのも無理はない']);
+      await era.printAndWait(['두 사람이 망설이는 것도 무리는 아니다.']);
       await era.printAndWait(
-        '今いる場所は、原生林と呼んでも差し支えない深山だ',
+        '지금 서 있는 곳은 원시림이라 불러도 될 만큼 깊은 산속이었으니까.',
       );
-      await era.printAndWait('こんなところに、本当に温泉があるのか……');
+      await era.printAndWait('이런 곳에 정말 온천이 있기는 한 걸까……');
       era.println();
       await tachyon.say_and_wait(
-        '探しますわ……待ちなさい、ここ電波もないのですか！？',
+        '찾아보겠네…… 잠깐, 여기엔 휴대전화 신호조차 없단 말인가!?',
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' が携帯を出すと、深山には本当に電波がなかった',
+        '이(가) 휴대전화를 꺼내 보았지만 깊은 산속에는 정말 신호가 잡히지 않았다.',
       ]);
-      await era.printAndWait('これは……まずい');
+      await era.printAndWait('이건…… 곤란한데.');
       era.println();
-      await tachyon.say_and_wait([callname, '……いっそ、戻りません？']);
+      await tachyon.say_and_wait([callname, '……차라리 돌아가는 게 어떤가?']);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' も退散しようと考えた、まさにそのとき',
+        '도 포기하고 돌아가려던 바로 그때,',
       ]);
-      await era.printAndWait('茂みを一枚払うと、目の前に温泉宿が現れた');
+      await era.printAndWait('덤불을 헤치자 눈앞에 온천 여관이 나타났다.');
       era.drawLine();
       await era.printAndWait([
         you.get_colored_name(),
-        ' と ',
+        '와(과) ',
         tachyon.get_colored_name(),
-        ' がフロントでチェックインしたあと、',
+        '이(가) 프런트에서 체크인을 마친 뒤,',
         you.get_colored_name(),
-        ' はすぐ露天風呂へ入った',
+        '은(는) 곧장 노천탕에 들어갔다.',
       ]);
       await era.printAndWait(
-        'まだ完全には暖まらない冬に、十数時間の車と山越え。本当に骨が折れた',
+        '아직 추위가 가시지 않은 겨울에 긴 자동차 여행에다 산길까지 넘었으니, 정말 고생스러웠다.',
       );
       await era.printAndWait(
-        'だが深山にも利点はある。宿には自分たち以外の客がおらず、いわば一人で宿を独占している',
+        '하지만 깊은 산속에도 장점은 있다. 여관에는 둘 외에 손님이 없어 사실상 통째로 빌린 셈이었다.',
       );
-      await era.printAndWait('だから今の湯は、格別に気持ちいい');
+      await era.printAndWait('그래서인지 지금 몸을 담근 온천물은 유난히 기분 좋았다.');
 
       era.printButton('「……ん？」', 1);
       await era.input();
