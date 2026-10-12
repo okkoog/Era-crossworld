@@ -3088,312 +3088,312 @@ module.exports = {
         case 4:
           await you.say_as_passer_by_and_wait(
             '店主',
-            '一等、特大ニンジンハンバーグ！',
+            '1등상, 특대 당근 함박스테이크!',
           );
           era.println();
-          await era.printAndWait('え……？');
-          await era.printAndWait('一等がこれか？');
+          await era.printAndWait('에……?');
+          await era.printAndWait('1등상이 고작 이거야?');
           era.println();
           await era.printAndWait(
-            '……なるほど、有名シェフの作だ。聞いたことのない人だが',
+            '……그렇군. 유명 셰프가 만든 거라는데 들어 본 적 없는 이름이다.',
           );
           await era.printAndWait(
-            '錯覚か。二等の一車のニンジンのほうが得な気がする',
+            '기분 탓일까. 왠지 2등상인 당근 한 수레보다 가치가 떨어지는 것 같은데.',
           );
           era.println();
           await tachyon.say_and_wait([
-            'おや、一等ですわ……ですが、',
+            '이런, 무려 1등상이라니…… 그런데 ',
             callname,
-            '、あまり嬉しそうではありませんわね？',
+            ', 자네 표정이 별로 기뻐 보이지 않는군?',
           ]);
-          era.printButton('「この賞品、タキオンしか食べられないだろ」', 1);
-          era.printButton('「なんか……二等のほうがマシだ」', 2);
+          era.printButton('「어차피 이 경품은 타키온밖에 못 먹잖아.」', 1);
+          era.printButton('「왠지…… 2등상보다 못한 느낌이라서.」', 2);
           await era.input();
           await tachyon.say_and_wait(
-            'おや？……ええ、ある意味ではそうですわ。シェフが作ったとて、要するにニンジンと肉ですもの',
+            '호오? ……음, 어떤 의미에서는 확실히 그렇군. 유명 셰프가 만들었든 어쨌든 결국은 당근과 고기일 뿐이니까.',
           );
           await tachyon.say_and_wait(
-            '原料だけで見れば、価値は二等のニンジン量に及びませんわ',
+            '원재료의 측면에서 보면 가치가 2등상인 당근 더미보다 낮은 건 사실이지.',
           );
           if (love >= 75) {
             await tachyon.say_and_wait(
-              'では、相応の価値を私が付けてあげますわ……',
+              '그럼 내가 여기에 합당한 가치를 부여해 주도록 하지……',
             );
             era.println();
             await era.printAndWait([
-              'そう言って、',
+              '말을 마치고 ',
               tachyon.get_colored_name(),
-              ' は賞品のハンバーグを受け取った',
+              '은(는) 경품인 함박스테이크를 받아 들었다.',
             ]);
             await era.printAndWait([
-              '一口分を切り、',
+              '딱 한 입 크기로 잘라 ',
               you.get_colored_name(),
-              ' の口元へ差し出した',
+              '의 입가로 가져왔다.',
             ]);
-            await era.printAndWait('え、これは……');
+            await era.printAndWait('어, 이건……');
             era.println();
             await tachyon.say_and_wait(
-              '愛する人と食べるハンバーグ……これで価値は上がりましたかしら？',
+              '사랑하는 이와 함께 먹는 함박스테이크…… 자, 이제 가치가 좀 올라갔나?',
             );
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
-              ' が答える前に、',
+              '이(가) 대답할 틈도 없이 ',
               tachyon.get_colored_name(),
-              ' はハンバーグを ',
+              '은(는) 함박스테이크를 ',
               you.get_colored_name(),
-              ' の口へ押し込んだ',
+              '의 입안으로 밀어 넣었다.',
             ]);
             await era.printAndWait([
-              '噛み終わるまで、',
+              '다 씹고 나서야 ',
               tachyon.sex,
-              'はフォークを引き抜かなかった',
+              '은(는) 포크를 뗐다.',
             ]);
             era.println();
-            await tachyon.say_and_wait('次はあなたですわ、ダーリン❤');
+            await tachyon.say_and_wait('이제 자네 차례라네, 여보❤');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は口を開け、',
+              '은(는) 입을 벌리고 ',
               you.get_colored_name(),
-              ' の給餌を待った',
+              '이(가) 먹여 주기를 기다렸다.',
             ]);
-            await era.printAndWait(['二人はそのハンバーグを分け合った']);
+            await era.printAndWait(['두 사람은 그 함박스테이크를 사이좋게 나눠 먹었다.']);
           } else if (love >= 50) {
-            await tachyon.say_and_wait('……それに、味もあなたには及びませんわ');
+            await tachyon.say_and_wait('……무엇보다 자네가 만든 것보다 맛없어 보이는군.');
             era.println();
-            await era.printAndWait('え……？');
+            await era.printAndWait('에……?');
             await era.printAndWait(
-              '褒められて嬉しいが、自分の腕がこの有名シェフに勝つとは思えない……',
+              '칭찬은 고맙지만 내 요리 실력이 저런 유명 셰프를 이길 리가 없는데……',
             );
             era.println();
             await tachyon.say_and_wait(
-              'くふふ……大事なのは栄養でも味でもなく、作る気持ち……それを教えたのは、あなたではありませんの？',
+              '후후…… 중요한 건 영양도 맛도 아니라네. 바로 만드는 이의 정성이지…… 이거, 자네가 내게 가르쳐 준 것 아닌가?',
             );
             era.println();
             await era.printAndWait([
-              'そう言って、',
+              '말을 마치고 ',
               tachyon.get_colored_name(),
-              ' は賞品のハンバーグを受け取った',
+              '은(는) 경품인 함박스테이크를 받아 들었다.',
             ]);
             await era.printAndWait([
-              '一口分を切り、',
+              '딱 한 입 크기로 잘라 ',
               you.get_colored_name(),
-              ' の口元へ差し出した',
+              '의 입가로 가져왔다.',
             ]);
-            await era.printAndWait('え、これは……');
+            await era.printAndWait('어, 이건……');
             era.println();
             await tachyon.say_and_wait(
-              'ですが、あなたの言う通りですわ……比較なしでは確定できません。科学は厳密でなければ',
+              '하지만 자네 말도 일리가 있군…… 비교 대상이 없으면 확신할 수 없지. 과학은 엄격해야 하니까 말이야.',
             );
             await tachyon.say_and_wait(
-              'ですから……技術はあるが愛はないものと、技術は劣るが愛があるもの。どちらが上か……❤',
+              '그러니…… 기술은 좋지만 사랑이 없는 요리와 기술은 좀 부족해도 사랑이 담긴 요리. 과연 어느 쪽이 더 우수한지 확인해 보자고❤',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' はハンバーグを優しく ',
+              '은(는) 함박스테이크를 부드럽게 ',
               you.get_colored_name(),
-              ' の口へ入れた',
+              '의 입에 넣어 주었다.',
             ]);
-            await era.printAndWait('そして小さく切り、自分の口へ入れた');
+            await era.printAndWait('본인도 작은 조각을 하나 입에 넣었다.');
             era.println();
             await tachyon.say_and_wait([
-              '戻ったらもう一枚作って比較してくださいまし、',
+              '비교를 위해 돌아가면 자네가 다시 한 번 만들어 주게나, ',
               callname,
               '❤️',
             ]);
             era.println();
-            await era.printAndWait([tachyon.sex, 'の笑顔の前では']);
+            await era.printAndWait([tachyon.sex, '의 미소 앞에서는……']);
             await era.printAndWait(
-              '自分は本当にモルモットになったようで、されるがままだった',
+              '자신이 정말 실험용 모르모트가 된 것처럼 느껴져 그저 하라는 대로 할 수밖에 없었다.',
             );
           } else if (cook_times === 0) {
             await tachyon.say_and_wait(
-              'ですが、私しか食べられない、は誤りですわ',
+              '하지만 나만 먹을 수 있다는 생각은 틀렸네.',
             );
             era.println();
             await era.printAndWait([
-              'そう言って、',
+              '말을 마치고 ',
               tachyon.get_colored_name(),
-              ' は賞品のハンバーグを受け取った',
+              '은(는) 경품인 함박스테이크를 받아 들었다.',
             ]);
             await era.printAndWait([
-              '一口分を切り、',
+              '딱 한 입 크기로 잘라 ',
               you.get_colored_name(),
-              ' の口元へ差し出した。',
+              '의 입가로 가져왔다.。',
             ]);
-            await you.say_and_wait('え、これは……');
+            await you.say_and_wait('어, 이건……');
             era.println();
             await tachyon.say_and_wait(
-              'ニンジンの栄養は人間にも有益ですわ。ハンバーグの動物性たんぱくも……',
+              '당근의 영양 성분은 인간에게도 상당히 유익하다네. 함박스테이크 속의 동물성 단백질도 마찬가지고……',
             );
             await tachyon.say_and_wait([
-              'むしろ人間の消化速度なら、肉への需要は',
+              '오히려 인간의 소화 속도를 생각하면 육류에 대한 요구량은 ',
               tachyon.uma_sex_title,
-              'より高いほどですわ',
+              '보다 훨씬 높지.',
             ]);
             era.println();
             await era.printAndWait(
-              'いや、違う。つまりこれは……自分に食べさせたいのか？',
+              '아니, 그러니까…… 이걸 나보고 먹으라는 소리야?',
             );
             era.println();
-            await tachyon.say_and_wait('ちっ……いい子ですから、あーん');
+            await tachyon.say_and_wait('쯧…… 자, 착하지. 아~~');
             era.println();
-            await era.printAndWait('ま、まさか「あーん」まで');
+            await era.printAndWait('서, 설마 『아~』까지……');
             await era.printAndWait([
               you.get_colored_name(),
-              ' は感動しながらハンバーグを食べた……',
+              '은(는) 감동하며 함박스테이크를 먹었다……',
             ]);
             era.drawLine();
-            era.printButton('「…………いつ」', 1);
+            era.printButton('「…………언제」', 1);
             await era.input();
-            await era.printAndWait('ただでは転ばない');
-            await era.printAndWait('だが……色仕掛けには防ぎようがない');
+            await era.printAndWait('그냥 넘어가는 법이 없구나.');
+            await era.printAndWait('하지만…… 미인계에는 당해 낼 도리가 없다.');
             await era.printAndWait([
-              '相手が、',
+              '상대가 바로 ',
               you.get_colored_name(),
-              ' に食べさせようとする絶世の美',
+              '에게 먹여 주려고 하는 절세미인 ',
               tachyon.teen_sex_title,
-              'ならなおさらだ',
+              '이라면 더더욱.',
             ]);
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
-              ' は、身体から点々と出る深い青の光を見て、呆れて尋ねた',
+              '은(는) 몸 여기저기에서 새어 나오는 짙푸른 빛을 보며 어이없다는 듯 물었다.',
             ]);
             era.println();
             await tachyon.say_and_wait([
-              'ふん、私の投薬があなたに見破られるようでは、毎日苦労して ',
+              '흥. 내 투약 기술을 자네 따위가 간파할 수 있다면 매일 정성을 다해 ',
               call_25,
-              ' に調合を飲ませている甲斐がありませんわ',
+              '에게 내가 조제한 약을 먹이던 보람이 없지 않겠나.',
             ]);
             await tachyon.say_and_wait(
-              '残りは……あなたが食べなさい。こういうものに興味はありませんわ',
+              '남은 건…… 자네가 다 먹게나. 난 이런 것에는 별로 관심 없으니까.',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              '……なぜか、',
+              '……왠지 모르겠지만 ',
               tachyon.sex,
-              'の食事への要求は極端に低い',
+              '는 식사에 관한 기준이 굉장히 낮았다.',
             ]);
-            await era.printAndWait('低いというより……要求がない');
-            await era.printAndWait('栄養が取れれば、何でもいい');
+            await era.printAndWait('기준이 낮다기보다는…… 아예 아무런 요구 사항이 없는 것 같았다.');
+            await era.printAndWait('그저 영양만 보충할 수 있다면 무엇이든 상관없는 것이다.');
             await era.printAndWait(
-              'だが……まだ正月のうちだ……少しだけ図に乗ってもいいだろう',
+              '하지만…… 어쨌든 지금은 아직 새해 연휴니까…… 조금은 기어올라도 괜찮겠지.',
             );
-            era.printButton('「……本当にうまいぞ。タキオンも一口どうだ？」', 1);
+            era.printButton('「……진짜 맛있는데, 타키온도 한 입 먹어 볼래?」', 1);
             await era.input();
             await tachyon.say_and_wait(
-              '結構ですわ。遠慮ではなく、本当に要りません',
+              '됐네. 사양하는 게 아니라 정말 필요 없어서 그러는 거야.',
             );
             era.printButton(
-              '「でも、抽選券はタキオンのだ。自分で味見しなければ不公平だろ」',
+              '「그래도 타키온 추첨권으로 뽑은 거니까 직접 맛보지 않으면 불공평하잖아.」',
               1,
             );
             await era.input();
-            await tachyon.say_and_wait('……そうですね。一口だけ');
+            await tachyon.say_and_wait('……하긴 그렇군. 그럼 한 입만 먹어 보지.');
             era.println();
             await era.printAndWait([
-              '気づいたとき、',
+              '정신을 차려 보니 ',
               you.get_colored_name(),
-              ' のフォークの肉は、',
+              '의 포크에 꽂혀 있던 고기는 이미 ',
               tachyon.get_colored_name(),
-              ' に電光石火で噛み取られていた',
+              '이(가) 번개 같은 속도로 물어 간 뒤였다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              'よろしい、味は悪くありませんわ。それで十分です',
+              '됐네, 확실히 맛은 있군. 이 정도면 됐어.',
             );
             era.println();
-            await era.printAndWait('……速すぎ！？');
-            await era.printAndWait('口を動かすのも見えなかった……！');
+            await era.printAndWait('……뭐야, 왜 이렇게 빨라!?');
+            await era.printAndWait('입을 움직이는 것조차 제대로 보이지 않았는데……!');
             await era.printAndWait([
               '……',
               tachyon.sex,
-              'が本気で食事を楽しんだら、食卓の争奪戦では無敵だろう',
+              '가 정말 식사를 즐기기 시작한다면 식탁 위에서는 누구도 상대할 수 없겠지.',
             ]);
             await era.printAndWait([
               'なぜか、',
               you.get_colored_name(),
-              ' はそんな見当違いのことを考え始めた',
+              '은(는) 그런 엉뚱한 생각을 하기 시작했다.',
             ]);
           } else {
-            await tachyon.say_and_wait('では……相応の価値を私が付けましょう');
+            await tachyon.say_and_wait('그럼…… 내가 여기에 합당한 가치를 부여해 주지.');
             era.println();
             await era.printAndWait([
-              'そう言って、',
+              '말을 마치고 ',
               tachyon.get_colored_name(),
-              ' は賞品のハンバーグを受け取った',
+              '은(는) 경품인 함박스테이크를 받아 들었다.',
             ]);
             await era.printAndWait([
-              '一口分を切り、',
+              '딱 한 입 크기로 잘라 ',
               you.get_colored_name(),
-              ' の口元へ差し出した',
+              '의 입가로 가져왔다.',
             ]);
-            await era.printAndWait('え、これは……');
+            await era.printAndWait('어, 이건……');
             if (relation <= 225) {
               await tachyon.say_and_wait([
-                'G1を走る',
+                'G1에 출전하는 ',
                 tachyon.uma_sex_title,
                 '、',
                 tachyon.get_colored_name(),
-                ' が自ら食べさせるハンバーグ。これで相応の価値はつきましたかしら？',
+                '이(가) 직접 먹여 주는 함박스테이크라네. 이 정도면 가치가 좀 생겼나?',
               ]);
             } else {
               await tachyon.say_and_wait([
                 '超絶美',
                 tachyon.teen_sex_title,
-                'であり、G1を走る',
+                'であり、G1에 출전하는 ',
                 tachyon.uma_sex_title,
                 'である ',
                 tachyon.get_colored_name(),
-                ' が自ら食べさせるハンバーグ。一口にいくら払えますの？',
+                '이(가) 직접 먹여 주는 함박스테이크라네. 이 한 입을 위해 자네라면 얼마를 낼 텐가?',
               ]);
             }
             era.println();
-            await tachyon.say_and_wait('さあ、いい子ですから、あーん');
+            await tachyon.say_and_wait('자, 착하지. 아~~');
             era.println();
-            await era.printAndWait('ま、まさか「あーん」まで');
+            await era.printAndWait('서, 설마 『아~』까지……');
             await era.printAndWait([
               you.get_colored_name(),
-              ' は感動しながらハンバーグを食べた……',
+              '은(는) 감동하며 함박스테이크를 먹었다……',
             ]);
             era.drawLine();
-            era.printButton('「…………いつ」', 1);
+            era.printButton('「…………언제」', 1);
             await era.input();
-            await era.printAndWait('ただでは転ばない');
-            await era.printAndWait('だが……色仕掛けには防ぎようがない');
+            await era.printAndWait('그냥 넘어가는 법이 없구나.');
+            await era.printAndWait('하지만…… 미인계에는 당해 낼 도리가 없다.');
             await era.printAndWait([
-              '相手が、',
+              '상대가 바로 ',
               you.get_colored_name(),
-              ' に食べさせようとする絶世の美',
+              '에게 먹여 주려고 하는 절세미인 ',
               tachyon.teen_sex_title,
-              'ならなおさらだ',
+              '이라면 더더욱.',
             ]);
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
-              ' は、身体から点々と出る深い青の光を見て、呆れて尋ねた',
+              '은(는) 몸 여기저기에서 새어 나오는 짙푸른 빛을 보며 어이없다는 듯 물었다.',
             ]);
             era.println();
             await tachyon.say_and_wait([
-              'ふん、私の投薬があなたに見破られるようでは、毎日苦労して ',
+              '흥. 내 투약 기술을 자네 따위가 간파할 수 있다면 매일 정성을 다해 ',
               call_25,
-              ' に調合を飲ませている甲斐がありませんわ',
+              '에게 내가 조제한 약을 먹이던 보람이 없지 않겠나.',
             ]);
-            await tachyon.say_and_wait('残りは……ちょっと！ 一口は残しなさい！');
+            await tachyon.say_and_wait('남은 건…… 야! 내 것도 좀 남겨 두게나!');
             era.println();
             await era.printAndWait([
-              '悲憤を食欲に変えた ',
+              '슬픔과 분노를 식욕으로 승화시킨 ',
               you.get_colored_name(),
               ' は、必死に ',
               tachyon.get_colored_name(),
-              ' と残りのハンバーグを奪い合った',
+              '과(와) 남은 함박스테이크를 두고 쟁탈전을 벌였다.',
             ]);
             await era.printAndWait(
-              '…………認めざるを得ない。有名シェフの腕は、自分より上だ',
+              '…………인정하긴 싫지만 유명 셰프의 실력이 나보다 훨씬 좋긴 하네.',
             );
           }
           break;
