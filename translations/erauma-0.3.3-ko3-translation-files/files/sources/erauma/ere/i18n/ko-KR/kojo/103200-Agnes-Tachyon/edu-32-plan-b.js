@@ -838,187 +838,187 @@ module.exports = {
         era.println();
         await tachyon.say_and_wait([
           callname,
-          '……あの日の答え、まだもらっていませんわね',
+          '……그날의 답은 아직 듣지 못했군.',
         ]);
-        await tachyon.say_and_wait('こういう可能性は、存在してよいのですか？');
+        await tachyon.say_and_wait('이런 가능성도 존재해도 괜찮은 걸까?');
         await tachyon.say_and_wait(
-          '可能性を追い続けた科学者が、ある日ふと疲れた。きっかけもなく、',
+          '가능성을 끊임없이 좇던 과학자가 어느 날 문득 지쳤다고 해 보세. 특별한 계기도 없이 말이야.',
         );
         await tachyon.say_and_wait(
-          'もう十分だと思い、先の道は後に続く者へ委ねよう、と……',
+          '이 정도면 충분하다며 앞으로 나아갈 길은 후학에게 맡기기로 마음먹는 거지……',
         );
         await tachyon.say_and_wait(
-          '大切に思う者、自分を大切にしてくれる者と、ただ一緒に暮らしたい……',
+          '소중히 여기는 사람, 그리고 자신을 소중히 여겨 주는 사람과 그저 함께 살아가고 싶어진다면……',
         );
         await tachyon.say_and_wait(
-          'そんな者にとって……こういう場所は、とても向いていると思いませんの？',
+          '그런 사람에게는…… 이런 장소가 정말 잘 어울린다고 생각하지 않나?',
         );
         era.println();
         await era.printAndWait([
-          '誰も ',
+          '아무도 ',
           tachyon.get_colored_name(),
-          ' を知らない場所',
+          '을(를) 모르는 장소.',
         ]);
-        await era.printAndWait('もう可能性を探らなくていい');
+        await era.printAndWait('더 이상 가능성을 탐구하지 않아도 된다.');
         await era.printAndWait(
-          '立ち止まって一息つける。あるいは……このまま、穏やかに暮らすこともできる',
+          '잠시 멈춰 숨을 고를 수도 있고, 어쩌면…… 이대로 평온하게 살아갈 수도 있다.',
         );
-        await era.printAndWait('そういう可能性……');
+        await era.printAndWait('그런 가능성이라니……');
       } else {
-        await tachyon.say_and_wait('この場所、静かですわね');
+        await tachyon.say_and_wait('이곳은 참 조용하군.');
         era.println();
-        await era.printAndWait('……風と湯の音以外、人の声ひとつない温泉宿');
+        await era.printAndWait('……바람 소리와 온천물 소리 말고는 사람 목소리 하나 들리지 않는 온천 여관.');
         await era.printAndWait([
-          'あまりの静けさは、別のときは怖くもあるだろう。だが ',
+          '이 정도로 조용하면 평소에는 무서울 수도 있겠지만, ',
           tachyon.get_colored_name(),
-          ' がいれば、この空間も耐えられないものではない',
+          '이(가) 함께 있다면 이 공간도 견디지 못할 곳은 아니다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('それに、広いですわ');
+        await tachyon.say_and_wait('게다가 꽤 넓군.');
         era.println();
         await era.printAndWait(
-          '……温泉宿なのだから当然だ。今は二人だけでも、もともと数百人の客を入れる造りだ',
+          '……온천 여관이니 당연하다. 지금은 둘뿐이지만 원래 수백 명의 손님을 받을 수 있는 시설이다.',
         );
         era.println();
-        await tachyon.say_and_wait('それに、人もいませんわ');
+        await tachyon.say_and_wait('게다가 사람도 없네.');
         era.println();
-        await era.printAndWait('……こんな深山なのだから');
+        await era.printAndWait('……이렇게 깊은 산속이니 그럴 만하지.');
         await era.printAndWait([
-          '脈絡のない言葉が続き、',
+          '두서없는 말이 계속되자 ',
           you.get_colored_name(),
-          ' はますます ',
+          '은(는) 더욱더 ',
           tachyon.get_colored_name(),
-          ' が何を言いたいのかわからなくなる',
+          '이(가) 무슨 말을 하려는지 알 수 없게 되었다.',
         ]);
         era.println();
         era.println();
         await tachyon.say_and_wait([
-          'これほど広く、静かで、穏やかな場所……凱旋門賞の',
+          '이렇게 넓고 조용하며 평온한 장소라면…… 개선문상의 ',
           tachyon.uma_sex_title,
-          'と、',
+          '와(과) ',
           tachyon.sex,
-          'のトレーナーくらい、収まるでしょう',
+          '의 트레이너 정도는 충분히 지낼 수 있겠지.',
         ]);
         await tachyon.say_and_wait(
-          'こうして……誰にも知られず、静かで穏やかに暮らす……それも、ひとつの可能性ですか？',
+          '이렇게…… 아무에게도 알려지지 않은 채 조용하고 평온하게 살아가는 것…… 그것도 하나의 가능성일까?',
         );
         era.println();
-        await era.printAndWait([tachyon.uma_sex_title, 'の可能性']);
+        await era.printAndWait([tachyon.uma_sex_title, '의 가능성.']);
         await era.printAndWait([
-          'それは ',
+          '그것은 ',
           tachyon.get_colored_name(),
-          ' がいつも口にする言葉だ',
+          '이(가) 언제나 입에 담는 말이다.',
         ]);
         await era.printAndWait([
-          'だが',
+          '하지만 ',
           tachyon.uma_sex_title,
-          'は、一生走り続けられるわけではない',
+          '은(는) 평생 달릴 수 있는 것은 아니다.',
         ]);
         await era.printAndWait([
-          '競走',
+          '경주 ',
           tachyon.uma_sex_title,
-          'であっても、いずれレース場を離れ、速度の追求から離れる道へ進む',
+          '라 해도 언젠가는 경기장을 떠나 속도를 추구하는 삶에서 벗어나 다른 길로 나아간다.',
         ]);
         era.println();
         await era.printAndWait([
-          'では、その可能性は ',
+          '그렇다면 그런 가능성은 ',
           tachyon.get_colored_name(),
-          ' にも当てはまるのか？',
+          '에게도 적용될 수 있을까?',
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' にとって、そんな可能性はあるのか？',
+          '에게도 그런 가능성이 있을까?',
         ]);
         await era.printAndWait([
-          '喫茶店の店主になった ',
+          '카페의 주인이 된 ',
           tachyon.get_colored_name(),
         ]);
         await era.printAndWait([
-          '研究の道へ進み、科学者になった ',
+          '연구의 길을 걸어 과학자가 된 ',
           tachyon.get_colored_name(),
         ]);
         await era.printAndWait([
-          '普通の生徒として進学し、大学生になり、社会へ出て会社員になった ',
+          '평범한 학생으로 진학해 대학을 졸업하고 직장인이 된 ',
           tachyon.get_colored_name(),
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'にもあるのか。普通の人と同じように、レース場を離れ、自分の暮らしを生きる日々',
+          '에게도 있을까? 보통 사람들처럼 경기장을 떠나 자신의 삶을 살아가는 날들이.',
         ]);
         era.println();
         await tachyon.say_and_wait([
           '……',
           callname,
-          '、私についてきてくれますの？',
+          ', 나를 따라와 주겠나?',
         ]);
         await tachyon.say_and_wait(
-          'もし……私が、そういう可能性を選んだとしたら',
+          '만약…… 내가 그런 가능성을 선택한다면 말일세.',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' と一緒に、レースとも、',
+          '와 함께 레이스와도, ',
           tachyon.uma_sex_title,
-          'の速度とも無縁の、淡く穏やかな日常を送る',
+          '의 속도와도 관계없는 조용하고 평온한 일상을 보낸다.',
         ]);
-        await era.printAndWait('そんな暮らしは、きっととても美しいだろう');
+        await era.printAndWait('그런 삶은 분명 무척 아름다울 것이다.');
         await era.printAndWait([
-          '平凡な日々でも、',
+          '평범한 나날이라도 ',
           tachyon.get_colored_name(),
-          ' がいれば、絶対に退屈しない',
+          '이(가) 함께한다면 결코 지루하지 않으리라.',
         ]);
       }
-      era.printButton('「悪くない……気がする」', 1);
-      era.printButton('「もう少し……考えてみてもいいか」', 2);
+      era.printButton('「나쁘지…… 않을 것 같아.」', 1);
+      era.printButton('「조금 더…… 생각해 봐도 될까?」', 2);
       await era.input();
-      await tachyon.say_and_wait('……ふふ');
+      await tachyon.say_and_wait('……후후.');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' の答えに、',
+        '의 대답을 듣고 ',
         tachyon.get_colored_name(),
-        ' は多くを言わなかった',
+        '은(는) 많은 말을 하지 않았다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'は足で水面を撫で、波紋を幾重にも広げている',
+        '은(는) 발끝으로 수면을 가볍게 저어 여러 겹의 파문을 만들었다.',
       ]);
       await era.printAndWait([
-        'ふと風が立ち、',
+        '문득 바람이 불어오자 ',
         you.get_colored_name(),
-        ' は森全体がまた息を吹き返したのを聞いた',
+        '은(는) 숲 전체가 다시 숨을 쉬기 시작하는 소리를 들었다.',
       ]);
       await era.printAndWait(
-        '葉がさらさら落ち、夜に眠っていた小鳥が驚いて飛び立つ',
+        '나뭇잎이 사락사락 떨어지고, 밤에 잠들었던 작은 새가 놀라 날아올랐다.',
       );
       await era.printAndWait([
-        '夜の静けさは、',
+        '밤의 정적은 ',
         tachyon.sex,
-        'の一時の撹乱で、一瞬にして破られたようだった',
+        '의 잠깐의 소란으로 순식간에 깨진 듯했다.',
       ]);
       era.println();
       await era.printAndWait([
-        'こんな',
+        '이런 ',
         tachyon.sex,
-        'が、本当にあんな暮らしをできるのか？',
+        '이(가) 정말 그런 삶을 살 수 있을까?',
       ]);
       await era.printAndWait([
-        'できるにせよできないにせよ、そこから生まれる可能性を考えて、',
+        '가능하든 아니든 그로부터 생겨날 가능성을 생각하니 ',
         you.get_colored_name(),
-        ' はふと興奮する',
+        '은(는) 문득 가슴이 뛰었다.',
       ]);
       await era.printAndWait([
-        'だが、できるにせよできないにせよ、自分は必ず',
+        '하지만 가능하든 아니든 자신은 반드시 ',
         tachyon.sex,
-        'に付き添う。最後まで',
+        '의 곁을 지킬 것이다. 끝까지.',
       ]);
       era.println();
-      await tachyon.say_and_wait('ところで');
+      await tachyon.say_and_wait('그런데 말일세.');
       era.println();
-      await era.printAndWait('周囲が冬の夜の静けさと喧騒を取り戻したあと');
+      await era.printAndWait('주변이 다시 겨울밤 특유의 고요함과 소란을 되찾은 뒤');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は、ふと思い出したように口を開いた',
+        '은(는) 무언가 떠올랐다는 듯 입을 열었다.',
       ]);
       await era.printAndWait(
         '言いながら、バスタオルの裾をコッソリ巻き上げ、太腿の付け根近くまで上げる',
