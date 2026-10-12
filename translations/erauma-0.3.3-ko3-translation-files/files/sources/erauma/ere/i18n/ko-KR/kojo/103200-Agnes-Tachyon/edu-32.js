@@ -1455,7 +1455,7 @@ module.exports = {
 
   // [번역 대상] before_begin_race
   before_begin_race: (() => {
-    const title = '課題の実現可能性';
+    const title = '과제의 실현 가능성';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -1466,117 +1466,117 @@ module.exports = {
     const f = async (tachyon, you, callname, relation, love) => {
       await era.printAndWait([
         tachyon.uma_sex_title,
-        'とトレーナーの初対面が、二人の歯車が回り始める瞬間なら',
+        '와 트레이너의 첫 만남이 두 사람의 톱니바퀴가 돌아가기 시작한 순간이었다면,',
       ]);
-      await era.printAndWait('この日は、その歯車の音が世界を震わせる瞬間だ');
+      await era.printAndWait('이날은 바로 그 톱니바퀴가 돌아가는 소리가 세상을 뒤흔드는 순간이었다.');
       await era.printAndWait([
-        '…………少なくとも、他の',
+        '…………적어도 다른 ',
         tachyon.uma_sex_title,
-        'にとっては',
+        '들에게 있어서는 그러했다.',
       ]);
 
-      era.printButton('「タキオン！」', 1);
+      era.printButton('「타키온!」', 1);
       await era.input();
       await era.printAndWait([
-        '自分の',
+        '자신의 ',
         tachyon.uma_sex_title,
-        'が本当にそんな叙事詩の開巻のような感慨を持っているなら、大切なレース前の時間を他の',
+        '가 정말로 이런 서사시의 서막과 같은 감상을 품고 있었다면, 소중한 레이스 전 준비 시간을 다른 ',
         tachyon.uma_sex_title,
-        'との雑談に費やしはしないだろう',
+        '들과 잡담을 나누는 데 쓰지는 않았을 것이다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'ですから、いわゆる時間とは人が与えた定義にすぎませんわ。人間が作った単位で、速いも遅いも相対の概念です…………',
+        '따라서 시간이란 그저 인위적으로 부여된 정의에 불과하며, 인류가 만들어낸 단위일 뿐이라네. 빠름과 느림 또한 상대적인 개념이지…………',
       );
-      await tachyon.say_and_wait(['おや、', callname, '？ 来ましたわね']);
+      await tachyon.say_and_wait(['이런, ', callname, '? 자네 왔나.']);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は言葉を失った。あと数分で出走',
+        '은(는) 어이가 없었다. 출주하는 ',
         tachyon.uma_sex_title,
-        'は入場する。生涯に理論上一度きりのメイクデビューだ、',
+        '들의 입장까지 겨우 몇 분밖에 남지 않았고, 이론상 평생 한 번뿐인 메이크 데뷔전이다.',
       ]);
       await era.printAndWait([
-        '一番人気の主役である',
+        '제1인기 주인공인 ',
         tachyon.sex,
-        'が、発走前まで人と雑談し、しかも中身はこの程度の話題だ',
+        '는 레이스 시작 직전까지 한가롭게 수다를 떨고 있었고, 심지어 화제도 지극히 사소했다.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
         ' は、',
         tachyon.get_colored_name(),
-        ' の論にうっとりしている子供たちに別れを告げ、',
+        '의 논리에 심취해 있던 아이들에게 작별 인사를 건넨 뒤, ',
         tachyon.get_colored_name(),
-        ' を地下道へ引っ張った',
+        '을(를) 이끌고 지하 통로로 내려갔다.',
       ]);
       if (you.sex_code === 1) {
         era.println();
         await tachyon.say_and_wait([
-          '男があれほど焦ると嫌われますわよ、',
+          '남자가 그렇게 성급하면 미움받는다네, ',
           callname,
         ]);
       }
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'は相変わらず悠然と ',
+        '는 여전히 여유로운 태도로 ',
         you.get_colored_name(),
-        ' の後ろを歩いた',
+        '의 뒤를 따랐다.',
       ]);
       await era.printAndWait([
-        '二人の足音が空洞の地下道に響き、空気が一瞬気まずい',
+        '두 사람의 발소리만이 텅 빈 지하 통로에 울려 퍼졌고, 분위기는 잠시 어색해졌다.',
       ]);
 
-      era.printButton('「……君、人付き合いが上手いんだな」', 1);
+      era.printButton('「……생각보다 붙임성이 좋네.」', 1);
       await era.input();
       await era.printAndWait([
-        '口を開けば明らかな間つなぎだ。だが ',
+        '분명히 억지로 말을 꺼낸 것이었다. 하지만 ',
         tachyon.get_colored_name(),
-        ' はその気まずさに気づかないか、気づいて気づかないふりをして言った',
+        '은(는) 그 어색함을 눈치채지 못했거나, 알고도 모른 척하며 말을 이었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '当然ですわ。個人イメージを時々育てなければ、実験体が尽きてしまいますもの',
+        '당연하지 않나. 가끔은 개인 이미지를 관리해야 실험체가 끊이지 않는 법이라네.',
       );
       era.println();
       await era.printAndWait(
-        '本当にイメージを気にするなら、普段から変なことをするな……',
+        '정말 이미지를 생각한다면 평소에 이상한 짓 좀 하지 말라고……',
       );
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '、まだまだですわね。イメージというものは、人は悪人に理由を与え、善人に綻びを探すのを好むのです',
+        ', 자네는 아직 멀었군. 사람들은 악인에게서 이유를 찾고 선인에게서 결점을 찾기를 좋아한다네.',
       ]);
       await tachyon.say_and_wait(
-        '完璧な人格を作って暴かれるより、狂気の科学者に疎外の理由を見つけて同情するほうを、彼らは好みますわ',
+        '완벽한 인격자가 가면을 벗는 것보다, 미친 과학자가 소외받는 이유를 찾아내어 동정하는 쪽을 더 선호하지.',
       );
       era.println();
-      await era.printAndWait([tachyon.sex, 'は冷たく笑った']);
+      await era.printAndWait([tachyon.sex, '는 냉소했다.']);
       era.println();
       await tachyon.say_and_wait([
-        'さっきの会話は種を植えただけ。このあとレースに勝てば、今日の話は',
+        '방금 전의 대화는 그저 씨앗을 심은 것뿐이라네. 곧 레이스에서 이기면 오늘의 대화는 ',
         tachyon.couple_title,
-        'の胸に根を張ります',
+        '의 마음속에 뿌리를 내리겠지.',
       ]);
       await tachyon.say_and_wait(
-        '将来困ったとき、自然と『親切なタキオン先輩』を探しに来るでしょう、',
+        '훗날 곤란한 일이 생기면 자연스럽게 『친절한 타키온 선배』를 찾아와 답을 구할 것이야.',
       );
       await tachyon.say_and_wait([
-        '慈悲深い私は、もちろん無償で',
+        '그리고 자애로운 나는 당연히 무상으로 ',
         tachyon.couple_title,
-        'を助けますわ',
+        '를 도와주겠지.',
       ]);
       await tachyon.say_and_wait(
-        'ただし、礼として実験データを記録させていただくのは当然、ですわね？',
+        '하지만 답례로 실험 데이터를 기록하게 해주는 건 당연한 도리 아니겠나?',
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は冷や汗をかいた。イメージのためだろうとは思っていたが、ここまで先を読んでいたとは',
+        '은(는) 식은땀이 흘렀다. 이미지 관리 때문이라고는 예상했지만, 이렇게까지 먼 미래를 계산하고 있을 줄은 몰랐다.',
       ]);
       if (love >= 50) {
-        await tachyon.say_and_wait('おやおや、誰かが嫉妬していますの？');
+        await tachyon.say_and_wait('이런이런, 설마 누가 질투라도 하는 건가?');
         era.println();
         await era.printAndWait([
           '何か勘違いしたのか、',
@@ -1625,27 +1625,27 @@ module.exports = {
         ]);
       }
       era.printButton(
-        '「……いくらなんでも、勝てなければその算段は水泡に帰すだろう？」',
+        '「……아무리 그래도 이기지 못하면 그 계획도 수포로 돌아가는 거 아냐?」',
         1,
       );
       await era.input();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は振り返らず、光のほうへまっすぐ歩いた',
+        '은(는) 뒤돌아보지 않고 빛이 쏟아지는 곳을 향해 똑바로 걸어갔다.',
       ]);
       await era.printAndWait([
-        '暗い地下道から突然外を見て、',
+        '어두운 지하 통로에서 갑자기 밖을 바라보자 ',
         you.get_colored_name(),
-        ' はその光に目が痛いくらいだった',
+        '은(는) 눈이 부실 정도의 광채를 느꼈다.',
       ]);
       await era.printAndWait([
-        '涙に照らされ、場へ上がる',
+        '눈물이 고인 시야 속에서 경기장으로 나아가는 ',
         tachyon.sex,
-        'は、光に溶けるように見えた',
+        '는 마치 빛 속으로 녹아드는 것만 같았다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'あなたはここで、私の凱旋を大人しく待っていれば十分ですわ',
+        '자네는 여기서 얌전히 나의 승전보를 기다리기만 하면 된다네.',
       );
     };
     f.title = title;
