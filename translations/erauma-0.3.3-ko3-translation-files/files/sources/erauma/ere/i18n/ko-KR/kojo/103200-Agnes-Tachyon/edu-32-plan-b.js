@@ -5229,7 +5229,7 @@ module.exports = {
 
   // [번역 대상] ws_b_95_48
   ws_b_95_48: (() => {
-    const title = '聖夜の約束';
+    const title = '성탄 전야의 약속';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -5252,142 +5252,142 @@ module.exports = {
     ) => {
       let ret = 0;
       await era.printAndWait([
-        '最近の ',
+        '최근 ',
         tachyon.get_colored_name(),
-        ' は、様子がおかしい',
+        '의 상태가 어딘지 모르게 평소와 달랐다.',
       ]);
       await era.printAndWait([
-        '一人で塞ぎ込み、',
+        '줄곧 혼자서 울적해 보였고, ',
         coffee.get_colored_name(),
-        ' のトレーニングにも付いてこない。実験すら、ほとんどしなくなった',
+        '의 훈련에도 따라오지 않았으며, 심지어 실험조차 거의 하지 않았다.',
       ]);
       await era.printAndWait([
-        '実験の最大の被害者である ',
+        '실험의 최대 피해자인 ',
         you.get_colored_name(),
-        ' と ',
+        '과(와) ',
         coffee.get_colored_name(),
-        ' にとっては、悪いことばかりでもない。だが、心配ではある',
+        '의 입장에서는 딱히 나쁜 일이라고는 할 수 없었지만, 그래도 역시 조금 걱정이 되었다.',
       ]);
       await era.printAndWait([
-        '突然、商店街のクリスマスソングが ',
+        '문득, 상점가에서 흘러나오는 캐럴 소리가 ',
         you.get_colored_name(),
-        ' の耳に入った',
+        '의 귀에 닿았다.',
       ]);
       await era.printAndWait([
-        'そうだ。クリスマスを口実に、',
+        '좋아, 크리스마스를 핑계 삼아 ',
         tachyon.sex,
-        'を連れ出して話そう',
+        '에게 외출해서 이야기 좀 하자고 불러내 보자.',
       ]);
       era.drawLine();
-      await era.printAndWait('聖夜の商店街は、普段より灯が明るく、熱気も高い');
-      await era.printAndWait('理由はクリスマスだけではない。それ以上に……');
-      await you.say_as_passer_by_and_wait('商店街のおじさん', [
-        '有馬記念予想！ 明日の有馬記念、レース前予想！',
+      await era.printAndWait('성탄 전야의 상점가는 평소보다 훨씬 밝게 빛나며 열기로 가득했다.');
+      await era.printAndWait('그 이유는 단순히 크리스마스 때문만이 아니라……');
+      await you.say_as_passer_by_and_wait('상점가 아저씨', [
+        '아리마 기념 예측! 내일 열릴 아리마 기념의 직전 예측입니다!',
       ]);
       await you.say_as_passer_by_and_wait('観光客A', [
-        '明日の有馬記念、どうなるかな……まあ、勝つのは ',
+        '내일 아리마 기념은 어떻게 되려나…… 그래도 이기는 건 역시 ',
         coffee.get_colored_name(),
-        ' だろうな',
+        '겠지?',
       ]);
       await you.say_as_passer_by_and_wait('観光客B', [
-        'ジャパンカップの走りは本当に強かった！……史上最強と言ってもいいんじゃないか',
+        '재팬 컵 때의 모습은 정말 너무 강했어! ……사상 최강이라고 해도 과언이 아니지.',
       ]);
       era.println();
       await tachyon.say_and_wait('…………');
       era.println();
-      await era.printAndWait('黙り続けるわけにもいかない。ここでは何か言おう');
-      era.printButton('「明日は有馬記念だ。カフェは大丈夫だ」', 1);
-      era.printButton('「向こうのハチミツ特飲、クリスマス特売みたいだ」', 2);
+      await era.printAndWait('계속 침묵을 지키는 것도 방법은 아니었다. 이럴 때는 뭐라도 말을 거는 게 좋겠지.');
+      era.printButton('「내일이 아리마 기념이네. 하지만 카페라면 문제없을 거야.」', 1);
+      era.printButton('「저쪽의 하치미가 크리스마스 특가 판매를 하는 모양이야.」', 2);
       if ((await era.input()) === 1) {
         ret++;
         await tachyon.say_and_wait('…………');
         era.println();
-        await era.printAndWait([tachyon.sex, 'は、やはり何も言わない']);
+        await era.printAndWait([tachyon.sex, '는 여전히 아무 말도 하지 않았다.']);
         await era.printAndWait([
-          '空気が重い。',
+          '분위기가 어색해진 것을 느낀 ',
           you.get_colored_name(),
-          ' は仕方なく、',
+          '은(는) 어쩔 수 없이 ',
           coffee.get_colored_name(),
-          ' の最近のトレーニングの話を続ける',
+          '의 최근 훈련 상황에 대해 계속 이야기를 이어갔다.',
         ]);
       } else {
-        await tachyon.say_and_wait('……では、一杯いただきましょう');
+        await tachyon.say_and_wait('……그럼, 한 잔 마셔볼까.');
         era.println();
         await era.printAndWait([
-          'いちばん甘いハチミツを飲んだあと、',
+          '가장 달콤한 하치미를 마시자 ',
           tachyon.get_colored_name(),
-          ' の機嫌は少し緩んだ',
+          '의 기분이 조금은 풀린 듯 보였다.',
         ]);
         await era.printAndWait([
-          'ついでに、',
+          '덧붙여서 ',
           you.get_colored_name(),
-          ' も合わせたいちばん甘いのを頼んだが……',
+          '도 분위기를 맞추기 위해 가장 단 것을 주문했지만……',
         ]);
         await era.printAndWait([
-          '一口吸っただけで、',
+          '단 한 모금만으로 ',
           you.get_colored_name(),
-          ' は歯が痛くなった',
+          '은(는) 이가 아려오는 것을 느꼈다.',
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が嬉しそうにハチミツを飲むのを見て、',
+          '기쁘게 하치미를 마시는 ',
           you.get_colored_name(),
-          ' は機会を見て',
+          '은(는) 조만간 기회를 봐서 ',
           tachyon.sex,
-          'の歯を診せたほうがいいのではないかと考え始める',
+          '를 치과에 데려가야 할지 고민하기 시작했다.',
         ]);
       }
       era.println();
       await era.printAndWait([
-        'ほどなく、商店街の中央のクリスマスツリーの前まで来た',
+        '은 상점가 중앙의 크리스마스트리 앞에 도착했다.',
       ]);
       await era.printAndWait([
-        '突然の強風が、周囲の有馬記念の報道を二人の前へ吹き寄せた',
+        '갑자기 불어온 강풍이 주변에 있던 아리마 기념 관련 보도 기사를 ',
       ]);
       await era.printAndWait([
-        '新聞にはジャパンカップのときの ',
+        '신문에는 재팬 컵 당시의 ',
         coffee.get_colored_name(),
-        '。威風堂々としている',
+        '의 모습이 늠름하게 실려 있었다.',
       ]);
       era.printButton(
-        '「ジャパンカップ……あのときのカフェは本当に強かった。場違いかもしれないが、タキオンと……」',
+        '「재팬 컵…… 그때의 카페는 정말 대단했지. 가당치 않은 생각이지만, 만약 타키온과……」',
         1,
       );
-      era.printButton('「タキオン！ 向こうの綿菓子屋、すごそうだ！」', 2);
+      era.printButton('「타키온! 저기 솜사탕 가게가 정말 대단해 보여!」', 2);
       if ((await era.input()) === 1) {
         ret++;
         await era.printAndWait([
-          'さっき有馬記念を出したとき、',
+          '방금 전 아리마 기념 이야기를 꺼냈을 때 ',
           tachyon.get_colored_name(),
-          ' の機嫌は悪かった',
+          '의 기분이 별로 좋지 않아 보였다.',
         ]);
         await era.printAndWait([
-          'だから ',
+          '그래서 ',
           you.get_colored_name(),
-          ' は話題をジャパンカップへ変えた',
+          '은 화제를 돌려 재팬 컵 이야기를 꺼냈다.',
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の宿願が叶った日なら、',
+          '의 숙원이 이루어진 날의 이야기라면 분명 ',
           tachyon.get_colored_name(),
-          ' の気も上がるだろう',
+          '의 기운을 북돋아 줄 수 있을 것이라 생각했다.',
         ]);
-        await era.printAndWait('ところが……');
+        await era.printAndWait('하지만……');
         era.println();
         await tachyon.say_and_wait('………………');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は、やはり何も言わない',
+          '은 여전히 아무 말도 하지 않았다.',
         ]);
-        await era.printAndWait('まだ違うのか……');
+        await era.printAndWait('이것도 아니었던 걸까……');
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' はツリー脇の綿菓子屋を見る。職人の手で、ふわふわの動物が次々と形になる',
+          '은(는) 크리스마스트리 옆의 솜사탕 가게를 바라보았다. 장인의 솜씨 아래에서 여러 가지 모양의 푹신푹신한 동물들이 순식간에 만들어지고 있었다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('……いいえ、私は……');
+        await tachyon.say_and_wait('……아니, 나는……');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
