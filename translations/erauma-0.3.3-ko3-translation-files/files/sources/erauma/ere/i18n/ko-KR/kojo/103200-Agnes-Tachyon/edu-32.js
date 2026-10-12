@@ -2768,92 +2768,92 @@ module.exports = {
             await tachyon.say_and_wait([
               '……そういえば、',
               callname,
-              '。こういう抽選は、店によっては細工をするそうですわ……',
+              ', 이런 추첨은 가끔 상인들이 조작한다고들 하던데……',
             ]);
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' が抽選箱まで調べようとするのを見て、',
+              '이(가) 직접 추첨통을 분해해서 검사하려 들자 ',
               you.get_colored_name(),
               ' は慌てて ',
               tachyon.get_colored_name(),
-              ' を商店街から連れ出した',
+              '을(를) 끌고 상점가를 떠났다.',
             ]);
             await tachyon.say_and_wait([
-              'くっ……離しなさい、',
+              '윽…… 이거 놓게, ',
               callname,
-              '。賞品などどうでもいいですわ。ですが消費者として、公平かを確かめる権利と責任があります……！',
+              '! 경품 따위는 관심 없지만, 소비자로서 공정성 여부를 확인할 권리와 책임이 있단 말이네……!',
             ]);
             era.println();
             await era.printAndWait([
               '……実際は、',
               tachyon.sex,
-              'も言っているほどどうでもよくないらしい',
+              '도 본인이 말한 것만큼 태연하지는 않은 모양이다.',
             ]);
           }
           break;
         case 2:
           await you.say_as_passer_by_and_wait(
             '店主',
-            '三等、特選ニンジン一本！',
+            '3등상, 특선 당근 한 개!',
           );
           era.println();
-          await era.printAndWait('特選とは……在庫処分だろう');
+          await era.printAndWait('특선이라니…… 그냥 재고 처리 같은데.');
           await era.printAndWait([
             you.get_colored_name(),
-            ' は仕方なくニンジンを一本持った',
+            '은(는) 어쩔 수 없다는 듯 당근 한 개를 들었다.',
           ]);
-          await era.printAndWait('突っ込むべきか迷うが、この抽選の賞品は');
+          await era.printAndWait('태클을 걸어야 할지 말아야 할지 모르겠지만, 이 경품 구성은……');
           await era.printAndWait([
-            '残念賞のティッシュと特等の温泉旅行券以外、全部',
+            '어쩐지 참가상 티슈와 특등 온천 여행권을 빼면 전부 ',
             tachyon.uma_sex_title,
-            '向けではないか？',
+            '를 위해 설계된 것 아닌가?',
           ]);
           era.println();
           if (plan_b) {
             await tachyon.say_and_wait(
-              'ニンジンですわ……そういえば、賞品はどれも実用的ですわね',
+              '당근인가…… 그러고 보니 여기 경품들은 꽤 실용적이군 그래.',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
               ' は多くを言わず、自然に ',
               you.get_colored_name(),
-              ' の手からニンジンを受け取り、小さく折って口に入れた',
+              '의 손에서 당근을 받아 한 입 베어 물었다.',
             ]);
             era.println();
-            await tachyon.say_and_wait('よろしい、甘いですわ');
+            await tachyon.say_and_wait('나쁘지 않군, 꽤 달아.');
           } else if (relation <= 225) {
             await tachyon.say_and_wait([
               'おや？',
               callname,
-              '、今の顔、悪くありませんわ',
+              ', 지금 자네 표정이 아주 좋군.',
             ]);
             era.println();
-            await era.printAndWait('え？ 顔？');
+            await era.printAndWait('에? 표정?');
             era.println();
-            await tachyon.say_and_wait('呆れ、落胆、慰め。複雑な顔ですわね');
+            await tachyon.say_and_wait('허탈함, 실망감, 위로받고 싶은 마음…… 아주 복잡한 표정일세.');
             era.println();
             await era.printAndWait([
               'ああ……そういえば、',
               tachyon.get_colored_name(),
-              ' の感情研究のために抽選したのだった',
+              '의 감정 연구를 위해 추첨했던 거였지.',
             ]);
             await era.printAndWait(
-              '……感情の研究とは、人の心がわからないロボットみたいだ',
+              '……감정 연구니 뭐니, 가끔 보면 사람 마음을 모르는 로봇 같다니까.',
             );
             await era.printAndWait([
-              'だが目の前の、マッドサイエンティストのような ',
+              '하지만 눈앞의 매드 사이언티스트 같은 ',
               tachyon.get_colored_name(),
-              ' を思えば……',
+              ' 을(를) 생각하면……',
             ]);
             await era.printAndWait([
               tachyon.sex,
-              'が今「人心などわからない」と言っても、驚かないだろう',
+              '가 지금 당장 사람의 마음 따윈 이해 못 한다고 말해도 전혀 이상하지 않을 것 같다.',
             ]);
             era.println();
             await tachyon.say_and_wait([
-              '今日の実験はまず成功ですわ。次は別の感情も見せてくださいまし、',
+              '오늘 실험은 꽤 성공적이군. 앞으로도 내게 더 다양한 감정을 보여 주게나, ',
               callname,
             ]);
             era.println();
@@ -2861,179 +2861,179 @@ module.exports = {
               tachyon.get_colored_name(),
               ' は勝手に ',
               you.get_colored_name(),
-              ' の手からニンジンを奪い、先の細いところを折って口に含んだ',
+              '의 손에서 당근을 빼앗아 끝부분을 조금 베어 물었다.',
             ]);
             era.println();
             await tachyon.say_and_wait('味は悪くありませんわ');
           } else {
-            await tachyon.say_and_wait('おや、ニンジン。悪くありませんわよ？');
+            await tachyon.say_and_wait('이런, 당근이라니 이거 괜찮지 않나?');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
               ' が寄ってきて、',
               you.get_colored_name(),
-              ' を慰めた',
+              '을(를) 위로했다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              '見栄えだけの品より、栄養を補えるもののほうが現実的ですわ',
+              '허울만 좋은 것들보다는 영양을 보충할 수 있는 게 훨씬 실속 있지 않겠나.',
             );
             await tachyon.say_and_wait(
-              'ニンジンなら……戻って炒め卵にします？ それともニンジンハンバーグ？ ジュースにしても悪くありませんわ……',
+              '당근이라…… 돌아가서 당근 달걀볶음을 할까? 아니면 당근 함박스테이크를 만들까? 그냥 즙을 내서 마시는 것도 좋을 것 같군……',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' の慰めを聞き、',
+              '의 위로 섞인 말을 듣고 ',
               you.get_colored_name(),
-              ' も笑ってしまった',
+              '도 그만 웃음을 터뜨리고 말았다.',
             ]);
-            era.printButton('「それなら一本じゃ足りないな」', 1);
-            era.printButton('「もう少し買わないと」', 2);
+            era.printButton('「그러려면 당근 한 개로는 부족하겠는걸.」', 1);
+            era.printButton('「당근을 좀 더 사야겠어.」', 2);
             await era.input();
             await era.printAndWait([
-              'こうして二人は商店街へ戻り、夕飯分のニンジンを買った',
+              '그렇게 두 사람은 상점가로 돌아가 저녁 식사를 만들기에 충분한 양의 당근을 샀다.',
             ]);
-            await era.printAndWait('……商店街の売り込みに乗っただけではないか');
+            await era.printAndWait('……이거 결국 상점가의 상술에 넘어간 거 아냐?');
             await era.printAndWait([
-              '帰り道で、',
+              '돌아오는 길에 ',
               you.get_colored_name(),
-              ' は遅れて気づいた',
+              '은(는) 그제야 그 사실을 깨달았다.',
             ]);
           }
           break;
         case 3:
           await you.say_as_passer_by_and_wait(
             '店主',
-            '二等、山ほど積んだニンジンの山！',
+            '2등상, 산더미처럼 쌓인 당근 더미!',
           );
           era.println();
-          await era.printAndWait('うわ！ 多い！');
-          await era.printAndWait('文字どおり、小山のように積んである');
+          await era.printAndWait('우와! 엄청나다!');
+          await era.printAndWait('정말 글자 그대로 작은 산처럼 쌓여 있다.');
           era.println();
           if (relation <= 225) {
-            await tachyon.say_and_wait('おや、悪くありませんわね？');
+            await tachyon.say_and_wait('이런, 이거 아주 좋지 않나?');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は嬉しそうな顔をした',
+              '이(가) 기뻐하는 표정을 지었다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              '今月、いいえ、半年はニンジンに困りませんわ',
+              '이번 달, 아니 어쩌면 반년 동안은 당근 걱정 없겠군.',
             );
             era.println();
             if (you.race > 0) {
               await era.printAndWait([
                 'いや、',
                 tachyon.uma_sex_title,
-                'でも、こんな量は食べきれないだろ……',
+                '라도 이런 양은 다 못 먹을 텐데……',
               ]);
               era.println();
               await tachyon.say_and_wait([
                 '一般に、',
                 tachyon.uma_sex_title,
-                'は消費エネルギーが多いほど補給も要ります。つまり、食べる量＝強さ、は成立しうるのですわ',
+                '에게 있어 소모하는 에너지가 많을수록 보충해야 할 에너지도 많아지는 법이라네. 즉, 많이 먹는 것=강함이라는 공식이 성립될 수 있지.',
               ]);
               era.println();
               await era.printAndWait([
                 tachyon.get_colored_name(),
                 ' は値踏みする目で ',
                 you.get_colored_name(),
-                ' の身体を見た',
+                '의 몸을 훑어보았다.',
               ]);
               era.println();
               await tachyon.say_and_wait(
-                '食欲を増す薬、ですの？……くふふ、悪くない選択かもしれませんわ',
+                '식욕을 돋우는 약인가? ……후후, 나쁘지 않은 선택이겠군.',
               );
               era.println();
               await era.printAndWait([
                 'このニンジンの山は、逃れようもなく ',
                 you.get_colored_name(),
-                ' 一人の責任になりそうだ',
+                ' 한 사람의 책임이 될 모양이다.',
               ]);
               era.println();
               await era.printAndWait([
                 you.get_colored_name(),
                 ' は肩を落とし、一車のニンジンを引いて ',
                 tachyon.get_colored_name(),
-                ' とトレセン学園へ戻った',
+                '과 함께 트레센 학원으로 돌아왔다.',
               ]);
             } else {
               await era.printAndWait([
-                'だが、人間がこんなにニンジンをどうする……',
+                '하지만 인간으로서 당근이 이렇게 많이 필요할 리가 없는데……',
                 you.get_colored_name(),
-                ' はその悩みを ',
+                '은(는) 자신의 고민을 ',
                 tachyon.get_colored_name(),
-                ' に伝えた',
+                '에게 털어놓았다.',
               ]);
               era.println();
               await tachyon.say_and_wait([
                 'おや……人間を',
                 tachyon.uma_sex_title,
-                'へ変える可能性を実験する、という意味ですの？ その研究……やれなくもありませんわ……',
+                '로 변화시킬 가능성에 대해 실험해 보고 싶다는 뜻인가? 그런 연구라면…… 뭐, 안 될 것도 없지……',
               ]);
               era.println();
               await you.say_and_wait('…………タキオン？');
               era.println();
               await tachyon.say_and_wait([
-                'くふふ……新しい研究の可能性ですわ、',
+                '후후…… 새로운 연구 주제를 제안해 주었군, ',
                 callname,
-                '……これは、万一の Plan C にしておきましょう',
+                '……이건 일단 만약을 위한 플랜 C로 두도록 하지.',
               ]);
               era.println();
               era.print([
-                '危険で不穏な言葉に、',
+                '매우 위험하고 불길한 말에 ',
                 you.get_colored_name(),
-                ' は背筋が凍った',
+                '은(는) 저도 모르게 등골이 서늘해졌다.',
               ]);
-              era.printButton('「や……やっぱりタキオンに渡す」', 1);
-              era.printButton('「抽選券はタキオンのだから」', 2);
+              era.printButton('「그…… 그냥 타키온에게 다 줄게.」', 1);
+              era.printButton('「어차피 네 추첨권으로 뽑은 거니까.」', 2);
               await era.input();
               await tachyon.say_and_wait(
-                '……まあいいですわ。惜しい。せっかくの機会なのに',
+                '……그렇군. 아쉽구먼, 모처럼 좋은 기회였는데.',
               );
               era.println();
               await era.printAndWait([
-                'また危ういところを逃れた ',
+                '간신히 또 한 번의 위기를 넘긴 ',
                 you.get_colored_name(),
                 ' は、',
                 tachyon.get_colored_name(),
-                ' と一車のニンジンを引いてトレセン学園へ戻った',
+                '과 함께 당근 수레를 끌고 학원으로 돌아갔다.',
               ]);
             }
           } else {
             era.println();
             await era.printAndWait([
-              '賞品を見た瞬間、',
+              '경품을 본 순간 ',
               you.get_colored_name(),
               ' は考え始めた。こんなにニンジンがあれば……',
               tachyon.get_colored_name(),
-              ' に何食分作れるか',
+              '에게 몇 끼나 만들어 줄 수 있을지 계산하기 시작했다.',
             ]);
             era.println();
-            await tachyon.say_and_wait('多いですわね……');
+            await tachyon.say_and_wait('정말 많군……');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' も、この山に目を見開いた',
+              '도 산더미 같은 당근을 보며 입을 다물지 못했다.',
             ]);
             era.println();
-            await tachyon.say_and_wait('これなら……閃きましたわ……');
+            await tachyon.say_and_wait('이렇게 되면…… 방법이 있지……');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は考え込んだ',
+              '은(는) 깊은 생각에 잠겼다.',
             ]);
             await era.printAndWait([
               tachyon.sex,
               'をよく知る ',
               you.get_colored_name(),
-              ' は、すぐ危険を察した',
+              '은(는) 즉시 불길함을 감지했다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              '……無料のニンジン……薬……オグリキャップかスペシャルウィークを……',
+              '……공짜 당근…… 약…… 오구리 캡이나 스페셜 위크를 불러서……',
             );
             era.println();
             await era.printAndWait([
@@ -3043,45 +3043,45 @@ module.exports = {
               'の思考を遮った',
             ]);
             era.printButton(
-              '「そ……そうだ、ニンジンのフルコースを作ろう！」',
+              '「그…… 그래, 당근 만찬을 만들자!」',
               1,
             );
             era.printButton(
-              '「こ、最近ニンジン主役の料理をたくさん覚えたんだ！」',
+              '「나 최근에 당근 위주의 요리를 많이 배웠거든!」',
               2,
             );
             await era.input();
             await tachyon.say_and_wait('………………');
             era.println();
-            await era.printAndWait('やっぱり……だめか');
+            await era.printAndWait('역시…… 안 되는 걸까?');
             era.println();
             await tachyon.say_and_wait([
-              'なぜ早く言わないのです！ まあ、蒸す、煮る、炒める、揚げる……どう作りますの～～',
+              '진작 말하지 그랬나! 이런, 찌고 삶고 볶고 튀기고…… 어떻게 만들어 줄 건가~~ ',
               callname,
-              '、好きに作りなさい！ 食材は足りていますわね？ もっと要ります？',
+              ', 마음껏 실력을 발휘해 보게! 식재료는 부족하지 않나? 더 필요하진 않고?!',
             ]);
             era.println();
             await era.printAndWait([
-              'もう十分だ、と ',
+              '이미 충분하다고 ',
               you.get_colored_name(),
-              ' は苦笑して首を横に振った',
+              '은(는) 쓴웃음을 지으며 고개를 저었다.',
             ]);
             await era.printAndWait([
               '食べ物で ',
               tachyon.get_colored_name(),
-              ' の注意を逸らせたのは幸いだ……下手をすれば罰は受けるだろうが',
+              '의 주의를 돌릴 수 있어서 다행이었다…… 비록 나중에 음식이 맛없으면 벌로 약을 먹게 되겠지만.',
             ]);
             await era.printAndWait(
-              '自分で薬を飲むほうが、学園中を巻き込むよりマシだ……',
+              '하지만 나 혼자 약을 먹는 게 학원 전체에 소동이 일어나는 것보다야 낫겠지……',
             );
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
               ' は一車のニンジンを引き、浮き立つ ',
               tachyon.get_colored_name(),
-              ' とトレセンへ戻った。道中も、',
+              '과 함께 트레센 학원으로 돌아가며, 길에서도 ',
               tachyon.get_colored_name(),
-              ' が満足する料理をどう作るか考えていた',
+              '가 만족할 만한 요리를 어떻게 만들지 고민했다.',
             ]);
           }
           break;
