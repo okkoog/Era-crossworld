@@ -3399,322 +3399,322 @@ module.exports = {
           break;
         case 5:
           if (love >= 75) {
-            await tachyon.say_and_wait('……そうですわ。今です');
-            await tachyon.say_and_wait('回しなさい！');
+            await tachyon.say_and_wait('……그래, 바로 지금이야.');
+            await tachyon.say_and_wait('돌려!');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' を信じる ',
+              '을(를) 믿는 ',
               you.get_colored_name(),
               ' は、',
               tachyon.sex,
-              'の言葉を聞いてすぐ抽選機を回した',
+              '의 말이 끝나자마자 즉시 추첨기의 손잡이를 돌렸다.',
             ]);
             await you.say_as_passer_by_and_wait('店主', '特等！ 温泉旅行券！');
             era.println();
-            await era.printAndWait('商店街のおじさんが鈴を激しく振った');
-            await era.printAndWait('今日の一等が、いま出たと告げる');
+            await era.printAndWait('상점가 아저씨가 힘차게 종을 흔들었다.');
+            await era.printAndWait('오늘의 최고 경품이 주인을 찾았음을 선포했다.');
             era.println();
             await tachyon.say_and_wait(
-              'おや……温泉旅行券ですわね。悪くありませんわ',
+              '오호라…… 온천 여행권이라니, 꽤 괜찮아 보이는데.',
             );
             era.println();
-            await era.printAndWait('期限は……来年四月まで');
-            await era.printAndWait('なら、URA決勝が終わったあとがちょうどいい');
-            era.printButton('「タキオン、一緒に行くか？」', 1);
+            await era.printAndWait('기한은…… 내년 4월까지였다.');
+            await era.printAndWait('이거라면 URA 파이널스가 끝난 뒤가 딱 적당한 시기였다.');
+            era.printButton('「타키온, 같이 갈래?」', 1);
             await era.input();
             await tachyon.say_and_wait(
-              '当然ですわ。私以外に、誰があなたと行くというのです？',
+              '그거야 당연하지. 아니, 애초에 나 말고 또 누가 자네와 함께 가겠나?',
             );
             era.println();
-            await era.printAndWait('容赦ない言い方だ');
+            await era.printAndWait('참으로 가차 없는 대답이었다.');
             era.println();
             await tachyon.say_and_wait(
-              '冗談ですわ。この券は、三年分のあなたへの褒美です……あらゆる困難と怪我を越えた先の……私たちの happy ending',
+              '농담일세. 이 온천권은 지난 3년 동안 자네가 보여 준 노력에 대한 보답이라고 생각해 주게나…… 모든 곤란과 부상을 이겨낸 끝에 맞이하는…… 우리의 해피 엔딩이지.',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
               ' は ',
               you.get_colored_name(),
-              ' の耳元で言った',
+              '의 귓가에 밀착해 속삭였다.',
             ]);
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' の口から出るとは思えない言葉に、',
+              '의 입에서 나왔다고는 믿기지 않는 다정한 말에 ',
               you.get_colored_name(),
-              ' は驚いて目を上げようとした……',
+              '은(는) 무심코 놀라 고개를 들려 했지만……',
             ]);
             era.println();
-            await tachyon.say_and_wait('動かないで');
+            await tachyon.say_and_wait('움직이지 말게.');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
               ' はなお ',
               you.get_colored_name(),
-              ' のそばに寄り、二人は抽選箱の前で親しげに話した',
+              '의 곁에 딱 붙은 채로, 두 사람은 추첨함 앞에서 다정하게 이야기를 나누었다.',
             ]);
-            await era.printAndWait('おかしい……なぜ抽選箱から離れない……？');
+            await era.printAndWait('이상하게도…… 왜 추첨함 앞을 떠나려 하지 않는 걸까……?');
             era.println();
-            await tachyon.say_and_wait(['よろしい、行きましょう、', callname]);
+            await tachyon.say_and_wait(['자, 이제 갈까, ', callname]);
             era.println();
             await era.printAndWait('え');
             await era.printAndWait([
-              '傍らの熱が急に消え、',
+              '줄곧 곁에 머물던 온기가 갑자기 사라지자 ',
               you.get_colored_name(),
               ' は慌てて ',
               tachyon.get_colored_name(),
-              ' について商店街を出た',
+              '의 뒤를 따라 상점가를 빠져나갔다.',
             ]);
             await era.printAndWait([
-              '商店街を出た ',
+              '상점가를 벗어난 ',
               tachyon.get_colored_name(),
-              ' が、左目から何かを取り出すのが見えた',
+              '이(가) 왼쪽 눈에서 무언가를 빼내는 모습이 보였다.',
             ]);
             era.println();
-            await tachyon.say_and_wait('ふぅ、やっと楽になりましたわ');
+            await tachyon.say_and_wait('후우, 이제 좀 살 것 같군.');
             era.println();
             await era.printAndWait([
               '…………？',
               tachyon.get_colored_name(),
-              ' の目……？',
+              '의 눈이……?',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' はよく見た。もともと',
+              '은(는) 자세히 살폈다. 원래 ',
               tachyon.sex,
-              'の赤のグラデーションの両目のうち、片方だけがわずかに薄い',
+              '의 붉은 그라데이션 눈동자 중 한쪽만 어딘가 미묘하게 옅어 보였다.',
             ]);
             era.println();
-            await you.say_and_wait('……カラコン？');
+            await you.say_and_wait('……컬러 렌즈?');
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' がそんなものを着ける人とは思えない',
+              '이(가) 그런 것을 착용할 사람이라고는 생각하기 어려웠다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              'くふふ……これは、シャカールと共同で作ったものですわ',
+              '후후…… 이건 샤커 군과 내가 공동 개발한 물건이라네.',
             );
             await tachyon.say_and_wait(
-              'まず、私の薬剤で、このレンズに非生物を透視する能力を持たせます',
+              '우선 내 약물 처리를 통해 이 렌즈에 비생물 투시 능력을 부여했지.',
             );
             await tachyon.say_and_wait(
-              'シャカールは見たものの軌道を解析できます。もともとはレースの走者解析用ですわ',
+              '그리고 샤커 군이 관측된 정보를 바탕으로 운동 궤적을 분석하는 기능을 넣었어. 본래는 레이스 중 주자들의 움직임을 분석하기 위한 용도였지만.',
             );
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' が立て続けに話し、',
+              '이(가) 쉴 새 없이 설명을 늘어놓는 통에 ',
               you.get_colored_name(),
-              ' は少し目が回った',
+              '은(는) 머리가 어질어질했다.',
             ]);
-            await era.printAndWait('だが……');
+            await era.printAndWait('하지만……');
 
-            era.printButton('「つまり……透視レンズか？」', 1);
+            era.printButton('「설마…… 이게 그 투시 렌즈 같은 거야?」', 1);
             await era.input();
             await tachyon.say_and_wait(
-              'まあ、そんなところですわ……ただし、小さな欠陥がありまして',
+              '뭐, 비슷하네…… 다만 약간의 결함이 있어서 말이야.',
             );
             await tachyon.say_and_wait(
-              'たとえば着けていると、変わった視界に慣れるまで一歩も歩けません',
+              '예를 들면 이걸 착용하고 있을 때는 왜곡된 시야에 익숙해지기 전까지 한 발짝도 걷기 힘들다거나,',
             );
             await tachyon.say_and_wait(
-              '乱用すれば、情報量過多で脳が昏倒することもあります',
+              '멋모르고 남용했다간 과도한 정보량 때문에 뇌가 혼수상태에 빠질 수도 있지.',
             );
             await tachyon.say_and_wait(
-              'ですのでシャカールと、これは封印するつもりでした。くふふ、ここで役立つとは……',
+              '그래서 샤커 군과 나는 이 물건을 봉인해 두기로 했었네만, 후후, 설마 여기서 도움이 될 줄이야……',
             );
             era.println();
-            await era.printAndWait('役立つ……？');
+            await era.printAndWait('도움이 됐다니……?');
             await era.printAndWait('透視＋軌道解析……');
-            await era.printAndWait('動けないから、福引の抽選箱の前に立つ……');
+            await era.printAndWait('움직이지 못하니까 경품 추첨함 앞에 서 있었던 것……');
             await you.say_and_wait('ああ');
-            era.printButton('「さっきの福引！」', 1);
-            era.printButton('「タキオン、お前……」', 2);
+            era.printButton('「방금 그 뽑기!」', 1);
+            era.printButton('「타키온, 설마 네가……」', 2);
             await era.input();
-            await tachyon.say_and_wait('しっ');
+            await tachyon.say_and_wait('쉿.');
             era.println();
             await era.printAndWait([
               tachyon.sex,
-              'は唇に指を当て、静かに、と合図した',
+              '는 입술 위에 손가락을 올리며 조용히 하라는 신호를 보냈다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              '言いましたわ。これは、あなたへの贈り物です',
+              '내가 말하지 않았나? 이건 자네에게 주는 선물이라고.',
             );
             era.println();
-            await tachyon.say_and_wait('神でも、冥々たる運でもありません');
+            await tachyon.say_and_wait('신령님도 아니고 정체 모를 운도 아니야.');
             await tachyon.say_and_wait([
               '私、',
               tachyon.get_colored_name(),
-              ' が、愛する人へ贈る正月の祝いですわ',
+              '이(가) 내 사랑하는 이에게 보내는 새해 선물이라네.',
             ]);
             await tachyon.say_and_wait([
-              '明けましておめでとう、',
+              '새해 복 많이 받게나, ',
               you.get_colored_actual_name(),
               ' 君',
             ]);
             era.println();
             await era.printAndWait(
-              '以前、正月と言えば、忘れがたい思い出がいくつも浮かんだ',
+              '이전까지 새해라고 하면 머릿속에 수많은 잊지 못할 추억들이 떠오르곤 했다.',
             );
             await era.printAndWait(
-              '囲炉裏、一家団欒、おせち、テレビのつまらない新春番組',
+              '가족이 둘러앉은 화롯가, 단란한 모임, 명절 음식 혹은 TV에서 틀어 주는 지루한 신춘 프로그램 같은 것들 말이다.',
             );
             await era.printAndWait(
-              'だが今日から、正月の第一印象は一つだけになる',
+              '하지만 오늘부터는 새해라는 단어를 들으면 가장 먼저 떠오르는 이미지는 단 하나뿐이게 될 것이다.',
             );
             await era.printAndWait([
-              '灯り始めた街灯の下、悪戯が成功した子猫のように笑う',
+              '점점 밝아지는 가로등 아래에서, 마치 장난에 성공한 새끼 고양이처럼 웃고 있는 ',
               tachyon.sex,
             ]);
             era.println();
-            await era.printAndWait('そして、あのキスの味');
+            await era.printAndWait('그리고 그 입맞춤의 맛.');
             await era.printAndWait([
-              'あのキスは甘かった。',
+              '그 입맞춤은 감미로운 맛이었다.',
               tachyon.get_colored_name(),
-              ' の紅茶より甘い',
+              '이(가) 타 주는 홍차보다도 달콤했다.',
             ]);
           } else {
             await you.say_as_passer_by_and_wait('店主', '特等！ 温泉旅行券！');
             era.println();
-            await era.printAndWait('商店街のおじさんが鈴を激しく振った');
-            await era.printAndWait('今日の一等が、いま出たと告げる');
+            await era.printAndWait('상점가 아저씨가 힘차게 종을 흔들었다.');
+            await era.printAndWait('오늘의 최고 경품이 주인을 찾았음을 선포했다.');
             era.println();
-            await era.printAndWait('特等だ！');
-            await era.printAndWait('二人用の温泉旅行券ではないか');
+            await era.printAndWait('특별상에 당첨되었다!');
+            await era.printAndWait('무려 2인용 온천 여행권이다.');
             era.println();
             await tachyon.say_and_wait(
-              'おや……温泉旅行券ですわね。悪くありませんわ',
+              '오호라…… 온천 여행권이라니, 꽤 괜찮아 보이는데.',
             );
             era.println();
-            await era.printAndWait('期限は……来年四月まで');
-            await era.printAndWait('なら、URA決勝が終わったあとがちょうどいい');
+            await era.printAndWait('기한은…… 내년 4월까지였다.');
+            await era.printAndWait('이거라면 URA 파이널스가 끝난 뒤가 딱 적당한 시기였다.');
             era.println();
             if (love >= 50) {
-              era.printButton('「タキオン、一緒に行こう！」', 1);
+              era.printButton('「타키온, 같이 가자!」', 1);
               await era.input();
-              await tachyon.say_and_wait('ふむ……一緒に、ですの？');
+              await tachyon.say_and_wait('흐음…… 같이 가겠다고?');
               await tachyon.say_and_wait([
                 callname,
-                '、一般に『温泉旅行へ一緒に行く』関係が何か、理解したうえで誘っていますの？',
+                ', 자네는 보통 『함께 온천 여행을 가는』 사람들이 어떤 관계인지 이해하고 나에게 권유하는 건가?',
               ]);
               era.println();
-              await era.printAndWait('一般に、温泉へ一緒に行く関係……');
+              await era.printAndWait('보통 함께 온천 여행을 가는 사람들은……');
               era.printButton('夫婦', 1);
               era.printButton('恋人', 2);
               era.printButton(
-                `「……普通の${tachyon.uma_sex_title}とトレーナーは、もともと行くものでは？」`,
+                `「……보통 ${tachyon.uma_sex_title}와 트레이너라면 원래 자주 가는 거 아니야?」`,
                 3,
               );
               switch (await era.input()) {
                 case 1:
-                  await era.printAndWait('一般的には……新婚夫婦だろう');
-                  await era.printAndWait('新婚旅行で温泉はよくある');
+                  await era.printAndWait('보통이라면…… 신혼부부겠지.');
+                  await era.printAndWait('신혼여행으로 온천에 가는 경우가 꽤 많지 않은가.');
                   await you.say_and_wait(
-                    '……俺とタキオンが、新婚夫婦……？',
+                    '……나와 타키온이, 신혼부부……?',
                     true,
                   );
                   break;
                 case 2:
-                  await era.printAndWait('たぶん……恋人だろう');
+                  await era.printAndWait('아마도…… 연인이겠지.');
                   await era.printAndWait(
-                    'それほど親しくなければ、二人だけで温泉へは行かない',
+                    '그 정도로 친밀한 관계가 아니라면 보통 둘이서만 온천 여행을 가지는 않을 테니까.',
                   );
-                  await you.say_and_wait('俺とタキオンが……恋人か？', true);
+                  await you.say_and_wait('나와 타키온이…… 연인인가?', true);
                   break;
                 case 3:
                   await era.printAndWait([
-                    '……いや、普通',
+                    '……아니, 보통 ',
                     tachyon.uma_sex_title,
-                    'とトレーナーはよく行くのでは？',
+                    '와 트레이너는 원래 자주 가는 거 아닌가?',
                   ]);
                   await era.printAndWait([
-                    '毎年四月、先輩たちが担当',
+                    '해마다 4월이면 많은 선배들이 담당 ',
                     tachyon.uma_sex_title,
-                    'と行く……しかも商店街の抽選らしい。不思議だ',
+                    '와 함께 떠나곤 했다…… 게다가 다들 상점가에서 당첨된 것 같던데, 정말 신기한 일이다.',
                   ]);
                   await era.printAndWait(
-                    'だが……二人だけで温泉は、やはり少し変か……？',
+                    '하지만……二人だけで温泉は、やはり少し変か……？',
                   );
                   era.println();
                   await tachyon.say_and_wait([
-                    'では、そのとき私とどんな関係になっていたいのです？',
+                    '그렇다면 자네는 그때 우리가 어떤 관계가 되어 있길 바라나?',
                     callname,
-                    '……来年四月、くふふ。楽しみですわ',
+                    '……내년 4월이라, 후후, 기대되는군.',
                   ]);
                   era.println();
                   await you.say_and_wait(
-                    '来年四月、自分とタキオンの関係か……',
+                    '내년 4월, 나와 타키온의 관계라……',
                     true,
                   );
               }
             } else if (relation >= 225) {
               await tachyon.say_and_wait(
-                'ええ……一緒に行きます？ 実験場としては、悪くない場所ですわ',
+                '음…… 같이 가겠나? 실험 장소로서는 확실히 나쁘지 않은 곳이군.',
               );
               await tachyon.say_and_wait(
-                '温泉旅館といえば、事故が起きても、人が死んでもおかしくない場所ですわね',
+                '온천 여관이라는 건 그거지? 어떤 돌발 사고가 일어나서 설령 사람이 죽는다 해도 전혀 이상하지 않은 장소 말일세.',
               );
               await tachyon.say_and_wait(
-                'なら、無害な小さな実験くらい、問題ないでしょう……',
+                '그런 곳이라면 내가 무해한 실험을 조금 한다 해도 큰 문제는 없겠지……',
               );
-              era.printButton('「違う」', 1);
+              era.printButton('「그게 아니야」', 1);
               await era.input();
-              await era.printAndWait('実験や研究の場ではない');
+              await era.printAndWait('실험이나 연구를 위한 장소로 가려는 게 아니었다.');
               await era.printAndWait(
-                '三年の二人三脚が終わったあとの、二人の休みだ',
+                '3년 동안의 이인삼각이 끝난 뒤에 갖는 두 사람만의 휴식이었다.',
               );
               era.printButton(
-                '「トレーニングも実験も関係ない。ただ休むだけ……だめか？」',
+                '「훈련도 아니고 실험도 아닌, 그저 순수한 휴식……은 안 될까?」',
                 1,
               );
               await era.input();
-              await tachyon.say_and_wait('……来年四月、ですの');
+              await tachyon.say_and_wait('……내년 4월인가.');
               await tachyon.say_and_wait(
-                'くふふ、ではモルモットへの労いとしましょう',
+                '후후, 그렇다면 모르모트 군에 대한 포상으로 해 두지.',
               );
               await tachyon.say_and_wait(
-                '来年四月、私たちの夢に一段落がついたとき……そのときもまだそばにいるなら、一緒に行きましょう',
+                '내년 4월, 우리의 꿈이 일단락되었을 때…… 그때까지 자네가 여전히 내 곁에 남아 있다면 함께 가도록 하세.',
               );
-              era.printButton('「ああ！」', 1);
+              era.printButton('「응!」', 1);
               await era.input();
-              await tachyon.say_and_wait('ただし、褒美を出した以上……');
+              await tachyon.say_and_wait('하지만 포상을 약속했으니……');
               await tachyon.say_and_wait(
-                '残りの一年、あなたも頑張らねばなりませんわ',
+                '남은 1년 동안 자네도 제대로 힘내야 할 거야.',
               );
               await tachyon.say_and_wait([
-                '実験を素直に受け、毎日料理をし、それから ',
+                '고분고분 실험을 받고, 매일 밥을 해 주고, 또 ',
                 call_25,
-                ' が逃げるときは捕まえて、私の実験に……',
+                '이(가) 도망치려 하면 붙잡아서 내 실험실로 데려오는 것까지……',
               ]);
               era.println();
-              await era.printAndWait('待て待て！ 最後のは明らかに無理だ！');
+              await era.printAndWait('잠깐 잠깐! 마지막 건 분명히 무리라고!');
               era.println();
               await era.printAndWait([
-                '笑いながら、二人はトレセン学園へ戻った',
+                '농담을 주고받으며 두 사람은 트레센 학원으로 돌아갔다.',
               ]);
-              await era.printAndWait('来年四月か……楽しみだ');
+              await era.printAndWait('내년 4월이라…… 정말 기대되는군.');
             } else {
               await era.printAndWait([
-                'だが……',
+                '하지만……',
                 tachyon.get_colored_name(),
-                ' は自分と行くだろうか',
+                '이(가) 나와 같이 가 주려 할까?',
               ]);
               era.println();
               await tachyon.say_and_wait(
-                'URA決勝のあと温泉旅行……悪くありませんわね',
+                'URA 파이널스가 끝난 뒤의 온천 여행이라…… 괜찮은 제안이군.',
               );
               era.println();
-              await era.printAndWait('おや？ あっさり承諾した？');
-              await era.printAndWait('面倒だと断ると思ったのに');
+              await era.printAndWait('오? 의외로 흔쾌히 수락했다.');
+              await era.printAndWait('번거롭다며 거절할 줄 알았는데 말이다.');
               era.println();
               await tachyon.say_and_wait(
-                '温泉旅館といえば、事故が起きても、人が死んでもおかしくない場所ですわ。なら、無害な小さな実験くらい問題ないでしょう……',
+                '온천 여관이라는 건 그거지? 어떤 돌발 사고가 일어나서 설령 사람이 죽는다 해도 전혀 이상하지 않은 장소 말일세. 그런 곳이라면 내가 무해한 실험을 조금 한다 해도 큰 문제는 없겠지……',
               );
               era.println();
-              await era.printAndWait('…………今のうちに券を返したほうがいいか？');
+              await era.printAndWait('…………그냥 지금 당장 온천권을 돌려주고 올까?');
             }
           }
       }
