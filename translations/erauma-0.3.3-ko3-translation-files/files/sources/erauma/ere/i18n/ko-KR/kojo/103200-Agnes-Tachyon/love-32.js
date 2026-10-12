@@ -766,7 +766,7 @@ module.exports = {
 
   // [번역 대상] 74
   74: (() => {
-    const title = '魔女の告白';
+    const title = '마녀의 고백';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -775,116 +775,116 @@ module.exports = {
     const f = async (tachyon, you, callname) => {
       await tachyon.say_and_wait([
         callname,
-        '、今日の薬を飲む前に、一つお話をしますわ',
+        ', 오늘의 약을 마시기 전에 자네에게 할 이야기가 하나 있네.',
       ]);
       era.println();
       await era.printAndWait([
-        '今日も ',
+        '오늘도 ',
         you.get_colored_name(),
-        ' はいつものように ',
+        '은(는) 평소처럼 ',
         tachyon.get_colored_name(),
-        ' の実験室へ来た。',
+        '의 실험실을 찾아왔다.',
         tachyon.sex,
-        'はいつものように弁当を受け取り、今日の薬を ',
+        '는 평소처럼 도시락을 받아 들고 오늘의 약을 ',
         you.get_colored_name(),
-        ' へ渡す。',
+        '에게 건넸다.',
       ]);
-      await era.printAndWait('物々交換のような、取引のようだ');
+      await era.printAndWait('마치 물물교환과도 같은 거래였다.');
       era.println();
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         you.get_colored_name(),
-        ' が薬を飲もうとしたとき、',
+        '이(가) 약을 마시려던 순간 ',
         tachyon.get_colored_name(),
-        ' は ',
+        '은(는) ',
         you.get_colored_name(),
-        ' の手を止めた',
+        '의 손을 막았다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が不思議そうに',
+        '이(가) 의아한 표정으로 ',
         tachyon.sex,
-        'を見ると、',
+        '를 바라보자 ',
         tachyon.sex,
-        'は真剣な眼で ',
+        '는 진지한 눈으로 ',
         you.get_colored_name(),
-        ' を見つめ返す',
+        '을(를) 마주 보았다.',
       ]);
       era.println();
       await era.printAndWait(
-        '…………その眼は、命を賭ける覚悟を帯びているかのようだった',
+        '…………그 눈빛에는 마치 목숨을 걸 각오가 서린 듯했다.',
       );
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '、人魚姫という童話を、ご存知ですかしら',
+        ', 인어공주라는 동화를 알고 있나?',
       ]);
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'は ',
+        '는 ',
         you.get_colored_name(),
-        ' の答えを待たず、最初から答えさせるつもりはなかったかのように、続けた',
+        '의 대답을 기다리지 않았다. 애초에 대답을 들을 생각도 없었던 듯 곧바로 이야기를 이었다.',
       ]);
       await era.printAndWait(
-        '……だがそれは、アンデルセン童話の人魚姫とは違う、別の物語だった',
+        '……하지만 그 이야기는 안데르센의 인어공주와는 전혀 다른 이야기였다.',
       );
       era.println();
       await tachyon.say_and_wait(
-        'むかしむかし、海の底に暮らす人魚姫がいましたわ。彼女は幼い頃から両脚を欲し、地上で、思う存分走りたいと願っていました',
+        '옛날 옛적 바닷속에 인어공주가 살고 있었다네. 그녀는 어릴 때부터 두 다리를 갖고 땅 위에서 마음껏 달리고 싶어 했지.',
       );
       await tachyon.say_and_wait(
-        'だが海に住む彼女には、腰から下の魚の尾しかなく、走るどころか、立つことすらできませんでした',
+        '하지만 바다에서 사는 그녀에게는 허리 아래로 물고기 꼬리만 있었네. 달리기는커녕 똑바로 서는 것조차 불가능했지.',
       );
       era.println();
-      await era.printAndWait('彼女は自嘲するように、自分の両脚を見る……');
-      await era.printAndWait('ガラスのように脆い両脚。立てても、走れても、');
+      await era.printAndWait('그녀는 자조하듯 자신의 두 다리를 내려다보았다……');
+      await era.printAndWait('유리처럼 연약한 두 다리. 설 수도 달릴 수도 있지만,');
       await era.printAndWait(
-        '走れば壊れる両脚は、魚の尾よりどれほどましなのでしょう？',
+        '달리면 부서지는 다리가 물고기 꼬리보다 얼마나 나을까?',
       );
       era.println();
       await tachyon.say_and_wait(
-        '姫は魔女に会いませんでした。信頼できない魔女に、両脚を預けるつもりもありませんでした。',
+        '공주는 마녀를 만나지 않았네. 믿을 수 없는 마녀에게 자신의 다리를 맡길 생각도 없었지.',
       );
       await tachyon.say_and_wait(
-        '欲しかったのは、本当に自分の両脚。だから彼女は、自分で魔術を学び始めました',
-      );
-      era.println();
-      await era.printAndWait([
-        tachyon.get_colored_name(),
-        ' が両手を振るうと、どこからともなく試験管が二本現れる。手品のようで、あるいは……魔術のようだ',
-      ]);
-      era.println();
-      await tachyon.say_and_wait(
-        '姫は信じていました。努力し続ければ、いつか自分の両脚が得られる、と。',
-      );
-      await tachyon.say_and_wait(
-        'そのときは思う存分走れる。もう何も恐れなくていい。あるところまで、そうでした……',
+        '정말 원했던 건 온전히 자신의 두 다리였네. 그래서 직접 마법을 배우기 시작했지.',
       );
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の口調が、不意に遠く、夢の中へ沈んだようになる',
+        '이(가) 양손을 흔들자 어디선가 시험관 두 개가 나타났다. 마치 마술처럼, 아니…… 마법처럼.',
       ]);
       era.println();
-      await tachyon.say_and_wait('彼女は、一人の人に出会いました');
       await tachyon.say_and_wait(
-        'その人は王子ではありません。ただの潜水士でした。海へ落ちて救いを待つ王子ではなく',
+        '공주는 믿고 있었다네. 계속 노력한다면 언젠가 진짜 두 다리를 얻을 수 있다고.',
       );
       await tachyon.say_and_wait(
-        '出航の途中、海面でデータを集めていた姫を偶然見て、うっかりセイレーンに魅せられた',
-      );
-      await tachyon.say_and_wait(
-        '海へ飛び込み、自ら実験を手伝ったただの人間。仮に——モルモット君、と呼びましょう',
+        '그때는 마음껏 달릴 수 있을 것이고 더 이상 아무것도 두려워하지 않아도 되겠지. 하지만 어느 순간까지의 이야기였다네……',
       );
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' はそこで、くすくすと笑った。何か冗談を思い出したように',
+        '의 말투가 갑자기 아득하게 멀어졌다. 마치 꿈속에 가라앉은 듯했다.',
+      ]);
+      era.println();
+      await tachyon.say_and_wait('그러다 그녀는 한 사람을 만났네.');
+      await tachyon.say_and_wait(
+        '그는 왕자가 아니었네. 그저 평범한 잠수부였지. 바다에 빠져 구원을 기다리던 왕자가 아니라,',
+      );
+      await tachyon.say_and_wait(
+        '항해하던 중 해수면에서 자료를 수집하는 공주를 우연히 발견하고 세이렌의 매력에 사로잡힌 사람일세.',
+      );
+      await tachyon.say_and_wait(
+        '스스로 바다에 뛰어들어 실험을 도운 평범한 인간이지. 편의상 그를—— 모르모트 군이라고 부르겠네.',
+      );
+      era.println();
+      await era.printAndWait([
+        tachyon.get_colored_name(),
+        '는 그 대목에서 무슨 농담이라도 떠올린 듯 키득거리며 웃었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '姫は最初、モルモット君に何の感情もありませんでした。面白い実験対象が来た、というだけ。',
+        '처음에 공주는 모르모트 군에게 아무런 감정도 없었네. 그저 재미있는 실험 대상이 생겼다고 생각했을 뿐이지.',
       );
       await tachyon.say_and_wait(
         '彼でさまざまな実験をしました。増殖、発光、分身、性転換………ふふ',
