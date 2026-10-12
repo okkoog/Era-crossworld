@@ -5782,196 +5782,196 @@ module.exports = {
           you.sex,
           '는 포옹의 힘을 더욱 굳건히 했다.',
         ]);
-        era.printButton('「少なくとも、明日の有馬記念は見てくれ」', 1);
-        era.printButton('「必ずタキオンにけじめはつける」', 2);
+        era.printButton('「적어도 내일 아리마 기념까지는 지켜봐 줘.」', 1);
+        era.printButton('「반드시 타키온에게 제대로 설명해 줄게.」', 2);
         await era.input();
-        await tachyon.print_and_wait('けじめ……どんなけじめ');
-        await tachyon.print_and_wait('関係を終わらせる、けじめなのか？');
+        await tachyon.print_and_wait('설명…… 대체 어떤 설명인가.');
+        await tachyon.print_and_wait('관계의 종말을 알리는…… 그런 설명인 것일까?');
         await tachyon.print_and_wait([
           you.sex,
-          'の両目を真っすぐに見つめても、何の意味も読み取れない',
+          '의 눈동자를 똑바로 바라보았지만 그 어떤 의미도 읽어낼 수 없었다.',
         ]);
         era.println();
-        await tachyon.print_and_wait('……それでも、悪くはない');
+        await tachyon.print_and_wait('……그것도 나쁘지 않겠지.');
         await tachyon.print_and_wait([
-          '最後に、',
+          '마지막으로 다시 한번 ',
           you.sex,
-          'のあの熱狂した目をもう一度見られるなら',
+          '의 그 뜨거운 눈빛을 볼 수만 있다면.',
         ]);
         await tachyon.print_and_wait([
-          '……その視線の先が、もう ',
+          '……비록 그 시선이 향하는 대상이 더 이상 ',
           tachyon.get_colored_name(),
-          ' ではなくても',
+          '이(가) 아닐지라도.',
         ]);
       } else {
-        await tachyon.say_and_wait('……ああ、雪ですわ');
+        await tachyon.say_and_wait('……아, 눈이 내리는군.');
         era.println();
-        await era.printAndWait('ふと、空から白い雪が舞い始めた');
+        await era.printAndWait('문득 하늘에서 하얀 눈송이가 흩날리기 시작했다.');
         await era.printAndWait([
-          'もう帰ったほうがいいか……そう考えた ',
+          '이제 그만 돌아가야 하는 건 아닐까…… 그런 생각을 하던 ',
           you.get_colored_name(),
-          ' の服を、',
+          '의 옷자락을 ',
           tachyon.get_colored_name(),
-          ' が軽く引く',
+          '이(가) 살짝 잡아당겼다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('どこかで、少し座りましょう');
+        await tachyon.say_and_wait('어디 가서 좀 앉아 있지.');
         era.println();
-        await era.printAndWait('そうだ。今日の目的は、まだ果たしていない');
+        await era.printAndWait('그렇지, 오늘의 목표는 아직 달성하지 못했다.');
         await era.printAndWait([
-          '店に腰を下ろして、',
+          '가게를 찾아 잠시 앉아서 ',
           tachyon.get_colored_name(),
-          ' が不機嫌な理由を聞き出そう',
+          '이(가) 기분이 좋지 않은 이유를 물어보자.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は自分に気合を入れた',
+          '은(는) 스스로를 다독였다.',
         ]);
         era.drawLine();
         era.printButton('「…………」', 1);
         await era.input();
-        await tachyon.say_and_wait([callname, '？ 座らないのですか？']);
-        era.printButton('「……いや、その」', 1);
+        await tachyon.say_and_wait([callname, '? 안 앉는 건가?']);
+        era.printButton('「……아니, 저기 말이야.」', 1);
         await era.input();
         await tachyon.say_and_wait(
-          'そんなに口ごもるなんて、あなたらしくありませんわ……それとも、言いづらい事情でも？',
+          '그렇게 우물쭈물하는 건 자네답지 않은걸…… 아니면 무슨 말 못 할 사정이라도 있는 건가?',
         );
         era.println();
-        await era.printAndWait('いや、言いづらい事情というより、問題は……');
-        era.printButton('「生徒と一緒に居酒屋は、NGだろう」', 1);
+        await era.printAndWait('아니, 말 못 할 사정이라기보다는……');
+        era.printButton('「학생이랑 같이 선술집에 들어가는 건 역시 NG겠지.」', 1);
         era.printButton('「미성년자와 함께 이자카야에 가는 건 불법이지」', 2);
         await era.input();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が ',
+          '이(가) ',
           you.get_colored_name(),
-          ' を引っ張って入ろうとしているのは、商店街の外れの居酒屋だった',
+          '을(를) 데리고 들어가려는 곳은 다름 아닌 상점가 끝자락의 선술집이었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'もう引退したのですから、大丈夫でしょう……私もこういう場所は初めてですけれど、問題はないはずですわ',
+          '이미 은퇴했으니 상관없지 않나…… 나도 이런 곳은 처음이긴 하지만 별문제 없을 걸세.',
         );
         await tachyon.say_and_wait([
-          'それとも ',
+          '아니면 ',
           callname,
-          '、もうそんな歳なのに、居酒屋にも入れないのですか？',
+          ', 자네는 그 나이 먹도록 선술집에 들어갈 용기도 없는 건가?',
         ]);
-        era.printButton('「問題は引退かどうかじゃなく、生徒だ！」', 1);
-        era.printButton('「……挑発は通じない」', 2);
+        era.printButton('「문제는 은퇴 여부가 아니라 학생이라는 점이라고!」', 1);
+        era.printButton('「……도발해도 소용없어.」', 2);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
-          ' が断って ',
+          '이(가) 거절하고 ',
           tachyon.get_colored_name(),
-          ' を引き戻そうとしたとき、',
+          '을(를) 데리고 돌아가려 했을 때, ',
           tachyon.get_colored_name(),
-          ' はもう店の中へ入っていた',
+          '은(는) 이미 주저 없이 가게 안으로 들어가 버렸다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'ほらほら、来なさい。夜食……というようなものですわ',
+          '자자, 어서 오게. 야식이라도 먹는 셈 치고…… 뭐 그런 거지.',
         );
-        await you.say_as_passer_by_and_wait('店主', 'いらっしゃい～～');
+        await you.say_as_passer_by_and_wait('점주', '어서 오세요~~');
         era.println();
         await era.printAndWait([
-          '扉が開くと、店内の暖かさと外の冷気が対比になり、',
+          '가게 문이 열리자 안쪽의 온기가 바깥의 찬 공기와 대비되며 ',
           you.get_colored_name(),
-          ' はもう足が動かなくなった',
+          '의 발길을 붙잡았다.',
         ]);
-        era.printButton('「……少し座るくらいなら、まあ」', 1);
+        era.printButton('「……잠시 앉아 있는 정도는 괜찮을지도.」', 1);
         await era.input();
         await era.printAndWait([
-          '店に入って、',
+          '가게 안으로 들어온 ',
           you.get_colored_name(),
-          ' は意外なものを見た',
+          '은(는) 뜻밖의 사실을 발견했다.',
         ]);
         await era.printAndWait(
-          '店内を忙しく動き回る店主の後ろに、栗色の長い尻尾がある',
+          '바쁘게 움직이는 주인장의 뒤편으로 길고 밤색인 꼬리가 보였다.',
         );
         era.println();
-        await tachyon.say_and_wait('……おや、まさか……');
+        await tachyon.say_and_wait('……호오, 이런 곳에……');
         era.println();
         await you.say_as_passer_by_and_wait(
-          '店主',
-          'いらっしゃい！ ……ねえお客さん、あんた、学生でしょう？',
+          '점주',
+          '어서 오세요! ……근데 손님, 아무래도 학생 같은데?',
         );
         era.println();
         await tachyon.say_and_wait(
-          'あら、そう見えますの？ でも私はもう引退した身分ですわよ',
+          '어라, 그렇게 보이나? 하지만 난 이미 은퇴한 몸이라네.',
         );
         era.println();
         await era.printAndWait(
-          'いや、引退したからといって生徒でなくなるわけではない',
+          '아니, 은퇴했다고 해서 학생이 아닌 건 아니잖아.',
         );
         await era.printAndWait(
-          '突っ込みたかったが、店主は頷いて「じゃあ問題ない」と言う',
+          '태클을 걸고 싶었지만 점주는 고개를 끄덕이며 그럼 괜찮다고 말했다.',
         );
-        await era.printAndWait('いや……何が問題ないのだ');
+        await era.printAndWait('아니…… 뭐가 괜찮다는 건데.');
         era.println();
         await you.say_as_passer_by_and_wait(
-          '店主',
-          'それに、隣の人はあんたのトレーナーでしょう。トレーナーが一緒なら大丈夫よ',
+          '점주',
+          '게다가 옆에 계신 분은 트레이너인 것 같네. 트레이너가 동행한다면 문제없지.',
         );
-        await tachyon.say_and_wait('……ほう、わかりますの？');
+        await tachyon.say_and_wait('……오, 딱 보면 아는 건가?');
         era.println();
         await era.printAndWait([
-          '問題は大きいだろう……だがそれより、',
+          '문제투성이지만…… 그것보다 ',
           you.get_colored_name(),
-          ' も、なぜ自分がトレーナーだとわかったのか気になる',
+          '도 주인이 어떻게 자신이 트레이너라는 걸 알아챘는지 궁금했다.',
         ]);
-        await you.say_as_passer_by_and_wait('店主', [
+        await you.say_as_passer_by_and_wait('점주', [
           you.sex,
-          'の目よ。うちの亭主とそっくり。担当を見たら足が止まっちゃう、あの目',
+          '의 눈빛 말이야. 우리 남편이랑 똑같거든. 자기 담당 우마무스메만 보면 정신을 못 차리는 그 눈빛.',
         ]);
         era.println();
-        await era.printAndWait('な、なんという言い草だ');
-        await era.printAndWait('自分は変態なのか');
+        await era.printAndWait('그, 그게 무슨 소리야?');
+        await era.printAndWait('내가 무슨 변태라도 된다는 건가.');
         await you.say_as_passer_by_and_wait(
-          '店主',
-          'ふふ、その目は良い亭主の必須条件よ～～逃しちゃだめ',
+          '점주',
+          '후후, 그런 눈빛이야말로 좋은 남편의 필수 조건이지~~ 절대 놓치지 말라고.',
         );
         era.println();
-        await era.printAndWait('店主はそう言うと、他の客の相手へ向かった');
+        await era.printAndWait('점주는 말을 마치고 다른 손님을 맞이하러 갔다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は恐る恐る ',
+          '은(는) 전전긍긍하며 ',
           tachyon.get_colored_name(),
-          ' を見る。今度こそ',
+          '을(를) 바라보았다. 분명 ',
           tachyon.sex,
-          'に笑われる……',
+          '에게 비웃음을 살 것이라 생각하며……',
         ]);
         era.println();
         await tachyon.say_and_wait('…………');
         era.println();
-        await era.printAndWait('何を考えているのかわからない');
+        await era.printAndWait('무슨 생각을 하고 있는 것일까.');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の表情は、どこか上の空だ',
+          '의 표정은 마치 넋이 나간 것처럼 보였다.',
         ]);
-        era.printButton('「タキオン？」', 1);
+        era.printButton('「타키온?」', 1);
         await era.input();
-        await tachyon.say_and_wait('……あ、ええ、コホン、何でもありませんわ');
+        await tachyon.say_and_wait('……아, 응, 흠흠. 아무것도 아니네.');
         era.println();
         await era.printAndWait([
-          '我に返ると、',
+          '정신을 차린 뒤 ',
           tachyon.get_colored_name(),
-          ' の顔は遅延起動の発熱弁当のように',
+          '의 얼굴은 마치 시간차로 가열되는 도시락처럼 ',
         ]);
         await era.printAndWait([
-          '一瞬で真っ赤になり、',
+          '순식간에 붉게 달아올랐고, ',
           you.get_colored_name(),
-          ' は',
+          '은(는) ',
           tachyon.sex,
-          'の顔から湯気が立つように見えた',
+          '의 얼굴에서 증기가 뿜어져 나오는 것만 같았다.',
         ]);
         await era.printAndWait([
-          '気まずい空気を隠すように、',
+          '민망함을 감추기 위해 ',
           tachyon.sex,
-          'は店内の様子へ注意を移す',
+          '는 가게 안의 분위기로 시선을 돌렸다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' も視線をそちらへ向けた',
+          '도 그쪽으로 눈길을 보냈다.',
         ]);
         era.println();
         await era.printAndWait('店主は忙しく客をもてなしている');
