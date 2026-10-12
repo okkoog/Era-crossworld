@@ -6374,9 +6374,9 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_a_95_48
+  // [번역 완료] ws_a_95_48
   ws_a_95_48: (() => {
-    const title = '聖夜のサンタ';
+    const title = '성탄 전야의 산타클로스';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -6396,7 +6396,7 @@ module.exports = {
       await era.printAndWait('그런데……');
       era.println();
       await era.printAndWait(
-        '誰だ、この時間に外でガタガタと安眠を妨げるのは！',
+        '누구야! 이 시간에 밖에서 소란을 피우며 단잠을 방해하는 건!',
       );
       era.println();
       await era.printAndWait([
@@ -6430,7 +6430,7 @@ module.exports = {
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は遠慮なく部屋へ入った',
+        '은(는) 거리낌 없이 방 안으로 들어왔다.',
       ]);
       await era.printAndWait([you.get_colored_name(), '은(는) 다소 경계하는 눈초리로 상대를 바라보았다.']);
       era.println();
@@ -6447,7 +6447,7 @@ module.exports = {
       era.printButton('「빨리 돌아가서 쉬어.」', 2);
       await era.input();
       await tachyon.say_and_wait([
-        '……ふむ、明日は有馬記念。では……今日は、何ですの？',
+        '……흠, 내일은 아리마 기념이지. 그렇다면…… 오늘은 무슨 날인가?',
       ]);
       era.printButton('「今日？」', 1);
       era.printButton('「……아리마 기념 전날?」', 2);
@@ -6467,7 +6467,7 @@ module.exports = {
       era.printButton('「요즘 유행이라서 그런가?」', 1);
       await era.input();
       await tachyon.say_and_wait(
-        '…………ケン○ッキーが、チキンセットを出し始めた、ですの？',
+        '…………켄○키에서 치킨 세트를 팔기 시작하는 날이라고?',
       );
       era.printButton('「K*C에서 치킨 말고 세트로 팔 게 더 있어?」', 1);
       await era.input();
@@ -6483,9 +6483,9 @@ module.exports = {
       await era.input();
       await era.printAndWait('하하하.');
       await era.printAndWait([
-        '室内に、',
+        '방 안에 ',
         tachyon.sex,
-        'の鈴のような笑い声が響いた',
+        '의 방울 같은 웃음소리가 울려 퍼졌다.',
       ]);
       await era.printAndWait(
         '만약 이 목소리가 종소리라면, 정말로 산타클로스가 왔다고 믿어버릴지도 모르겠다.',
@@ -6508,7 +6508,7 @@ module.exports = {
       era.printButton('「메리 크리스마스」', 2);
       await era.input();
       await tachyon.say_and_wait(
-        'いいですわいいですわ、早く言ってくださいまし。欲しいクリスマスプレゼントは何ですの！',
+        '좋네, 좋아. 어서 말해 보게. 어떤 크리스마스 선물을 받고 싶은가!',
       );
       era.printButton('「타키온의 키스」', 1);
       era.printButton('「아리마 기념 승리」', 2);
@@ -6537,7 +6537,7 @@ module.exports = {
           await tachyon.say_and_wait('예를 들면……');
           era.println();
           await era.printAndWait(
-            'ゆっくりめくられる制服のスカート。その下は深紫のレース',
+            '천천히 들춰지는 제복 치마. 그 아래에는 짙은 보라색 레이스가 있었다.',
           );
           await era.printAndWait('암시적인 눈빛에는 정욕과 갈망이 가득 담겨 있었다.');
           await era.printAndWait('하지만……');
@@ -6590,12 +6590,12 @@ module.exports = {
           if (!era.get('exp:0:接吻次数')) {
             await era.printAndWait('첫 키스가 딥키스라니.');
             await era.printAndWait(
-              'こんな奇蹟じみた夢は、聖夜にしか起きないのかもしれない',
+              '이토록 기적 같은 꿈은 성탄 전야에만 일어나는 것일지도 모른다.',
             );
           }
           era.println();
           await tachyon.say_and_wait(
-            'このクリスマスプレゼント、気に入りました？',
+            '이 크리스마스 선물, 마음에 드나?',
           );
           era.println();
           await era.printAndWait([
@@ -6605,7 +6605,7 @@ module.exports = {
           ]);
           era.println();
           await tachyon.say_and_wait(
-            '安心なさい……軽重の見分けくらいは、つきますわ',
+            '안심하게…… 경중을 구분할 정도의 분별력은 있으니까.',
           );
           era.println();
           await era.printAndWait([
@@ -6617,7 +6617,7 @@ module.exports = {
           ]);
         } else if (relation > 225) {
           await tachyon.say_and_wait(
-            'ん？ 奇妙な願いですわね……それだけですの？',
+            '음? 기묘한 소원이군…… 그게 전부인가?',
           );
           era.println();
           await era.printAndWait([
@@ -6639,9 +6639,9 @@ module.exports = {
           await era.printAndWait('그렇다면……');
           era.println();
           await tachyon.say_and_wait([
-            '！……ちょっと、ちょっとちょっと、',
+            '!……잠깐, 잠깐 잠깐, ',
             callname,
-            '……何をしていますの',
+            '……뭘 하는 건가?',
           ]);
           era.println();
           await era.printAndWait([
@@ -6654,7 +6654,7 @@ module.exports = {
             '모처럼의 크리스마스인데, 직접 주도권을 쥐어보는 것도 재미있는 경험 아니겠는가.',
           );
           await era.printAndWait(
-            'せっかくのクリスマスだ。主導権を握るのも、面白い経験ではないか',
+            '모처럼의 크리스마스다. 주도권을 쥐는 것도 재미있는 경험 아니겠는가.',
           );
           era.println();
           await era.printAndWait([
@@ -6677,7 +6677,7 @@ module.exports = {
           await era.printAndWait('————어?');
           era.println();
           await tachyon.say_and_wait(
-            '聞いたことがありますわ。誓いのキス、とかいうものですのね',
+            '들어 본 적 있네. 맹세의 키스라는 것이지?',
           );
           era.println();
           await era.printAndWait('에에———!?');
@@ -6725,7 +6725,7 @@ module.exports = {
           await era.printAndWait('이게 진심인지 장난인지 도무지 알 수가 없었다.');
         } else {
           await tachyon.say_and_wait(
-            'ちょっと、クリスマスだからといって、その冗談は度が過ぎますわ',
+            '이보게, 크리스마스라고 해도 그런 농담은 지나치지 않은가.',
           );
           era.println();
           await era.printAndWait([
@@ -6761,12 +6761,12 @@ module.exports = {
         );
         era.println();
         await era.printAndWait([
-          '月下の',
+          '달빛 아래의 ',
           tachyon.sex,
-          'は、本物の天使のようだった',
+          '은(는) 진짜 천사처럼 보였다.',
         ]);
         era.printButton(
-          '「タキオンにも、こんなロマンチックな面があるんだな」',
+          '「타키온에게도 이렇게 낭만적인 면이 있었구나.」',
           1,
         );
         await era.input();
@@ -6775,10 +6775,10 @@ module.exports = {
         );
         era.println();
         await era.printAndWait(
-          'あのロマンチックで、感性的なものを信じていなければ',
+          '그 낭만적이고 감성적인 무언가를 믿지 않았다면',
         );
         await era.printAndWait(
-          '退屈で反復的な研究に、人生を投じたりはしないだろう',
+          '지루하고 반복적인 연구에 인생을 바치지는 않았을 것이다.',
         );
         await era.printAndWait([
           tachyon.uma_sex_title,
@@ -6792,7 +6792,7 @@ module.exports = {
         await era.printAndWait('이들이야말로 세상에서 가장 천진난만한 두 명의 꿈꾸는 자들이 아닐까.');
         era.println();
         await tachyon.say_and_wait(
-          'では、他に欲しいクリスマスプレゼントはありますの？',
+          '그럼 또 받고 싶은 크리스마스 선물이 있나?',
         );
         era.printButton('「아니, 됐어.」', 1);
         await era.input();
@@ -6805,7 +6805,7 @@ module.exports = {
         ]);
         era.drawLine();
         await tachyon.say_and_wait(
-          'では……あなたの欲しかった贈り物は済みましたわ',
+          '그렇다면…… 자네가 원하던 선물은 전해 준 셈이군.',
         );
         era.println();
         await era.printAndWait('응……?');
@@ -6816,7 +6816,7 @@ module.exports = {
         ]);
         era.println();
         await tachyon.say_and_wait(
-          '次は、サンタクロースが贈りたい贈り物の番ですわ',
+          '다음은 산타클로스가 주고 싶은 선물을 전할 차례일세.',
         );
         era.println();
         await era.printAndWait([
@@ -6828,7 +6828,7 @@ module.exports = {
         era.println();
         await tachyon.say_and_wait([
           callname,
-          '、ここ数日、あなたも疲れていたでしょう',
+          ', 요 며칠 자네도 피곤했겠지?',
         ]);
         era.println();
         await era.printAndWait([
@@ -6847,7 +6847,7 @@ module.exports = {
         await era.printAndWait('이번엔 무엇일까. 발광? 변색? 변형?');
         era.println();
         await era.printAndWait(
-          '恐怖とともにベッドへ這い上がる、赤い瞳の影が迫る',
+          '두려움 속에서 침대 위로 기어오르는 붉은 눈동자의 그림자가 다가왔다.',
         );
         await era.printAndWait([
           '마침내 거리가 제로가 되었을 때, ',
@@ -6860,10 +6860,10 @@ module.exports = {
         await tachyon.say_and_wait('————착하지, 착해.');
         era.println();
         await era.printAndWait('뒷머리에 닿은 것은 부드러운 실크 같은 감촉이었다.');
-        await era.printAndWait(['眼前は、', tachyon.sex, 'の艶やかな顔']);
+        await era.printAndWait(['눈앞에는 ', tachyon.sex, '의 매혹적인 얼굴이 있었다.']);
         if (tachyon.sex_code - 1) {
           await era.printAndWait(
-            '——そう言おうとして、二つの膨らみに視線を遮られた',
+            '——그렇게 말하려던 순간, 두 개의 봉긋한 굴곡이 시야를 가로막았다.',
           );
         }
         await era.printAndWait('이건…… 무릎 베개인가?');
