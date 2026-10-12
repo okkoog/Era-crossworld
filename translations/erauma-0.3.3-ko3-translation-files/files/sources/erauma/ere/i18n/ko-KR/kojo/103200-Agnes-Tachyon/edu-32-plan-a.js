@@ -3688,28 +3688,28 @@ module.exports = {
         era.drawLine();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が模擬レースに勝った',
+          '가 모의 레이스에서 승리했다.',
         ]);
-        await era.printAndWait('だが……ほんのわずかな差だ');
+        await era.printAndWait('하지만…… 정말 근소한 차이였다.');
         era.println();
         await tachyon.say_and_wait([
-          'はあ……はあ……ふ……くふふふ！ どうですの？',
+          '하아…… 하아…… 후…… 크후후후! 어떤가?',
           call_25,
-          '、最後は私の勝ちですわ！',
+          ', 마지막에는 내가 이겼네!',
         ]);
         await coffee.say_and_wait(
-          '……今が本当の実力だと思わないで……これは模擬レースにすぎない',
+          '……지금 이게 내 진짜 실력이라고 생각하지 마…… 이건 모의 레이스일 뿐이니까.',
         );
         await tachyon.say_and_wait(
-          'くふふふ！ 愉快、愉快。負け犬の悔しげな吠え声も悪くありませんわ……ぐっ！',
+          '크후후후! 유쾌하군, 유쾌해. 패배자의 분한 울부짖음도 나쁘지 않…… 윽!',
         );
-        await coffee.say_and_wait('…………覚えておきなさい');
+        await coffee.say_and_wait('…………기억해 두세요.');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は作り笑いの途中で、',
+          '은 억지웃음을 짓다가 ',
           coffee.get_colored_name(),
-          ' の視線に黙った。見えない手で口鼻を塞がれたように',
+          '의 시선에 입을 다물었다. 보이지 않는 손이 입과 코를 틀어막은 듯했다.',
         ]);
         if (
           era.get('cflag:25:招募状态') === recruit_flags.yes &&
@@ -3717,118 +3717,118 @@ module.exports = {
         ) {
           await coffee.say_and_wait([
             callname_25,
-            '……有馬のとき……声をかけてくれると、うれしい',
+            '……아리마 때…… 말을 걸어 주신다면 기쁠 거예요.',
           ]);
         }
         era.println();
         await era.printAndWait([
           coffee.get_colored_name(),
-          ' は振り向かず訓練場を去り、',
+          '은 뒤돌아보지 않고 훈련장을 떠났다. ',
           you.get_colored_name(),
-          ' と ',
+          '와 ',
           tachyon.get_colored_name(),
-          '、そして出番はなかったが確かに場に残っていた後輩',
+          ', 그리고 출전하지 않았지만 끝까지 자리를 지킨 후배 ',
           tachyon.uma_sex_title,
-          'だけが残った',
+          '만 남았다.',
         ]);
         era.println();
         await you.say_as_passer_by_and_wait(
           tachyon.uma_sex_title + 'A',
-          'タキオン先輩！ 本当にすごかったです！',
+          '타키온 선배! 정말 굉장했어요!',
         );
         await tachyon.say_and_wait([
-          '……ふんふん、まだ序の口ですわ。有馬記念を見てくださいまし。そのときは、極致の走りをお見せしますわ！',
+          '……후후, 아직 시작에 불과하네. 아리마 기념을 기대하게. 그때는 궁극의 달리기를 보여 주겠네!',
         ]);
         await you.say_as_passer_by_and_wait(
           tachyon.uma_sex_title + 'A',
-          'タキオン先輩～～～～！',
+          '타키온 선배～～～～!',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が後輩に二言三言応えると、後輩も場を離れた',
+          '가 후배에게 두어 마디 답하자 후배도 자리를 떠났다.',
         ]);
-        await era.printAndWait('そこまでして……');
-        era.printButton(`「……もういい。${tachyon.couple_title}は行った」`, 1);
+        await era.printAndWait('그렇게까지 하면서……');
+        era.printButton(`「……이제 됐어. ${tachyon.couple_title}는 떠났어」`, 1);
         await era.input();
-        await tachyon.say_and_wait('はあ～～');
+        await tachyon.say_and_wait('하아～～');
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は、詰めていた息が抜けたように ',
+          '은 참았던 숨이 한꺼번에 빠져나간 듯 ',
           you.get_colored_name(),
-          ' に寄りかかり、地面に崩れ落ちた',
+          '에게 몸을 기댄 뒤 그대로 주저앉았다.',
         ]);
         await era.printAndWait([
-          '普段なら ',
+          '평소 같았으면 ',
           you.get_colored_name(),
-          ' は心配顔で、',
+          '이(가) 걱정스러운 표정으로 ',
           tachyon.sex,
-          'の具合を尋ねる',
+          '의 상태를 물었을 것이다.',
         ]);
-        await era.printAndWait('だが今は……');
-        era.printButton('「お疲れ」', 1);
-        era.printButton('「きつかっただろ」', 2);
+        await era.printAndWait('하지만 지금은……');
+        era.printButton('「수고했어」', 1);
+        era.printButton('「많이 힘들었지」', 2);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
-          ' にしかわからない。さっきのレースで ',
+          '만이 알고 있다. 방금 레이스에서 ',
           tachyon.get_colored_name(),
-          ' は本当に全力を出した',
+          '은 정말 전력을 다했다.',
         ]);
         await era.printAndWait([
           coffee.get_colored_name(),
-          ' の走りと可能性に追い詰められ、全力を出し、かろうじて、本当にかろうじて、',
+          '의 달리기와 가능성에 몰려 전력을 쏟아부었고, 간신히, 정말 간신히……',
         ]);
-        await era.printAndWait('誤差と呼べるほどの差で勝った');
+        await era.printAndWait('오차라고 해도 좋을 만큼 근소한 차이로 이겼다.');
         era.println();
         await tachyon.say_and_wait([
-          'ええ……',
+          '그래……',
           call_25,
-          '……想像を、超えて伸びていましたわ……',
+          '……상상 이상으로 성장했더군……',
         ]);
         await tachyon.say_and_wait([
-          '私はまだ……元の態度のまま',
+          '나는 아직도…… 예전과 똑같은 태도로 ',
           tachyon.sex,
-          'に接していた……',
+          '를 대하고 있었어……',
         ]);
       } else {
-        await tachyon.print_and_wait('ああ……この感触が、つまり……');
+        await tachyon.print_and_wait('아아…… 이 느낌이란, 결국……');
         era.drawLine();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は模擬レースに負けた',
+          '이(가) 모의 레이스에서 패했다.',
         ]);
-        await era.printAndWait('だが、ごくわずかな差での敗北だ');
+        await era.printAndWait('하지만 아주 근소한 차이의 패배였다.');
         era.println();
-        await coffee.say_and_wait('……この程度なら、失望する');
+        await coffee.say_and_wait('……그 정도라면 실망스럽네요.');
         await coffee.say_and_wait([
-          'こんな ',
+          '그런 ',
           c_call_t,
-          ' では、友人を超える目標の助けにならない……',
+          '로는 친구를 뛰어넘겠다는 목표에 도움이 되지 않아요……',
         ]);
         if (love >= 75) {
           await coffee.say_and_wait([
-            'わからない……なぜ ',
+            '모르겠어요…… 어째서 ',
             callname_25,
-            ' は、あなたに時間を使うのか',
+            '이(가) 당신을 위해 시간을 쓰는지.',
           ]);
           era.println();
           await era.printAndWait([
             coffee.get_colored_name(),
-            ' が ',
+            '이(가) ',
             you.get_colored_name(),
-            ' に寄り添う。親密な仕草と容赦ない批評の落差に、',
+            '에게 다가가 몸을 기댔다. 친밀한 행동과 가차 없는 평가의 낙차에 ',
             you.get_colored_name(),
-            ' は戸惑った',
+            '은 당황했다.',
           ]);
           await era.printAndWait([
-            '走り終えたばかりの薄い草の香りと、かすかな汗の匂いが ',
+            '막 달리기를 마친 뒤의 희미한 풀 향기와 땀 냄새가 ',
             you.get_colored_name(),
-            ' の嗅覚をくすぐる',
+            '의 후각을 자극했다.',
           ]);
           await era.printAndWait([
-            '少し湿った髪と、息を整えた赤い頬が ',
+            '약간 젖은 머리카락과 숨을 고르느라 붉어진 뺨이 ',
             you.get_colored_name(),
             ' の視覚を刺激する',
           ]);
