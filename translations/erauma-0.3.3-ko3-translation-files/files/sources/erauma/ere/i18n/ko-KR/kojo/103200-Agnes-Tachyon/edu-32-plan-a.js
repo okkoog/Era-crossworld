@@ -3400,9 +3400,9 @@ module.exports = {
       }
       era.println();
       await era.printAndWait([
-        'わけもなく、突然 ',
+        '아무런 예고도 없이 갑자기 ',
         tachyon.get_colored_name(),
-        ' のもとへ来た',
+        '를 찾아왔다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
@@ -3506,185 +3506,185 @@ module.exports = {
       ]);
       era.println();
       await tachyon.print_and_wait(
-        '自分が進んでいるあいだ、相手はその場で待っていると思った理論家は、侮りの代償を払うことになる',
+        '자신이 앞서 나아가는 동안 상대는 제자리에 머물러 있으리라 생각했던 이론가는 그 오만의 대가를 치르게 된다.',
       );
-      await tachyon.print_and_wait('……相手、ですの？');
+      await tachyon.print_and_wait('……상대라고?');
       era.println();
-      await tachyon.print_and_wait('偽者ではない');
-      await tachyon.print_and_wait('代替品でもない');
+      await tachyon.print_and_wait('가짜가 아니야.');
+      await tachyon.print_and_wait('대용품도 아니지.');
       await tachyon.print_and_wait(
-        '漆黒の猟犬が、傲慢な研究者の首筋に牙を立てた',
+        '칠흑의 사냥개가 오만한 연구자의 목덜미에 송곳니를 박았다.',
       );
-      await tachyon.print_and_wait('痛みと、敗北で、自らの存在を証明する');
+      await tachyon.print_and_wait('고통과 패배로 자신의 존재를 증명한다.');
       await tachyon.print_and_wait([
         tachyon.sex,
-        'と同じ舞台に立てる「相手」だと、証明する',
+        '와 같은 무대에 설 수 있는 『상대』임을 증명하는 거다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……くふふ。相手に勝ちたい、相手を超えたい、誰かを越えたい……なるほど、こういう感触ですのね？',
+        '……크후후. 상대에게 이기고 싶고, 상대를 뛰어넘고 싶고, 누군가보다 앞서고 싶다…… 과연, 이런 느낌인가?',
       );
       era.println();
-      await tachyon.print_and_wait('いいでしょう。認めますわ');
+      await tachyon.print_and_wait('좋아. 인정하지.');
       await tachyon.print_and_wait([
-        '今回は ',
+        '이번에는 ',
         tachyon.get_colored_name(),
-        ' の負けですわ',
+        '의 패배일세.',
       ]);
       await tachyon.print_and_wait(
-        '覚悟が足りない。研究が足りない。真剣さが足りない',
+        '각오가 부족했어. 연구도 부족했고, 진지함도 부족했지.',
       );
       await tachyon.print_and_wait(
-        'この状態で勝ってしまっては、相手の努力を軽んじることになりますわ',
+        '이런 상태에서 이긴다면 오히려 상대의 노력을 얕보는 꼴이 될 테지.',
       );
       await tachyon.print_and_wait([
-        'むしろ、',
+        '오히려 ',
         call_25,
-        ' に感謝すべきですわ',
+        '에게 감사해야 할 일이군.',
       ]);
       await tachyon.print_and_wait([
-        'このまま放置して、有馬記念で欠けた「最後の要素」に気づいたのでは、やり直しは利きませんわ',
+        '이대로 방치했다가 아리마 기념에서 빠뜨렸던 『마지막 요소』를 알아차렸다면 다시 시작할 수도 없었을 테니까.',
       ]);
-      await tachyon.print_and_wait('ですから……');
+      await tachyon.print_and_wait('그러니……');
       era.println();
-      await tachyon.say_and_wait('ああ……今回の私は———');
-      era.printButton('「タキオン、負けるな！」', 1);
-      era.printButton('「カフェ、頑張れ！」', 2, {
+      await tachyon.say_and_wait('아아…… 이번의 나는——');
+      era.printButton('「타키온, 지지 마!」', 1);
+      era.printButton('「카페, 힘내!」', 2, {
         disabled: era.get('cflag:25:招募状态') !== recruit_flags.yes,
       });
       const ret = await era.input();
       era.println();
       if (ret === 1) {
-        await tachyon.print_and_wait('言葉は喉まで来て、出ない');
+        await tachyon.print_and_wait('말은 목구멍까지 올라왔지만 밖으로 나오지 않았다.');
         await tachyon.print_and_wait([
-          '純粋な ',
+          '순수한 ',
           tachyon.get_colored_name(),
-          ' なら、目の前の敗北を認めるのは難しくないはずですわ',
+          '라면 눈앞의 패배를 인정하는 것이 어렵지는 않을 텐데.',
         ]);
         await tachyon.print_and_wait(
-          'レースは実験と同じ。必ず成功する道理などない',
+          '레이스는 실험과 같아. 반드시 성공한다는 보장은 없지.',
         );
         await tachyon.print_and_wait(
-          '失敗しても構わない。教訓を吸って、やり直せばいい。それだけのこと',
+          '실패하더라도 교훈을 얻고 다시 시도하면 돼. 그뿐이야.',
         );
-        await tachyon.print_and_wait('まして、これは模擬レースにすぎませんわ');
+        await tachyon.print_and_wait('더구나 이번은 모의 레이스일 뿐이야.');
         era.println();
-        await tachyon.print_and_wait('諦める理由はいくらでも挙げられる');
-        await tachyon.print_and_wait('続ける理由は、たった一つ');
-        await tachyon.print_and_wait('ですがその一つが、他のすべてに勝る');
+        await tachyon.print_and_wait('포기할 이유라면 얼마든지 댈 수 있어.');
+        await tachyon.print_and_wait('계속해야 할 이유는 단 하나뿐.');
+        await tachyon.print_and_wait('하지만 그 하나가 다른 모든 이유를 압도하지.');
         era.println();
-        await tachyon.say_and_wait('勝ちたい……勝ちたいのですわ！');
+        await tachyon.say_and_wait('이기고 싶어…… 이기고 싶단 말이네!');
         era.println();
-        await tachyon.print_and_wait('自分でも驚く執着');
+        await tachyon.print_and_wait('스스로도 놀랄 만큼 강한 집착.');
         await tachyon.print_and_wait([
-          '純粋な ',
+          '순수한 ',
           tachyon.get_colored_name(),
-          ' なら、いまならきっぱり諦められる',
+          '였다면 지금 당장 깔끔하게 포기했을 거야.',
         ]);
         await tachyon.print_and_wait(
-          'ですが、外界に左右されない、純粋で冷酷な研究者は、もういませんわ',
+          '그러나 외부에 흔들리지 않는 순수하고 냉혹한 연구자는 이제 없어.',
         );
         era.println();
         await tachyon.print_and_wait(
-          '他者の声援を受け入れ、他者に感染されたとき',
+          '타인의 응원을 받아들이고 타인에게 영향을 받은 순간,',
         );
         await tachyon.print_and_wait([
           tachyon.get_colored_name(),
-          ' は、すでに純粋ではなくなった',
+          '는 이미 순수한 존재가 아니게 되었지.',
         ]);
         await tachyon.print_and_wait([
-          'いまの ',
+          '지금의 ',
           tachyon.get_colored_name(),
-          ' は、研究のため、限界を超えるため',
+          '는 연구를 위해, 한계를 넘기 위해 달리지.',
         ]);
-        await tachyon.print_and_wait('そして……');
-        await tachyon.print_and_wait('どのレースでも、自分の傍にいる人のため');
+        await tachyon.print_and_wait('그리고……');
+        await tachyon.print_and_wait('어떤 레이스에서든 자기 곁을 지켜 주는 사람을 위해서도.');
         await tachyon.print_and_wait([
-          'いつでも ',
+          '언제나 ',
           tachyon.get_colored_name(),
-          ' の要求を優先してくれる人のため',
+          '의 요구를 우선해 주는 사람을 위해서.',
         ]);
         era.println();
         if (love >= 50) {
           await tachyon.print_and_wait([
             tachyon.get_colored_name(),
-            ' は、唯一の恋人のために走っている',
+            '는 단 하나뿐인 연인을 위해 달리고 있어.',
           ]);
         } else if (relation > 225) {
           await tachyon.print_and_wait([
             tachyon.get_colored_name(),
-            ' は、志を同じくする同志のために走っている',
+            '는 뜻을 함께하는 동지를 위해 달리고 있어.',
           ]);
         } else {
           await tachyon.print_and_wait([
             tachyon.get_colored_name(),
-            ' は、唯一の実験動物のために走っている',
+            '는 유일한 실험동물을 위해 달리고 있어.',
           ]);
         }
         era.println();
         await tachyon.print_and_wait(
-          '反応は相互作用する。化学の基本定理ですわ',
+          '반응에는 상호작용이 따르지. 화학의 기본 원리일세.',
         );
         await tachyon.print_and_wait([
           you.get_colored_actual_name(),
-          ' という名のモルモットが ',
+          '라는 이름의 모르모트가 ',
           tachyon.get_colored_name(),
-          ' の走りに両目を灼かれるのと同時に',
+          '의 달리기에 눈이 부실 만큼 매료되는 동시에,',
         ]);
         await tachyon.print_and_wait([
           tachyon.get_colored_name(),
-          ' も',
+          '도',
           you.sex,
-          'の声援を受けながら、',
+          '의 응원을 받으며 ',
           you.sex,
-          'に変えられていく',
+          '로 변해 가고 있는 거야.',
         ]);
         era.println();
         await tachyon.say_and_wait([
           you.sex,
-          'の前で負けたくない……',
+          '앞에서 지고 싶지 않아……',
           you.sex,
-          'の信頼を裏切りたくない……それに……',
+          '의 신뢰를 저버리고 싶지 않아…… 게다가……',
         ]);
         era.println();
         await tachyon.say_and_wait([
           coffee.get_colored_name(),
-          ' には、負けたくありませんわ！',
+          '에게만큼은 지고 싶지 않네!',
         ]);
       } else {
-        await tachyon.say_and_wait('————私の、負けですわ');
+        await tachyon.say_and_wait('————이번에는 나의 패배일세.');
         era.println();
-        await tachyon.print_and_wait('ですが、永遠ではない');
-        await tachyon.print_and_wait('いまだけ、この瞬間だけ認める');
+        await tachyon.print_and_wait('하지만 영원한 패배는 아니야.');
+        await tachyon.print_and_wait('지금, 이 순간에만 인정하지.');
         await tachyon.print_and_wait([
           tachyon.get_colored_name(),
-          ' は ',
+          '는 ',
           coffee.get_colored_name(),
-          ' に及ばない',
+          '에게 미치지 못했어.',
         ]);
-        await tachyon.print_and_wait('次は、有馬記念');
-        await tachyon.print_and_wait('こちらが挑戦者として向き直り');
+        await tachyon.print_and_wait('다음은 아리마 기념.');
+        await tachyon.print_and_wait('이번에는 내가 도전자로서 맞서겠어.');
         await tachyon.print_and_wait([
           coffee.get_colored_name(),
-          ' の喉を引き裂き、噛み砕く',
+          '의 목덜미를 물어뜯어 산산이 부숴 주지.',
         ]);
         era.println();
-        await tachyon.print_and_wait('ああ……止まない灼熱');
-        await tachyon.print_and_wait('どうしても、収まらない');
+        await tachyon.print_and_wait('아아…… 식지 않는 이 열기.');
+        await tachyon.print_and_wait('아무리 해도 가라앉지 않아.');
       }
       era.println();
-      await tachyon.print_and_wait('研究者としての傲り？');
-      await tachyon.print_and_wait('予備計画への軽視？');
-      await tachyon.print_and_wait('いいえ、違いますわ');
-      await tachyon.print_and_wait('ただ勝ちたい。徹底して超えたい');
+      await tachyon.print_and_wait('연구자로서의 오만 때문인가?');
+      await tachyon.print_and_wait('예비 계획을 얕봤기 때문일까?');
+      await tachyon.print_and_wait('아니, 달라.');
+      await tachyon.print_and_wait('그냥 이기고 싶어. 철저히 뛰어넘고 싶은 거야.');
       await tachyon.print_and_wait([
         coffee.get_colored_name(),
-        ' に負けたくない',
+        '에게 지고 싶지 않아.',
       ]);
-      await tachyon.print_and_wait([coffee.get_colored_name(), ' に勝ちたい']);
+      await tachyon.print_and_wait([coffee.get_colored_name(), '를 이기고 싶어.']);
       era.println();
       if (ret === 1) {
-        await tachyon.say_and_wait('必ず……勝ちますわ！');
+        await tachyon.say_and_wait('반드시…… 이기겠네!');
         era.drawLine();
         await era.printAndWait([
           tachyon.get_colored_name(),
