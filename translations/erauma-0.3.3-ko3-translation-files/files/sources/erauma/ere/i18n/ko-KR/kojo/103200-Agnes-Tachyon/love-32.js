@@ -34,235 +34,235 @@ module.exports = {
     ) => {
       await coffee.print_and_wait([
         tachyon.get_colored_name(),
-        ' の実験室。学園をいつも騒がせるこの場所が、ここ数日は妙に静かだった',
+        '의 실험실. 평소 학원을 소란스럽게 만들던 이곳이 요 며칠 사이 유난히 조용했다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '何ですの、愛馬を学園に一人残して、自分だけ出張ですって',
+        '정말이지, 담당을 혼자 학원에 남겨 두고 자기만 출장을 가 버리다니.',
       );
       await coffee.print_and_wait([
         tachyon.get_colored_name(),
-        ' は実験室で実験をしながら、ぶつぶつとこぼしている',
+        '은(는) 실험실에서 실험을 하며 투덜투덜 불평을 늘어놓았다.',
       ]);
       await coffee.print_and_wait(
-        '愚痴の相手？ もちろん、出張で一週間いなくなるモルモットのことだ',
+        '불평의 대상? 물론 출장 때문에 일주일이나 자리를 비우게 된 어느 모르모트였다.',
       );
       era.println();
       await tachyon.say_and_wait(
-        '弁当まで自分で温めさせるなんて……怠慢にもほどがありますわ',
+        '도시락까지 직접 데워 먹어야 하다니…… 이런 태만한 행위는 너무하군.',
       );
       era.println();
       await coffee.print_and_wait([
         tachyon.get_colored_name(),
-        ' は止まらず、止まらず、止まらず呟き続ける',
+        '은(는) 끊임없이, 끊임없이, 끊임없이 중얼거렸다.',
       ]);
-      await coffee.print_and_wait('呟きだけなら、まだ耐えられたかもしれない……');
+      await coffee.print_and_wait('그저 중얼거리는 것뿐이었다면 어떻게든 견딜 수 있었겠지만……');
       era.println();
       await tachyon.say_and_wait([
-        'これでもう虐待だと思いませんの？ ',
+        '자네도 이게 학대라고 생각하지 않나? ',
         t_call_c,
       ]);
       await coffee.say_and_wait(
-        '…………恩愛の見せびらかしに、私を巻き込むのはやめて',
+        '…………당신들의 염장질에 저를 끌어들이지 마세요.',
       );
       era.println();
       await coffee.print_and_wait([
         tachyon.sex,
-        'に止まる気配がなく、自分まで話題へ引き込もうとしたところで、同じ空き教室を共有する ',
+        '가 전혀 멈출 기미를 보이지 않고 자신까지 화제에 끌어들이자, 같은 빈 교실을 공유하던 ',
         coffee.get_colored_name(),
-        ' はついに堪えきれなくなった',
+        '는 마침내 참지 못했다.',
       ]);
-      await coffee.say_and_wait([c_call_t, '……その話、もう三度目です']);
-      await tachyon.say_and_wait('三度だけですわ。多くもありませんでしょう');
+      await coffee.say_and_wait([c_call_t, '……그 이야기만 벌써 세 번째예요.']);
+      await tachyon.say_and_wait('겨우 세 번뿐이네만. 그렇게 많은 것도 아니지 않나.');
       await coffee.say_and_wait([
         callname_25,
-        ' が出発したのは、今日が初日です……',
+        '은(는) 오늘 겨우 출장 첫날인데……',
       ]);
-      await tachyon.say_and_wait('…………それでも、三度は多く……');
+      await tachyon.say_and_wait('…………그렇다 해도 세 번은……');
       await coffee.say_and_wait([
         you.sex,
-        'が学園を出て、まだ三十分も経っていません',
+        '가 학원을 떠난 지 30분도 채 안 지났어요.',
       ]);
       await tachyon.say_and_wait('………………');
       era.println();
       await coffee.print_and_wait([
         coffee.get_colored_name(),
-        ' はため息をつく。以前は実験至上だったこの同級生が、トレーナーと仲良くなってから、まるで別人だ',
+        '는 한숨을 내쉬었다. 과거에는 실험 지상주의였던 이 동급생이 트레이너와 친해지고 나서 완전히 딴사람이 됐다.',
       ]);
       if (era.get('love:25') >= 50) {
-        await coffee.print_and_wait('……分からないでもない。あの人だもの');
+        await coffee.print_and_wait('……뭐, 이해하지 못할 것도 아니다. 상대가 그 사람이라면.');
       } else {
         await coffee.print_and_wait(
-          '元は冷酷で、倫理もなく、人命を草芥のように……言いすぎたかもしれない',
+          '원래는 냉혹하고 윤리관도 없으며 인명을 하찮게 여기는…… 아니, 지나친 말이었을지도.',
         );
       }
       await coffee.print_and_wait([
         tachyon.sex,
-        'がまだぶつぶつこぼすのを見て、',
+        '가 여전히 투덜거리는 모습을 보자 ',
         coffee.get_colored_name(),
-        ' の胸に苛立ちが湧き、思わず口をついて出る',
+        '의 마음속에 짜증이 치밀어 자신도 모르게 말이 튀어나왔다.',
       ]);
       era.println();
       await coffee.say_and_wait([
-        'それに……',
+        '애초에…… ',
         callname_25,
-        ' は ',
+        '은(는) ',
         c_call_t,
-        ' の専属でもありません',
+        '만의 전유물이 아니잖아요.',
       ]);
-      await tachyon.say_and_wait('…………どういう意味ですの？');
+      await tachyon.say_and_wait('…………그건 무슨 의미인가?');
       await coffee.say_and_wait([
-        'どういう意味か、',
+        '무슨 의미인지는 ',
         c_call_t,
-        ' 自身がいちばん分かっているはずです。',
+        '스스로가 가장 잘 알고 있지 않나요? ',
         callname_25,
-        ' は出張すると言いましたが、どこへ、何をしに行くのか、言いましたか？',
+        '은(는) 출장이라고만 했지, 어디서 무엇을 하는지 자세히 말해 줬나요?',
       ]);
       await coffee.say_and_wait([
-        '…………いいえ。最初から最後まで、',
+        '…………아니, 처음부터 끝까지 ',
         you.sex,
-        'は私に、出張するとしか言っていません',
+        '는 내게 출장을 간다는 사실만 전했을 뿐이네.',
       ]);
       era.println();
       await coffee.print_and_wait([
-        '当然だ。出張と言いつつ、実際は ',
+        '그야 당연했다. 출장이라고는 하지만 사실 얼마 전 ',
         c_call_t,
-        ' が先日起こした実験漏洩の後始末へ緊急招集されたのだ。担当の感情を気にしすぎる ',
+        '가 일으킨 약물 유출 사고의 뒤처리를 위해 긴급히 불려 간 것이었다. 담당의 감정을 지나치게 배려하는 ',
         callname,
-        ' が、',
+        '가 ',
         tachyon.sex,
-        '本人に言うはずがない',
+        '본인에게 사실대로 말했을 리 없었다.',
       ]);
       if (era.get('cflag:25:招募状态') === 1) {
-        await coffee.print_and_wait('……妬ましくなるくらいだ');
+        await coffee.print_and_wait('……조금 질투가 날 정도네.');
       }
       await coffee.print_and_wait([
         coffee.get_colored_name(),
-        ' は心の中で思う',
+        '는 속으로 생각했다.',
       ]);
       era.println();
       await coffee.say_and_wait([
-        'では……こんな可能性もあります。',
+        '그렇다면…… 이런 가능성도 있지 않을까요? ',
         callname_25,
-        ' は出張ではなく……誰かと密会している、という',
+        '은(는) 사실 출장이 아니라…… 누군가와 밀회를 즐기고 있다면?',
       ]);
       await tachyon.say_and_wait('…………');
       await coffee.say_and_wait([
-        'だって……',
+        '그도 그럴 게…… ',
         c_call_t,
-        ' は面倒です。私が ',
+        '는 너무 번거롭잖아요. 제가 ',
         callname_25,
-        ' なら、とうにうんざりしているでしょう',
+        '이라면 벌써 진작에 질려 버렸을걸요?',
       ]);
       await tachyon.say_and_wait([
         '……',
         you.sex,
-        'は言いましたわ。',
+        '는 말했네.',
         you.sex,
-        'は私の走りと可能性に魅せられた、と',
+        '는 나의 주법과 가능성에 매료되었다고.',
       ]);
-      await coffee.say_and_wait('ふふ……');
-      await tachyon.say_and_wait('何がおかしいんですの');
+      await coffee.say_and_wait('후후……');
+      await tachyon.say_and_wait('뭐가 웃긴 거지?');
       era.println();
       await coffee.print_and_wait([
         coffee.get_colored_name(),
-        ' はコーヒーを一口飲み、今の ',
+        '는 커피를 한 모금 마시며 지금 이 순간 ',
         tachyon.get_colored_name(),
-        ' の態度を味わう',
+        '의 반응을 만끽했다.',
       ]);
       if (era.get('love:25') >= 50) {
         await coffee.print_and_wait(
-          '最近、「自分の」トレーナーと餌をまき散らしてばかりのこの人に、こんな不安な顔をさせる……いけない、少し癖になりそうだ',
+          '최근 들어 「자기」 트레이너와 염장질만 하던 사람이 이렇게 불안한 표정을 짓게 만들다니…… 위험해, 조금 중독될 것 같아.',
         );
       } else {
         await coffee.print_and_wait(
-          '最近、トレーナーと餌をまき散らしてばかりのこの人に、こんな不安な顔をさせる……いけない、少し癖になりそうだ',
+          '최근 들어 트레이너와 염장질만 하던 사람이 이렇게 불안한 표정을 짓게 만들다니…… 위험해, 조금 중독될 것 같아.',
         );
       }
       era.println();
       await coffee.say_and_wait([
-        'つまり、',
+        '바꿔 말하면, ',
         tachyon.get_colored_name(),
-        ' という',
+        '이라는 ',
         tachyon.uma_sex_title,
-        'そのものには、',
+        '그 자체는 ',
         you.sex,
-        'にとって何の魅力もない、ということでは？',
+        '에게 아무런 매력이 없다는 뜻 아닌가요?',
       ]);
       await tachyon.say_and_wait('…………');
       await coffee.say_and_wait([
-        '走り、可能性……',
+        '주법, 가능성…… ',
         you.sex,
-        'が見ているのは ',
+        '가 바라보고 있는 것은 ',
         tachyon.get_colored_name(),
-        ' という',
+        '이라는 ',
         tachyon.uma_sex_title,
-        'ですか。それとも『それを持つ某',
+        '일까요, 아니면 『그것들을 지닌 어떤 ',
         tachyon.uma_sex_title,
-        'A』ですか？',
+        'A』일까요?',
       ]);
       await tachyon.say_and_wait('……違……');
       await coffee.say_and_wait([
-        '逆に言えば、それら以外に、',
+        '반대로 말하자면, 그것들 말고 ',
         tachyon.get_colored_name(),
-        ' という',
+        '이라는 ',
         tachyon.uma_sex_title,
-        'は、',
+        '는 ',
         you.sex,
-        'に何の魅力があるのでしょう？',
+        '에게 대체 어떤 매력이 있다는 걸까요?',
       ]);
       await tachyon.say_and_wait('…………');
       era.println();
       await coffee.print_and_wait([
-        'さっきまでの不快は消え、今日の愉悦が最大まで上がった ',
+        '방금 전의 짜증은 온데간데없이 사라지고 오늘의 즐거움이 절정에 달한 ',
         coffee.get_colored_name(),
-        ' は、最後に原子爆弾を落とすように一言を残し、教室を出た',
+        '는 마지막으로 핵폭탄급 한마디를 남기고 교실을 나섰다.',
       ]);
       if (era.get('love:25') >= 50) {
         await coffee.say_and_wait([
-          'そういえば、',
+          '아, 참. ',
           callname_25,
-          ' の弁当、本当においしいですね……今度からも ',
+          '의 도시락 정말 맛있었어요…… 앞으로도 ',
           callname_25,
-          ' に作ってもらいましょうか？',
+          '에게 만들어 달라고 부탁해 볼까요?',
         ]);
       } else {
         await coffee.say_and_wait([
-          'そういえば、',
+          '아, 참. ',
           callname_25,
-          ' の弁当、本当においしいですね……機会があれば、また',
+          '의 도시락 정말 맛있었어요…… 기회가 된다면 다시 ',
           you.sex,
-          'に作ってもらいましょう',
+          '에게 만들어 달라고 해 보죠.',
         ]);
       }
       era.drawLine();
       await tachyon.say_and_wait('…………');
       await tachyon.print_and_wait([
         coffee.get_colored_name(),
-        ' は去り、実験室に残されたのは ',
+        '가 떠나고 실험실에는 ',
         tachyon.get_colored_name(),
-        ' 一人だった',
+        '혼자만 남았다.',
       ]);
       await tachyon.print_and_wait([
-        '頭の回る',
+        '두뇌 회전이 빠른 ',
         tachyon.sex,
-        'には分かっている。あの言葉は ',
+        '는 알고 있었다. 그 말은 모두 ',
         coffee.get_colored_name(),
-        ' が',
+        '가 ',
         tachyon.sex,
-        'を煽るために、わざと吐いたものだ',
+        '를 도발하기 위해 일부러 내뱉은 것이었다.',
       ]);
       await tachyon.print_and_wait([
-        'なぜそうしたかまで、',
+        '왜 그랬는지까지 ',
         tachyon.sex,
-        'は見当がついている',
+        '는 짐작하고 있었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('恩愛の見せびらかし……？');
+      await tachyon.say_and_wait('염장질……?');
       era.println();
       await tachyon.print_and_wait([
         coffee.get_colored_name(),
-        ' の言う通り、自分と ',
+        '의 말대로라면, 자신과 ',
         callname,
         ' は',
         tachyon.sex,
