@@ -1783,7 +1783,7 @@ module.exports = {
         await era.printAndWait(`아프다, 엄청나게 아프다.`);
         await era.printAndWait(`뼈를 찌르는 듯한 통증이 신경을 자극했다.`);
         await era.printAndWait(
-          `${treve.name}은(는) ${you.name}의 배를 껴안은 채, ${treve.sex}는——`,
+          `${treve.name}는 ${you.name}의 배를 껴안았고, ${treve.sex}는——`,
         );
         await era.printAndWait(`울고 있었다.`);
         await era.printAndWait(
