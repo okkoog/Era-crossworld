@@ -1654,7 +1654,7 @@ module.exports = {
 
   // [번역 완료] before_hoch_sho
   before_hoch_sho: (() => {
-    const title = '実験対照';
+    const title = '실험 대조';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -2383,7 +2383,7 @@ module.exports = {
 
   // [번역 완료] hope_sta_lose
   hope_sta_lose: (() => {
-    const title = '希望';
+    const title = '희망';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -2505,7 +2505,7 @@ module.exports = {
 
   // [번역 완료] hope_sta_win
   hope_sta_win: (() => {
-    const title = '希望';
+    const title = '희망';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -6243,7 +6243,7 @@ module.exports = {
 
   // [번역 대상] try_drug
   try_drug: (() => {
-    const title = '試薬';
+    const title = '시약';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
@@ -6927,7 +6927,7 @@ module.exports = {
 
   // [번역 완료] ts_add_low_rel
   ts_add_low_rel: (() => {
-    const title = '追加実験';
+    const title = '추가 실험';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -8524,7 +8524,7 @@ module.exports = {
 
   // [번역 완료] ws_47_1
   ws_47_1: (() => {
-    const title = '年度審査';
+    const title = '연도 심사';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
