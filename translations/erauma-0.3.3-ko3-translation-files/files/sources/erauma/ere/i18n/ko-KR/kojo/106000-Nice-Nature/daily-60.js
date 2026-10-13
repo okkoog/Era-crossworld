@@ -231,15 +231,15 @@ module.exports = {
       `잠시 어색한 침묵이 흐른 뒤, 붉은 머리의 ${nature.teen_sex_title}가 머뭇거리며 입을 열었다.`,
     );
     nature.say(
-      '今日……外泊届、出してあるから……だから……もう少し一緒にいても、いいんだよ？ その……もし……',
+      '오늘…… 외박 신청도 해 뒀으니까…… 그러니까…… 조금만 더 같이 있어도 괜찮아? 그…… 혹시……',
     );
-    nature.say(`もし ${callname} が望むなら……も、もっと先のことも——`);
+    nature.say(`혹시 ${callname}도 원한다면…… 조, 조금 더 함께할 수도——`);
     era.print(
-      `ここまでで${nature.teen_sex_title}の頬は真っ赤に燃え、潤んだ瞳が ${
+      `여기까지 말한 ${nature.teen_sex_title}의 뺨은 새빨갛게 달아올랐고, 촉촉해진 눈동자가 ${
         you.name
-      } の目を見つめている。${nature.sex}が続きを言わなくても、${
+      }의 눈을 바라보고 있었다. ${nature.sex}가 더 말하지 않아도 ${
         you.name
-      } にはもうわかっていた。`,
+      }은(는) 이미 그 뜻을 알아차렸다.`,
     );
     era.printButton('수락한다', 1);
     era.printButton('거절한다', 2, { disabled: check === 2 });
