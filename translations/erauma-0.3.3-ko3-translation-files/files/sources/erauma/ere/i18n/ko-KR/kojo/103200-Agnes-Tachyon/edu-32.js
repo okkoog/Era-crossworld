@@ -9093,7 +9093,7 @@ module.exports = {
 
   // [번역 대상] ws_95_29
   ws_95_29: (() => {
-    const title = '束の間の休息';
+    const title = '잠시 동안의 휴식';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -9115,29 +9115,29 @@ module.exports = {
       arim_kin,
     ) => {
       const ret = [];
-      await tachyon.say_and_wait('夏合宿、そして……');
+      await tachyon.say_and_wait('여름 집중 훈련, 그리고……');
       if (plan_b) {
-        await tachyon.say_and_wait(['その次は……', prix_lat, ' ですわ']);
+        await tachyon.say_and_wait(['그다음 단계는…… 바로 ', prix_lat, ' 이겠군.']);
         await tachyon.say_and_wait(
-          'ええ、世界の頂点を頂点の目標に……くふふ、これ以上ふさわしいものはありませんわ',
+          '음, 세계의 정점을 목표로 삼다니…… 후후, 이거 정말, 더할 나위 없이 어울리는군.',
         );
       } else {
         era.println();
-        await tachyon.say_and_wait(['その次は……年末の ', arim_kin, ' ですわ']);
+        await tachyon.say_and_wait(['그다음 단계는…… 바로 연말의 ', arim_kin, ' 이겠군.']);
         await tachyon.say_and_wait(
-          'ええ、最も影響力のあるレースで理論の締めくくり……くふふ、これ以上ふさわしいものはありませんわ',
+          '음, 가장 영향력 있는 레이스로 우리 이론의 종지부를 찍다니…… 후후, 이거 정말, 더할 나위 없이 어울리는군.',
         );
       }
-      era.printButton('「だが、その前に……」', 1);
-      era.printButton('「まずは、しっかり楽しもう」', 2);
+      era.printButton('「그치만, 그전에……」', 1);
+      era.printButton('「우선은 좀 즐기도록 하자」', 2);
       await era.input();
-      await era.printAndWait('陽射し、砂浜、ビキニ');
+      await era.printAndWait('햇살, 백사장, 비키니.');
       await era.printAndWait([
-        'そして ',
+        '그리고 ',
         tachyon.get_colored_name(),
-        ' の水着',
+        '의 수영복.',
       ]);
-      await era.printAndWait([tachyon.get_colored_name(), ' の、水着']);
+      await era.printAndWait([tachyon.get_colored_name(), '의, 수영복.']);
       era.println();
       if (love >= 50 && tachyon.sex_code !== 1) {
         await tachyon.say_and_wait(
@@ -9264,35 +9264,35 @@ module.exports = {
         }
       } else if (relation >= 225 && tachyon.sex_code !== 1) {
         await tachyon.say_and_wait(
-          'どうしましたの？ そんなに見惚れて。くふふ、実験を手伝った褒美ですわ。もっと見ていいですわよ',
+          '왜? 그렇게 넋을 잃고 보는 건가? 후후, 실험을 도와준 보답으로 조금 더 봐도 상관없다네.',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は体をくねらせ、胸の大きさをさらに強調した',
+          '은 몸을 뒤척이며 풍만한 가슴을 더욱 강조해 보였다.',
         ]);
       } else if (relation > 0 && relation <= 225) {
         era.println();
         await tachyon.say_and_wait(
-          'ふん、そんなに露出の多い服が好きですの？……いいえ、これなら空気抵抗は減り、速度は上がりうる……',
+          '허, 이렇게나 노출도 높은 옷을 좋아하는 건가? ……아니, 이런 상황이라면 공기 저항이 줄어들어 확실히 속도가 증가할 가능성이 있겠군……',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は途中で、また自分の思考に沈んだ',
+          '은 말을 하다가 다시 자기만의 생각에 빠져들었다.',
         ]);
         await era.printAndWait([
-          '水着が走りに効くかどうか……',
+          '수영복이 달리기에 주는 가중치에 대해서라면…… ',
           you.get_colored_name(),
-          ' は',
+          '은(는) ',
           tachyon.sex,
-          'の揃っていないホットパンツとサンダルを見た……問題は水着ではないだろう、と ',
+          '의 그 엉성한 핫팬츠와 샌들을 보았다. ',
           you.get_colored_name(),
-          ' は思った',
+          '이(가) 생각하기에, 문제는 수영복에 있는 게 아닌 것 같았다.',
         ]);
       } else {
         await tachyon.say_and_wait(
-          '……私と同じく理性至上である必要はありませんわ。ですが、発情した猿のような目は、少し収めてくださいまし',
+          '……나처럼 이성 지상주의가 되라고 강요하지는 않겠네만, 적어도 그 발정 난 원숭이 같은 눈빛은 좀 거둬주게.',
         );
       }
       return ret;
