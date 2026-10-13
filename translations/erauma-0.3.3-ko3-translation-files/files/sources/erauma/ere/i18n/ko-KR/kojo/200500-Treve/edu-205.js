@@ -1527,7 +1527,7 @@ module.exports = {
       );
       await era.printAndWait(`푸른빛 도는 승부복을 입고 결승선을 통과하던 그 짜릿한 순간을.`);
       await era.printAndWait(
-        `꾸밈없는 솔직함과 정직함, 지기 싫어하는 근성과 활력이 넘치던 ${treve.uma_sex_title}の感触。`,
+        `꾸밈없는 솔직함과 정직함, 지기 싫어하는 근성과 활력이 넘치던 ${treve.uma_sex_title}의 모습.`,
       );
       await era.printAndWait(
         `그때 그 아이가 이렇게 자랐다. 키가 훌쩍 크더니 어느덧 늘씬한 모델 체형으로 변모해 가고 있었다.`,
