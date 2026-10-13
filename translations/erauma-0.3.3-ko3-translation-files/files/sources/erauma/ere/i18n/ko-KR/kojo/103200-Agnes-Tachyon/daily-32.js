@@ -744,7 +744,7 @@ module.exports = {
       '은(는) 망설임 없이 마셨다.',
     ]);
     await era.printAndWait([
-      '結果、',
+      '그 결과, ',
       tachyon.get_colored_name(),
       '은(는) ',
       coffee,
@@ -1214,7 +1214,7 @@ module.exports = {
       await era.input();
       await era.printAndWait('그렇다…… 지금도 그 맛은 홍차에 한없이 가까웠다.');
       await era.printAndWait([
-        '万一、',
+        '만일, ',
         tachyon.sex,
         '가 그것을 다른 사람의 음료에, 아니면 더 끔찍하게도 식수에 섞는다면…… 상상도 하기 싫다.',
       ]);
@@ -1346,7 +1346,7 @@ module.exports = {
           '은(는) 초조함을 꾹 참으며 자리에 앉아 있었다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('…………馬鹿');
+        await tachyon.say_and_wait('…………바보');
         era.println();
         await era.printAndWait([
           tachyon.sex,
@@ -1523,7 +1523,7 @@ module.exports = {
         era.drawLine({ offset: 8, width: 8 });
         await era.printAndWait('【학원에서 알려드립니다】', { align: 'center' });
         await era.printAndWait(
-          ['午後、', tachyon.get_colored_name(), '、薬剤、終了'],
+          ['오후, ', tachyon.get_colored_name(), '의 약물 투여가 끝났다.'],
           { align: 'center' },
         );
     }
@@ -2935,7 +2935,7 @@ module.exports = {
             ),
           async () => {
             await tachyon.say_and_wait([
-              '限界……',
+              '한계……',
               tachyon.uma_sex_title,
               '……다리…… 아니, 역시 안 되겠어……',
               callname,
@@ -3931,7 +3931,7 @@ module.exports = {
       '에게 미련도 없었고, 오히려 기뻤다.',
     ]);
     await era.printAndWait([
-      '毎日 ',
+      '매일 ',
       tachyon.get_colored_name(),
       '의 얼굴은 여전히 볼 수 있었고 일상도 평소와 같았다. 다만 ',
       tachyon.sex,
