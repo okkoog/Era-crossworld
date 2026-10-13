@@ -2401,16 +2401,16 @@ module.exports = {
       era.setToBottom();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は感じる。何かが ',
+        '은(는) 무언가가 ',
         you.get_colored_name(),
-        ' の唇に触れた',
+        '의 입술에 닿는 것을 느꼈다.',
       ]);
-      await era.printAndWait('柔らかく、温かく、瑞々しい、二枚の薔薇');
+      await era.printAndWait('부드럽고, 따스하고, 가냘픈 두 송이의 장미.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' が、',
+        '이(가) ',
         you.get_colored_name(),
-        ' の唇に口づけた',
+        '의 입술에 입을 맞췄다.',
       ]);
       era.println();
       await era.printAndWait([
@@ -2440,23 +2440,23 @@ module.exports = {
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の目標は————あまりに突然の展開で、',
+        '의 목표는————너무나도 갑작스러운 전개에 ',
         you.get_colored_name(),
-        ' が反応できず、呑み込むことすらできなかった、',
+        '이(가) 반응하지 못해 삼키지도 못한 채 ',
         you.get_colored_name(),
-        ' の口の中の薬',
+        '의 입안에 머물러 있던 약이었다.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はやっと気づき、慌てて止めようとする',
+        '은(는) 그제야 상황을 파악하고 다급히 저지하려 했다.',
       ]);
-      await era.printAndWait('だが、もう遅い');
+      await era.printAndWait('하지만 이미 모든 것이 늦어버린 뒤였다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' の口の中の薬は、すでに',
+        '의 입안에 있던 약은 이미 ',
         tachyon.sex,
-        'に大半を分け取られていた',
+        '에 의해 절반 이상 빼앗겨버렸다.',
       ]);
       era.println();
       await era.printAndWait([
@@ -2466,11 +2466,11 @@ module.exports = {
         'を止めようとする',
       ]);
       await era.printAndWait([
-        'だが人間は、力では',
+        '하지만 인간은 힘으로는 결국 ',
         tachyon.uma_sex_title,
-        'に敵わない。これほど実験を重ねた ',
+        '를 이길 수 없는 법이다. 아무리 수많은 실험을 겪어온 ',
         you.get_colored_name(),
-        ' でも、例外ではない',
+        '일지라도 예외는 아니었다.',
       ]);
       era.println();
       await era.printAndWait('마침내, 마치 한 세기처럼 길게 느껴졌던 입맞춤이 끝났다.');
