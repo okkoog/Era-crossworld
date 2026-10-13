@@ -606,7 +606,7 @@ broken_dream:
 
 # [번역 완료] hibernation
 hibernation:
-  title: 蟄伏
+  title: 칩거
   lines:
     - 국화상 출전을 결정한 뒤 %YOU%의 앞에는 새로운 문제가 나타났다.
     - 타이신의 상태로는 한동안 훈련하기 어려울 것이다.
@@ -752,7 +752,7 @@ kiku_sho_lose:
 
 # [번역 완료] kiku_sho_win
 kiku_sho_win:
-  title: 盛開
+  title: 만개
   lines:
     - color: %COLOR_23%
       content:
@@ -1241,7 +1241,7 @@ tenn_spr_win:
 
 # [번역 완료] toky_yus_all_lose
 toky_yus_all_lose:
-  title: 失意
+  title: 실의
   lines:
     - 그때 타이신은 티켓이 울부짖는 소리에 신경 쓰지 않았다. %SEX%의 어깨에도 똑같은 패배의 무게가 얹혀 있었다.
     - color: %COLOR%
@@ -2499,7 +2499,7 @@ we_find_taishin_3:
 
 # [번역 완료] we_frog
 we_frog:
-  title: 霧
+  title: 안개
   lines:
     - 이번 승리는 타이신에게 차분함과 침묵을 남겼다.
     - 잠시 뒤 타이신이 입을 열었다.
@@ -3063,7 +3063,7 @@ ws_christmas_c:
 
 # [번역 완료] ws_contestants
 ws_contestants:
-  title: 「二強」
+  title: 「양강」
   lines:
     - 다가올 사츠키상을 위해 %YOU%은(는) 사무실에서 타이신과 맞붙을 상대들을 살펴봤다.
     - 클래식 첫 관문에 도전하는 선수들은 모두 실력 있는 %UMA%다.
@@ -3231,7 +3231,7 @@ ws_famous:
 
 # [번역 완료] ws_find_taishin_5
 ws_find_taishin_5:
-  title: 帰路
+  title: 귀로
   lines:
     - 다음 날 아침, %YOU%은(는) 타이신 모녀에게 작별을 고하고 트레센 학원으로 돌아왔다.
     - 겨우 자신의 책상에 앉았을 때 %MINORU%가 문을 열었다.
