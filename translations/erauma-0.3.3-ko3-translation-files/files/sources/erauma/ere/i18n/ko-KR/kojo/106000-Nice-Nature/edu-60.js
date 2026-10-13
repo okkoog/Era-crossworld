@@ -6,7 +6,7 @@ module.exports = {
 
   // [번역 완료] arim_kin_classical
   arim_kin_classical: (() => {
-    const title = '遠望';
+    const title = '먼 곳을 바라보며';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} you プレイヤー
@@ -1936,7 +1936,7 @@ module.exports = {
 
   // [번역 완료] we_se
   we_se: (() => {
-    const title = '夏季合宿終了';
+    const title = '여름 합숙 종료';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {string} callname ナイスネイチャのプレイヤーへの呼び方
@@ -2045,7 +2045,7 @@ module.exports = {
 
   // [번역 완료] ws_ss_1
   ws_ss_1: (() => {
-    const title = '夏季合宿';
+    const title = '여름 합숙';
     /**
      * @param {CharaTalk} nature ナイスネイチャ
      * @param {CharaTalk} you プレイヤー
@@ -2093,7 +2093,7 @@ module.exports = {
 
   // [번역 완료] ws_ss_2
   ws_ss_2: (() => {
-    const title = '夏季合宿';
+    const title = '여름 합숙';
     /** @param {CharaTalk} nature ナイスネイチャ */
     const f = async (nature) => {
       await era.printAndWait(
