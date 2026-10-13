@@ -2799,7 +2799,7 @@ module.exports = {
       await tachyon.say_as_unknown_and_wait([callname, '? 자네가 왜 여기에 있나.']);
       await tachyon.say_as_unknown_and_wait('……이런, 참으로 꼴사나운 모습이군.');
       await tachyon.say_as_unknown_and_wait(
-        'どうしましたの。酒代がなくなった？ それとも賭け金がなくて賭場を追い出された……あるいは、誰か気になる娘でも？',
+        '왜 그러나. 술값이 떨어졌나? 아니면 판돈이 없어 카지노에서 쫓겨났나…… 그것도 아니면 마음에 드는 사람이라도 생겼나?',
       );
       await tachyon.say_as_unknown_and_wait('돈이…… 더 필요한가?');
       era.println();
