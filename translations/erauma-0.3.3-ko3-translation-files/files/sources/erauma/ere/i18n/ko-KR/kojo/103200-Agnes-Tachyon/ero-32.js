@@ -1052,95 +1052,95 @@ module.exports = {
         era.println();
 
         await tachyon.print_and_wait([
-          '不意に、',
+          '갑자기, ',
           t_call_c,
-          ' の声が、ひどく艶やかになる。',
+          '의 목소리가 더없이 요염하게 변했다.',
         ]);
         await tachyon.print_and_wait([
-          '話し方も変わり、見知らぬようで、見慣れた口調になる。',
+          '말투조차 바뀌어, 낯설면서도…… 어딘가 익숙한 어조가 되었다.',
         ]);
         era.println();
 
         await coffee.say_and_wait([
-          'おや、',
+          '이런, ',
           callname_25,
-          '……どうして、急にこんなに強くなったんです？',
+          '…… 어째서, 갑자기 그렇게 거칠어진 건가?',
         ]);
         await coffee.say_and_wait([
-          'まさか……私を通して、誰かを見ているんですか？',
+          '설마…… 나를 통해서, 다른 누군가를 보고 있는 겐가?',
         ]);
         era.println();
 
-        await tachyon.print_and_wait(['いや……']);
-        await tachyon.print_and_wait(['やめて。']);
+        await tachyon.print_and_wait(['안 돼……']);
+        await tachyon.print_and_wait(['그만둬.']);
         await tachyon.print_and_wait(['待って、', t_call_c, '、やめて。']);
-        await tachyon.print_and_wait(['堪えきれない。']);
-        await tachyon.print_and_wait(['結局、声を出してしまった。']);
-        await tachyon.print_and_wait(['だが……']);
+        await tachyon.print_and_wait(['더는 참을 수 없어.']);
+        await tachyon.print_and_wait(['결국 입을 열어, 소리를 내뱉고 말았다.']);
+        await tachyon.print_and_wait(['하지만……']);
         era.println();
 
         await coffee.say_and_wait(
-          [you.sex, 'には、あなたは見えませんし、聞こえません。'],
+          [you.sex, '는 당신을 볼 수도, 들을 수도 없어.'],
           true,
         );
         era.println();
 
         await tachyon.print_and_wait([
-          '背後で、何かが自分に囁いている気がする。',
+          '마치 어떤 목소리가, 등 뒤에서 나에게 속삭이는 듯했다.',
         ]);
-        await tachyon.print_and_wait(['……', t_call_c, ' の『友達』？']);
-        await tachyon.print_and_wait(['違う、そんなことはどうでもいい。']);
-        await tachyon.print_and_wait([t_call_c, '、あなたは——————。']);
+        await tachyon.print_and_wait(['……', t_call_c, '의 『친구』인가?']);
+        await tachyon.print_and_wait(['아니, 그런 건 중요하지 않아.']);
+        await tachyon.print_and_wait([t_call_c, ', 자네는——————.']);
         era.println();
 
-        await coffee.say_and_wait(['ひどいですよね、', callname_25, '。']);
+        await coffee.say_and_wait(['정말 너무하네요, ', callname_25, '。']);
         era.println();
 
         await tachyon.print_and_wait([
-          '不意に、',
+          '갑자기, ',
           t_call_c,
-          ' の声が元へ戻る。',
+          '의 목소리가 원래대로 돌아왔다.',
         ]);
         era.println();
 
         await coffee.say_and_wait([
-          'あなたは彼女を愛していた……なのに、彼女はあなたの想いを踏みにじった。そうでしょう？',
+          '분명, 당신은 그녀를 사랑하고 있는데…… 하지만, 그녀는 이렇게 당신의 마음을 짓밟고 있잖아요, 그렇죠?',
         ]);
         era.println();
 
-        await tachyon.print_and_wait(['な。']);
-        await tachyon.print_and_wait([t_call_c, '……何を言っているの。']);
-        await tachyon.print_and_wait(['違う……誰の……話……？']);
+        await tachyon.print_and_wait(['뭐라고.']);
+        await tachyon.print_and_wait([t_call_c, '…… 지금 무슨 말을 하는 건가.']);
+        await tachyon.print_and_wait(['아니…… 지금…… 누구를……?']);
         era.println();
 
         await coffee.say_and_wait([
-          'これほど ',
+          '분명, ',
           callname_25,
-          ' は ',
+          '은 ',
           c_call_t,
-          ' に捧げてきたのに。',
+          '에게 그토록 헌신했는데.',
         ]);
         await coffee.say_and_wait([
-          'トレーナーと',
+          '이미, 트레이너와 ',
           tachyon.uma_sex_title,
-          'の境界を、とうに越えていたのに。',
+          '의 경계를 완전히 넘어서 버렸는데도요.',
         ]);
         await coffee.say_and_wait([
-          'それなのに……私が『この薬は ',
+          '하지만…… 그녀는 제가 『이 약은 ',
           callname_25,
-          ' と一緒に使う』と言った瞬間……あっさり薬を渡したんですよ。',
+          '과 함께 쓸 거예요』라고 제안했을 때…… 망설임 없이 약을 넘겨주었답니다.',
         ]);
         era.println();
 
-        await tachyon.print_and_wait([callname, '……好きな……人……']);
+        await tachyon.print_and_wait([callname, '…… 사랑하는…… 사람……']);
         await tachyon.print_and_wait([
-          '違う、',
+          '아니야, ',
           you.sex,
-          'と ',
+          '와 ',
           t_call_c,
-          ' のほうが、釣り合うはず。',
+          '이야말로 더 잘 어울리는 사이가 아닌가.',
         ]);
-        await tachyon.print_and_wait(['第三者なのは、私のほう……']);
+        await tachyon.print_and_wait(['부외자는 바로 나……']);
         era.println();
 
         await coffee.say_and_wait(['んっ……急に……急にこんなに強く……❤️。']);
