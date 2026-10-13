@@ -1578,111 +1578,111 @@ module.exports = {
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' ですら、その光景にしばらく呆けた',
+        '(이)라 해도 이 광경에는 잠시 멍해질 수밖에 없었다.',
       ]);
       await era.printAndWait(
-        'もちろん、無理な要求のせいではない。普段の要求のほうがよほど無理だ。そうではなく……',
+        '물론 상대의 무리한 요구 때문은 아니었다. 평소의 요구는 이보다 훨씬 더 무리한 편이었으니까. 하지만……',
       );
-      era.printButton('「研究できない、と言っていたよな？」', 1);
+      era.printButton('「더 이상 연구는 못 한다고 하지 않았어?」', 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は覚えている。昨日、涙ぐんで、もう研究できない、もう可能性を見つけられないと言っていた ',
+        '은(는) 아직 기억하고 있었다. 어제 눈물까지 글썽이며 이제 연구에 집중할 수 없다고, 가능성을 찾을 수 없다고 말하던 ',
         tachyon.get_colored_name(),
-        ' の、あわれな様子を',
+        '의 그 가련한 모습을.',
       ]);
       await era.printAndWait([
-        '今の',
+        '지금의 ',
         tachyon.sex,
-        'には、前日の落胆も崩壊も、まったく見えない',
+        '는 전날의 낙담과 붕괴를 전혀 찾아볼 수 없었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait(['……本当のことですわよ、', callname, ' ']);
+      await tachyon.say_and_wait(['……내가 한 말은 진심이라네, ', callname, '. ']);
       await tachyon.say_and_wait(
-        '今の私は、もう自分の可能性の研究に集中できませんわ。',
+        '나는 이제 나 자신의 가능성에만 몰두하는 연구는 할 수 없게 되었어.',
       );
-      await tachyon.say_and_wait('頭の中は、四六時中あなたのことでいっぱい……');
+      await tachyon.say_and_wait('머릿속이 온통 자네 생각뿐이라서 말이야……');
       await tachyon.say_and_wait(
-        '今この瞬間も、心ではあなたの喜ぶ顔、怒る顔、恥じる顔、緊張する顔を……',
+        '지금 이 순간에도 자네의 기뻐하는 모습, 화내는 모습, 부끄러워하는 모습, 긴장한 모습이 떠오르네……',
       );
       await tachyon.say_and_wait(
-        '私をこうしたのですから、責任を取っていただかないと困りますわ',
+        '나를 이렇게 만들어버렸으니, 자네가 끝까지 책임져야 할 거야.',
       );
-      era.printButton('「ご……ごめん？」', 1);
+      era.printButton('「미…… 미안해?」', 1);
       await era.input();
-      await era.printAndWait('これは、自分のせいなのか？');
+      await era.printAndWait('이게, 이게 내 잘못인가?');
       await era.printAndWait(
-        'それに、こんな直球の愛情をぶつけられると、やはり恥ずかしい……',
+        '그나저나 이렇게 직구로 애정을 표현하니 역시 쑥스럽지만……',
       );
-      await era.printAndWait('違う、それはさっきの話と何の関係がある');
+      await era.printAndWait('아니, 그보다 조금 전의 이야기와 무슨 상관이야?');
       await era.printAndWait(
-        '今も普段どおり研究している理由の説明になっていないではないか？',
+        '왜 지금 여전히 평소처럼 연구를 하고 있는지에 대한 설명은 안 됐잖아?',
       );
       era.println();
       await tachyon.say_and_wait(
-        'だから……もう自分のことだけを考えていられませんわ',
+        '그러니까…… 나는 이제 나 혼자만을 생각할 수는 없게 되었다는 걸세.',
       );
       await tachyon.say_and_wait(
-        '今思いつくすべての可能性に……あなたが傍にいなければなりません。これから考えられるのも、たぶん『あなたと』一緒の可能性だけでしょう',
+        '내가 상상할 수 있는 모든 가능성에는…… 반드시 자네가 곁에 있어야만 하네. 앞으로 내가 고찰할 수 있는 건, 오직 『자네와 함께하는』 가능성뿐일 테니까.',
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は急に',
+        '은(는) 순간 ',
         tachyon.sex,
-        'の意味が分からなくなり、じっと ',
+        '의 말을 이해하지 못하고 ',
         tachyon.get_colored_name(),
-        ' を見る',
+        '을 뚫어지게 쳐다보았다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' も ',
+        '은 ',
         you.get_colored_name(),
-        ' の視線の下で、落ち着かなくなってくる',
+        '의 시선에 조금씩 어색함을 느끼기 시작했다.',
       ]);
       await era.printAndWait(
-        'それから、ダムが決壊するように、何事もない顔が、恋人の視線という最後の一押しで',
+        '그리고 마치 댐이 무너지듯, 아무렇지 않은 척하던 표정은 사랑하는 이의 시선이라는 결정타 한 방에',
       );
       await era.printAndWait(
-        '一瞬にして、満面を赤らめた恥じらいの表情へ変わる',
+        '순식간에 뺨을 붉힌 부끄러워하는 표정으로 변했다.',
       );
       era.println();
       await tachyon.say_and_wait(
-        'ですから……つまり……週末の実験……時間は空けられますわね……',
+        '그러니까…… 그게…… 주말 실험은…… 시간을 낼 수 있겠지……?',
       );
       await tachyon.say_and_wait(
-        '一般に言う、あの、つまり、デートと呼ばれる行為が二人にどれほど適するかの検証で…………',
+        '일반적으로 말하는, 그, 소위 데이트라고 불리는 행위가 우리 둘에게 얼마나 적합한지 측정하기 위함이라네…………',
       );
       await tachyon.say_and_wait(
-        'とにかく！ 土曜日の朝九時、遅刻は許しませんわ！ それと私の朝食も持ってきて！ 以上ですわ！',
+        '아무튼! 토요일 아침 9시, 늦지 말게! 그리고 내 아침밥도 챙겨오고! 이상이야!',
       );
       await tachyon.say_and_wait(
-        'それと、今日の昼の弁当……できれば……一口で食べやすいものに……',
+        '그리고, 오늘 점심 도시락은…… 가능하다면…… 한입에 먹기 편한 것으로 준비해주게……',
       );
       await tachyon.say_and_wait(
-        'あの……恋人関係における『あーん』行為の心拍指数測定を……してもよろしいですの？',
+        '그게…… 연인 관계에서의 『아~~앙』 이라는 행위가 심박수 지수에 미치는 영향을 측정하고 싶거든…… 괜찮겠지?',
       );
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'が恥ずかしさを押し切って言い終える様子を見て、',
+        '부끄러움을 참아가며 할 말을 다 하는 ',
         you.get_colored_name(),
-        ' は思わず笑ってしまう',
+        '은(는) 그만 웃음이 터졌다.',
       ]);
-      await era.printAndWait('こんなとき、どう答えればいいだろう');
+      await era.printAndWait('이런 상황에서는 뭐라고 대답해야 할까.');
       await era.printAndWait(
-        'この勝手で、気ままな、いちばん可愛い狂った科学者に',
+        '이 까다롭고 제멋대로지만, 세상에서 가장 귀여운 광기 어린 과학자에게.',
       );
       await era.printAndWait([
-        'このいとおしく、愛おしい、いちばん愛する恋する',
+        '이 사랑스럽고 애틋하며, 세상에서 가장 소중한 사랑에 빠진 ',
         tachyon.teen_sex_title,
-        'に',
+        '에게.',
       ]);
       era.println();
       await you.say_and_wait([
-        'はい……私の',
-        tachyon.sex_code - 1 ? '姫' : '王子',
-        '様',
+        '알겠습니다…… 나의 ',
+        tachyon.sex_code - 1 ? '공주' : '왕자',
+        '님.',
       ]);
       return [];
     };
