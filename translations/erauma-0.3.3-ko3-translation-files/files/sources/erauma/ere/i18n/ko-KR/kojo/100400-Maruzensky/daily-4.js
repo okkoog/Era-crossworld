@@ -805,7 +805,7 @@ module.exports = {
       async () => {
         await maru.say_and_wait(`대단해! 당근 버거!`);
         await era.printAndWait([
-          '夜、',
+          '밤이 되자, ',
           you.get_colored_name(),
           '와(과) ',
           maru.get_colored_name(),
