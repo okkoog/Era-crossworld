@@ -2600,7 +2600,7 @@ module.exports = {
 
   // [번역 대상] slave_end
   slave_end: (() => {
-    const title = '金の代価';
+    const title = '금전의 대가';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -2609,125 +2609,125 @@ module.exports = {
     const f = async (tachyon, you, callname) => {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は飲みかけのウイスキーを手に、よろよろと五軒目のバーから出てきた',
+        '은(는) 마시다 만 위스키 병을 든 채, 비틀거리며 다섯 번째 바를 나섰다.',
       ]);
-      await era.printAndWait('夜は相変わらず暗い。爛れた夜はまだ続く');
+      await era.printAndWait('밤공기는 여전히 차갑고, 퇴폐적인 밤은 계속되고 있었다.');
       era.println();
-      await era.printAndWait('終わった……では、次はどこへ行けばいい');
-      await era.printAndWait('ふらふらと歩き、全身から酒の匂いを漂わせている');
+      await era.printAndWait('끝났군…… 그럼, 다음은 어디로 가는 게 좋을까?');
+      await era.printAndWait('몸을 가누지 못하고 길을 걷는 모습에선 온몸에 술 냄새가 진동했다.');
       await era.printAndWait([
-        '通行人が鼻を覆って遠ざかる姿は、',
+        '어떤 행인이 보더라도 코를 찌푸리며 멀리할 법한 이 모습이야말로, ',
         you.get_colored_name(),
-        ' がわざわざ作り上げようとしたものだ',
+        '이(가) 필사적으로 연출하고자 했던 모습이었다.',
       ]);
       era.println();
-      await era.printAndWait('二、三、五………二十三、二十九 ');
+      await era.printAndWait('둘, 셋, 다섯……… 스물셋, 스물아홉 ');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は頭の中で黙って数えた',
+        '은(는) 머릿속으로 숫자를 세었다.',
       ]);
       await era.printAndWait([
-        '素数を数えて冷静になるわけではない。今夜 ',
+        '이것은 소수를 세며 마음을 진정시키려는 것이 아니라, 오늘 하룻밤 동안 ',
         you.get_colored_name(),
-        ' が飲んだ酒の量だ',
+        '이(가) 마셔버린 술의 양이었다.',
       ]);
-      await era.printAndWait('合計金額は……七桁……それとも八桁か？');
+      await era.printAndWait('총금액은…… 7자리…… 아니면 8자리인가?');
       await era.printAndWait([
-        '驚くべき数字だが、それは ',
+        '경악스러운 액수였지만, 그것은 단지 ',
         you.get_colored_name(),
-        ' が一晩で飲んだ酒の値段にすぎない',
+        '이(가) 하룻밤 사이에 해치운 술값에 불과했다.',
       ]);
       await era.printAndWait(
-        '最高級のバーで、高いものばかり選んで店を掃討した結果が、普通の人間なら想像もしたくない数字だった',
+        '최고급 바에서 질 따위는 따지지 않고 오직 비싼 것들로만 가게 안을 싹쓸이한 결과가, 일반인이라면 상상도 못 할 숫자를 만들어낸 것이다.',
       );
       era.println();
-      await era.printAndWait('だが……');
-      await era.printAndWait('無駄だ。まったく効かない');
+      await era.printAndWait('그러나……');
+      await era.printAndWait('소용없었다. 아무런 효과가 없었다.');
       await era.printAndWait([
-        '値段も度数も関係ない。今夜飲んだ酒は、',
+        '가격이 얼마든, 도수가 몇 도든, 오늘 마신 그 어떤 술도 ',
         you.get_colored_name(),
-        ' を何度かトイレへ行かせた以外、何の役にも立たなかった',
+        '을(를) 화장실에 몇 번 더 가게 했을 뿐, 그 이상의 작용은 전혀 하지 못했다.',
       ]);
       await era.printAndWait([
-        '意識はこれ以上ないほどはっきりしている。はっきりしすぎて、',
+        '의식은 더할 나위 없이 또렷했고, 그 명료함은 ',
         you.get_colored_name(),
-        ' は二日前のことを思い出した',
+        '에게 이틀 전의 일을 떠올리게 했다.',
       ]);
       era.println();
-      await tachyon.say_as_unknown_and_wait('お金を借りたいですの？');
-      await tachyon.say_as_unknown_and_wait(['いいですわ、', callname]);
+      await tachyon.say_as_unknown_and_wait('돈을 빌려달라고?');
+      await tachyon.say_as_unknown_and_wait(['좋지, ', callname]);
       await tachyon.say_as_unknown_and_wait(
-        'ただしいつもの決まりですわよ……今日の実験は、神経抑制剤の排除に関するものですわ',
+        '하지만 늘 그렇듯 규칙은 알고 있겠지…… 오늘의 실험은, 신경 억제제 배제에 관한 실험이라네.',
       );
-      await tachyon.say_as_unknown_and_wait('では、実験を始めましょう');
+      await tachyon.say_as_unknown_and_wait('그럼, 실험을 시작하도록 하지.');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はウイスキーを口に直接流し込んだ',
+        '은(는) 위스키를 병째로 들이켰다.',
       ]);
       await era.printAndWait([
-        '一口で普通の人間が酔うはずの強い酒が、',
+        '보통 사람이라면 한 모금만으로도 고꾸라질 독주가, 오히려 ',
         you.get_colored_name(),
-        ' の頭をさらに澄ませる',
+        '의 머릿속을 더욱 맑게 만들었다.',
       ]);
       await era.printAndWait(
-        '酒で憂さを晴らすのが、アルコールで神経を麻痺させて現実から逃げることなら、その麻痺すら許されない自分は、世界でいちばん惨めな酔客だろう',
+        '술로 시름을 잊는다는 것이 알코올을 통해 신경을 마비시켜 현실을 도피하는 것이라면, 신경을 마비시키는 것조차 허락되지 않는 자신은 분명 세상에서 가장 고통스러운 주정뱅이일 터였다.',
       );
       era.println();
       await era.printAndWait(
-        '賑やかな夜の街に、自分のような酔客はいくらでもいる',
+        '번화한 밤거리에서 자신과 같은 취객은 흔하디흔했다.',
       );
       await era.printAndWait([
-        'ふらつく人々の姿を見て、',
+        '비틀거리는 그들의 뒷모습을 보며, ',
         you.get_colored_name(),
-        ' は心から羨んだ',
+        '은(는) 가슴 깊은 곳에서 우러나오는 진심 어린 부러움을 느꼈다.',
       ]);
       era.println();
       await era.printAndWait([
-        '歩いていると、眼前に突然光が走り、',
+        '걷다 보니 갑자기 눈앞에서 번쩍이는 빛 때문에 ',
         you.get_colored_name(),
-        ' は思わず目を細めた',
+        '은(는) 자신도 모르게 두 눈을 가늘게 떴다.',
       ]);
       await era.printAndWait(
-        '目を刺すのは照明だけではない。きらめく内装と、一夜で金持ちになる夢がいくつもそこにある',
+        '눈을 어지럽히는 것은 조명뿐만이 아니라, 화려한 인테리어와 일확천금을 꿈꾸는 수많은 욕망이었다.',
       );
-      await era.printAndWait('賭けと酒、酒と賭け。昔からこの二つは離れない');
+      await era.printAndWait('도박과 술, 술과 도박. 이 둘은 예로부터 떼려야 뗄 수 없는 관계였다.');
       await era.printAndWait(
-        '酔いつぶれる酒豪たちが、ほろ酔いのうちに賭場へ手を出すのも、もう決まりごとのようだ',
+        '진탕 마셔대던 주당들이 거나하게 취했을 때, 카지노에 들러 한 판 벌이는 것은 이미 관례와도 같았다.',
       );
       era.println();
       await era.printAndWait([
-        'だが、酔客の格好をした ',
+        '하지만 취객의 모습을 한 ',
         you.get_colored_name(),
-        ' は賭場へ目すら向けず、ただ前方を見つめた',
+        '은(는) 카지노 쪽으로는 눈길조차 주지 않고 오직 정면만을 응시하며 걸었다.',
       ]);
-      await era.printAndWait('賭場の賭けが小物だから嫌ったわけではない———');
+      await era.printAndWait('카지노의 판돈이 너무 작아서가 아니었다———');
       await era.printAndWait([
-        'ここの賭場には、',
+        '듣기로는 이곳 카지노에는 심지어 ',
         tachyon.uma_sex_title,
-        'のレースに賭けるという、発覚したら二度と商売できない営業まであるらしい',
+        ' 레이스에 돈을 거는, 외부에 발설되는 순간 파멸이 확정된 은밀한 영업까지 행해지고 있다고 했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が潔癖だからでもない——こんな時間にこんな通りを徘徊する人間が、どれだけ綺麗でいられるというのか',
+        '이(가) 대단히 도덕적인 사람이라서도 아니었다. 애초에 이런 시간에 이런 거리를 배회하는 인간이 깨끗해 봐야 얼마나 깨끗하겠는가.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はまた一口飲み、過去を思い出した',
+        '은(는) 다시 술을 한 모금 들이켜며 과거를 회상했다.',
       ]);
       era.println();
-      await tachyon.say_as_unknown_and_wait('お金を借りたいですの？');
-      await tachyon.say_as_unknown_and_wait(['いいですわ、', callname]);
+      await tachyon.say_as_unknown_and_wait('돈을 빌려달라고?');
+      await tachyon.say_as_unknown_and_wait(['좋지, ', callname]);
       await tachyon.say_as_unknown_and_wait(
-        'ただしいつもの決まりですわよ……今日の実験は、脳の報酬系の調整と抑制ですわ',
+        '하지만 늘 그렇듯 규칙은 알고 있겠지…… 오늘의 실험은, 뇌의 보상 메커니즘의 조정과 억제에 관한 것이라네.',
       );
-      await tachyon.say_as_unknown_and_wait('では、実験を始めましょう');
+      await tachyon.say_as_unknown_and_wait('그럼, 실험을 시작하도록 하지.');
       era.println();
-      await era.printAndWait('普通のサラリーマンの年収を超える金を勝っても');
-      await era.printAndWait('一夜で海辺の別荘を一軒失っても');
-      await era.printAndWait('感情はひとつも動かず、眉間に皺すら寄らない');
-      await era.printAndWait('こんな状態で賭けて、何が楽しいというのか');
+      await era.printAndWait('평범한 직장인의 연봉을 뛰어넘는 돈을 따더라도.');
+      await era.printAndWait('하룻밤 사이에 바다 조망의 별장을 잃는다 해도.');
+      await era.printAndWait('아무런 감정의 동요도 없었고, 미간에 주름조차 잡을 수 없었다.');
+      await era.printAndWait('이런 상황에서의 도박에 대체 무슨 재미가 있겠는가?');
       era.println();
       await era.printAndWait(
         '賭場の中で、自分だけが世の外に孤立しているようだ',
