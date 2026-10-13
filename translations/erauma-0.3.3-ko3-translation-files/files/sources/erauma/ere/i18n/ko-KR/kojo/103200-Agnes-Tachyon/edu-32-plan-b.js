@@ -7,7 +7,7 @@ module.exports = {
 
   // [번역 완료] before_arim_kin_b
   before_arim_kin_b: (() => {
-    const title = '最終実験、準備完了';
+    const title = '최종 실험, 준비 완료';
     /**
      * Plan B 専用、シニア年有馬記念の前
      * 注意：Plan B ではアグネスタキオンはシニア年有馬記念に出走できないため、このイベントは機制上マンハッタンカフェの同段階の前イベントに属する
@@ -2869,7 +2869,7 @@ module.exports = {
 
   // [번역 완료] we_b_95_36
   we_b_95_36: (() => {
-    const title = '決意';
+    const title = '결의';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
