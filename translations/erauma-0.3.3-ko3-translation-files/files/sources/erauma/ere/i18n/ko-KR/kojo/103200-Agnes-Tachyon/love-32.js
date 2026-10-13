@@ -1692,118 +1692,118 @@ module.exports = {
 
   // [번역 대상] 74-betray
   '74-betray': (() => {
-    const title = [{ color: buff_colors[3], content: '魔女の薬' }];
+    const title = [{ color: buff_colors[3], content: '마녀의 약' }];
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
      * @param {string} callname アグネスタキオンがプレイヤーを呼ぶ名
      */
     const f = async (tachyon, you, callname) => {
-      await era.printAndWait([you.get_colored_name(), ' は、不意に疲れた']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 문득 피로를 느꼈다.']);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は薬を ',
+        '은(는) 약을 ',
         tachyon.get_colored_name(),
-        ' の手へ押し戻す',
+        '의 손에 다시 쥐여주었다.',
       ]);
       era.println();
       await tachyon.say_and_wait(['…………', callname, '？']);
-      era.printButton('「疲れた。飲むなら自分で飲め」', 1);
+      era.printButton('「지쳤어. 마시고 싶으면 너나 마셔.」', 1);
       await era.input();
-      await era.printAndWait('いつからだろう。理由は何だろう。');
+      await era.printAndWait('언제부터였을까? 원인은 무엇이었을까?');
       await era.printAndWait([
-        'あるいは ',
+        '어쩌면 ',
         you.get_colored_name(),
-        ' は、もう ',
+        '은(는) 더 이상 ',
         tachyon.get_colored_name(),
-        ' という',
+        '이라는 이름의 ',
         tachyon.uma_sex_title,
-        'の勝手に耐えられなくなったのか',
+        '의 제멋대로인 행동을 견딜 수 없게 된 것일지도 몰랐다.',
       ]);
       await era.printAndWait([
-        'あるいは ',
+        '어쩌면 ',
         you.get_colored_name(),
-        ' は、すでに ',
+        '은(는) 이미 ',
         tachyon.get_colored_name(),
-        ' への忍耐を失ったのか',
+        '에 대한 인내심을 잃어버린 것일지도 몰랐다.',
       ]);
       await era.printAndWait([
-        'あるいは ',
+        '혹은 ',
         you.get_colored_name(),
-        ' は、これも',
+        '은(는) 이것이 그저 ',
         tachyon.sex,
-        'のまた一つの冗談だと思ったのか',
+        '의 또 다른 장난에 불과하다고 생각했을지도 몰랐다.',
       ]);
       await era.printAndWait([
-        '所詮、',
+        '애당초 ',
         tachyon.sex,
-        'の都合で自分に死ねと言うなど、この女は何の冗談を言っているんだ',
+        ' 때문에 죽고 싶어지다니, 무슨 농담인가 싶었다.',
       ]);
       era.println();
       await era.printAndWait([
-        'とにかく、',
+        '결국, ',
         you.get_colored_name(),
-        ' は薬を',
+        '은(는) 약을 ',
         tachyon.sex,
-        'へ押し返した',
+        '에게 다시 밀어냈다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、この薬が本当に人を死なせるかどうかなど気にしない',
+        '은(는) 이 약이 정말로 사람을 죽게 만드는지 따위는 상관하지 않았다.',
       ]);
       await era.printAndWait(
-        'いいえ、本当に人を死なせるなら、それも悪くないかもしれない',
+        '아니, 정말로 사람을 죽이는 것이라면 차라리 그것도 나쁘지 않겠다고 생각했다.',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' の内側に、そんな暗い考えまで生まれていた',
+        '의 내면에는 그런 음습한 생각까지 싹트고 있었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('…………ああ、そうですか……分かりましたわ');
+      await tachyon.say_and_wait('…………아아, 그렇군…… 알겠네.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は、激しい反応を見せなかった',
+        '은 딱히 격렬한 반응을 보이지 않았다.',
       ]);
       await era.printAndWait([
-        'いつもの',
+        '평소의 ',
         tachyon.sex,
-        'に比べ、異常なほど落ち着いた様子が、かえって ',
+        '에 비하면 이상할 정도로 차분한 거동이 오히려 ',
         you.get_colored_name(),
-        ' の興味を少し引く',
+        '의 흥미를 약간 자극했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、やっと顔を上げた',
+        '은(는) 겨우 고개를 든 ',
         tachyon.sex,
-        'が、釈然とし、解き放たれたような笑顔を浮かべているのを見る',
+        '가 체념한 듯, 무언가에서 해방된 듯한 미소를 짓는 모습을 바라보았다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        '……そうですわね。この問題の答えは、もともと二つだけではなかった',
+        '……그러고 보니, 이 문제의 정답은 언제나 두 가지만 있는 게 아니었지.',
       );
       await tachyon.say_and_wait(
-        '生と死の外に、第三の選択肢がある。出題者を死なせる、ということですわね？',
+        '삶과 죽음 이외에도 세 번째 선택지가 존재했어. 즉, 출제자를 죽이는 것, 그렇지?',
       );
       era.println();
-      await era.printAndWait([you.get_colored_name(), ' は思わず眉を寄せる']);
-      await era.printAndWait('話が長い。飲むのか、飲まないのか');
+      await era.printAndWait([you.get_colored_name(), '은(는) 자신도 모르게 미간을 찌푸렸다.']);
+      await era.printAndWait('말이 너무 많다. 대체 마실 건가 말 건가?');
       await era.printAndWait([
-        '……いいえ、所詮この、いつも他人に薬を飲ませる',
+        '……아니, 애당초 늘 남에게 약을 먹이는 이 ',
         tachyon.phy_sex_title.substring(0, 1),
-        'は',
+        '은(는)',
       ]);
-      await era.printAndWait('自分が薬を飲むことなど、考えていなかっただろう');
+      await era.printAndWait('자신이 약을 마시는 것 따위는 조금도 생각하지 않았을 것이다.');
       await era.printAndWait([
         you.get_colored_name(),
-        ' はため息をつき、また一つの茶番だと嘆き、実験室を出ようとする',
+        '은(는) 또 시작된 이 연극에 한숨을 내쉬며 실험실을 떠날 준비를 했다.',
       ]);
       era.drawLine();
       await era.printAndWait([
-        'そして、',
+        '그리고, ',
         you.get_colored_name(),
-        ' が振り返って出ようとした瞬間',
+        '이(가) 몸을 돌려 떠나려던 찰나',
       ]);
       era.println();
       await tachyon.say_and_wait('ぐっ………！');
