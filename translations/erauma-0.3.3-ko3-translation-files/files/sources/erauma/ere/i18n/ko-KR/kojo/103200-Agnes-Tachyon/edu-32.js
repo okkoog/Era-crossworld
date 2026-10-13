@@ -358,7 +358,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] be_crazy_fan
+  // [번역 완료] be_crazy_fan
   be_crazy_fan: (() => {
     const title = '멈춰 버린 시계';
     /**
@@ -954,38 +954,38 @@ module.exports = {
         era.drawLine();
         await tachyon.say_and_wait('이보게, 모르모트 군.');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'ん？ タキオン、どうした？',
+          '모르모트',
+          '응? 타키온, 왜 그래?',
         );
         await tachyon.say_and_wait(
-          '言いますけれど、目が覚めてから、一度も私と親しんでいませんわよね？',
+          '내 말은, 자네 깨어난 뒤로 나랑 전혀 애정 행각을 안 했잖나?',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '……え？');
+        await you.say_as_passer_by_and_wait('모르모트', '……에?');
         await tachyon.say_and_wait(
-          '恋人を放ったらかしですわ。さっきまでは回復していないからだと思っていましたけれど……身体検査も問題ないのですから、そろそろちゃんと甘えなさいな？',
+          '연인을 이렇게 방치해두다니. 깨어난 직후에는 회복 중이라 쳐도…… 지금은 정밀 검사에서도 아무 이상 없다는데, 이제 슬슬 예전처럼 알콩달콩 지내야 하지 않겠나?',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '待て、タキオンはまだ学生だろう',
+          '모르모트',
+          '아니, 잠깐만. 타키온은 학생이잖아.',
         );
-        await tachyon.say_and_wait('ええ、何か問題ですの？');
+        await tachyon.say_and_wait('그렇지. 그게 무슨 문제라도?');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '大問題だろう！？ 倫理とか……',
+          '모르모트',
+          '문제가 아주 크지!? 윤리 같은 게……',
         );
         await tachyon.say_and_wait(
-          '……急に何を興奮しているのですの。当初は、あなたからあんなに積極的だったのに♡',
+          '……왜 갑자기 그렇게 격하게 반응하나. 예전엔 자네가 훨씬 적극적이었으면서♡',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '…昔の俺は、そんなに最低だったのか',
+          '모르모트',
+          '…과거의 나는 그렇게 쓰레기였던 거야?',
         );
-        await tachyon.say_and_wait('？ モルモット君、今、何か言いました？');
+        await tachyon.say_and_wait('? 모르모트 군, 방금 뭐라고 했나?');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……いや、なんでもない',
+          '모르모트',
+          '……아니, 아무것도 아니야.',
         );
-        await tachyon.say_and_wait('では早く。ちゃんと親しみましょう♡');
+        await tachyon.say_and_wait('그럼 어서, 진하게 사랑을 나누자고♡');
         era.drawLine();
         await tachyon.say_and_wait(
           '오오, 이번 도시락은 꽤 괜찮군! 모르모트 군! 드디어 예전 실력을 되찾았구만!',
