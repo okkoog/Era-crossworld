@@ -91,7 +91,7 @@ module.exports = {
 
       await you.say_as_passer_by_and_wait('실황', [
         tachyon.get_colored_name(),
-        '！ ',
+        '! ',
         tachyon.get_colored_name(),
         '의 복귀 첫 경기! 아리마 기념에서 눈부신 승리를 거뒀습니다!',
       ]);
@@ -3337,7 +3337,7 @@ module.exports = {
               await tachyon.say_and_wait([
                 'G1에 출전하는 ',
                 tachyon.uma_sex_title,
-                '、',
+                ', ',
                 tachyon.get_colored_name(),
                 '이(가) 직접 먹여 주는 함박스테이크라네. 이 정도면 가치가 좀 생겼나?',
               ]);
