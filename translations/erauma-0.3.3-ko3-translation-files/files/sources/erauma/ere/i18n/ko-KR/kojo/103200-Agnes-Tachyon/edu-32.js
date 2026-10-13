@@ -7392,94 +7392,94 @@ module.exports = {
           tachyon.sex_code - 1 &&
           you.sex_code > 0
         ) {
-          era.printButton('だって……', 1);
+          era.printButton('왜냐하면……', 1);
           await era.input();
           await era.printAndWait([
             you.get_colored_name(),
-            ' が口を開こうとした瞬間、振り返った ',
+            '이(가) 입을 열려 했으나, 뒤돌아선 ',
             tachyon.get_colored_name(),
-            ' に唇を押さえられ、声が出なかった',
+            '이 입술을 손가락으로 누르는 바람에 가로막혔다.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'は立ち上がり、ソファの ',
+            '는 일어서서 소파에 앉아 있는 ',
             you.get_colored_name(),
-            ' を押さえ、',
+            '을(를) 내리눌렀고, ',
             you.get_colored_name(),
-            ' と目を合わせた',
+            '과(와) 시선을 정면으로 마주하며 응시했다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            '言いたいことはわかっていますわ。公にも私にも、レースに出る理由と必要性があることも。ですが……',
+            '자네가 무슨 말을 하려는지 알고 있네. 공적으로나 사적으로나 내가 레이스에 참가해야 할 이유와 필요성도 알고 있어. 하지만……',
           );
           era.println();
           await era.printAndWait([
             tachyon.sex,
-            'は向きを変え、どかりと ',
+            '는 몸을 돌려 ',
             you.get_colored_name(),
-            ' の腿に座り、',
+            '의 허벅지 위에 털썩 주저앉더니, ',
             you.get_colored_name(),
-            ' の腿の外側を叩いた',
+            '의 허벅지 바깥쪽을 툭툭 쳤다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            '今はレースに出る気がありませんの。だからうまく考えて、私を機嫌取る言葉を探しなさい。機嫌が良くなれば……出てもいいかもしれませんわよ？',
+            '지금은 레이스에 나갈 기분이 아니란 말이지. 그러니 방법을 좀 생각해보게나. 나를 기쁘게 할 만한 말을 해보란 말이야. 기분이 좋아지면…… 레이스에 나갈 마음이 생길지도 모르지 않나?',
           );
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は苦笑し、',
+            '은(는) 쓴웃음을 지으며 ',
             tachyon.get_colored_name(),
-            ' の腰を抱いた',
+            '의 허리를 껴안았다.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'はごく自然に身を寄せ、いちばん楽な姿勢に直した',
+            '는 아주 자연스럽게 몸을 밀착시키며 가장 편안한 자세를 잡았다.',
           ]);
           era.println();
-          await you.say_and_wait('タキオンはいちばんかっこいい');
-          await you.say_and_wait('タキオンはかわいい');
-          await you.say_and_wait('タキオンは美しい');
+          await you.say_and_wait('타키온이 제일 멋져.');
+          await you.say_and_wait('타키온은 너무 귀여워.');
+          await you.say_and_wait('타키온은 정말 아름다워.');
           await you.say_and_wait([
-            'いちばん強くてすごい',
+            '가장 대단하고 강한 ',
             tachyon.uma_sex_title,
           ]);
           await you.say_and_wait([
-            '超光速の',
-            tachyon.sex_code === 1 ? '王子' : '姫',
+            '초광속의 ',
+            tachyon.sex_code === 1 ? '왕자님' : '공주님',
           ]);
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) 계속해서 ',
             tachyon.get_colored_name(),
-            ' の耳元で、',
+            '의 귓가에 ',
             tachyon.sex,
-            'を称える言葉を止めなかった',
+            '를 칭찬하는 말을 계속 속삭였다.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'の耳も揺れ続け、その言葉が効いていることを示していた',
+            '의 귀가 쉬지 않고 쫑긋거리는 모습에서 그 말들이 얼마나 효과적인지가 드러났다.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'は得意げな顔で、',
+            '는 의기양양한 표정을 지으며 ',
             you.get_colored_name(),
-            ' の腿を強く叩き、続きを促した',
+            '의 허벅지를 세게 때리며 계속하라는 신호를 보냈다.',
           ]);
           era.println();
-          await tachyon.say_and_wait('ふんふん……もっと、もっと、言いなさい！');
+          await tachyon.say_and_wait('흐흐…… 더 해보게, 더! 더 많이 말해봐!');
           era.println();
           await era.printAndWait([
-            '叩かれて少し痛い ',
+            '허벅지가 조금 얼얼해진 ',
             you.get_colored_name(),
-            ' は心変わりし、悪戯を思いついた',
+            '은(는) 문득 장난기가 발동했다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は抱いていた手を放し、',
+            '은(는) 안고 있던 손을 풀어 ',
             tachyon.sex,
-            'の腿の外側へ移した',
+            '의 허벅지 바깥쪽으로 옮겼다.',
           ]);
           era.println();
           await tachyon.say_and_wait(['……？ ', callname, '？']);
