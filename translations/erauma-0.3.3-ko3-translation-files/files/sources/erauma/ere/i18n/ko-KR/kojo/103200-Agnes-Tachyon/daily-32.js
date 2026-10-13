@@ -2750,13 +2750,13 @@ module.exports = {
         'このまま彼女たちの肢体に沈めたら、きっとこの上なく幸せだろう……',
       );
       era.println();
-      await tachyon.say_as_unknown_and_wait('お金を借りたいですの？');
-      await tachyon.say_as_unknown_and_wait(['いいですわ、', callname]);
-      await tachyon.say_as_unknown_and_wait('ただしいつもの決まりですわ……');
+      await tachyon.say_as_unknown_and_wait('돈을 빌려달라고?');
+      await tachyon.say_as_unknown_and_wait(['좋지, ', callname]);
+      await tachyon.say_as_unknown_and_wait('하지만 규칙은……');
       era.println();
-      await era.printAndWait('ああ');
+      await era.printAndWait('아아.');
       await era.printAndWait([you.get_colored_name(), ' は少女の誘いを断った']);
-      await era.printAndWait('反応はゼロだ');
+      await era.printAndWait('아무런 반응도 없었다.');
       await era.printAndWait(
         '本来なら好みのはずの娘でも、今は体にわずかな反応すら起きない',
       );
@@ -2867,33 +2867,33 @@ module.exports = {
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' と一緒に食事がしたい',
+        '과 함께 밥을 먹고 싶어.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' と一緒にドライブがしたい',
+        '과 함께 드라이브를 가고 싶어.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' と一緒に夜景が見たい',
+        '과 함께 야경을 보고 싶어.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' と一緒にラブホテルへ入りたい',
+        '과 함께 러브 호텔에 들어가고 싶어.',
       ]);
       await era.printAndWait([
-        '徹底的に、内側から外側まで、完全に ',
+        '완전히, 안에서부터 밖까지, 전부 다 ',
         tachyon.get_colored_name(),
-        ' のものになりたい',
+        '의 색으로 물들고 싶어.',
       ]);
-      await era.printAndWait('そう想うほど、胸は軽くなり、楽になる');
+      await era.printAndWait('그런 생각을 하면 할수록, 마음은 더욱 가벼워졌고 편안해졌다.');
       era.println();
-      await tachyon.say_as_unknown_and_wait('ふふ……いい子、いい子ですわ');
+      await tachyon.say_as_unknown_and_wait('후후…… 착한 아이구나, 착한 아이야.');
       era.println();
       await era.printAndWait([
-        'こうして、',
+        '그리하여, ',
         you.get_colored_name(),
-        ' は本当の幸福を得た',
+        '은(는) 진정한 행복을 얻었다.',
       ]);
     };
     f.title = title;
