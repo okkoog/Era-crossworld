@@ -1806,16 +1806,16 @@ module.exports = {
         '이(가) 몸을 돌려 떠나려던 찰나',
       ]);
       era.println();
-      await tachyon.say_and_wait('ぐっ………！');
+      await tachyon.say_and_wait('읍………!');
       era.println();
-      await era.printAndWait([you.get_colored_name(), ' は強引に口づけられた']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 강제로 입맞춤을 당했다.']);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は抗おうとするが、人間は所詮',
+        '은(는) 저항하려 했지만, 인간은 결국 ',
         tachyon.uma_sex_title,
-        'の力に敵わない。薬で何度も改造された ',
+        '의 힘을 당해낼 수 없었다. 약물로 여러 번 개조된 ',
         you.get_colored_name(),
-        ' でも同じだ',
+        '일지라도 마찬가지였다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
@@ -1839,22 +1839,22 @@ module.exports = {
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の目標は————まだ飲み込んでいない、人を「消す」に足りる薬を、',
+        '의 목표는————입안에 머금고 있던, 사람을 「사라지게」 만들기에 충분한 그 약물을 ',
         you.get_colored_name(),
-        ' の口へ導くこと',
+        '의 입안으로 밀어 넣는 것이었다.',
       ]);
       era.println();
-      await you.say_and_wait('ぐっ……！ ううう………！！！');
+      await you.say_and_wait('꿀꺽……! 으으으………!!!');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は必死に抗い、体をよじるが、相手を止められない',
+        '은(는) 필사적으로 저항하며 몸을 뒤틀었으나, 상대의 행동을 막을 수는 없었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の徒労の抵抗の末、薬はそれでも ',
+        '의 헛된 저항 속에서, 약은 결국 ',
         you.get_colored_name(),
-        ' たち二人で分け尽くされた',
+        '들 두 사람에게 공평하게 나누어졌다.',
       ]);
       era.println();
       await you.say_and_wait('빌어먹을……!');
