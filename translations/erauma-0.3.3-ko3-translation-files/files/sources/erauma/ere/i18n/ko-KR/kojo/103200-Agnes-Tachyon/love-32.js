@@ -1333,18 +1333,18 @@ module.exports = {
       }
       await era.printAndWait([
         tachyon.sex,
-        'が完全に抗うのをやめてから、',
+        '가 완전히 저항을 포기한 뒤에야, ',
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'を離す',
+        '를 놓아주었다.',
       ]);
       era.println();
       await tachyon.say_and_wait([callname, '……']);
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'はまださっきの体験に沈み、我に返れていない',
+        '는 아직 조금 전의 일에서 헤어나오지 못한 듯 정신을 차리지 못하고 있었다.',
       ]);
       await era.printAndWait([
         '그리고 이 순간, ',
