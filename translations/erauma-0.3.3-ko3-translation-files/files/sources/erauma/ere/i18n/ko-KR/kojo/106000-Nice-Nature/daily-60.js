@@ -219,16 +219,16 @@ module.exports = {
   // [번역 대상] good_night_sex
   async good_night_sex(nature, you, callname, check) {
     era.print(
-      `忙しい一日が終わり、${you.name} は ${nature.name} を学生寮の前まで送る。`,
+      `바쁜 하루가 끝나고 ${you.name}은(는) ${nature.name}를 학생 기숙사 앞까지 배웅했다.`,
     );
     era.print(
-      `${you.name} がいつもどおり手を振って別れようとした瞬間、袖をナイスネイチャに掴まれた。`,
+      `${you.name}이(가) 평소처럼 손을 흔들며 작별하려던 찰나, 나이스 네이처가 갑자기 소매 끝을 붙잡았다.`,
     );
     era.print(
-      '下を見ると、夕陽のせいなのか、うつむくナイスネイチャの頬がやけに赤い。',
+      '고개를 숙여 보니 노을빛 때문인지 네이처의 얼굴이 평소보다 훨씬 붉게 물들어 있었다.',
     );
     era.print(
-      `短い沈黙のあと、赤毛の${nature.teen_sex_title}が、もじもじと口を開いて気まずさを破る。`,
+      `잠시 어색한 침묵이 흐른 뒤, 붉은 머리의 ${nature.teen_sex_title}가 머뭇거리며 입을 열었다.`,
     );
     nature.say(
       '今日……外泊届、出してあるから……だから……もう少し一緒にいても、いいんだよ？ その……もし……',
@@ -241,34 +241,34 @@ module.exports = {
         you.name
       } にはもうわかっていた。`,
     );
-    era.printButton('応じる', 1);
-    era.printButton('断る', 2, { disabled: check === 2 });
+    era.printButton('수락한다', 1);
+    era.printButton('거절한다', 2, { disabled: check === 2 });
     const ret = await era.input();
     if (ret === 1) {
-      nature.say('ほ、ほんと！');
+      nature.say('저, 정말?!');
       era.print(
-        `恥ずかしそうだったナイスネイチャの顔に、喜びが一気に広がる。${you.name} がもう一度確かめる暇もなく、腕に抱きつき、耳元で小さく囁いた。`,
+        `수줍어하던 네이처의 얼굴에 순식간에 기쁨과 설렘이 번졌다. ${you.name}이(가) 다시 확인할 틈도 없이 팔을 덥석 껴안고 귓가에 작게 속삭였다.`,
       );
       nature.say(
         `今夜のトレーニングも、よろしくね？ トレ・ー・ナ・ー・${you.adult_sex_title} ❤️`,
       );
       era.print(
-        `こうして ${
+        `그렇게 ${
           you.name
-        } はナイスネイチャに手を引かれ、下校中の${nature.uma_sex_title}たちに温かく見送られながら、通りの向こうへ歩いていった……`,
+        }은(는) 네이처에게 이끌려 기숙사 정문을 뒤로했다. 하교 중인 ${nature.uma_sex_title}들의 따뜻한 시선을 받으며 두 사람은 거리 반대편으로 향했다……`,
       );
     } else {
-      nature.say('そっか……そうだよね……');
+      nature.say('그렇구나…… 알겠어……');
       era.print(
-        `${nature.teen_sex_title}は袖を掴んでいた手を放し、隠しきれない寂しさを顔に浮かべる。`,
+        `${nature.teen_sex_title}는 붙잡고 있던 소매를 놓았고, 얼굴에는 감추기 힘든 실망감이 스쳐 지나갔다.`,
       );
       nature.say(
-        `うん、大丈夫。あたしもね、${callname}、今日あんなに疲れてるのに。ちゃんと休んだほうがいい。さっきのは聞かなかったことにして。おやすみ、${callname}、また明日！`,
+        `응, 괜찮아. 나도 참, ${callname}, 오늘 많이 피곤했을 텐데 눈치가 없었네. 방금 한 말은 못 들은 걸로 해 줘! 잘 자, ${callname}. 내일 봐!`,
       );
       era.print(
-        `寂しそうに去っていく${nature.teen_sex_title}の背中を見て、${
+        `쓸쓸히 멀어지는 ${nature.teen_sex_title}의 뒷모습을 보며 ${
           you.name
-        } の胸に言いようのない思いが残った。`,
+        }의 마음속에는 설명하기 어려운 묘한 기분이 맴돌았다.`,
       );
     }
     return ret;
