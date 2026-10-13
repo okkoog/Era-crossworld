@@ -347,11 +347,11 @@ module.exports = {
       ]);
       await tachyon.print_and_wait([you.sex, '의 모든 것이 자신을 매혹한다.']);
       await tachyon.print_and_wait([
-        'だから、',
+        '그래서, ',
         you.sex,
-        'が欲しい、',
+        '를 갈망하고, ',
         you.sex,
-        'が欲しい。',
+        '를 원했다.',
       ]);
       await tachyon.print_and_wait([
         you.sex,
@@ -406,7 +406,7 @@ module.exports = {
       await tachyon.print_and_wait(['ください、早くください。']);
       await tachyon.print_and_wait(['이제 달릴 가치조차 없는 나.']);
       await tachyon.print_and_wait([
-        '残っているのは、女としての価値だけでしょう。',
+        '남은 것이라고는 여자로서의 가치뿐이지 않은가.',
       ]);
       await tachyon.print_and_wait(['私を満たして。']);
       await tachyon.print_and_wait(['私を注ぎ込んで。']);
@@ -414,7 +414,7 @@ module.exports = {
         '텅 빈 내 마음을 당신의 사랑으로 넘칠 만큼 채워 줘.',
       ]);
       await tachyon.print_and_wait(['私を、あなただけの女にして。']);
-      await tachyon.print_and_wait(['そしてあなたも、私だけの……']);
+      await tachyon.print_and_wait(['그리고 자네 또한, 오직 나만의 것으로……']);
       era.println();
 
       await coffee.say_and_wait(['ん……あっ……', callname_25, '……お願い……']);
@@ -448,9 +448,9 @@ module.exports = {
         '부정하고 싶지만, 옆에서 벌어지는 현실이다.',
       ]);
       await tachyon.print_and_wait([
-        '……哀れな',
+        '……가엾게도 이 ',
         tachyon.uma_sex_title,
-        'が、頭の中で自分を当てはめるための現実。',
+        '는, 그 현실을 망상의 소재로 삼아 자신을 대입하고 있었다.',
       ]);
       era.println();
 
@@ -488,17 +488,17 @@ module.exports = {
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['幻覚の二人は、とても気持ちよさそうだ。']);
+      await tachyon.print_and_wait(['환각 속의 두 사람은 무척이나 기분 좋아 보였다.']);
       await tachyon.print_and_wait([
-        '自分も……',
+        '자신도…… ',
         you.couple_title,
-        'と同じように、気持ちよくなりたい。',
+        '들처럼 기분 좋아지고 싶었다.',
       ]);
       era.println();
 
       await tachyon.print_and_wait(['無意識に、手が下へ伸びる。']);
-      await tachyon.print_and_wait(['だめ……']);
-      await tachyon.print_and_wait(['いけない……']);
+      await tachyon.print_and_wait(['안 돼……']);
+      await tachyon.print_and_wait(['안 된다고……']);
       await tachyon.print_and_wait([
         '今あそこを触ったら、もう戻れない、という予感がある。',
       ]);
@@ -507,23 +507,23 @@ module.exports = {
         you.sex,
         'の女の睦まじさを妄想の材料にしたら。',
       ]);
-      await tachyon.print_and_wait(['もう戻れない……']);
-      await tachyon.print_and_wait(['だから……']);
-      await tachyon.print_and_wait(['だから、やめて……']);
+      await tachyon.print_and_wait(['두 번 다시 돌아갈 수 없게 될 것이었다……']);
+      await tachyon.print_and_wait(['그러니……']);
+      await tachyon.print_and_wait(['그만둬……']);
       era.println();
 
       await coffee.say_and_wait([callname_25, '……強く……もっと強く……愛して。']);
       era.println();
 
-      await tachyon.print_and_wait(['ああ……']);
-      await tachyon.print_and_wait(['もう、だめ。']);
+      await tachyon.print_and_wait(['아아……']);
+      await tachyon.print_and_wait(['더는 무리였다.']);
       await tachyon.print_and_wait(['隣室の嬌声が壁を伝って耳へ届いた瞬間。']);
       await tachyon.print_and_wait(['下からも、濁った液体が噴き出した。']);
       await tachyon.print_and_wait(['触れていないのに……']);
       await tachyon.print_and_wait(['我慢できていれば……']);
       era.println();
 
-      await tachyon.print_and_wait(['もう戻れない。']);
+      await tachyon.print_and_wait(['이제 돌아갈 수 없었다.']);
       await tachyon.print_and_wait([
         'さっき我慢した分を、一度に取り返すように。',
       ]);
