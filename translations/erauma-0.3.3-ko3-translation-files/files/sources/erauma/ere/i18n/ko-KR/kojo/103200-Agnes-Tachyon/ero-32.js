@@ -337,15 +337,15 @@ module.exports = {
       ]);
       await tachyon.print_and_wait([
         you.sex,
-        'の手、',
+        '의 손, ',
         you.sex,
-        'の眼、',
+        '의 눈, ',
         you.sex,
-        'の口、',
+        '의 입, ',
         you.sex,
-        'の肌。',
+        '의 피부.',
       ]);
-      await tachyon.print_and_wait([you.sex, 'のすべてが、自分を魅了する。']);
+      await tachyon.print_and_wait([you.sex, '의 모든 것이 자신을 매혹한다.']);
       await tachyon.print_and_wait([
         'だから、',
         you.sex,
@@ -359,7 +359,7 @@ module.exports = {
         you.sex,
         'に壊されたい。',
       ]);
-      await tachyon.print_and_wait(['どうせ……もう走れない体ですもの。']);
+      await tachyon.print_and_wait(['어차피…… 이제 달릴 수 없는 몸인걸.']);
       await tachyon.print_and_wait([
         'すべてを捨て、色に溺れたところで、何の問題がありましょう。',
       ]);
@@ -432,7 +432,7 @@ module.exports = {
         'の下にいる者が、一瞬で姿を入れ替わる。',
       ]);
       await tachyon.print_and_wait([
-        '黒髪に金色の瞳。変わらないのは、眼に満ちた愛情だけ。',
+        '검은 머리와 금빛 눈동자. 변하지 않은 것은 눈에 담긴 애정뿐이었다.',
       ]);
       era.println();
 
@@ -445,7 +445,7 @@ module.exports = {
         'は、先刻の自分相手より興奮している。',
       ]);
       await tachyon.print_and_wait([
-        '否定したいが、これは隣で起きている現実だ。',
+        '부정하고 싶지만, 옆에서 벌어지는 현실이다.',
       ]);
       await tachyon.print_and_wait([
         '……哀れな',
@@ -462,29 +462,29 @@ module.exports = {
       era.println();
 
       await tachyon.print_and_wait([
-        '無意識に漏れた懇願まで、声を潜めてしまう。',
+        '무의식중에 흘러나온 간청마저 목소리를 낮추고 만다.',
       ]);
-      await tachyon.print_and_wait(['隣の睦まじい二人に聞かれたくない。']);
+      await tachyon.print_and_wait(['옆방의 다정한 두 사람에게 들키고 싶지 않다.']);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' が、どれほど哀れな',
+        '이(가) 얼마나 가엾은 ',
         tachyon.uma_sex_title,
-        'か、知られたくない。',
+        '인지 알려지고 싶지 않다.',
       ]);
       era.println();
 
-      await tachyon.print_and_wait([you.couple_title, 'こそ、釣り合う。']);
+      await tachyon.print_and_wait([you.couple_title, '야말로 서로 어울린다.']);
       await tachyon.print_and_wait([
         you.couple_title,
-        'こそ、いちばん相応しい。',
+        '가 가장 잘 어울린다.',
       ]);
       await tachyon.print_and_wait([
-        '優しいトレーナーと、その人と愛を育み、夢を叶える',
+        '상냥한 트레이너와, 그와 사랑을 키우며 꿈을 이루는 ',
         tachyon.uma_sex_title,
-        '。',
+        '.',
       ]);
       await tachyon.print_and_wait([
-        'それに比べれば、自分の存在は第三者に近い。',
+        '그에 비하면 자신은 제삼자나 다름없다.',
       ]);
       era.println();
 
