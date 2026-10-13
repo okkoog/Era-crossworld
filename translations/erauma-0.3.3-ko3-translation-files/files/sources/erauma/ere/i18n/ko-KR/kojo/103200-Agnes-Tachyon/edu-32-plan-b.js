@@ -689,7 +689,7 @@ module.exports = {
       await era.printAndWait([
         '말을 마치자마자 ',
         tachyon.sex,
-        'は ',
+        '는 ',
         you.get_colored_name(),
         '의 대답도 기다리지 않고 탈의실 문을 밀고 들어왔다.',
       ]);
@@ -709,7 +709,7 @@ module.exports = {
       await era.printAndWait([
         '놀리는 듯한 말투였지만 ',
         you.get_colored_name(),
-        ' には',
+        '에게는 ',
         tachyon.sex,
         '가 무언가 할 말이 있어 보였다.',
       ]);
@@ -722,7 +722,7 @@ module.exports = {
       await tachyon.say_and_wait([
         '정확히는 경주 ',
         tachyon.uma_sex_title,
-        'の ',
+        '인 ',
         tachyon.get_colored_name(),
         '을(를) 모른다는 뜻일세.',
       ]);
@@ -741,9 +741,9 @@ module.exports = {
       ]);
       if (win_prix_lat) {
         await era.printAndWait([
-          'だが競走',
+          '하지만 경주 ',
           tachyon.uma_sex_title,
-          'の ',
+          '인 ',
           tachyon.get_colored_name(),
           '을(를) 모른다니…… 세계 정상인 개선문상을 제패한 ',
           tachyon.uma_sex_title,
@@ -751,9 +751,9 @@ module.exports = {
         ]);
       } else {
         await era.printAndWait([
-          'だが競走',
+          '하지만 경주 ',
           tachyon.uma_sex_title,
-          'の ',
+          '인 ',
           tachyon.get_colored_name(),
           '을(를) 모른다는 건 이 세상에서 확실히 드문 일이다.',
         ]);
@@ -768,7 +768,7 @@ module.exports = {
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
         '이(가) 말을 이어 가기를 기다렸다.',
       ]);
@@ -807,7 +807,7 @@ module.exports = {
           '이(가) 제시한 가능성을 거절했다.',
         ]);
         await era.printAndWait([
-          'あのときの',
+          '그때의 ',
           tachyon.sex,
           '은(는) 도망치기 위해 레이스장을 떠나려 했기 때문이다.',
         ]);
