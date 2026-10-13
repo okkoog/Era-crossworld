@@ -1778,168 +1778,168 @@ module.exports = {
         era.printButton(`「어째서…… 여기에 있는 거야……」`, 1);
         await era.input();
         await era.printAndWait(
-          `${treve.name} は凄い脚力で ${you.name} へ突進する。${treve.sex}の頭が槍のように ${you.name} の腹へ刺さり、肺が潰れるようだ。`,
+          `${treve.name}는 엄청난 각력으로 ${you.name}에게 돌진했다. ${treve.sex}의 머리가 창처럼 ${you.name}의 복부에 박혔고, 폐가 으스러지는 듯했다.`,
         );
-        await era.printAndWait(`痛い。かなり痛い。`);
-        await era.printAndWait(`骨まで届く痛みが神経を刺激する。`);
+        await era.printAndWait(`아프다, 엄청나게 아프다.`);
+        await era.printAndWait(`뼈를 찌르는 듯한 통증이 신경을 자극했다.`);
         await era.printAndWait(
-          `${treve.name} は ${you.name} の腹に抱きつき、${treve.sex}は——`,
+          `${treve.name}은(는) ${you.name}의 배를 껴안은 채, ${treve.sex}는——`,
         );
-        await era.printAndWait(`泣いた。`);
+        await era.printAndWait(`울고 있었다.`);
         await era.printAndWait(
-          `サファイアのような美しい目が歪み、裂けそうに眉を寄せる。`,
+          `그 사파이어처럼 아름다운 눈동자가 일그러졌고, 찢어질 듯 미간을 찌푸리고 있었다.`,
         );
         await treve.say_and_wait(
-          `トレーナーのばか！Stupide idiot.Pourquoi dis-tu des choses aussi horribles！（大ばか！どうしてそんなひどいことを！）`,
+          `트레이너 바보! Stupide idiot. Pourquoi dis-tu des choses aussi horribles! (진짜 바보! 어째서 그렇게 심한 말을 하는 건가요!)`,
         );
-        era.printButton(`「待って！何を言ってるか分からない！——」`, 1);
+        era.printButton(`「잠깐만! 무슨 말을 하는!——」`, 1);
         await era.input();
         await era.printAndWait(
-          `${treve.name} はそのまま ${you.name} の腕の中で泣く。`,
+          `${treve.name}는 그대로 ${you.name}의 품 안에서 울었다.`,
         );
         await era.printAndWait(
-          `勝手に飛びかかって傷ついたのは ${you.name} なのに、${treve.sex}が泣いている。`,
+          `멋대로 뛰어들어 피해를 입은 건 ${you.name}인데, 정작 우는 건 ${treve.sex}였다.`,
         );
         await era.printAndWait(
-          `当然だ。${you.name} が${treve.sex}の心を傷つけた。`,
+          `물론, ${you.name}의 마음에 상처를 준 것은 ${treve.sex}(이)다.`,
         );
         await era.printAndWait(
-          `場内を片付けようとする職員が来る。驚いてこちらを一目見る。`,
+          `경기장 정리를 준비하던 직원이 다가와 놀란 표정으로 두 사람을 바라보았다.`,
         );
         await era.printAndWait(
-          `きっと狂った娘と悪い男、カップルの喧嘩だと思ったのだろう。`,
+          `아마도 미친 여자애와 나쁜 남자의 치정 싸움 정도로 여겨졌겠지.`,
         );
-        await era.printAndWait(`その人はすぐ視線を逸らし、仕事へ戻る。`);
+        await era.printAndWait(`그 사람은 곧바로 시선을 돌려 자신의 업무로 돌아갔다.`);
         await era.printAndWait(
-          `イルミネーションが競馬場を飾り、そんな場所であなたたちはしゃがむ。`,
+          `일루미네이션이 경기장을 수놓은 가운데 두 사람은 바닥에 주저앉아 있었다.`,
         );
         await treve.say_and_wait(
-          `私がどんな気持ちでここに立ってるか分かってるの！迎えに来るなら早く来て！`,
+          `제가 어떤 마음으로 여기에 서 있었는지 알기나 하나요! 저를 마중 나올 거라면 빨리 왔어야죠!`,
         );
-        era.printButton(`「え！？待ち伏せしたのは君のほう——」`, 1);
+        era.printButton(`「어!? 네가 날 매복해서 기다린 게——」`, 1);
         await era.input();
         await treve.say_and_wait(
-          `うるさい、うるさい！言い訳は聞きたくない、ばか！`,
+          `시끄러워요, 시끄러워요! 당신의 변명 따위 듣고 싶지 않아요, 이 바보!`,
         );
-        era.printButton(`「えええ？」`, 1);
+        era.printButton(`「어어어?」`, 1);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は本当に',
+          '은(는) 정말로 ',
           treve.uma_sex_title,
-          '特有の怪力で抱き潰されそうになり、',
+          ' 특유의 괴력에 안겨 으스러질 것 같아, ',
           treve.get_colored_name(),
-          ' の背を軽く叩く。',
+          '의 등을 가볍게 토닥였다.',
         ]);
         await era.printAndWait(
-          `『abandonne』（諦めろ）と言ったのに、${treve.name} は少しも離れようとしない。痛哭する${treve.sex}は、かえって力を強める。`,
+          `분명 『abandonne-포기해』라고 말했는데도, ${treve.name}는 조금도 떨어지려 하지 않았다. 통곡하는 ${treve.sex}는 오히려 힘이 더 강해졌다.`,
         );
         await era.printAndWait(
-          `自作自受なのかもしれない…………だが肋骨が本当に折れそうだ。`,
+          `이것이 자업자득이라는 걸까………… 하지만 갈비뼈가 정말로 부러질 것 같다.`,
         );
-        await treve.say_and_wait(`どうなの？`);
-        era.printButton(`「？」`, 1);
+        await treve.say_and_wait(`어떤가요?`);
+        era.printButton(`「?」`, 1);
         await era.input();
-        await treve.say_and_wait(`私を愛してるの！？愛してないの！？`);
-        era.printButton(`「そういう問題じゃない——」`, 1);
+        await treve.say_and_wait(`저를 사랑하나요!? 사랑하지 않나요!?`);
+        era.printButton(`「그렇게 말할 문제가 아니잖아——」`, 1);
         await era.input();
-        await treve.say_and_wait(`そういう問題よ！`);
-        era.printButton(`「愛していなければ、こんなに困らない。」`, 1);
-        era.printButton(`「好きだから、困ってるんだ！」`, 2);
+        await treve.say_and_wait(`바로 그런 문제예요!`);
+        era.printButton(`「사랑하지 않았다면, 이렇게 곤란해하지도 않았어.」`, 1);
+        era.printButton(`「너를 좋아하니까 곤란한 거잖아!」`, 2);
         await era.input();
-        await era.printAndWait(`${treve.name} は水を得た魚のようだ。`);
+        await era.printAndWait(`${treve.name}는 마치 물 만난 물고기 같았다.`);
         await treve.say_and_wait(
-          `じゃあ早く結婚式を！婚約して、指輪も買って……『師匠』もきっと祝福してくれる！`,
+          `그럼 빨리 결혼식을 올려요! 약혼하고, 반지도 사야 하고…… 『스승님』도 분명 우리를 축복해 주실 거예요!`,
         );
         await treve.say_and_wait(
-          `フランスなら教会でしょう？日本でもいい。真っ白な服で寺の前で愛を誓うわ！`,
+          `프랑스에서 한다면 교회겠죠? 일본에서도 괜찮아요, 새하얀 옷을 입고 절 앞에서 사랑을 맹세하는 거예요!`,
         );
-        era.printButton(`「寺じゃない、神社だ。」`, 1);
+        era.printButton(`「절이 아니라 신사라고 하는 거야.」`, 1);
         await era.input();
         await era.printAndWait(
-          `${you.name} は独り盛り上がる ${treve.name} を止めるため、${treve.sex}の肩を掴む。`,
+          `${you.name}은(는) 혼자 신난 ${treve.name}를 말리기 위해 ${treve.sex}의 어깨를 붙잡았다.`,
         );
-        await treve.say_and_wait(`大胆ね……`);
-        await treve.say_and_wait(`外でなんて……でもあなたなら——`);
-        era.printButton(`「変なことを言うな！結婚の話などしていない！」`, 1);
+        await treve.say_and_wait(`정말 대담하시네요…`);
+        await treve.say_and_wait(`밖에서 이러다니…… 하지만 당신이라면——`);
+        era.printButton(`「이상한 소리 하지 마! 난 결혼 얘기 같은 건 한 적 없어!」`, 1);
         await era.input();
-        await treve.say_and_wait(`つまり先に恋人になるってことね。感動した！`);
+        await treve.say_and_wait(`즉 일단은 연인이 되자는 뜻이군요, 정말 감동했어요!`);
         await treve.say_and_wait(
           `주변 사람들도 분명 이해하고 받아들여 줄 거야! 그렇지 않으면 아이가 정말 고통받을 거야!`,
         );
-        era.printButton(`「私はヨーロッパ人じゃない。」`, 1);
+        era.printButton(`「난 유럽인도 아닌걸.」`, 1);
         await era.input();
-        await treve.say_and_wait(`人種がそんなに大事なの！？`);
-        era.printButton(`「大事だろう！？」`, 1);
+        await treve.say_and_wait(`인종이 그렇게 중요한가요!?`);
+        era.printButton(`「중요하잖아!?」`, 1);
         await era.input();
         await treve.say_and_wait(
-          `私はあなたの人種や容貌を見て恋したんじゃない。心に恋したの！`,
+          `저는 당신의 인종과 외모를 보고 사랑에 빠진 게 아니에요, 당신의 마음에 사랑에 빠진 거라고요!`,
         );
         await treve.say_and_wait(
-          `アジア人？だから何？騒ぐ人には『うるさい』と大声で言うわ！誰も私たちを邪魔できない！`,
+          `아시아인? 그래서요, 어쨌다는 건가요? 떠들어대는 사람들에겐 『시끄러워』라고 소리쳐 줄 거예요! 누구도 우리를 방해할 순 없어요!`,
         );
-        await treve.say_and_wait(`勝手に私の価値を決めないで！`);
+        await treve.say_and_wait(`멋대로 제 가치를 결정하지 마세요!`);
         await treve.say_and_wait(
-          `私の価値は私が決める。将来も！自惚れてくれない？あなたと結婚しても、私は何も変わらない。鬱陶しいことを言う人がいたら、頭を捻じ切る！`,
+          `제 가치는 제가 결정해요, 앞으로도 계속! 자만하지 마세요! 당신과 결혼한다고 해도, 저는 아무것도 변하지 않아요! 만약 누군가 성가신 소리를 한다면, 그 녀석의 머리를 비틀어 버릴 거예요!`,
         );
-        era.printButton(`「それは少し……」`, 1);
-        era.printButton(`「そこまでは……」`, 2);
+        era.printButton(`「그건 좀……」`, 1);
+        era.printButton(`「그럴 필요까지는……」`, 2);
         await era.input();
         await era.printAndWait(
-          `そうして、泣き腫らした顔のまま、それでも ${treve.name} は気高く立つ。`,
+          `그러자, 비록 울어서 부은 얼굴이었지만, 그럼에도 ${treve.name}는 고귀하게 일어섰다.`,
         );
         await era.printAndWait(
-          `化粧を落としても、${treve.sex}は美しい。夜を聖く照らす月のようだ。`,
+          `화장이 지워졌어도, ${treve.sex}는 여전히 아름다웠다. 마치 밤을 신성하게 비추는 달 같았다.`,
         );
         await treve.say_and_wait(
-          `私は天才の${treve.uma_sex_title}よ！大抵のことは fermez-la で済む！`,
+          `저는 천재 ${treve.uma_sex_title}예요! 대부분의 일은 fermez-la 라고 할 수 있다고요!`,
         );
-        era.printButton(`「君を煩わせたくない。」（好感+10、恋慕+1）`, 1);
-        era.printButton(`「分かってくれ……」`, 2);
+        era.printButton(`「널 힘들게 하고 싶지 않아.」 (호감+10, 애정도+1)`, 1);
+        era.printButton(`「이해해 줬으면 해……」`, 2);
         ret.push(await era.input());
         await treve.say_and_wait(
-          `分からない、まったく分からない！好きなら、私を喜ばせて！いっしょにいるって言ったのよ！私を幸せにできるのはあなただけだって！`,
+          `모르겠어요, 전혀 모르겠어요! 저를 좋아한다면, 저를 기쁘게 해주세요! 저는 당신과 함께 있겠다고 했어요! 저를 행복하게 해줄 수 있는 건 당신뿐이라고 했다고요!`,
         );
         era.printButton(
-          `「『幸せにできるのはあなただけ』……それが求婚だろう！」`,
+          `「『행복하게 해줄 수 있는 건 당신뿐』이라니…… 그거 프러포즈잖아!」`,
           1,
         );
         await era.input();
-        await treve.say_and_wait(`さっきのは違う！いまのが求婚よ！`);
-        era.printButton(`「わけが分からない！」`, 1);
+        await treve.say_and_wait(`아까 건 아니에요! 지금 게 프러포즈라고요!`);
+        era.printButton(`「영문을 모르겠네!」`, 1);
         await era.input();
-        await treve.say_and_wait(`わけが分からないくらい、好きなの！`);
+        await treve.say_and_wait(`영문을 모를 정도로 당신을 좋아해요!`);
         await era.printAndWait(
-          `互いの叫びが東京の夜の一角に響く。どちらも息が上がっているが、目は逸らさない。`,
+          `서로의 외침이 도쿄 밤의 한구석에 울려 퍼졌다. 서로 숨을 헐떡이면서도 시선은 피하지 않았다.`,
         );
         await treve.say_and_wait(
-          `心のどこかで、ずっとあなたを追ってた！考えないようにしても、できなかった！トレーナーと話した日々、あの記憶が録画みたいにループするの！`,
+          `저는 마음속 어딘가에서 줄곧 당신을 쫓고 있었어요! 당신을 생각하지 않으려고 해봤지만, 역시 무리였어요! 트레이너와 이야기를 나누던 나날들, 그 기억들이 마치 녹화된 것처럼 반복 재생되고 있다고요!`,
         );
-        era.print(`${you.name} も……`);
-        era.printButton(`「ずっと君を想っていた。」`, 1);
-        era.printButton(`「ずっと忘れられなかった……」`, 2);
+        era.print(`${you.name} 역시……`);
+        era.printButton(`「계속 널 생각했어.」`, 1);
+        era.printButton(`「계속 잊지 못했어……」`, 2);
         await era.input();
-        await treve.say_and_wait(`なら！`);
+        await treve.say_and_wait(`그렇다면!`);
         await era.printAndWait(
-          `${treve.name} は膝から ${you.name} へ寄り、${you.name} の胸倉を掴む。`,
+          `${treve.name}는 무릎걸음으로 ${you.name}에게 다가가, ${you.name}의 멱살을 쥐었다.`,
         );
         await era.printAndWait(
-          `美女に驚かされると怖いというのは、本当らしい。`,
+          `미녀에게 위협당하면 무섭다는 것은 사실인 듯했다.`,
         );
         await era.printAndWait(
-          `${treve.sex}のフランス系の端正な貌が至近まで迫る。${treve.name} は ${you.name} に口を開く。${treve.sex}の怒号が大井競馬場の前に響く。`,
+          `${treve.sex}의 프랑스계 단정한 외모가 지근거리까지 다가왔다. ${treve.name}는 ${you.name}을(를) 향해 입을 열었다. ${treve.sex}의 분노 어린 외침이 오이 경기장 앞에 울려 퍼졌다.`,
         );
-        await treve.say_and_wait(`あなた、ばか。`);
-        era.printButton(`「ばかじゃない」`, 1);
+        await treve.say_and_wait(`이 바보.`);
+        era.printButton(`「난 바보가 아니야」`, 1);
         await era.input();
         await treve.say_and_wait(
-          `いいえ、ばか！弱くてもいい……情けなければ手を携えて支えればいい。あなたが責任を捨てないなら、私はなおさら捨てられない。`,
+          `아니요, 바보예요! 나약해도 상관없어요…… 변변치 않다면 손을 맞잡고 지탱해 주면 되는 거예요. 당신은 책임을 회피하지 않았고, 저는 더더욱 포기할 수 없어요.`,
         );
         await treve.say_and_wait(
-          `トレーナーと${treve.uma_sex_title}の関係は対等よ。私たちは全力で走り、トレーナーは導く。欠けてはならない夫婦みたいなもの。`,
+          `트레이너와 ${treve.uma_sex_title}의 관계는 대등해요. 우리는 전력으로 달리고, 트레이너는 이끌어주죠. 마치 어느 한쪽이라도 없어서는 안 될 부부처럼요.`,
         );
         await treve.say_and_wait(
-          `だから……くっ、しっ、私たちは引き合うのよ、違う？`,
+          `그러니까…… 읏, 훌쩍, 우리가 서로 끌리게 된 거잖아요, 안 그런가요?`,
         );
         await era.printAndWait(
           `${you.name} は自分より十歳若い${treve.child_sex_title}を泣かせてしまった。`,
