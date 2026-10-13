@@ -216,7 +216,7 @@ module.exports = {
     );
   },
 
-  // [번역 대상] good_night_sex
+  // [번역 완료] good_night_sex
   async good_night_sex(nature, you, callname, check) {
     era.print(
       `바쁜 하루가 끝나고 ${you.name}은(는) ${nature.name}를 학생 기숙사 앞까지 배웅했다.`,
@@ -250,7 +250,7 @@ module.exports = {
         `수줍어하던 네이처의 얼굴에 순식간에 기쁨과 설렘이 번졌다. ${you.name}이(가) 다시 확인할 틈도 없이 팔을 덥석 껴안고 귓가에 작게 속삭였다.`,
       );
       nature.say(
-        `今夜のトレーニングも、よろしくね？ トレ・ー・ナ・ー・${you.adult_sex_title} ❤️`,
+        `오늘 밤 훈련도 잘 부탁해, 트·레·이·너 ${you.adult_sex_title} ❤️`,
       );
       era.print(
         `그렇게 ${
