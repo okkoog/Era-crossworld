@@ -6686,84 +6686,84 @@ module.exports = {
         case 5:
           await era.printAndWait([
             you.get_colored_name(),
-            ' は飲んだあと、全身が光り始めた。',
+            '이(가) 약을 마시자 전신에서 갑자기 빛이 나기 시작했다. ',
             you.get_colored_name(),
-            ' は少し恐れたが、',
+            '은(는) 당황했으나, ',
             tachyon.get_colored_name(),
-            ' は相変わらず興奮していた',
+            '은 여전히 흥분한 기색이었다.',
           ]);
           era.println();
-          await tachyon.say_and_wait('早く、服を脱ぎなさい');
+          await tachyon.say_and_wait('빨리, 옷을 벗어.');
           era.println();
-          await era.printAndWait(['この人は何を言っている！？']);
+          await era.printAndWait(['이 녀석이 대체 무슨 소릴 하는 거지!?']);
           await era.printAndWait([
-            '変態か！？ トレセンで流行りの嫌がらせか！？',
+            '변태인가!? 요즘 트레센에서 유행하는 그 치한인가!?',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は慌てて服を掴んだ。だが人間は',
+            '은(는) 서둘러 제 옷을 여몄으나, 인간은 끝내 ',
             tachyon.uma_sex_title,
-            'の力に敵わない。三秒の抵抗のあと、引っ張られて服は裂けた',
+            '의 힘을 이길 수 없었다. 3초간 저항했지만 결국 옷이 갈기갈기 찢어지고 말았다.',
           ]);
           era.println();
           await era.printAndWait([
-            '抗えない ',
+            '저항할 힘을 잃은 ',
             you.get_colored_name(),
-            ' は目を閉じた。抗えないなら楽しむしかない。さあ、か弱い花だと思って手加減するな！',
+            '은(는) 두 눈을 감았다. 반항할 수 없다면 즐기는 수밖에 없으니... 오라, 나를 가련한 꽃처럼 아껴주지 마라!',
           ]);
           era.println();
-          await tachyon.say_and_wait('…………なるほど、なるほどですわ');
+          await tachyon.say_and_wait('...과연, 그렇군 그렇군.');
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' が待っていたことは、いつまでも起きなかった。そっと目を開けると、',
+            '이(가) 기대했던 일은 아무리 기다려도 일어나지 않았다. 슬며시 눈을 뜨자, ',
             tachyon.get_colored_name(),
-            ' は ',
+            '이 ',
             you.get_colored_name(),
-            ' の身体を見つめ、呟きながら記録帳に何か書いていた',
+            '의 몸을 빤히 들여다보며 무언가를 기록장에 적고 있는 모습이 보였다.',
           ]);
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は自分の身体に視線を戻した。たしかに光っている。だが光る部位には一定の規則があり、まるで…………',
+            '이(가) 자신의 몸을 보니 정말로 빛이 나고 있었는다. 그 부위들이 일정한 규칙성을 띠고 있었다. 그것은 마치...',
           ]);
           era.println();
           if (you.race > 0) {
-            await tachyon.say_and_wait('具体的には、こう動いていたのですわ……');
+            await tachyon.say_and_wait('원래 구체적으로 이렇게 작동하는 거였군...');
           } else {
             await tachyon.say_and_wait(
-              `人間の身体は、具体的にはこう動いていたのですわ……ですが……${tachyon.uma_sex_title}との違いが…………`,
+              `인간의 몸은 구체적으로 이렇게 작동하는군…… 하지만 ${tachyon.uma_sex_title}와의 차이가……`,
             );
           }
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             tachyon.get_colored_name(),
-            ' の独り言を聞き、これも',
+            '의 혼잣말을 듣고서야, 이것이 역시나 ',
             tachyon.uma_sex_title,
-            'の神秘を探る実験だと察した',
+            '의 신비를 파헤치기 위한 실험이었음을 깨달았다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は、浅はかな想像を少し恥ずかしく思った',
+            '은(는) 자신의 천박한 착각에 조금 부끄러움을 느꼈다.',
           ]);
           era.println();
           await tachyon.say_and_wait([
-            'よろしい、今日の観察はここまでですわ。戻って実験します。',
+            '좋아, 오늘 관찰은 여기까지 하지. 난 먼저 실험하러 갈 테니, ',
             callname,
-            '、服を着なさい！',
+            ', 자네는 잊지 말고 옷을 좀 챙겨 입어!',
           ]);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は記録を終え、急いでトレーナー室を出て、',
+            '은 기록을 마치고 쏜살같이 트레이닝실을 나갔다. 트레이닝실에는 ',
             you.get_colored_name(),
-            ' 一人を残した',
+            '혼자만이 남겨졌다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は床の、もはや服とは呼べない破片を見て、夜にまぎれて帰るか、同僚に服を頼むか考えた',
+            '은(는) 바닥에 굴러다니는, 옷이라고 부를 수조차 없는 누더기 조각들을 보며, 어둠을 틈타 집으로 도망쳐야 할지 아니면 동료에게 옷을 좀 빌려달라고 부탁해야 할지 고민했다.',
           ]);
       }
     };
