@@ -2153,83 +2153,83 @@ module.exports = {
       );
       await era.printAndWait(['밤색 털의 ', tachyon.uma_sex_title, '가 말했다.']);
       await era.printAndWait([
-        'このとき ',
+        '그제야 ',
         you.get_colored_name(),
-        ' はやっと、自分がまだ床に寝ていることに気づき、急いで起き上がる',
+        '은(는) 자신이 여전히 바닥에 누워 있었다는 것을 깨닫고 서둘러 몸을 일으켰다',
       ]);
-      era.printButton(`「${you.actual_name}だ。トレーナーをしている」`, 1);
+      era.printButton(`「나는 ${you.actual_name}, 트레이너야.」`, 1);
       await era.input();
       await tachyon.say_as_unknown_and_wait(
-        '…………おや？ ではトレーナー君、ここで寝ているのは、何のご用ですの',
+        '…………호오? 그렇다면 트레이너 군, 자네가 여기에 누워 있는 것에는 어떤 용건이 있는 건가?',
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、ここに横たわる前に何をしていたか思い出そうとするが、どうしても出てこない',
+        '은(는) 이곳에 쓰러지기 전 자신이 무엇을 하고 있었는지 떠올리려 했지만 아무것도 기억나지 않았다.',
       ]);
       era.println();
       await tachyon.say_as_unknown_and_wait(
-        '…………思い出せなくても結構ですわ。なぜか私も記憶を失ったようで、さっきまで何をしていたか思い出せません……',
+        '…………기억나지 않는다면 관두게나. 왠지 나도 기억을 잃은 것처럼, 이전에 무엇을 하고 있었는지 기억나지 않는군……',
       );
       await tachyon.say_as_unknown_and_wait([
-        'まあ、その話は置いておきましょう。とにかく、私は ',
+        '뭐, 됐네. 그 이야기는 접어두고, 어쨌든 내 이름은 ',
         tachyon.get_colored_name(),
-        '。トレーナー君、よろしくですわ',
+        '이라네. 트레이너 군, 잘 부탁하네',
       ]);
       era.println();
       await era.printAndWait([tachyon.get_colored_name()]);
       await era.printAndWait([
-        '奇妙な名前だ……まあ、',
+        '참으로 이상한 이름이군…… 뭐, 애초에 ',
         tachyon.uma_sex_title,
-        'の名前は大概こういうものだ。他人の名前を差別してもよくない',
+        '들의 이름은 대부분 그런 식이니 타인의 성명을 차별하는 건 좋지 않겠지',
       ]);
       await era.printAndWait([
-        'だがなぜか、直感が ',
+        '하지만 어째서인지 직감이 ',
         you.get_colored_name(),
-        ' に告げる。眼前のこの',
+        '에게 경고하고 있었다. 눈앞의 이 ',
         tachyon.uma_sex_title,
-        'とは距離を置け、と',
+        '와는 거리를 두어야 한다고',
       ]);
       era.println();
       era.printButton(
-        `「では、今日はここまでに。実験室に入り込んでしまい、大変申し訳ありません。後日、改めてお詫びします、${tachyon.name} さん」`,
+        `「그럼, 오늘은 여기까지 하자. 실험실에 마음대로 들어와서 정말 미안했어. 나중에 다시 정식으로 사과하러 올게. ${tachyon.name} 양」`,
         1,
       );
       await era.input();
       await tachyon.say_and_wait(
-        '…………いいえ、結構ですわ。所詮、二人が同時に記憶を失うなど……',
+        '…………아니, 그럴 필요 없네. 애당초 두 사람이 동시에 기억을 잃는다는 건……',
       );
       await tachyon.say_and_wait(
-        'まあ、これでいいでしょう。あとからわざわざ来る必要もありませんわ、トレーナー君',
+        '됐네, 없던 일로 하지. 앞으로 딱히 찾아올 필요도 없네, 트레이너 군.',
       );
       era.println();
       await era.printAndWait([
-        'こうして、',
+        '그렇게, ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の実験室を出た',
+        '의 실험실을 떠났다',
       ]);
       await era.printAndWait([
-        '扉を出る前、',
+        '문을 나서기 직전, ',
         you.get_colored_name(),
-        ' は不意に振り返る',
+        '은(는) 문득 뒤를 돌아보았다',
       ]);
       era.println();
-      await tachyon.say_and_wait('ん？ トレーナー君、まだ何か？');
+      await tachyon.say_and_wait('음? 트레이너 군, 무슨 일이라도 남았나?');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' には予感がある。この扉を出たら、たぶん、もうこの',
+        '은(는) 예감이 들었다. 만약 지금 이 문을 나선다면, 아마 다시는 이 ',
         tachyon.uma_sex_title,
-        'と交わることはない、と',
+        '와 엮일 일은 없을 것이라고',
       ]);
       era.println();
-      await you.say_and_wait('なんでもない。気のせいだろう');
+      await you.say_and_wait('아무것도 아니야. 내 착각이었나 봐.');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は実験室の扉を出る。今度は、まったく躊躇しなかった',
+        '은(는) 실험실 문을 나섰다. 이번에는 일말의 망설임도 없었다',
       ]);
     };
     f.title = title;
