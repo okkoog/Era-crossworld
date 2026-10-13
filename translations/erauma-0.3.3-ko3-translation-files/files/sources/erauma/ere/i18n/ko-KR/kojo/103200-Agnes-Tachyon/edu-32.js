@@ -1579,11 +1579,11 @@ module.exports = {
         await tachyon.say_and_wait('이런이런, 설마 누가 질투라도 하는 건가?');
         era.println();
         await era.printAndWait([
-          '何か勘違いしたのか、',
+          '무언가 착각한 것인지, ',
           tachyon.get_colored_name(),
-          ' は突然 ',
+          '은(는) 갑자기 ',
           you.get_colored_name(),
-          ' に身体を寄せた',
+          '에게 몸을 바싹 붙였다.',
         ]);
         await era.printAndWait([
           tachyon.sex,
@@ -1619,9 +1619,9 @@ module.exports = {
         }
         await era.printAndWait([
           tachyon.sex,
-          'はくっくと笑い、',
+          '는 쿡쿡 웃으며 ',
           you.get_colored_name(),
-          ' を離し、一人で競馬場へ歩いていった',
+          '을(를) 놓아주고 혼자 경기장으로 걸어갔다.',
         ]);
       }
       era.printButton(
