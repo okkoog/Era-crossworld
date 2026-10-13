@@ -1688,7 +1688,7 @@ module.exports = {
       await tachyon.say_and_wait('……기자회견이 곧 시작될 걸세.');
       era.println();
       await era.printAndWait([
-        '상반기 최강',
+        '상반기 최강 ',
         tachyon.uma_sex_title,
         '의 총결산이니, 이런 레이스에 기자들이 몰리지 않을 리 없다.',
       ]);
@@ -6029,7 +6029,7 @@ module.exports = {
           '가 되는 것은 아니다.',
         ]);
         await era.printAndWait([
-          '경주',
+          '경주 ',
           tachyon.uma_sex_title,
           '였다 하더라도 경기장이 아닌 다른 길을 걷는 것을 선택할 수 있다.',
         ]);
