@@ -1655,7 +1655,7 @@ module.exports = {
       );
       era.printButton('「다음에는 『텐노상 (가을)』에 도전해 볼래?」', 1);
       await era.input();
-      await nature.say_and_wait('『天皇賞（秋）』……！');
+      await nature.say_and_wait('『천황상(가을)』……!');
       await nature.say_and_wait('내가…… 역사와 전통이 있는 『텐노상』에?');
       await nature.say_and_wait('……안 돼, 안 돼. 내가 왜 주눅 드는 거야.');
       await nature.say_and_wait(
