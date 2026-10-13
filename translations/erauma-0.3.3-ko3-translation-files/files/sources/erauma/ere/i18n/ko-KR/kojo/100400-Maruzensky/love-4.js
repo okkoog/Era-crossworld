@@ -786,7 +786,7 @@ module.exports = {
     await maru.say_and_wait([
       callname,
       '은(는) 이렇게 멋진 ',
-      maru.sex_code === 1 ? '彼氏' : '彼女',
+      maru.sex_code === 1 ? '남자친구' : '여자친구',
       '을(를) 독차지하고 싶은 거지♪ 흥흥.',
     ]);
     await era.printAndWait(
