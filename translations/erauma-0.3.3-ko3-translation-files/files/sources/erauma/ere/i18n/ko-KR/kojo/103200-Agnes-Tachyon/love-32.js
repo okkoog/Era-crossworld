@@ -1101,7 +1101,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 74-accept
+  // [번역 완료] 74-accept
   '74-accept': (() => {
     const title = '초광속의 공주';
     /**
@@ -1268,67 +1268,67 @@ module.exports = {
           break;
         case 2:
           await era.printAndWait(
-            '古来伝わる愛情の示し方は、口を塞ぎつつ感情を伝える最強の技なのかもしれない',
+            '예로부터 전해 내려오는 사랑의 표현 방식이야말로, 입을 막는 동시에 감정을 전할 수 있는 가장 강력한 기술일지도 모른다.',
           );
           await era.printAndWait([
             tachyon.sex,
-            'の唇は',
+            '의 입술은 ',
             tachyon.sex,
-            '本人と同じく、見かけは硬い守りだが、触れた瞬間に崩れ、柔らかな内側を晒す。',
+            '본인과도 같아서, 강해 보이던 방어선은 접촉하는 순간 무너져 내리며 부드럽고 여린 속살을 드러냈다.',
           ]);
           await era.printAndWait(
-            '岩のような牙城も、舌先の探りであっさり崩れ、敵の長駆直入を許すしかない。',
+            '바위처럼 견고하던 아성은 혀끝의 탐색 한 번에 순식간에 붕괴되어, 적군의 거침없는 진입을 허용할 뿐이었다.',
           );
           await era.printAndWait(
-            '忠貞に見えた舌も、自分の太い舌に触れた瞬間、小鳥のように依りかかり、受け身で摘まれる',
+            '충직해 보이던 혀 역시 자신의 굵고 긴 혀가 닿는 순간 수줍은 소녀처럼 변해, 수동적으로 얽혀 들었다.',
           );
           break;
         case 3:
-          await era.printAndWait('代わりに漏れたのは、抑えきれない嬌声だった');
+          await era.printAndWait('단절된 말 대신 참지 못한 교성이 터져 나왔다.');
           await era.printAndWait([
-            '周知の通り、多くの',
+            '세간에 잘 알려져 있듯, 대부분의 ',
             tachyon.uma_sex_title,
-            'に特有で、人間と異なる器官は、',
+            '가 가진 인간과는 다른 기관은 ',
             tachyon.couple_title,
-            'のいちばん敏感な部位だ',
+            '들에게 있어 가장 민감한 부위였다.',
           ]);
           await era.printAndWait([
-            'だから、',
+            '그러니 ',
             tachyon.get_colored_name(),
-            ' が漏らした、想像を掻き立てる嬌声を、誰が責められよう',
+            '이 내뱉은 묘한 상상을 불러일으키는 교성을 누가 탓할 수 있겠는가.',
           ]);
           await era.printAndWait([
-            'むしろ、',
+            '오히려 ',
             you.get_colored_name(),
-            ' に抱かれ耳を摘まれながら、まだ立っていられ、',
+            '의 품에 안겨 귀가 잡힌 상태에서도 쓰러지지 않고 버티고 있는 ',
             you.get_colored_name(),
-            ' の腕の中へ崩れ落ちなかった ',
+            '의 품 안에서도 쓰러지지 않았던 ',
             tachyon.get_colored_name(),
-            ' は、相当なものだ',
+            '이 대단할 정도였다.',
           ]);
           era.println();
           await tachyon.say_and_wait([
             callname,
-            '……だめ……待って……くすぐったい……',
+            '……아…… 잠시만…… 간지러워……',
           ]);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' の、拒絶というより受け入れるような声を聞き、',
+            '의 거절보다는 받아들이는 듯한 목소리를 듣고, ',
             you.get_colored_name(),
-            ' は手を変え、より荒い力で、揉み、擦り、',
+            '은(는) 손길을 바꿔 좀 더 거칠게 ',
             tachyon.uma_sex_title,
-            'の弾力のある、敏感な耳先を弄る',
+            '의 탄력 있고 민감한 귀끝을 주물렀다.',
           ]);
           era.println();
-          await tachyon.say_and_wait('ひっ……待って……だめですわ……');
+          await tachyon.say_and_wait('히잇…… 기다려…… 안 돼……');
           era.println();
           await era.printAndWait([
-            'たっぷり三十秒耐えた末、',
+            '장장 30초를 버티던 ',
             tachyon.get_colored_name(),
-            ' はついに敗れ、',
+            '은 결국 패배하여 ',
             you.get_colored_name(),
-            ' の腕の中へ崩れ落ちた',
+            '의 품속에 완전히 늘어졌다.',
           ]);
       }
       await era.printAndWait([
