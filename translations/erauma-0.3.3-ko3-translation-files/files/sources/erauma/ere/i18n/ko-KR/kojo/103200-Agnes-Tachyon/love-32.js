@@ -2238,7 +2238,7 @@ module.exports = {
 
   // [번역 대상] 74-reject-1
   '74-reject-1': (() => {
-    const title = '歯車が回りだす';
+    const title = '톱니바퀴가 돌아가기 시작하다';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -2247,157 +2247,157 @@ module.exports = {
     const f = async (tachyon, you, callname) => {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、初めて ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' という',
+        '이라는 이름의 ',
         tachyon.uma_sex_title,
-        'に会ったときの光景を思い出す',
+        '를 처음 만났을 때의 화면을 회상했다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の走り、',
+        '의 주법, ',
         tachyon.sex,
-        'の儚さ、',
+        '의 허무함, ',
         tachyon.sex,
-        'の可能性',
+        '의 가능성',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'に両眼を灼かれた ',
+        '에게 두 눈을 불태워져 버린 ',
         you.get_colored_name(),
-        ' は、あのときすでに、',
+        '은(는), 그때부터 이미 ',
         tachyon.sex,
-        'のためにすべてを捧げることを誓っていたのではないか',
+        '를 위해 모든 것을 희생하기로 맹세하지 않았던가.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は多くを言わず、直接',
+        '은(는) 별다른 말 없이, ',
         tachyon.sex,
-        'の手から試験管を受け取る',
+        '의 손에서 직접 시험관을 건네받았다',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'は以前、自分には狂った眼があると言った',
+        '가 예전에 스스로 미친 눈을 가졌다고 말했던 것을.',
       ]);
       await era.printAndWait([
-        'その狂気の源は、きっと',
+        '그 광기의 기원은, 분명 ',
         tachyon.sex,
-        'の輝きの反射だ',
+        '의 광휘로부터 반사된 것이리라.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の狂気は',
+        '의 광기는 ',
         tachyon.sex,
-        'の夢から生まれ、',
+        '의 꿈에서 비롯된 것이고, ',
         you.get_colored_name(),
-        ' の狂気は',
+        '의 광기는 ',
         tachyon.sex,
-        'から生まれた',
+        '로부터 비롯된 것이다.',
       ]);
       await era.printAndWait([
-        'なら、',
+        '그렇다면, ',
         tachyon.sex,
-        'の夢のために、',
+        '의 꿈을 위해서, ',
         tachyon.sex,
-        'があの光を放ち続けるために、自分を犠牲にして何が悪い？',
+        '가 계속해서 그런 빛을 발할 수 있도록 하기 위해서라면, 자신을 희생하는 것쯤이야 아무렴 어떠랴?',
       ]);
       era.println();
       await era.printAndWait([
-        '今の ',
+        '지금의 ',
         you.get_colored_name(),
-        ' は、敬虔な信徒のようだ。事実、そうでもある',
+        '은(는) 마치 한 명의 독실한 신도 같았으며, 실제로도 그러했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の心の神、唯一の光が、今は ',
+        '의 마음속 신이자 유일한 빛이, 지금 ',
         you.get_colored_name(),
-        ' のために闇へ堕ちている',
+        '(으)로 인해 어둠에 타락하려 하고 있었다.',
       ]);
-      await era.printAndWait('そんなことは、絶対に許されない');
-      await era.printAndWait('幸い、まだ救いがある');
+      await era.printAndWait('그런 일은 당연히 절대 용납될 수 없었다.');
+      await era.printAndWait('다행히, 아직 모든 것을 되돌릴 방법은 남아있었다.');
       era.println();
       await era.printAndWait([
-        '自分が消えれば、',
+        '자기 자신만 사라진다면, ',
         tachyon.sex,
-        'はまた ',
+        '는 다시 ',
         you.get_colored_name(),
-        ' の見たい光を放てる',
+        '이(가) 보고 싶어 했던 빛을 계속해서 발할 수 있을 것이다.',
       ]);
-      era.printButton('「ありがとう……可能性の彼方で、また会おう」', 1);
+      era.printButton('「고마워…… 가능성의 저편에서 다시 만나자.」', 1);
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' を信じている。妄信、盲信と言ってもいい',
+        '를 믿었다. 아니, 맹신이라고 해도 좋을 정도였다.',
       ]);
       await era.printAndWait([
-        'だが同時に、',
+        '하지만 동시에, ',
         you.get_colored_name(),
-        ' の内側には、一筋の恐れも残っている',
+        '의 내면에는 한 줄기 두려움 또한 존재했다.',
       ]);
       await era.printAndWait([
-        'もし自分が死んだあと、',
+        '만약 자신이 죽은 뒤에, ',
         tachyon.sex,
-        'が自分の思うほど強くなかったら、どうする',
+        '가 생각만큼 강인하지 못하면 어떡하지?',
       ]);
       await era.printAndWait([
-        'もし',
+        '만약 ',
         tachyon.sex,
-        'が、',
+        '가 ',
         tachyon.sex,
-        '自身の思うほど強くなかったら、どうする',
+        ' 스스로가 생각하는 것만큼 강하지 않다면 어떡하지?',
       ]);
       await era.printAndWait([
-        'だからこれは、',
+        '그래서 이것은 ',
         you.get_colored_name(),
-        ' が万一のためにかけた枷だ',
+        '이(가) 만약을 대비해 걸어둔 굴레이자 자물쇠였다.',
       ]);
       era.println();
       await era.printAndWait([
-        '自分が',
+        '자신이 ',
         tachyon.sex,
-        'にとって、それほど大切だとは思わない。だが万一、もし、',
+        '에게 정말로 그만큼 중요한 존재라고 생각하지는 않지만, 만약에라도, 설령 ',
         tachyon.sex,
-        'が本当に立ち直れなくなったら……この枷、あるいは、この呪いが',
+        '가 정말로 무너져버린다면…… 그렇다면 이 굴레가, 아니, 이 저주가',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'がかつて愛した者からの呪いが、',
+        '가 한때 사랑했던 사람으로부터 온 이 저주가, ',
         tachyon.sex,
-        'を前へ押し、',
+        '를 계속해서 밀어붙여 결국 ',
         tachyon.sex,
-        'の理想に届くまで進ませる',
+        '의 이상에 도달하게 만들 것이다.',
       ]);
       await era.printAndWait([
-        'もしすべて自惚れで、自分が',
+        '만약 모든 것이 자신의 착각이고, ',
         tachyon.sex,
-        'の心にそれほどの重さを占めていなかったなら、',
+        '의 마음속에 자신이 그 정도의 비중을 차지하지 못했다면,',
       ]);
       await era.printAndWait([
-        'それがいちばんだ。',
+        '그것대로 좋은 일이었다. ',
         tachyon.sex,
-        'はただのモルモットに歩みを止められず、堅持し、堅く前へ進むだろう',
+        '는 고작 모르모트 따위에게 발목을 잡히지 않고, 굳건하고 단호하게 계속해서 나아갈 테니까.',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はそう願い、試験管を掲げて飲み下し、それから……',
+        '은(는) 그렇게 바라며 시험관을 들어 들이켰다. 그리고……',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は驚きと喜びに目を見開く。',
+        '은(는) 기쁘게도 ',
         tachyon.sex,
-        'が顔を上げ、いつもの笑顔を浮かべている',
+        '가 고개를 들고 평소와 다름없는 미소를 짓는 것을 보았다.',
       ]);
       await era.printAndWait([
-        'これでいい。',
+        '이걸로 됐다. ',
         tachyon.sex,
-        'はきっと、きっと自分の道を堅持する…………',
+        '는 분명, 반드시 자신의 길을 계속해서 고수해 나갈 것이다…………',
       ]);
       era.setToBottom();
-      await era.printAndWait('次の瞬間');
+      await era.printAndWait('다음 순간');
       era.setToBottom();
       await era.printAndWait([
         you.get_colored_name(),
