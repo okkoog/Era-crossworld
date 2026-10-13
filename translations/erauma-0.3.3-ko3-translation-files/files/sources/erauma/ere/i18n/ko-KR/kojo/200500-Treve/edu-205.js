@@ -1801,7 +1801,7 @@ module.exports = {
           `멋대로 뛰어들어 피해를 입은 건 ${you.name}인데, 정작 우는 건 ${treve.sex}였다.`,
         );
         await era.printAndWait(
-          `물론, ${you.name}의 마음에 상처를 준 것은 ${treve.sex}(이)다.`,
+          `물론, ${treve.sex}의 마음에 상처를 준 것은 ${you.name}(이)다.`,
         );
         await era.printAndWait(
           `경기장 정리를 준비하던 직원이 다가와 놀란 표정으로 두 사람을 바라보았다.`,
