@@ -789,135 +789,135 @@ module.exports = {
         ]);
         era.println();
 
-        await tachyon.print_and_wait(['理解できない。分からない。']);
+        await tachyon.print_and_wait(['이해할 수 없군, 도무지 알 수가 없어.']);
         await tachyon.print_and_wait([
-          '人を好きになるとは、こんなに難解なことだったのか。',
+          '누군가를 좋아한다는 건 이렇게나 난해한 일이었던가.',
         ]);
         await tachyon.print_and_wait([
-          '合理に従うなら、ここで心から',
+          '합리적으로 따진다면, 여기서 기꺼운 마음으로 ',
           you.couple_title,
-          'を祝うべき。',
+          '들을 축복해 주어야 마땅하거늘.',
         ]);
-        await tachyon.print_and_wait(['なのに、なのに……']);
+        await tachyon.print_and_wait(['그러질 못하고, 그러질 못하고……']);
         era.println();
 
-        await tachyon.print_and_wait(['いつの間にか。']);
+        await tachyon.print_and_wait(['어느샌가.']);
         await tachyon.print_and_wait([
-          'また視線は、ベッドの',
+          '자신도 모르게 시선은 침대 위의 ',
           you.sex,
-          'へ向いている。',
+          '에게 향해 있었다.',
         ]);
         await tachyon.print_and_wait([
-          '……いつも、勝手な自分を受け止めてくれた',
+          '……언제나 이기적인 나를 포용해 주었던 ',
           you.sex,
           '。',
         ]);
         await tachyon.print_and_wait([
-          '今度だけは……もう一度、自分の勝手を許してください。',
+          '이번 한 번만…… 부디 다시 한번, 내 응석을 용서해주게.',
         ]);
         era.println();
 
-        await tachyon.print_and_wait([t_call_c, ' へ手を伸ばした瞬間。']);
+        await tachyon.print_and_wait([t_call_c, '에게 손을 뻗은 순간.']);
         await tachyon.print_and_wait([
-          'ベッドの',
+          '침대 위의 ',
           you.sex,
-          'が、不意に驚いた顔をした瞬間。',
+          '가, 갑자기 놀란 표정을 지은 순간.',
         ]);
         await tachyon.print_and_wait([
-          '内心の情を抑えきれず、ベッドの恋人へ飛びかかる。',
+          '더는 내면의 감정을 억누르지 못하고, 침대 위의 연인에게 달려들었다.',
         ]);
 
-        era.printButton(`「わあ、${y_call_t}、いつから！？」`, 1);
+        era.printButton(`「앗, ${y_call_t}! 언제부터 있었어!?」`, 1);
         await era.input();
 
         await tachyon.print_and_wait([
           you.sex,
-          'の顔には驚き、戸惑い、いくらかの後ろめたさもある。',
+          '의 표정에는 놀라움과 당혹감, 심지어 약간의 죄책감마저 서려 있었다.',
         ]);
         await tachyon.print_and_wait([
-          'だがいちばん大切なのは……',
+          '하지만 무엇보다 중요한 것은…… ',
           you.sex,
-          'の体。',
+          '의 육체였다.',
         ]);
-        await tachyon.print_and_wait(['温かい。安心する。']);
+        await tachyon.print_and_wait(['참으로 따뜻하고, 안심이 되는군.']);
         await tachyon.print_and_wait([
-          '今になって、長く、長く見ていた悪夢から覚めた気がする。',
+          '이제야 비로소 아주 길고, 긴 악몽에서 깨어난 듯한 기분이 들었다.',
         ]);
-        await tachyon.print_and_wait(['さっきの自分は、何を考えていたの。']);
+        await tachyon.print_and_wait(['방금 전까지 나는 대체 무슨 생각을 했던 걸까.']);
         await tachyon.print_and_wait([
-          'どうしてこの温もりを自ら捨て、他人が味わうのを見ていたいなどと思ったの。',
+          '어째서 이런 온기를 스스로 포기하려 하고, 심지어 타인이 누리는 것을 지켜보려 했던 걸까.',
         ]);
         era.println();
 
         await tachyon.print_and_wait([
-          '遅れてきた恐怖が、今になって ',
+          '뒤늦게 찾아온 공포와 두려움이 그제야 ',
           tachyon.get_colored_name(),
-          ' の心へ追いつく。',
+          '의 심장을 옥죄었다.',
         ]);
         await tachyon.print_and_wait([
-          'もし何も言わず、本当に ',
+          '만약 방금 정말로 아무 말도 하지 않았다면, 정말로 ',
           callname,
-          ' を手放していたら……',
+          '을 포기해 버렸더라면……',
         ]);
         era.println();
 
         await tachyon.say_and_wait([
           callname,
-          '……ごめんなさい……ごめんなさい！',
+          '……미안하네…… 미안해!',
         ]);
-        await tachyon.say_and_wait(['いやですわ……もう誰にも渡しませんわ！']);
+        await tachyon.say_and_wait(['싫어…… 더는 자네를 누구에게도 넘기고 싶지 않단 말이네!']);
         await tachyon.say_and_wait([
-          '嫌……嫌ですわ！ 私の ',
+          '싫어…… 싫다고! 자네는 나의 ',
           callname,
-          '……一生、私のですわ……！',
+          '이야…… 평생 나의 것이란 말이네……!',
         ]);
         era.println();
 
-        await tachyon.print_and_wait(['子供のように大声で泣く。']);
-        await tachyon.print_and_wait(['恥ずかしい。でも……']);
+        await tachyon.print_and_wait(['어린아이처럼 소리 높여 울었다.']);
+        await tachyon.print_and_wait(['참으로 수치스럽군, 하지만……']);
         await tachyon.print_and_wait([
-          '困惑しながらも優しく慰めてくれる',
+          '당황하면서도 다정하게 자신을 달래주는 ',
           you.sex,
-          'に抱かれるのは、本当に……気持ちよい。',
+          '에게 안겨 있으니, 정말로…… 기분이 좋았다.',
         ]);
 
         era.drawLine();
 
         await era.printAndWait([
-          'まだ自分に縋って泣き続ける ',
+          '여전히 자신을 껴안고 울음을 그치지 못하는 ',
           tachyon.get_colored_name(),
-          ' を、戸惑って見る。',
+          '을 당혹스럽게 바라보았다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、少し混乱していた。',
+          '은(는) 내심 당황스러움을 느꼈다.',
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' がどう実験室に現れたのかも、今の号泣も、すべてが ',
+          '이 어떻게 갑자기 실험실에 나타난 것인지부터, 지금의 통곡까지, 모든 것이 ',
           you.get_colored_name(),
-          ' には訳が分からない。',
+          '에게는 의문투성이였다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、事情を知っていそうな唯一の存在である ',
+          '은 유일하게 사태를 파악하고 있을 듯한 ',
           coffee.get_colored_name(),
-          ' を見る。だが……',
+          '를 무의식적으로 쳐다보았으나……',
         ]);
         era.println();
 
         await coffee.say_and_wait([
-          '今日は……譲ります……',
+          '오늘은…… 일단 그녀에게 양보하죠…… ',
           callname_25,
-          '、彼女が満たされるまで、よく慰めてあげてください。',
+          ', 그녀가 만족할 때까지 잘 달래주세요.',
         ]);
         await coffee.say_and_wait([
-          '代わりに……今日はとても役立つ薬をいただきました……',
+          '대신에…… 오늘은 아주 유용한 약을 얻었으니까요…… ',
           callname_25,
-          '、明日は私に、同等の愛をくださいね。',
+          ', 내일은 저에게 그만큼의 사랑을 주셔야 해요.',
         ]);
         await era.printAndWait([
-          '言い終えると、',
+          '말을 마친 뒤, ',
           coffee.get_colored_name(),
           ' は扉を押して出ていった。',
         ]);
