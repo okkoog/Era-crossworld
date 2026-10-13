@@ -1690,7 +1690,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 74-betray
+  // [번역 완료] 74-betray
   '74-betray': (() => {
     const title = [{ color: buff_colors[3], content: '마녀의 약' }];
     /**
@@ -1819,23 +1819,23 @@ module.exports = {
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の舌が ',
+        '의 혀가 ',
         you.get_colored_name(),
-        ' の唇をこじ開け、',
+        '의 입술을 가르고 들어와, ',
         you.get_colored_name(),
-        ' の口の中で掻き混ぜ、導く',
+        '의 입 안을 쉴 새 없이 휘저으며 유도했다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の舌が名残惜しげに ',
+        '의 혀는 미련이 남은 듯 ',
         you.get_colored_name(),
-        ' の歯間、',
+        '의 치아 사이, ',
         you.get_colored_name(),
-        ' の舌先、',
+        '의 혓바닥, ',
         you.get_colored_name(),
-        ' の歯茎を舐める————だが、それらは',
+        '의 잇몸 안쪽을 핥고 지나갔다————하지만, 이것들은 ',
         tachyon.sex,
-        'の目標ではない',
+        '의 목표가 아니었다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
@@ -2236,7 +2236,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] 74-reject-1
+  // [번역 완료] 74-reject-1
   '74-reject-1': (() => {
     const title = '톱니바퀴가 돌아가기 시작하다';
     /**
@@ -2414,29 +2414,29 @@ module.exports = {
       ]);
       era.println();
       await era.printAndWait([
-        'それだけではない。',
+        '그뿐만이 아니었다. ',
         tachyon.sex,
-        'の舌が ',
+        '의 혀가 ',
         you.get_colored_name(),
-        ' の双唇をこじ開ける',
+        '의 두 입술을 가르고 들어왔다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の舌が ',
+        '의 혀는 ',
         you.get_colored_name(),
-        ' の口の中で掻き混ぜ、求める',
+        '의 입 안을 쉴 새 없이 휘저으며 탐했다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の舌が名残惜しげに ',
+        '의 혀는 미련이 남은 듯 ',
         you.get_colored_name(),
-        ' の歯間、',
+        '의 치아 사이, ',
         you.get_colored_name(),
-        ' の舌先、',
+        '의 혓바닥, ',
         you.get_colored_name(),
-        ' の歯茎を舐める————だが、それらは',
+        '의 잇몸 안쪽을 핥고 지나갔다————하지만, 이것들은 ',
         tachyon.sex,
-        'の目標ではない',
+        '의 목표가 아니었다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
@@ -2461,9 +2461,9 @@ module.exports = {
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、なぜかと問う余裕すらなく、急いで舌を抜き、',
+        '은(는) 이유를 물을 틈도 없이 서둘러 혀를 빼내어 ',
         tachyon.sex,
-        'を止めようとする',
+        '을(를) 막으려 했다.',
       ]);
       await era.printAndWait([
         '하지만 인간은 힘으로는 결국 ',
