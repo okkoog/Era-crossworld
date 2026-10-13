@@ -2730,11 +2730,11 @@ module.exports = {
       await era.printAndWait('이런 상황에서의 도박에 대체 무슨 재미가 있겠는가?');
       era.println();
       await era.printAndWait(
-        '賭場の中で、自分だけが世の外に孤立しているようだ',
+        '마치 카지노 전체에서 자신만이 세상 밖으로 격리된 것 같았다.',
       );
-      await era.printAndWait('昔の自分がなぜこれに嵌まったのか、理解できない');
-      await era.printAndWait('いや、理解はできる。だができないことはできない');
-      await era.printAndWait('目が覚めた人間が、夢へ戻れないのと同じだ');
+      await era.printAndWait('과거의 자신이 왜 이곳에 몰두했었는지 이해할 수 없었다.');
+      await era.printAndWait('아니, 이해는 할 수 있었으나, 되지 않는 것은 되지 않는 법이었다.');
+      await era.printAndWait('마치 이미 잠에서 깬 사람이 다시 꿈속으로 돌아갈 수 없는 것과 같았다.');
       era.println();
       await tachyon.say_as_passer_by_and_wait(
         '立ちんぼの少女',
@@ -2762,108 +2762,108 @@ module.exports = {
       );
       era.println();
       await era.printAndWait([
-        'いつの間にか、',
+        '어느새 ',
         you.get_colored_name(),
-        ' は通りを出ていた',
+        '은(는) 그 거리를 벗어나 있었다.',
       ]);
       await era.printAndWait([
-        '広大な夜の街、華やかな夜の都なのに、',
+        '이토록 거대한 밤거리, 번화한 밤의 도시에서 ',
         you.get_colored_name(),
-        ' に欲を起こさせるものは何ひとつ見つからない',
+        '에게 욕망을 불러일으킬 만한 것은 그 어디에도 없었다.',
       ]);
-      await era.printAndWait('かつて興味を持ったものたち');
-      await era.printAndWait('美食、酒と煙草、賭け、色……');
+      await era.printAndWait('한때 흥미를 느꼈던 것들.');
+      await era.printAndWait('미식, 술과 담배, 도박, 여자……');
       await era.printAndWait(
-        'かつて嵌まり、神経を麻痺させるために使ったものたち',
+        '자신을 탐닉하게 하고 신경을 마비시켰던 그 모든 것들이,',
       );
-      await era.printAndWait('今は神経を、かえって澄ませるだけだ');
+      await era.printAndWait('이제는 오로지 신경을 더욱 날카롭게 깨울 뿐이었다.');
       era.println();
-      await era.printAndWait('もういい。もう十分だ');
+      await era.printAndWait('그만해, 이제 충분해.');
       await era.printAndWait(
-        '何でもいい。酔い沈めさえすれば、考えることをやめられさえすれば、何でもいい',
+        '무엇이든 좋으니 자신을 취하게 할 수만 있다면, 사고를 멈출 수만 있다면 무엇이든 좋았다.',
       );
-      await era.printAndWait('理性がこれほど人を狂わせるとは、知らなかった');
-      await era.printAndWait('暴力、痛み、血、傷');
-      await era.printAndWait('それらでさえ、これ以上の刺激にはならない');
-      await era.printAndWait('どれは、どの実験で売り払ったのだろう');
-      await era.printAndWait('もう忘れた。そんなことはもうどうでもいい');
+      await era.printAndWait('이성이 이토록 사람을 광기로 몰아넣을 줄은 미처 몰랐다.');
+      await era.printAndWait('폭력, 고통, 혈흔, 상처.');
+      await era.printAndWait('심지어 이런 것들조차 자신에게 더 큰 자극을 주지는 못했다.');
+      await era.printAndWait('이것들은 또 몇 번째 실험에서 팔아넘긴 것일까?');
+      await era.printAndWait('이미 잊었다. 그런 건 이제 중요하지 않았다.');
       era.println();
       await era.printAndWait(
-        '人格が剥がれるように、焦って刺激を求め、それでも何も得られない',
+        '마치 인격이 해체되는 것처럼, 다급하게 자극을 갈구했으나 그 무엇도 얻을 수 없었다.',
       );
       await era.printAndWait(
-        'このままでは……壊れる。神経も、体も、必ず壊れ、切れる',
+        '이대로라면…… 무너지고 말 것이다. 신경도, 몸도, 반드시 붕괴하고 끊어질 것이다.',
       );
-      await era.printAndWait('だからその前に、何でもいい……');
-      await era.printAndWait('何でも、いい……');
-      await tachyon.say_as_unknown_and_wait([callname, '？ どうしてここに']);
-      await tachyon.say_as_unknown_and_wait('……おや、みっともない姿ですわね');
+      await era.printAndWait('그러니 그전에, 무엇이라도 좋으니……');
+      await era.printAndWait('무엇이라도, 좋으니……');
+      await tachyon.say_as_unknown_and_wait([callname, '? 자네가 왜 여기에 있나.']);
+      await tachyon.say_as_unknown_and_wait('……이런, 참으로 꼴사나운 모습이군.');
       await tachyon.say_as_unknown_and_wait(
         'どうしましたの。酒代がなくなった？ それとも賭け金がなくて賭場を追い出された……あるいは、誰か気になる娘でも？',
       );
-      await tachyon.say_as_unknown_and_wait('もっと……お金が要りますの？');
+      await tachyon.say_as_unknown_and_wait('돈이…… 더 필요한가?');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' はぼんやりと相手を見た',
+        '은(는) 멍하니 상대를 바라보았다.',
       ]);
       await era.printAndWait([
-        '悪魔の囁きのように、',
+        '마치 악마의 속삭임처럼, ',
         you.get_colored_name(),
-        ' の耳元で綿のように細く語る',
+        '의 귓가에 솜처럼 부드럽게 감겨왔다.',
       ]);
-      await era.printAndWait('金');
-      await era.printAndWait('まだ金が要る');
-      await era.printAndWait('もっと金が要る');
-      await era.printAndWait('もっと借りなければならない');
+      await era.printAndWait('돈.');
+      await era.printAndWait('돈이 더 필요해.');
+      await era.printAndWait('더 많은 돈이 있어야 해.');
+      await era.printAndWait('더 많이 빌려야만 해.');
       era.println();
-      await era.printAndWait('………………………なぜ？');
-      await era.printAndWait('なぜ金が欲しい？');
-      await era.printAndWait('なぜ借りる？');
-      await era.printAndWait('酒を買うため？');
-      await era.printAndWait('賭けのため？');
-      await era.printAndWait('女遊びのため？');
-      await era.printAndWait('なぜ？');
-      await era.printAndWait('なぜ？');
+      await era.printAndWait('………………………왜?');
+      await era.printAndWait('왜 돈을 원하는 거지?');
+      await era.printAndWait('왜 돈을 빌리려 하는 거지?');
+      await era.printAndWait('술을 사기 위해서?');
+      await era.printAndWait('도박을 하기 위해서?');
+      await era.printAndWait('여자랑 놀기 위해서?');
+      await era.printAndWait('왜?');
+      await era.printAndWait('대체 왜?');
       era.println();
-      await era.printAndWait('何でもいい');
-      await era.printAndWait('何をしてもいい');
-      await era.printAndWait('考えろ');
-      await era.printAndWait('どうすれば、考えることをやめられる');
-      await era.printAndWait('どうすれば、頭を徹底的に麻痺させられる');
+      await era.printAndWait('무엇이든 상관없어.');
+      await era.printAndWait('무슨 짓을 해도 좋아.');
+      await era.printAndWait('제발 생각해내.');
+      await era.printAndWait('어떻게 해야 사고를 멈출 수 있지?');
+      await era.printAndWait('어떻게 해야 내 머릿속을 완전히 마비시킬 수 있지?');
       era.println();
-      await era.printAndWait('ああ……');
-      await era.printAndWait('ああ！');
-      await era.printAndWait('あった');
+      await era.printAndWait('아아……');
+      await era.printAndWait('아아!');
+      await era.printAndWait('찾았다.');
       await era.printAndWait(
-        'あったあったあったあったあったあったあったあったあったあった',
+        '찾았다찾았다찾았다찾았다찾았다찾았다찾았다찾았다찾았다찾았다',
       );
       era.println();
-      await you.say_and_wait('……いい、金を貸してくれるか？');
+      await you.say_and_wait('……부탁이야, 내게 돈을 빌려줄 수 있을까?');
       await tachyon.say_as_unknown_and_wait([
-        'もちろんですわ……ただし、',
+        '물론이고말고…… 하지만, ',
         callname,
-        '、借りたお金で何をするつもりですの？',
+        ', 그 돈을 빌려서 무얼 할 생각인가?',
       ]);
       era.println();
-      await era.printAndWait('相手が残した唯一の隙間');
-      await era.printAndWait('自分に残された最後の慈悲');
-      await era.printAndWait('仕掛け？ 陰謀？ 計算？');
-      await era.printAndWait('そんなものはもうどうでもいい');
+      await era.printAndWait('상대가 남긴 유일한 허점.');
+      await era.printAndWait('자신에게 남겨진 마지막 자비.');
+      await era.printAndWait('포석? 음모? 계산?');
+      await era.printAndWait('그런 것들은 이제 중요하지 않았다.');
       era.println();
       await you.say_and_wait(
-        'タキオン……この金で……一晩、俺に付き合ってくれないか？',
+        '타키온…… 이 돈으로…… 오늘 밤을 나와 함께 보내주겠어?',
       );
       era.println();
       await era.printAndWait(
-        '口にした瞬間、限界まで張ったばねがようやく緩んだ',
+        '그 말을 내뱉은 순간, 한계까지 팽팽해졌던 용수철이 드디어 풀려났다.',
       );
-      await era.printAndWait('ああ……');
-      await era.printAndWait('相手を想うときだけ、頭は息をつけた');
-      await era.printAndWait('相手を念じるときだけ、内側は麻痺できた');
-      await era.printAndWait('なぜ昔の自分は気づかなかった');
-      await era.printAndWait('なぜずっと、意味のないことに金を借りていた');
-      await era.printAndWait('心の唯一の安らぎは、ここにあったのに');
+      await era.printAndWait('아아……');
+      await era.printAndWait('오직 상대만을 생각할 때, 머릿속은 비로소 숨을 쉴 수 있었다.');
+      await era.printAndWait('오직 상대만을 갈망할 때, 내면은 비로소 마비될 수 있었다.');
+      await era.printAndWait('왜 예전의 자신은 몰랐던 것일까.');
+      await era.printAndWait('왜 계속해서 돈을 빌려 그런 의미 없는 짓거리들을 해왔던 것일까.');
+      await era.printAndWait('분명히, 분명히 내면의 유일한 안식은 여기에 있었는데.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
