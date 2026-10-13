@@ -844,115 +844,115 @@ module.exports = {
         await tachyon.say_and_wait(
           '자, 모르모트 군. 이제 깨어났으니 가장 먼저 해야 할 일이 무엇인지 알고 있겠지?',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '……なに、だ？');
+        await you.say_as_passer_by_and_wait('모르모트', '그건……?');
         await tachyon.say_and_wait(
-          '決まっていますわ、ご飯です！ ご飯！ お腹が空いて死にそうですわ。モルモット君、早く何か作ってきなさい！',
+          '당연히 밥이지! 밥! 배고파 죽겠네. 모르모트 군, 빨리 가서 뭐라도 좀 만들어 오게!',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '…………わかった');
+        await you.say_as_passer_by_and_wait('모르모트', '…………알겠어.');
         era.println();
-        await you.say_as_passer_by_and_wait('モルモット', '味は……どうだ？');
-        await tachyon.say_and_wait('………ん');
-        await tachyon.say_and_wait('ぐえっ……まずいですわ……');
+        await you.say_as_passer_by_and_wait('모르모트', '맛은…… 어때?');
+        await tachyon.say_and_wait('………음.');
+        await tachyon.say_and_wait('우엑…… 맛없어……');
         await tachyon.say_and_wait(
-          'どうしてこんなにまずいの……モルモット君、あなた……',
+          '어쩜 이렇게 맛이 없을 수가…… 모르모트 군, 자네……',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '！？');
+        await you.say_as_passer_by_and_wait('모르모트', '!?');
         await tachyon.say_and_wait(
-          'きっと……身体がまだ完全に戻っていないのでしょう。あんなに長く寝ていたのですもの',
+          '분명…… 몸이 아직 다 회복되지 않아서 그런 거겠지. 하긴 그렇게 오래 누워 있었으니.',
         );
         await tachyon.say_and_wait(
-          '今回は見逃してあげますわ。でも、早く元に戻りなさいな',
+          '이번만은 봐주겠지만, 다음엔 빨리 감각을 되찾아야 하네.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……あはは、すまないな',
+          '모르모트',
+          '……아하하, 미안해.',
         );
         era.drawLine();
         await tachyon.say_and_wait(
-          'では……次は、グラウンドでトレーニングですわ',
+          '그럼…… 다음은 먼저 운동장으로 트레이닝을 하러 가세.',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '…………');
-        await tachyon.say_and_wait('………モルモット君？');
-        await you.say_as_passer_by_and_wait('モルモット', 'あ、どうした……');
+        await you.say_as_passer_by_and_wait('모르모트', '…………');
+        await tachyon.say_and_wait('………모르모트 군?');
+        await you.say_as_passer_by_and_wait('모르모트', '아, 응……');
         await tachyon.say_and_wait(
-          '驚かないのですか？ この私が、自らトレーニングに行くと言ったのですよ？',
+          '자네, 조금도 놀라지 않는 건가? 내가 무려 자발적으로 트레이닝을 하러 가겠다고 했다고?',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '……え');
+        await you.say_as_passer_by_and_wait('모르모트', '……에.');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……つい、またサボるつもりだと思った',
+          '모르모트',
+          '……무의식적으로 또 땡땡이치러 가자는 소린 줄 알았어.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'タキオンが、本気でトレーニングに行くのか！？',
+          '모르모트',
+          '타키온, 너 정말로 트레이닝하러 가는 거야!?',
         );
-        await tachyon.say_and_wait('いえ、それは大袈裟ですわ');
-        await you.say_as_passer_by_and_wait('モルモット', 'あはは……そうか');
+        await tachyon.say_and_wait('아니, 그건 또 반응이 너무 과하군.');
+        await you.say_as_passer_by_and_wait('모르모트', '아하하…… 그렇네.');
         era.drawLine();
-        await you.say_as_passer_by_and_wait('モルモット', '商店街……？');
+        await you.say_as_passer_by_and_wait('모르모트', '상점가……?');
         await tachyon.say_and_wait(
-          'ええ。実験器具が足りなくなってきましたもの。付き合ってくださいまし',
+          '그래, 내 실험 기구가 좀 부족해졌거든. 같이 좀 가주게.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'ああ、いい。もちろん',
+          '모르모트',
+          '아, 알았어. 당연히 가야지.',
         );
         await tachyon.say_and_wait(
-          'モルモット君？ どちらへ行くのですの？ 商店街はあちらではありませんわ',
+          '모르모트 군? 어디로 가는 건가? 상점가는 그쪽이 아닐세.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……あ、いや、なんでもない。ちょっと取りに行くものがあっただけだ',
+          '모르모트',
+          '……아, 아냐, 아무것도. 그냥 갑자기 챙길 게 생각나서.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'よく考えたら、大した用事じゃなかった。あははは',
+          '모르모트',
+          '하지만 다시 생각해보니 별로 중요한 것도 아니었어. 아하하하.',
         );
-        await tachyon.say_and_wait('……変ですわね');
+        await tachyon.say_and_wait('……참 이상하군.');
         era.println();
-        await tachyon.say_and_wait('ふん～ふんふんふん');
-        await you.say_as_passer_by_and_wait('モルモット', '……なあ、タキオン？');
-        await tachyon.say_and_wait('ん？');
+        await tachyon.say_and_wait('흠～ 흠흠흠♪');
+        await you.say_as_passer_by_and_wait('모르모트', '……저기, 타키온?');
+        await tachyon.say_and_wait('응?');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'なぜ……商店街の人が、お前を見る目が妙なんだ',
+          '모르모트',
+          '…… 상점가 사람들이 널 보는 눈빛이 어쩐지 좀 이상한 것 같은데?',
         );
         await tachyon.say_and_wait(
-          '……そ、そんなことありますの？ 気のせいですわよ、モルモット君',
+          '……그, 그런가? 자네 기분 탓이겠지, 모르모트 군.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'いや、明らかにそうだ。危険人物でも見るような……',
+          '모르모트',
+          '아니, 분명해. 마치 위험 인물을 보는 듯한……',
         );
-        await tachyon.say_and_wait('見間違いですわ');
-        await you.say_as_passer_by_and_wait('モルモット', 'でも');
-        await tachyon.say_and_wait('見間違いですわ');
-        await you.say_as_passer_by_and_wait('モルモット', '……わかった');
+        await tachyon.say_and_wait('자네가 잘못 본 거야.');
+        await you.say_as_passer_by_and_wait('모르모트', '그렇지만.');
+        await tachyon.say_and_wait('잘못 본 거라니까.');
+        await you.say_as_passer_by_and_wait('모르모트', '……알았어.');
         era.drawLine();
         await tachyon.say_and_wait(
-          '……モルモット君。今は、慎重に、手のものを下ろしなさい',
+          '……저기 말이야, 모르모트 군. 지금 당장, 아주 조심스럽게, 손에 든 걸 내려놓는 게 좋겠네.',
         );
-        await you.say_as_passer_by_and_wait('モルモット', 'え……どうした？');
+        await you.say_as_passer_by_and_wait('모르모트', '으음…… 왜 그래?');
         await tachyon.say_and_wait([
-          'どうしたもこうしたも、それが ',
+          '왜 그러냐니, 그게 ',
           t_call_c,
-          ' のものですのよ？',
+          '의 물건이라는 걸 잊은 건가?',
         ]);
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'え……でも、ちょっと触ったくらいなら大丈夫だろう',
+          '모르모트',
+          '에…… 하지만 살짝 만지는 정도는 별일 없겠지.',
         );
         await tachyon.say_and_wait(
-          'そんなはずが！ この前、私が研究資料に軽く触れただけで、一瞬で燃え上がったのですわ！',
+          '그럴 리가! 지난번에 내가 살짝 건드리기만 했는데 내 연구 자료가 순식간에 불타버렸단 말일세!',
         );
-        await you.say_as_passer_by_and_wait('モルモット', 'でも……');
+        await you.say_as_passer_by_and_wait('모르모트', '하지만……');
         await tachyon.say_and_wait('………');
-        await you.say_as_passer_by_and_wait('モルモット', '…………');
+        await you.say_as_passer_by_and_wait('모르모트', '…………');
         await tachyon.say_and_wait(
-          'では私も試しますわ………わああ！ 燃えていますわ！ 早く資料を救いなさいあああ！',
+          '그럼 나도 한번……… 으아아악! 불붙었다! 빨리 자료 구조해! 아아악!',
         );
         era.drawLine();
-        await tachyon.say_and_wait('ねえねえ、モルモット君');
+        await tachyon.say_and_wait('이보게, 모르모트 군.');
         await you.say_as_passer_by_and_wait(
           'モルモット',
           'ん？ タキオン、どうした？',
