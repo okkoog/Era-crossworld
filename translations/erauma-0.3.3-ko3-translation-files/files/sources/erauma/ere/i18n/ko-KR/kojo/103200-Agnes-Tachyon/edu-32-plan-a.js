@@ -967,48 +967,48 @@ module.exports = {
           'の勝負服がしっかり隠れているのが幸いだった。でなければ、妙に膨らんだ下腹に全員が気づいただろう',
         ]);
       }
-      era.printButton('「時間だ、タキオン」', 1);
+      era.printButton('「시간 다 됐어, 타키온.」', 1);
       await era.input();
       await tachyon.say_and_wait(
-        'ああ、そうですわね。では出場しますわ……レースが終わってから、祝ってくださいな、仔馬たち',
+        '아, 그렇군. 그럼 슬슬 나갈 시간인가…… 내 축하는 레이스가 끝난 뒤에 해달라고, 포니짱.',
       );
       era.println();
       await era.printAndWait([
-        '最後の流し目に、小さな',
+        '마지막 윙크 한 번에 어린 ',
         tachyon.uma_sex_title,
-        'たちはまた歓声を上げた',
+        '들은 다시 한번 환호성을 내질렀다.',
       ]);
-      era.printButton('「……仔馬？」', 1);
+      era.printButton('「……포니짱?」', 1);
       await era.input();
       await tachyon.say_and_wait([
         call_5,
-        ' から習ったのです……どうです、あなたもそう呼ばれたいですの？ 私の小さなモルモット？',
+        '에게 배웠다네…… 왜, 자네도 그렇게 불리고 싶은가? 나의 모르모트 군?',
       ]);
-      era.printButton('…………いや、遠慮しておく', 1);
+      era.printButton('…………아니, 역시 사양할게.', 1);
       await era.input();
       await tachyon.say_and_wait([
-        'おや、照れたのですか？ 純情ですわね、',
+        '이런, 설마 부끄러워하는 건가? 정말 순진하구만, ',
         callname,
       ]);
       era.printButton(
-        'だって……ハードウェアが追いつかない。真似するとかえって……',
+        '그야…… 하드웨어가 못 따라가니까, 그렇게 흉내 내봤자 비웃음만 살걸……',
         1,
       );
       await era.input();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は憐れむように ',
+        '은(는) 가엾다는 듯이 ',
         tachyon.get_colored_name(),
-        ' の胸元を見た',
+        '의 가슴 부근을 바라보았다.',
       ]);
       await tachyon.say_and_wait([
         '…………',
         callname,
-        '？ ハードウェアとは何の意味か、はっきり言ってくださいな',
+        '? 실례지만 하드웨어가 무슨 뜻인지 자세히 설명해 줄 수 있겠나?',
       ]);
-      era.printButton('「……なんでもない」', 1);
+      era.printButton('「……아니, 아무것도 아니야.」', 1);
       await era.input();
-      await era.printAndWait('ふざけているうちに、発走の時刻が来た');
+      await era.printAndWait('티격태격하는 사이에 어느덧 레이스가 시작될 시간이 되었다.');
     };
     f.title = title;
     return f;
