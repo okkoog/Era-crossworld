@@ -1503,9 +1503,9 @@ module.exports = {
         `${treve.child_sex_title}는 중심을 잃고 현관 바닥에 엉덩방아를 찧고 말았다.`,
       );
       await era.printAndWait(
-        `フランスの姫、天才の${treve.teen_sex_title}なのに、${
+        `프랑스의 공주이자 천재인 ${treve.teen_sex_title}. 하지만 ${
           you.name
-        } の前で髪を直す様子は吹き出しそうになる。`,
+        } 앞에서 헝클어진 머리를 정돈하는 모습은 절로 웃음을 자아냈다.`,
       );
       await era.printAndWait(
         `옷차림은 여전히 반바지에 티셔츠 차림이었지만, 키는 처음 만났을 때보다 훌쩍 자라 있었다.`,
@@ -1518,12 +1518,12 @@ module.exports = {
       );
       await treve.say_and_wait(`제가 어디에 있을지는 제가 정해요, 트레이너.`);
       await era.printAndWait(
-        `視線がぶつかる。主張については、${treve.sex}にも一理ある。${treve.name} は誇らしげな顔をする。`,
+        `시선이 마주쳤다. ${treve.sex}의 주장에도 나름 일리가 있어, ${treve.name}의 얼굴에는 당당한 기색이 감돌았다.`,
       );
       await era.printAndWait(
-        `${treve.name} は世界最強の${treve.uma_sex_title}だ。${
+        `${treve.name}는 세계 최강의 ${treve.uma_sex_title}다. ${
           you.name
-        } はあのときの情景を忘れない。`,
+        }은(는) 그때의 광경을 결코 잊지 못한다.`,
       );
       await era.printAndWait(`푸른빛 도는 승부복을 입고 결승선을 통과하던 그 짜릿한 순간을.`);
       await era.printAndWait(
@@ -1689,7 +1689,7 @@ module.exports = {
         await treve.say_and_wait(
           `……ねえ、${
             you.actual_name
-          }。私たちがトレーナーと${treve.uma_sex_title}じゃなかったら、出会えたかしら。`,
+          }. 우리가 트레이너와 ${treve.uma_sex_title}가 아니었더라도 서로 만날 수 있었을까요?`,
         );
         era.printButton(`「……아니, 못 만났겠지.」`, 1);
         await era.input();
