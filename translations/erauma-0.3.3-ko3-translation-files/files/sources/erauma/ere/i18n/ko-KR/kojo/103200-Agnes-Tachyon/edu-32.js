@@ -3725,7 +3725,7 @@ module.exports = {
 
   // [번역 대상] race_end_win
   race_end_win: (() => {
-    const title = 'レース勝利';
+    const title = '레이스 승리';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -3733,8 +3733,8 @@ module.exports = {
      * @param {boolean} do_sex 興奮したままの行為か（男/フタナリトレーナー×女/フタナリタキオンのみ）
      */
     const f = async (tachyon, you, callname, do_sex) => {
-      era.printButton('「最高の走りだった！」', 1);
-      era.printButton('「まだ改良の余地がある」', 2);
+      era.printButton('「최고의 달리기였어!」', 1);
+      era.printButton('「아직 개선할 여지가 있어」', 2);
       const ret = await era.input();
       if (do_sex) {
         await era.printAndWait('ドン');
@@ -3857,34 +3857,34 @@ module.exports = {
       } else if (ret === 1) {
         if (era.get('relation:32:0') > 225) {
           await tachyon.say_and_wait(
-            'でしょうでしょう？ フフ、これが光速を超える走りですわ',
+            '그렇지, 그렇지? 후후, 이것이 광속을 뛰어넘는 달리기라네.',
           );
         } else {
           await tachyon.say_and_wait([
-            '実験の検算にすぎないのに、そんなに喜んで。',
+            '그저 실험 결과를 검산한 것뿐인데 그렇게 기뻐하다니.',
             callname,
-            '、おめでたいですわね',
+            '자네도 참 천진난만하군.',
           ]);
         }
       } else if (era.get('relation:32:0') > 225) {
         if (Math.random() < 0.5) {
           await tachyon.say_and_wait(
-            'ちっ……反論はできませんわ。でも、もう少し褒めてもいいでしょう？ あれだけ頑張って勝ったのですもの',
+            '쳇…… 반박할 순 없지만, 그래도 좀 더 칭찬해 줘도 되지 않나? 그렇게 열심히 뛰어서 이겼는데.',
           );
         } else {
           await tachyon.say_and_wait([
-            'ひどいですわ、',
+            '너무하군, ',
             callname,
-            '。愛馬が勝ったのに、そんな顔をして誰に見せるの。早く早く、もっと褒めて、早～～く～～！',
+            '담당 우마무스메가 이겼는데 그런 표정을 누구한테 보여주는 건가. 어서 더 칭찬하게, 얼른～～!',
           ]);
         }
       } else if (Math.random() < 0.5) {
         await tachyon.say_and_wait(
-          'ふん……わかっていますわ。余計な口は不要です',
+          '흥…… 알고 있네. 쓸데없는 말은 필요 없어.',
         );
       } else {
         await tachyon.say_and_wait(
-          'よろしい。新しい発見があれば、今回の実験も無駄ではありませんわ',
+          '좋아. 새로운 발견이 있었다면 이번 실험도 헛된 건 아니겠지.',
         );
       }
       return [];
