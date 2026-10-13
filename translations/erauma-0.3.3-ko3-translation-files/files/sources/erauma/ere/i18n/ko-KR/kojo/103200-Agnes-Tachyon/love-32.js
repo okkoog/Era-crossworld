@@ -2679,73 +2679,73 @@ module.exports = {
         await tachyon.say_and_wait(['잘 자게나, ', callname, ' ']);
         era.setToBottom();
         await era.printAndWait([
-          'その言葉を聞いたあと、',
+          '이 말을 끝으로, ',
           you.get_colored_name(),
-          ' の意識は深淵へ沈む',
+          '의 의식은 심연으로 가라앉았다.',
         ]);
         era.setToBottom();
         era.drawLine();
-        await tachyon.say_as_unknown_and_wait('……起き');
-        await tachyon.say_as_unknown_and_wait('………起きて');
+        await tachyon.say_as_unknown_and_wait('……눈');
+        await tachyon.say_as_unknown_and_wait('………눈을 뜨게');
         era.println();
-        await era.printAndWait([you.get_colored_name(), ' は目を覚ました']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 깨어났다.']);
         await era.printAndWait([
-          'ある声に起こされた ',
+          '어떤 목소리에 의해 깨어난 ',
           you.get_colored_name(),
-          ' は、眼を開けて見た天井が見知らぬものだと気づく',
+          '은(는), 눈을 뜨자마자 낯선 천장이 보인다는 것을 깨달았다.',
         ]);
-        era.printButton('「ここはどこだ？」', 1);
+        era.printButton('「여기는 어디지?」', 1);
         await era.input();
-        await tachyon.say_as_unknown_and_wait('……ここは私の実験室ですわ');
+        await tachyon.say_as_unknown_and_wait('……여기는 나의 실험실이라네.');
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は声のするほうを見る',
+          '은(는) 목소리가 들려오는 방향을 바라보았다.',
         ]);
         await era.printAndWait([
-          '眼前は栗毛の',
+          '눈앞에는 밤색 털의 ',
           tachyon.uma_sex_title,
-          '。切り揃えた短髪と白衣が、',
+          '가 서 있었다. 단정한 숏컷과 몸에 걸친 하얀 가운은 ',
           tachyon.sex,
-          'の研究者としての身分を語っている。',
+          '의 연구자로서의 신분을 증명하고 있었다.',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'は品定めするような眼で ',
+          '는 살피는 듯한 눈빛으로 ',
           you.get_colored_name(),
-          ' を見、なぜか ',
+          '을(를) 바라보았다. 왠지 모르게 ',
           you.get_colored_name(),
-          ' は肌が粟立つ',
+          '은(는) 소름 끼치는 기분을 느꼈다.',
         ]);
-        era.printButton('「君は誰だ？」', 1);
+        era.printButton('「너는 누구지?」', 1);
         await era.input();
         await tachyon.say_as_unknown_and_wait(
-          'その質問は、私がするべきですわ……あなたは何者？ どうして私の実験室に寝ているんですの？',
+          '그 질문은 내가 자네에게 먼저 해야겠군…… 자네는 누구인가? 왜 나의 실험실에 누워 있는 거지?',
         );
-        await era.printAndWait(['栗毛の', tachyon.uma_sex_title, 'は言う']);
+        await era.printAndWait(['밤색 털의 ', tachyon.uma_sex_title, '가 말했다.']);
         await era.printAndWait([
-          'このとき ',
+          '그제야 ',
           you.get_colored_name(),
-          ' はやっと、自分がまだ床に寝ていることに気づき、急いで起き上がる',
+          '은(는) 자신이 여전히 바닥에 누워 있었다는 것을 깨닫고 서둘러 몸을 일으켰다',
         ]);
-        era.printButton(`「${you.actual_name}だ。トレーナーをしている」`, 1);
+        era.printButton(`「나는 ${you.actual_name}, 트레이너야.」`, 1);
         await era.input();
         await tachyon.say_as_unknown_and_wait(
-          '…………おや？ ではトレーナー君、ここで寝ているのは、何のご用ですの',
+          '…………호오? 그렇다면 트레이너 군, 자네가 여기에 누워 있는 것에는 어떤 용건이 있는 건가?',
         );
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、ここに横たわる前に何をしていたか思い出そうとするが、どうしても出てこない',
+          '은(는) 이곳에 쓰러지기 전에 무엇을 하고 있었는지 떠올려 보려 했지만 아무것도 기억나지 않았다.',
         ]);
         era.println();
         await tachyon.say_as_unknown_and_wait(
-          '…………思い出せなくても結構ですわ。なぜか私も記憶を失ったようで、さっきまで何をしていたか思い出せません……',
+          '…………기억나지 않는다면 관두게나. 왠지 나도 기억을 잃은 것처럼, 이전에 무엇을 하고 있었는지 기억나지 않는군……',
         );
         await tachyon.say_as_unknown_and_wait([
-          'まあ、その話は置いておきましょう。とにかく、私は ',
+          '뭐, 됐네. 그 이야기는 접어두고, 어쨌든 내 이름은 ',
           tachyon.get_colored_name(),
-          '。トレーナー君、よろしくですわ',
+          '이라네. 트레이너 군, 잘 부탁하네',
         ]);
         era.println();
         await era.printAndWait([tachyon.get_colored_name()]);
