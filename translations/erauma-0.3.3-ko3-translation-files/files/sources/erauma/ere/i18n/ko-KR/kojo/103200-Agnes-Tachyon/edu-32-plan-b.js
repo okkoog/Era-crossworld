@@ -1087,9 +1087,9 @@ module.exports = {
   // [번역 대상] hot_spring_b_sex_end
   async hot_spring_b_sex_end(tachyon, you) {
     await era.printAndWait([
-      '事が済むと、',
+      '일이 끝나자, ',
       tachyon.get_colored_name(),
-      ' が先に湯を出た',
+      '가 먼저 온천에서 나왔다.',
     ]);
     if (tachyon.sex_code !== 1 && you.sex_code > 0) {
       await era.printAndWait([
@@ -1106,9 +1106,9 @@ module.exports = {
     }
     await era.printAndWait('部屋に戻れば、また一戦になりそうだ……');
     await era.printAndWait([
-      'その前に、',
+      '그 전에, ',
       you.get_colored_name(),
-      ' は空を見上げ、戦いの前の最後の静けさを味わう',
+      '은(는) 하늘을 올려다보며 다음 소동이 시작되기 전 마지막 고요함을 만끽했다.',
     ]);
   },
 
