@@ -3737,7 +3737,7 @@ module.exports = {
       era.printButton('「아직 개선할 여지가 있어」', 2);
       const ret = await era.input();
       if (do_sex) {
-        await era.printAndWait('ドン');
+        await era.printAndWait('쿵!');
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
@@ -9151,7 +9151,7 @@ module.exports = {
           ' の目を見て、誰かが踏み出すのを待った',
         ]);
         era.printButton('手を伸ばして触る', 1);
-        era.printButton('拒む', 2);
+        era.printButton('거절한다', 2);
         ret.push(await era.input());
         if (ret[0] === 1) {
           await era.printAndWait([
@@ -9545,7 +9545,7 @@ module.exports = {
             you.get_colored_name(),
             ' は震える手を伸ばした',
           ]);
-          await era.printAndWait('胸に触れないよう、慎重にチョコを取り出した');
+          await era.printAndWait('가슴에 닿지 않도록 조심스럽게 초콜릿만 꺼냈다.');
         } else {
           await era.printAndWait([
             tachyon.get_colored_name(),
@@ -9561,7 +9561,7 @@ module.exports = {
             'を甘い声にさせる肉塊は？',
           ]);
           await era.printAndWait(
-            '錯覚だろう。チョコを置く棚が、声を出すはずがない',
+            '착각이겠지. 초콜릿을 놓는 선반이 말을 할 리 없으니까.',
           );
         }
         era.println();
