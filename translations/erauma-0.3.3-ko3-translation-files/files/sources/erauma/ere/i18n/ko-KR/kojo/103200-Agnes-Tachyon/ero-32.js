@@ -632,7 +632,7 @@ module.exports = {
       ]);
       era.println();
 
-      await coffee.say_and_wait(['……가엾군요, ', c_call_t, '。']);
+      await coffee.say_and_wait(['……가엾군요, ', c_call_t, '.']);
       await tachyon.say_and_wait([t_call_c, '、どうして……']);
       await coffee.say_and_wait([
         'あんなに大きな声……',
@@ -2148,7 +2148,7 @@ module.exports = {
     const f = async (tachyon, you, callname) => {
       await tachyon.say_and_wait([
         callname,
-        '～오늘 실험도 수고 많으셨어요.',
+        '~오늘 실험도 수고 많으셨어요.',
       ]);
       await tachyon.say_and_wait('では……ご褒美が要りますの❤️');
       await you.say_and_wait('頼む');
