@@ -1510,7 +1510,7 @@ module.exports = {
       era.println();
       await tachyon.say_and_wait('……후후.');
       await tachyon.say_and_wait('그럼 마지막으로…… 한마디만 하겠네.');
-      await you.say_as_passer_by_and_wait('記者A', '마지막……?');
+      await you.say_as_passer_by_and_wait('기자 A', '마지막……?');
       await tachyon.say_and_wait([
         '나는 모든 ',
         tachyon.uma_sex_title,
