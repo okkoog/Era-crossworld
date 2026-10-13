@@ -6666,9 +6666,9 @@ module.exports = {
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' は頭を振り、今日のことを振り落とそうとした。だが ',
+              '은(는) 고개를 저어 오늘 있었던 일을 잊으려 했다. 하지만 ',
               tachyon.get_colored_name(),
-              ' の美しい体は、頭の中に残り、忘れられない……',
+              '의 아름다운 모습은 머릿속에서 떠나지 않았다……',
             ]);
             era.println();
             await era.printAndWait([
