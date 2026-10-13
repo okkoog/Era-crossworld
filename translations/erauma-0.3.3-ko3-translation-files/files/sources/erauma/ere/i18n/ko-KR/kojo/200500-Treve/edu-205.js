@@ -1628,154 +1628,154 @@ module.exports = {
         await era.input();
         await treve.say_and_wait(`……`);
         await era.printAndWait(
-          `${treve.name} の言葉は、いつの間にか重みを増している。`,
+          `${treve.name}의 말에 어느샌가 묵직한 무게감이 실려 있었다.`,
         );
         await era.printAndWait(
-          `数年前の ${you.name} には、${treve.sex}を語る資格がなかった。`,
+          `몇 년 전의 ${you.name}이었다면 감히 ${treve.sex}에 대해 이렇다 저렇다 말할 자격조차 없었을 것이다.`,
         );
         await treve.say_and_wait(
-          `${treve.couple_title}にとって大舞台。そのために調整し、ここに来る。自分の魂を賭ける。だから——`,
+          `${treve.couple_title}들에게 있어서는 커다란 무대예요. 이를 위해 몸을 조율하고, 이곳에 선 거죠. 자신의 영혼을 걸고서요. 그러니까——`,
         );
-        await you.say_and_wait('ゴールだ。', true);
-        era.printButton(`「……そうか？」`, 1);
+        await you.say_and_wait('결승선을 통과했네.', true);
+        era.printButton(`「……그래?」`, 1);
         await era.input();
         await era.printAndWait(
-          `${you.name} にとって、これは何の違いもないG3だった。`,
+          `${you.name}에게 있어 이것은 특별할 것 하나 없는, 수많은 G3 레이스 중 하나일 뿐이었다.`,
         );
         await era.printAndWait(
-          `普通の準備、普通の努力、少しだけ光るところ。そんなレース。`,
+          `평범한 준비와 평범한 노력, 그리고 아주 사소한 반짝임이 있을 뿐인, 그런 평범한 레이스.`,
         );
         await era.printAndWait(
-          `${you.name} がトレーナーの立場で多くのレースを見てきたせいで、大事なものを見落としていたのかもしれない。`,
+          `어쩌면 ${you.name}은(는) 트레이너라는 권태로운 입장에서 너무나 많은 레이스를 보아온 탓에, 정말 중요한 무언가를 놓치고 있었던 것일지도 모른다.`,
         );
-        await treve.say_and_wait(`……はは。`);
-        await era.printAndWait(`乾いた笑い。`);
+        await treve.say_and_wait(`……후훗.`);
+        await era.printAndWait(`씁쓸한 웃음이 새어 나왔다.`);
         await treve.say_and_wait(`……`);
         await treve.say_and_wait(`……`);
         await era.printAndWait(
-          `競馬場は閑散としている。レースは終わった。だが ${you.name} はまったく立てず、鉛のような重い膝を曲げ、客席に座っている。`,
+          `경마장은 한산해졌다. 레이스는 이미 모두 막을 내렸다. 하지만 ${you.name}은(는) 도저히 자리에서 일어날 수 없었다. 마치 납덩이라도 매단 듯 무거운 무릎을 꺾은 채, 텅 빈 관람석에 그대로 주저앉아 있었다.`,
         );
-        await era.printAndWait(`風が冷たい。`);
+        await era.printAndWait(`바람이 차가웠다.`);
         era.drawLine();
         await era.printAndWait(
-          `深夜、${you.name} と ${treve.name} は東京の通りを歩く。`,
+          `깊은 밤, ${you.name}과(와) ${treve.name}는 도쿄의 거리를 나란히 걸었다.`,
         );
-        await treve.say_and_wait(`……ジャパンカップに出たい。`);
+        await treve.say_and_wait(`……저, 재팬 컵에 나가고 싶어요.`);
         await treve.say_and_wait(`……`);
         await era.printAndWait(
-          `${treve.name} がこれから大事な話をしようとしているのは、${you.name} にも分かる。`,
+          `${treve.name}가 이제부터 아주 중요한 이야기를 꺼내려 한다는 사실을, ${you.name}은(는) 직감적으로 알아차렸다.`,
         );
-        await treve.say_and_wait(`あなたを忘れられない。トレーナー。`);
+        await treve.say_and_wait(`전 당신을 잊을 수 없었어요, 트레이너.`);
         await treve.say_and_wait(
-          `国も人種も、分からない。でもトレーナーなら、楽しいと思う。`,
+          `국가나 인종 같은 건 아무래도 좋아요. 하지만 트레이너, 당신과 함께라면 정말 즐거울 것 같아요.`,
         );
-        await era.printAndWait(`これは ${you.name} の罪状だ。`);
-        await era.printAndWait(`胸がかすかに痛み、${you.name} は平気を装う。`);
-        await treve.say_and_wait(`愛してる。`);
-        await treve.say_and_wait(`ずっと愛してる。`);
-        await era.printAndWait(`言葉は滑らかだ。`);
+        await era.printAndWait(`이것은 온전히 ${you.name}의 죄였다.`);
+        await era.printAndWait(`가슴 한구석이 아려왔지만, ${you.name}은(는) 아무렇지 않은 척 표정을 숨겼다.`);
+        await treve.say_and_wait(`사랑해요.`);
+        await treve.say_and_wait(`줄곧 당신을 사랑해 왔어요.`);
+        await era.printAndWait(`한 마디 한 마디가 너무나 매끄럽게 흘러나왔다.`);
         await era.printAndWait(
-          `何度も練習したに違いない。${you.name} のために、わざわざ。`,
+          `분명 속으로 수없이 연습하고 또 연습했을 터였다. 오직 ${you.name}만을 위해 특별히 연습해 온 고백이었다.`,
         );
-        await era.printAndWait(`頭が真っ白になる。動悸。呼吸が粗くなったか。`);
+        await era.printAndWait(`머릿속이 새하얘졌다. 심장이 거세게 뛰고 호흡이 가빠져 오는 듯한 착각마저 들었다.`);
         await era.printAndWait(
-          `${treve.sex}が胸の内を見せるたび、${you.name} の心も晒される。`,
+          `${treve.sex}가 마음을 전해올 때마다, ${you.name}의 비겁한 속내 역시 가차 없이 파헤쳐졌다.`,
         );
         await era.printAndWait(
-          `糸を解くように、${treve.name} の言葉はヴェールを一枚ずつ剥ぎ、${you.name} の心も裸にする。`,
+          `마치 고치에서 실을 자아내듯, ${treve.name}의 올곧은 대사들이 마음에 씐 베일을 한 겹씩 벗겨내며 ${you.name}의 심장을 적나라하게 드러내고 있었다.`,
         );
-        await era.printAndWait(`${you.name} はどうしようもない遺憾を感じる。`);
-        await era.printAndWait(`${treve.name} は何度も言葉を重ねる。`);
+        await era.printAndWait(`그리고 ${you.name}은(는) 뼈저린 후회와 아쉬움을 느꼈다.`);
+        await era.printAndWait(`${treve.name}는 끊임없이 이야기를 쏟아냈다.`);
         await treve.say_and_wait(
           `……ねえ、${
             you.actual_name
           }。私たちがトレーナーと${treve.uma_sex_title}じゃなかったら、出会えたかしら。`,
         );
-        era.printButton(`「……出会えない。」`, 1);
+        era.printButton(`「……아니, 못 만났겠지.」`, 1);
         await era.input();
-        await treve.say_and_wait(`そうね。`);
+        await treve.say_and_wait(`그렇겠죠.`);
         await treve.say_and_wait(`……`);
         await era.printAndWait(
-          `立っているこの場所から空を仰ぐと、一等星が数個光っているだけだ。`,
+          `두 사람이 서 있는 자리에서 밤하늘을 올려다보니 희미한 일등성 몇 개만 외롭게 빛나고 있었다.`,
         );
-        await era.printAndWait(`都心から見る、安い星空。`);
+        await era.printAndWait(`도심에서 바라보는 특별할 것 없는 밤하늘.`);
         await era.printAndWait(
-          `この低い星空の下に生まれ、おそらくここで死ぬ ${you.name} と、満点の星空のような未来を抱えた${treve.sex}。`,
+          `이 나지막하고 우중충한 하늘 아래에서 태어나 아마도 이곳에서 뼈를 묻을 ${you.name}과(와), 눈부신 은하수 같은 미래를 품고 달리는 ${treve.sex}.`,
         );
-        await era.printAndWait(`不均衡なのは、明らかだ。`);
+        await era.printAndWait(`두 사람 사이의 격차는 너무나도 극명했다.`);
         await era.printAndWait(
-          `${you.name} は、今にも泣きそうな ${treve.name} に告げる。`,
+          `${you.name}은(는) 당장이라도 울음을 터뜨릴 것 같은 ${treve.name}에게 차갑게 선언했다.`,
         );
-        await era.printAndWait(`夜風が吹き、日没は近い。`);
+        await era.printAndWait(`밤바람이 불어왔다. 해가 저물어가고 있었다.`);
         await era.printAndWait(
-          `${treve.name} の目は、出会ったときとほとんど変わっていない。`,
-        );
-        await era.printAndWait(
-          `これまで何度も回想した記憶の中の${treve.sex}と同じだ。`,
+          `${treve.name}의 눈동자는 처음 만났을 때와 비교해 조금도 변함이 없었다.`,
         );
         await era.printAndWait(
-          `だが変わったこともある。${treve.sex}はレース以外への興味を芽生えさせた。`,
-        );
-        await era.printAndWait(`時間は、すべてを変える。`);
-        await era.printAndWait(
-          `${you.name} は${treve.sex}と違い、${treve.sex}の足を引っ張るだけだ。`,
+          `지금까지 수없이 반추해 왔던 기억 속의 ${treve.sex} 그대로였다.`,
         );
         await era.printAndWait(
-          `${you.name} は${treve.uma_sex_title}の足を引っ張りたくない。`,
+          `하지만 확실히 변한 것도 있었다. ${treve.sex}의 마음속에 레이스 이외의 것에 대한 열망이 싹튼 것이다.`,
         );
-        await era.printAndWait(`だから——`);
-        era.printButton(`「別れよう。」`, 1);
+        await era.printAndWait(`시간은 모든 것을 변화시킨다.`);
+        await era.printAndWait(
+          `${you.name}은(는) ${treve.sex}와는 달리 그저 발목을 잡을 뿐인 존재다.`,
+        );
+        await era.printAndWait(
+          `${you.name}은(는) 동경하는 ${treve.uma_sex_title}의 발목을 잡고 싶지 않았다.`,
+        );
+        await era.printAndWait(`그러니까——`);
+        era.printButton(`「헤어지자.」`, 1);
         await era.input();
-        await treve.say_and_wait(`ん……！`);
+        await treve.say_and_wait(`읏……!`);
         await you.say_and_wait(
-          `もう私の前に現れないでくれ。仕事以外なら、日本にも来るな。消えてくれ。`,
+          `다시는 내 앞에 나타나지 마. 공적인 일이 아니라면 일본에 오지도 마. 내 눈앞에서 사라져.`,
         );
-        await treve.say_and_wait(`なぜ、なぜそんなことを！`);
+        await treve.say_and_wait(`왜, 어째서 그런 심한 말씀을 하시는 거예요!`);
         await you.say_and_wait(`……`);
         await treve.say_and_wait(
-          `記憶の中のトレーナーは優しかった。ずっとそう思って——`,
+          `제 기억 속의 트레이너는 무척 상냥하셨단 말이에요, 그래서 전 줄곧——`,
         );
-        await you.say_and_wait(`それは間違いだ。`);
-        await treve.say_and_wait(`ん……！`);
+        await you.say_and_wait(`그건 네 착각이야.`);
+        await treve.say_and_wait(`으……!`);
         await you.say_and_wait(
-          `……もうすぐ夜だ。寝れば朝になる。そうすれば明日だ。さよなら——`,
+          `……곧 밤이 깊어질 테고, 자고 일어나면 아침이 오겠지. 그렇게 내일이 되면 영원히 안녕이야——`,
         );
-        await treve.say_and_wait(`待って！`);
+        await treve.say_and_wait(`기다려 주세요!`);
         await you.say_and_wait(`……`);
         await treve.say_and_wait(
-          `せめて、せめて気持ち…せめてトレーナーの気持ちは——`,
+          `적어도, 적어도 마음만은… 적어도 트레이너의 진짜 속마음만큼은——`,
         );
-        era.printButton(`「知らない。」`, 1);
+        era.printButton(`「모르겠어.」`, 1);
         await era.input();
-        await treve.say_and_wait(`あっ……！`);
+        await treve.say_and_wait(`아……!`);
         await era.printAndWait(
-          `${you.name} は、最低の人生に似合う言葉を言った。`,
+          `${you.name}은(는) 그야말로 최악의 인간에게나 어울릴 법한 모진 말을 내뱉었다.`,
         );
-        await treve.say_and_wait(`嘘つき！`);
+        await treve.say_and_wait(`거짓말쟁이!`);
         await you.say_and_wait(`……`);
         await era.printAndWait(
-          `${you.name} は、${treve.name} が後ろへ去る足音を聞く。`,
+          `${you.name}의 등 뒤로 ${treve.name}가 울며 뛰어가는 발소리가 멀어졌다.`,
         );
-        await era.printAndWait(`${you.name} はふらふらと東京競馬場へ来る。`);
+        await era.printAndWait(`${you.name}은(는) 비틀거리는 걸음으로 도쿄 경기장으로 향했다.`);
         await era.printAndWait(
-          `競馬場は冷たい。周囲の喧騒が蘇る気がする。走る車の音と、葉の揺れる音。`,
+          `경기장은 싸늘하게 식어 있었고, 도로 위를 달리는 차 소리와 나뭇잎이 서스레치는 소리 등 주변의 소음이 다시금 선명해지는 것 같았다.`,
         );
-        await era.printAndWait(`十一月だ。ジャパンカップが近い。`);
+        await era.printAndWait(`11월, 재팬 컵이 코앞으로 다가와 있었다.`);
         await era.printAndWait(
-          `${you.name} はしばらくそこに立ち、秋の競馬場に一人で立つ。`,
+          `${you.name}은(는) 한동안 그곳에 머물렀다. 쓸쓸한 가을 경기장에 멍하니 홀로 서 있었다.`,
         );
-        await era.printAndWait(`${you.name} の隣に、誰もいない。`);
-        await era.printAndWait(`それでいい。だから——`);
-        era.printButton(`「忘れてくれ……」`, 1);
+        await era.printAndWait(`${you.name}의 곁에는 이제 아무도 없었다.`);
+        await era.printAndWait(`이걸로 된 거다. 그러니까——`);
+        era.printButton(`「전부 잊자……」`, 1);
         await era.input();
-        await era.printAndWait(`——何分過ぎただろう。`);
-        await era.printAndWait(`空はすでに暗い。夜が東京競馬場へ降りる。`);
-        await era.printAndWait(`放送では、まもなく閉門の時間らしい。`);
-        await era.printAndWait(`胸に穴が開いたようだ。`);
+        await era.printAndWait(`——그렇게 몇 분이나 흘렀을까.`);
+        await era.printAndWait(`하늘은 완전히 어두워졌고, 도쿄 경기장 위로 짙은 밤의 어둠이 가라앉았다.`);
+        await era.printAndWait(`안내 방송에서는 곧 폐장 시간임을 알리고 있었다.`);
+        await era.printAndWait(`가슴 한구석에 거대한 구멍이 뚫린 것만 같았다.`);
         await era.printAndWait(
-          `${you.name} が去ろうとするとき……出入口に ${treve.name} が立っている。`,
+          `${you.name}이(가) 막 발걸음을 옮겨 떠나려던 찰나…… 출입구 쪽에 ${treve.name}가 서 있었다.`,
         );
-        era.printButton(`「なぜここに……」`, 1);
+        era.printButton(`「어째서…… 여기에 있는 거야……」`, 1);
         await era.input();
         await era.printAndWait(
           `${treve.name} は凄い脚力で ${you.name} へ突進する。${treve.sex}の頭が槍のように ${you.name} の腹へ刺さり、肺が潰れるようだ。`,
