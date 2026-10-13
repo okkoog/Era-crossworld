@@ -384,7 +384,7 @@ module.exports = {
 
   // [번역 완료] before_arim_kin_a
   before_arim_kin_a: (() => {
-    const title = '最終実験、準備完了';
+    const title = '최종 실험, 준비 완료';
     /**
      * シニア級有馬記念のレース前、Plan A 限定
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -1016,7 +1016,7 @@ module.exports = {
 
   // [번역 완료] before_takz_kin_a
   before_takz_kin_a: (() => {
-    const title = '万衆一心';
+    const title = '모두가 한마음으로';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -1087,7 +1087,7 @@ module.exports = {
 
   // [번역 완료] ending_a
   ending_a: (() => {
-    const title = '祝勝';
+    const title = '승리 축하';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} coffee マンハッタンカフェ
