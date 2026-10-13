@@ -1274,38 +1274,38 @@ module.exports = {
         ]);
         era.println();
 
-        await you.say_and_wait('いや……見られたくないなら……無理はさせない。');
-        await coffee.say_and_wait([callname_25, '……優しいですね……']);
+        await you.say_and_wait('아니…… 보이고 싶지 않다면…… 억지로 그러지는 말자.');
+        await coffee.say_and_wait([callname_25, '…… 정말 다정하시네요……']);
         era.println();
 
-        await tachyon.print_and_wait(['ええ……']);
-        await tachyon.print_and_wait(['本当に、優しすぎる。']);
-        await tachyon.print_and_wait(['なぜか、頭の中に絵が浮かぶ。']);
+        await tachyon.print_and_wait(['그렇군……']);
+        await tachyon.print_and_wait(['정말로, 지나칠 정도로 다정해.']);
+        await tachyon.print_and_wait(['어째서인지, 뇌리에 어떤 상상이 떠오르기 시작했다.']);
         await tachyon.print_and_wait([
-          'もし',
+          '만약 ',
           you.sex,
-          'が、',
+          '가 ',
           tachyon.get_colored_name(),
-          ' がこんな',
+          '이 이런 ',
           tachyon.uma_sex_title,
-          'だと知ったら。',
+          '라는 사실을 알게 된다면.',
         ]);
         await tachyon.print_and_wait([
-          'もし',
+          '만약 ',
           you.sex,
-          'が、今の下賤な自分を見たら。',
+          '가 지금 나의 이 하등한 모습을 보게 된다면.',
         ]);
         await tachyon.print_and_wait([
           you.sex,
-          'は……どんな蔑む眼で自分を見るだろう？',
+          '는…… 얼마나 경멸 어린 눈으로 나를 쳐다볼까?',
         ]);
         await tachyon.print_and_wait([
-          'どんな冷たい言葉で、自分を罵るだろう。',
+          '얼마나 차가운 말로 나를 매도할까.',
         ]);
-        await tachyon.print_and_wait(['あるいは……']);
-        await tachyon.print_and_wait(['もし、', you.sex, 'が自分を許したら。']);
+        await tachyon.print_and_wait(['아니면……']);
+        await tachyon.print_and_wait(['만약 ', you.sex, '가 나를 용서해 준다면.']);
         await tachyon.print_and_wait([
-          'ここまで救いようのない自分を、許したら……',
+          '이미 이토록 구제 불능이 되어버린 나를 용서한다면……',
         ]);
         await tachyon.print_and_wait([
           'そのあと再び ',
@@ -1339,9 +1339,9 @@ module.exports = {
           '言うことを聞かない子犬を躾けるように。',
         ]);
         await tachyon.print_and_wait([
-          '自分の恋敵なのに、自分のライバルなのに。',
+          '분명, 나의 연적이며 라이벌이거늘.',
         ]);
-        await tachyon.print_and_wait(['なのに……']);
+        await tachyon.print_and_wait(['하지만……']);
         await tachyon.print_and_wait([
           t_call_c,
           ' の股からゆっくり流れ、脹脛を伝って落ちるのを見る。',
@@ -1387,11 +1387,11 @@ module.exports = {
         era.println();
 
         await tachyon.print_and_wait([
-          '不意に、',
+          '갑자기, ',
           t_call_c,
-          ' が耳元へ口を寄せ、',
+          '이 입술을 귓가에 가져다 대고, 오직 ',
           tachyon.uma_sex_title,
-          'にしか聞こえない声量で囁く。',
+          '만이 들을 수 있는 작은 목소리로 속삭였다.',
         ]);
         era.println();
 
