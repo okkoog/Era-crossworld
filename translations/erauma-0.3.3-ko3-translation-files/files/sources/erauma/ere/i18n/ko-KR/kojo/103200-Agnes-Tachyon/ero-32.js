@@ -1006,15 +1006,15 @@ module.exports = {
         era.println();
 
         await tachyon.print_and_wait([
-          'そこまで言って、',
+          '그 말을 내뱉으며, ',
           t_call_c,
-          ' はベッド脇にしゃがむ自分を一目見た。',
+          '은 침대 옆에 웅크리고 있는 자신을 힐끗 쳐다보았다.',
         ]);
-        await tachyon.print_and_wait(['今の自分の顔は、どんな表情だろう？']);
-        await tachyon.print_and_wait(['悲しみ？ 苦痛？ 憎しみ？ 虚無？']);
-        await tachyon.print_and_wait(['ああ……']);
-        await tachyon.print_and_wait([t_call_c, ' の蔑む眼を見れば分かる。']);
-        await tachyon.print_and_wait(['どれにも、当てはまらないのだろう。']);
+        await tachyon.print_and_wait(['지금의 나는, 어떤 표정을 짓고 있을까?']);
+        await tachyon.print_and_wait(['슬픔? 고통? 증오? 절망?']);
+        await tachyon.print_and_wait(['아아……']);
+        await tachyon.print_and_wait([t_call_c, '의 경멸 어린 눈빛만 봐도 알 수 있군.']);
+        await tachyon.print_and_wait(['분명, 그중 어느 것도 아닐 테지.']);
         era.println();
 
         await coffee.say_and_wait([callname_25, '……', callname_25, '……']);
@@ -1029,16 +1029,16 @@ module.exports = {
         await tachyon.print_and_wait([
           'それから、最下等の娼婦ですら恥じるような嬌声を上げる。',
         ]);
-        await tachyon.print_and_wait(['……いいえ、それは自分の色眼鏡だ。']);
+        await tachyon.print_and_wait(['……아니, 이건 그저 나의 색안경일 뿐이겠지.']);
         await tachyon.print_and_wait([
           '実際は、幸福で、喜びに満ちた喘ぎなのだろう。',
         ]);
-        await tachyon.print_and_wait(['だが、構わない。']);
+        await tachyon.print_and_wait(['하지만, 상관없어.']);
         await tachyon.print_and_wait([
           'むしろ前者だと思い込んだほうが、自分は興奮する。',
         ]);
-        await tachyon.print_and_wait(['自分の恋人。']);
-        await tachyon.print_and_wait(['自分の ', callname, '。']);
+        await tachyon.print_and_wait(['나의 연인.']);
+        await tachyon.print_and_wait(['나의 ', callname, '。']);
         await tachyon.print_and_wait([
           '娼婦以下の存在に従わせ、騎乗されている姿。',
         ]);
@@ -1073,7 +1073,7 @@ module.exports = {
 
         await tachyon.print_and_wait(['안 돼……']);
         await tachyon.print_and_wait(['그만둬.']);
-        await tachyon.print_and_wait(['待って、', t_call_c, '、やめて。']);
+        await tachyon.print_and_wait(['잠깐, ', t_call_c, ', 하지 말게.']);
         await tachyon.print_and_wait(['더는 참을 수 없어.']);
         await tachyon.print_and_wait(['결국 입을 열어, 소리를 내뱉고 말았다.']);
         await tachyon.print_and_wait(['하지만……']);
