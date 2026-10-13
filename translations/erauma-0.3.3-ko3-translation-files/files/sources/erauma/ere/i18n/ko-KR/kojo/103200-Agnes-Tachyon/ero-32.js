@@ -304,36 +304,36 @@ module.exports = {
      * @param {PrintedSpan} callname_25 マンハッタンカフェがプレイヤーを呼ぶ名
      */
     const f = async (tachyon, coffee, you, callname, callname_25) => {
-      await tachyon.say_and_wait(['はあっ……はあっ……']);
+      await tachyon.say_and_wait(['하아…… 하아……']);
       era.println();
 
-      await tachyon.print_and_wait(['手足が、熱い。']);
-      await tachyon.print_and_wait(['頭が、熱い。']);
+      await tachyon.print_and_wait(['손발이 뜨겁다.']);
+      await tachyon.print_and_wait(['머리가 뜨겁다.']);
       era.println();
 
-      await tachyon.say_and_wait(['すぅ……はあっ……はあっ……']);
+      await tachyon.say_and_wait(['스읍…… 하아…… 하아……']);
       era.println();
 
-      await tachyon.print_and_wait(['胸が熱い。']);
+      await tachyon.print_and_wait(['가슴이 뜨겁다.']);
       await tachyon.print_and_wait(['秘部が灼ける。']);
       era.println();
 
       await tachyon.say_and_wait([callname, '……', callname, '……']);
       era.println();
 
-      await tachyon.print_and_wait(['喉が、熱い。']);
-      await tachyon.print_and_wait(['舌先が、熱い。']);
-      await tachyon.print_and_wait(['だから、抑えきれず呼んでしまう。']);
-      await tachyon.print_and_wait(['自分を、全身を熱くする源を。']);
+      await tachyon.print_and_wait(['목이 뜨겁다.']);
+      await tachyon.print_and_wait(['혀끝이 뜨겁다.']);
+      await tachyon.print_and_wait(['그래서 참지 못하고 이름을 부르고 만다.']);
+      await tachyon.print_and_wait(['자신의 온몸을 뜨겁게 만드는 그 사람을.']);
       era.println();
 
       await tachyon.say_and_wait([callname, '……くださいまし……お願い……']);
       era.println();
 
       await tachyon.print_and_wait([
-        '朦朧とするなか、',
+        '의식이 몽롱한 가운데, ',
         you.sex,
-        'の姿が眼前に現れる。',
+        '의 모습이 눈앞에 나타난다.',
       ]);
       await tachyon.print_and_wait([
         you.sex,
@@ -594,38 +594,38 @@ module.exports = {
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['突然、睦言が止まった。']);
+      await tachyon.print_and_wait(['갑자기 다정한 속삭임이 멈췄다.']);
       await tachyon.print_and_wait(['絶頂の寸前で寸止めされたように、焦る。']);
-      await tachyon.print_and_wait(['どうして続けないの。']);
-      await tachyon.print_and_wait(['どうして止まったの。']);
-      await tachyon.print_and_wait(['睦言が止んだ瞬間、部屋は静まり返る。']);
+      await tachyon.print_and_wait(['어째서 계속하지 않는 거지?']);
+      await tachyon.print_and_wait(['왜 멈춘 거지?']);
+      await tachyon.print_and_wait(['속삭임이 멎는 순간 방 안은 고요해졌다.']);
       era.println();
 
-      await tachyon.print_and_wait(['たっ。']);
-      await tachyon.print_and_wait(['たっ。']);
-      await tachyon.print_and_wait(['たっ。']);
+      await tachyon.print_and_wait(['또각.']);
+      await tachyon.print_and_wait(['또각.']);
+      await tachyon.print_and_wait(['또각.']);
       await tachyon.print_and_wait([
-        'だから……扉の外の足音が、やけにはっきり聞こえる。',
+        '그래서…… 문밖의 발소리가 유난히 또렷하게 들렸다.',
       ]);
-      await tachyon.print_and_wait(['足音は、扉の前で止まった。']);
-      await tachyon.print_and_wait(['外の人は、何をするつもりだろう。']);
-      await tachyon.print_and_wait(['開けるの？']);
+      await tachyon.print_and_wait(['발소리는 문 앞에서 멈췄다.']);
+      await tachyon.print_and_wait(['문밖의 사람은 뭘 하려는 걸까?']);
+      await tachyon.print_and_wait(['문을 열려는 걸까?']);
       await tachyon.print_and_wait([
         '開けられたら、自分のこの姿、この卑しい姿が。',
       ]);
-      await tachyon.print_and_wait(['見られてしまう……見られてしまう。']);
+      await tachyon.print_and_wait(['들키고 말 거야…… 들키고 말 거야.']);
       await tachyon.print_and_wait([
-        '隠れなければ。こんなところを見せられない。どこかに隠れなければ。',
+        '숨어야 해. 이런 모습을 보여줄 수는 없어. 어디든 숨어야 해.',
       ]);
       await tachyon.print_and_wait([
         'なのに……どうして、手がまた勝手に動くの……',
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['がらっ。']);
-      await tachyon.print_and_wait(['ああ……開いた。']);
+      await tachyon.print_and_wait(['드르륵.']);
+      await tachyon.print_and_wait(['아아…… 열렸다.']);
       await tachyon.print_and_wait([
-        '扉の外に現れた、黒髪に金色の瞳の影を見た瞬間。',
+        '문밖에 나타난 검은 머리와 금빛 눈동자의 그림자를 본 순간.',
       ]);
       await tachyon.print_and_wait([
         '絶頂は極みへ達し、今まででいちばん興奮した頂きを迎えた。',
