@@ -722,7 +722,7 @@ module.exports = {
   })(),
 
   74: (() => {
-    const title = 'Un heureux événement（幸せな出来事）';
+    const title = 'Un heureux événement(행복한 일)';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
@@ -1115,7 +1115,7 @@ module.exports = {
 
   // [번역 대상] 89
   89: (() => {
-    const title = 'Premier amour（初恋という小事）';
+    const title = 'Premier amour(첫사랑이라는 사소한 일)';
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
@@ -1355,7 +1355,7 @@ module.exports = {
 
   // [번역 대상] 99
   99: (() => {
-    const title = "Ensemble, c'est tout（いっしょにいれば、それでいい）";
+    const title = "Ensemble, c'est tout(함께라면 그걸로 충분해)";
     /**
      * @param {CharaTalk} treve トレヴ
      * @param {CharaTalk} you プレイヤー
