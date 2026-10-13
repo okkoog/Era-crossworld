@@ -2750,130 +2750,130 @@ module.exports = {
         era.println();
         await era.printAndWait([tachyon.get_colored_name()]);
         await era.printAndWait([
-          'その名前を聞いた瞬間、',
+          '이 이름을 듣는 순간, ',
           you.get_colored_name(),
-          ' の内側は一拍、欠けたような気がする',
+          '의 심장이 마치 한 박자 어긋난 듯이 뛰었다.',
         ]);
-        await era.printAndWait('聞いたことのない名前のはずなのに');
+        await era.printAndWait('분명 들어본 적 없는 이름일 텐데');
         await era.printAndWait([
-          'この',
+          '분명 모르는 사이일 터인 이 ',
           tachyon.uma_sex_title,
-          'を知らないはずなのに',
+          '을(를) 전혀 모를 텐데.',
         ]);
-        await era.printAndWait('なぜか、馴染みがある');
+        await era.printAndWait('하지만 어째서인지, 묘한 친숙함이 느껴졌다.');
         era.println();
-        era.printButton('「僕たち……どこかで会ったことが？」', 1);
+        era.printButton('「우리…… 어디선가 본 적 없어?」', 1);
         await era.input();
         await tachyon.say_and_wait(
-          'おや、近頃はそんな古い口説きは流行りませんわよ、トレーナー君',
+          '이런, 요즘 세상에 그런 구닥다리 헌팅 수법은 유행이 지났다고, 트레이너 군.',
         );
         await era.printAndWait([
           tachyon.sex,
-          'は ',
+          '는 ',
           you.get_colored_name(),
-          ' を見て悪戯な笑顔を浮かべ、',
+          '을(를) 보며 짓궂은 미소를 지었고, ',
           you.get_colored_name(),
-          ' は慌てて、そういう意味ではないと説明する',
+          '은(는) 다급히 그런 게 아니라고 해명했다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          '冗談ですわ……なぜか、私も同じ感じがしますの',
+          '농담이라네…… 왠지 모르겠지만, 나도 그런 느낌이 드는군.',
         );
         era.println();
         await era.printAndWait([
-          'なぜか、トレーナーとしての直感が ',
+          '어째서인지, 트레이너로서의 직감이 ',
           you.get_colored_name(),
-          ' に告げる。この',
+          '에게 말해주고 있었다. 이 ',
           tachyon.uma_sex_title,
-          'は、きっと ',
+          '는 반드시 ',
           you.get_colored_name(),
-          ' を震撼させる走りを見せる、と。',
+          '을(를) 전율케 할 주법을 보여줄 것이라고.',
         ]);
         await era.printAndWait([
-          'だが同時に、ある絵が ',
+          '하지만 동시에, 어떤 장면이 ',
           you.get_colored_name(),
-          ' の頭に浮かび続ける。',
+          '의 뇌리에 끊임없이 떠올랐다. 그것은 이 ',
           tachyon.get_colored_name(),
-          ' というこの',
+          '이라고 불리는 ',
           tachyon.uma_sex_title,
-          'が……',
+          '가……',
         ]);
-        await era.printAndWait('しきりに弁当をねだる姿？？？');
+        await era.printAndWait('끊임없이 도시락을 요구하는 모습이었다???');
         await era.printAndWait([
-          '気づくと、',
+          '정신을 차렸을 때, ',
           you.get_colored_name(),
-          ' はすでに',
+          '은(는) 이미 ',
           tachyon.sex,
-          'へ契約を申し込んでいた',
+          '에게 계약을 제안한 뒤였다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          '…………申し上げますが、普通、こんなに突然契約を申し込むものですの？ これは',
+          '…………저기 말이야, 보통 이렇게 갑자기 계약을 제안하나? 이건 ',
           tachyon.uma_sex_title,
-          'の一生に関わることですわ。もう少し真剣に扱うべきだと思いませんの？',
+          '의 일생이 걸린 문제라고. 좀 더 진지하게 대해야 한다고 생각하지 않나?',
         ]);
-        era.printButton('「きっと、僕たちは合う気がする」', 1);
+        era.printButton('「왠지 느낌이 와. 우리는 반드시 잘 맞을 거야」', 1);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は言い終え、すべて終わったと思う',
+          '은(는) 말을 내뱉고 나서야, 모든 것이 끝났다고 생각했다.',
         ]);
         await era.printAndWait(
-          '何を考えていたんだ。既視感はあるが、普通はこんなに突然契約を申し込まない！！',
+          '대체 무슨 생각을 한 거지. 상대에게 기시감이 느껴진다고는 해도, 보통 이렇게 뜬금없이 계약을 제안하지는 않잖아!!',
         );
         await era.printAndWait(
-          'これで終わりだ。拒まれるだけでなく、さんざん笑われるかもしれない…………',
+          '이제 다 끝났다. 거절당하는 건 물론이고, 심하면 엄청나게 비웃음만 당하겠지…………',
         );
         era.println();
         await era.printAndWait([
-          '案の定、',
+          '아니나 다를까, ',
           tachyon.get_colored_name(),
-          ' という',
+          '이라는 이름의 ',
           tachyon.uma_sex_title,
-          'は聞いて一度呆け、それから豪快に笑い、それから……',
+          '는 말을 듣고 멍하니 있다가, 이내 하하하 크게 웃더니……',
         ]);
-        await tachyon.say_and_wait('いいですわ');
+        await tachyon.say_and_wait('좋네.');
         era.println();
-        await era.printAndWait('ほら、やはり………………');
-        await era.printAndWait('？？？？？');
+        await era.printAndWait('거봐, 역시………………');
+        await era.printAndWait('?????');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は満面の疑問符を浮かべて相手を見る',
+          '은(는) 의문이 가득한 얼굴로 상대를 바라볼 수밖에 없었다.',
         ]);
-        await era.printAndWait([tachyon.sex, 'は目尻に笑った涙を拭い、言う']);
+        await era.printAndWait([tachyon.sex, '가 눈가에 맺힌 웃음의 눈물을 닦으며 말했다.']);
         era.println();
         await tachyon.say_and_wait(
-          'なぜか、私も同じ感じがしますわ……その感じの源が何かは、もちろん調べなければなりませんが、',
+          '나도 왠지 모르게 그런 예감이 드는군…… 비록 이 감정의 근원이 무엇인지는 반드시 밝혀내야 하겠지만,',
         );
         await tachyon.say_and_wait(
-          'あなたは悪い人ではないと思います。その上、絶対に面白い人になる……',
+          '자네는 나쁜 사람은 아닌 것 같아. 그뿐만 아니라, 분명 아주 재미있는 사람일 거야……',
         );
         await tachyon.say_and_wait(
-          'ふふ、ですから、よろしくですわ、トレーナー…………いいえ、モルモット君',
+          '후후, 그러니 잘 부탁하네, 트레이너………… 아니, 모르모트 군.',
         );
         era.println();
-        await era.printAndWait('「モルモット君」');
+        await era.printAndWait('「모르모트 군」');
         await era.printAndWait([
           tachyon.sex,
-          'が不意に変えた呼び方が、少し訳が分からず、少し怖い……',
+          '가 갑자기 바꿔 부른 호칭은 어딘가 묘했고, 심지어 약간의 공포마저 느껴졌다……',
         ]);
         await era.printAndWait([
-          'モルモットという呼び方は、普通あまり良い呼び方ではないだろう。それに',
+          '애당초 모르모트라는 호칭은 보통 좋은 의미로 쓰이지 않는 데다가, ',
           tachyon.sex,
-          'のこの研究狂いの様子…………',
+          '의 이 연구광 같은 모습까지 더해지니…………',
         ]);
         await era.printAndWait([
-          'だがそれ以外に、',
+          '하지만 그런 감정 외에도, ',
           you.get_colored_name(),
-          ' は一筋の親しさも感じる',
+          '은(는) 한 줄기 친숙함을 느꼈다.',
         ]);
-        era.printButton('「よろしく、アグネスタキ…………タキオン」', 1);
+        era.printButton('「잘 부탁해, 아그네스…… 타키온」', 1);
         await era.input();
         await era.printAndWait([
           you.get_colored_actual_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' を知った',
+          '을 알게 되었다',
         ]);
       }
     };
