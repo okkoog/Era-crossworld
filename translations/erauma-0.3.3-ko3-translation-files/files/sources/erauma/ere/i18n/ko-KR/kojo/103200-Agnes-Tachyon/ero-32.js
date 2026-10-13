@@ -551,7 +551,7 @@ module.exports = {
       ]);
       await tachyon.print_and_wait(['下から、また潮が噴き出した。']);
     };
-    f.title = 'Aromatic Hydrocarbon Addiction（芳香族炭化水素依存）';
+    f.title = '방향족 탄화수소 의존';
     return f;
   })(),
 
@@ -1425,7 +1425,7 @@ module.exports = {
       }
       return ret;
     };
-    f.title = 'Aromatic Hydrocarbon Poisoning（芳香族炭化水素中毒）';
+    f.title = '방향족 탄화수소 중독';
     return f;
   })(),
 
@@ -1856,10 +1856,10 @@ module.exports = {
       await tachyon.say_and_wait('では……ご褒美として、処理して差し上げますわ');
       await tachyon.say_and_wait('この数日、溜まったもの❤');
       era.println();
-      await era.printAndWait('……え？');
+      await era.printAndWait('……네?');
       era.println();
-      await tachyon.say_and_wait('その反応……まさか、お断りですの？');
-      await tachyon.say_and_wait('恋人同士でしょう？');
+      await tachyon.say_and_wait('그 반응은…… 설마 거절하시는 건가요?');
+      await tachyon.say_and_wait('우리 연인 사이잖아요?');
       era.println();
       await era.printAndWait('眼前に運ばれた肉を、食べない道理がない！');
       await era.printAndWait(
@@ -2134,7 +2134,7 @@ module.exports = {
         ' は、命令ばかり吐くその小さな口を、もう一度塞ぐことにした',
       ]);
     };
-    f.title = '実験の報酬・一';
+    f.title = '실험의 보상·첫 번째';
     return f;
   })(),
 
@@ -2148,7 +2148,7 @@ module.exports = {
     const f = async (tachyon, you, callname) => {
       await tachyon.say_and_wait([
         callname,
-        '～今日の実験もお疲れさまでしたわ',
+        '～오늘 실험도 수고 많으셨어요.',
       ]);
       await tachyon.say_and_wait('では……ご褒美が要りますの❤️');
       await you.say_and_wait('頼む');
@@ -2245,7 +2245,7 @@ module.exports = {
         '何が起きたかは分からないが、まずは何事もなかったことにしておこう',
       );
     };
-    f.title = '実験の報酬・三';
+    f.title = '실험의 보상·세 번째';
     return f;
   })(),
 
