@@ -988,172 +988,172 @@ module.exports = {
         await tachyon.say_and_wait('では早く。ちゃんと親しみましょう♡');
         era.drawLine();
         await tachyon.say_and_wait(
-          'おお、今回の弁当は上出来ですわ！ モルモット君！ ようやく昔の水準に戻りましたわね！',
+          '오오, 이번 도시락은 꽤 괜찮군! 모르모트 군! 드디어 예전 실력을 되찾았구만!',
         );
-        await you.say_as_passer_by_and_wait('モルモット', 'そ……そうか？');
+        await you.say_as_passer_by_and_wait('모르모트', '그…… 그래?');
         await tachyon.say_and_wait(
-          'あんなに必死にリハビリした甲斐がありましたわ！',
+          '필사적으로 재활한 보람이 있군 그래!',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'ああ…………レシピ本のおかげでもある',
+          '모르모트',
+          '그렇네………… 그 요리책들도 도움이 됐고.',
         );
         await tachyon.say_and_wait(
-          'まったく……こんな味、久しぶりですわ…………本当に、久しぶり………',
+          '정말…… 오랜만이군, 이 맛………… 정말로, 아주 오래도록………',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……タキオン、一つ聞いてもいいか？',
+          '모르모트',
+          '……타키온, 질문 하나 해도 될까?',
         );
-        await tachyon.say_and_wait('ん？');
+        await tachyon.say_and_wait('응?');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '俺は一体……どれだけ眠っていた',
+          '모르모트',
+          '내가 대체…… 얼마나 오랫동안 잠들어 있었던 거야?',
         );
         await tachyon.say_and_wait('……………');
-        await tachyon.say_and_wait('……………年ですわ');
-        await you.say_as_passer_by_and_wait('モルモット', '…………');
-        await tachyon.say_and_wait('……モルモット君？');
+        await tachyon.say_and_wait('…………년이라네.');
+        await you.say_as_passer_by_and_wait('모르모트', '…………');
+        await tachyon.say_and_wait('……모르모트 군?');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'すまない……そんなに長いあいだ、お前は……孤独だっただろう',
+          '모르모트',
+          '미안해…… 그 긴 세월 동안, 너…… 정말 외로웠겠구나.',
         );
-        await tachyon.say_and_wait('！');
+        await tachyon.say_and_wait('!');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……もう戻った。もう大丈夫だ。もう、これ以上……',
+          '모르모트',
+          '……내가 돌아왔어. 이제 됐어. 더 이상은……',
         );
         await tachyon.say_and_wait('……');
         await tachyon.say_and_wait(
-          'モルモット君……本当に……本当に、もう支えきれないところでしたわ……',
+          '모르모트 군…… 나 정말로…… 정말로, 거의 무너질 뻔했다네……',
         );
         await tachyon.say_and_wait(
-          'もし……目が覚めなかったら……もし……私を完全に忘れていたら……もし……もし……',
+          '만약…… 자네가 깨어나지 못했다면…… 만약…… 나를 완전히 잊어버렸다면…… 만약…… 만약……',
         );
         await tachyon.say_and_wait(
-          '本当に……怖かった……悪夢のよう……何年も続いた悪夢……',
+          '정말로…… 너무나 무서웠어…… 마치 악몽 같았지…… 수년간 이어진 악몽 말이야……',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '……………');
+        await you.say_as_passer_by_and_wait('모르모트', '……………');
         await tachyon.say_and_wait(
-          'でも……戻ってきましたわ。あなたは、戻ってきました',
+          '하지만…… 자네가 돌아왔어. 결국 다시 돌아와 주었어.',
         );
         await tachyon.say_and_wait(
-          '約束してくださいまし……今度は、もう離れないで……いいですわね？',
+          '약속해주게…… 이번엔 절대로 나를 떠나지 않겠다고…… 알겠나?',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '……ああ、もう離れない',
+          '모르모트',
+          '……응, 다시는 떠나지 않을게.',
         );
         era.drawLine();
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'それで……あの日は、いったい……',
+          '모르모트',
+          '그래서…… 그날 대체 무슨 일이 있었던 거야?',
         );
         await tachyon.say_and_wait(
-          '……あの日、あなたは商店街で……私は、ほんの少し席を外しただけ。なのに……自称ファンの者が、飛びかかって……それから……',
+          '……그날, 자네가 상점가에서…… 내가 잠시 자리를 비운 사이, 어떤…… 자칭 팬이라는 녀석이 달려들어서…… 그래서……',
         );
-        await tachyon.say_and_wait('……あのとき、もう少し早く戻れていれば、');
-        await tachyon.say_and_wait('いいえ、ずっとそばにいれば……');
+        await tachyon.say_and_wait('……만약 그때, 내가 조금만 더 빨랐더라면.');
+        await tachyon.say_and_wait('아니, 내가 계속 자네 곁에 있었더라면……');
         await tachyon.say_and_wait(
-          '絶対に、あんなことにはならなかった……ごめんなさい……',
+          '절대로, 절대로 그런 일은 일어나지 않았을 텐데…… 미안하네……',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'いいんだ……今は、もう無事なんだろう？',
+          '모르모트',
+          '괜찮아…… 어쨌든, 지금은 이렇게 멀쩡하잖아?',
         );
         await tachyon.say_and_wait(
-          'でも……あいだの、あなたの人生……何年も…………恨まないのですか？',
+          '하지만…… 그 사이 자네의 인생은…… 수년간의 세월이 무의미하게………… 나를 원망하지 않나?',
         );
         await tachyon.say_and_wait(
-          '私が原因でなければ……私が担当でなければ……あなたは、こんな目に遭わなかったかもしれませんわ',
+          '나 때문이 아니었다면…… 나를 담당하지 않았더라면…… 자네는 이런 일을 겪지 않아도 됐을 텐데.',
         );
-        await you.say_as_passer_by_and_wait('モルモット', 'なぜ恨む必要がある');
+        await you.say_as_passer_by_and_wait('모르모트', '내가 왜 너를 원망하겠어?');
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          'タキオンのせいじゃない……それなのに、タキオンは俺を救い出してくれた',
+          '모르모트',
+          '타키온 네 잘못도 아니고…… 게다가, 네가 노력해서 나를 살려냈잖아.',
         );
         await you.say_as_passer_by_and_wait(
-          'モルモット',
-          '感謝しても足りない。恨むわけがない',
+          '모르모트',
+          '고마워해도 모자랄 판에, 원망이라니.',
         );
         await tachyon.say_and_wait(
-          '…………そうですね。あなたなら、そう言いますわ',
+          '…………그렇군. 과연 자네답군. 분명 그렇게 말할 줄 알았어.',
         );
-        await you.say_as_passer_by_and_wait('モルモット', '？ どういう意味だ');
-        await tachyon.say_and_wait('いいえ……なんでもありませんわ');
+        await you.say_as_passer_by_and_wait('모르모트', '? 무슨 뜻이야.');
+        await tachyon.say_and_wait('아니…… 아무것도 아니야.');
         era.drawLine();
-        await era.printAndWait('こうして');
+        await era.printAndWait('그렇게.');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' とモルモット君の足跡は、かつて辿った場所をすべて踏んだ',
+          '과 모르모트 군의 발자취가, 그들이 함께했던 모든 장소에 새겨졌다.',
         ]);
-        await era.printAndWait('グラウンド、レース場、河原、神社');
+        await era.printAndWait('훈련장, 경기장, 강변, 신사.');
         await era.printAndWait(
-          '過去を味わい直し、何年も前に止まった時計を、また歩ませるために',
+          '과거를 되새기기 위해, 그리고 수년 전 멈춰버린 시간을 다시 움직이기 위해.',
         );
         await era.printAndWait(
-          'あいだに失った歳月は、埋められないかもしれない',
+          '어쩌면 잃어버린 세월은 메울 수 없을지도 모른다.',
         );
         await era.printAndWait(
-          'それでも二人は、自分たちだけの新しい人生を、懸命に作った',
+          '하지만 그들은 여전히 노력하며, 오직 그들만의 새로운 인생을 만들어나갔다.',
         );
         era.println();
-        await tachyon.say_and_wait('……こんな物語の終わり、気に入りましたか？');
+        await tachyon.say_and_wait('……이런 이야기의 결말, 만족하나?');
         era.println();
-        await era.printAndWait('……ああ、いい話だ');
+        await era.printAndWait('……응. 아주 좋네.');
         era.println();
-        await tachyon.say_and_wait('……モルモット君');
+        await tachyon.say_and_wait('……모르모트 군.');
         era.println();
-        await era.printAndWait('もういい。これで、十分だ');
-        await era.printAndWait('俺は……もう死ぬ');
+        await era.printAndWait('됐어, 이제, 이것으로 충분해.');
+        await era.printAndWait('나는…… 이제 곧 죽으니까.');
         await tachyon.say_and_wait('…………');
-        await era.printAndWait('タキオン……ありがとう');
+        await era.printAndWait('타키온…… 고마워.');
         await tachyon.say_and_wait(
-          '約束したでしょう……もう離れない、と。約束したのですわ',
+          '나랑 약속했잖나…… 다시는 떠나지 않겠다고, 약속했지 않았나.',
         );
         era.println();
-        await era.printAndWait('……すまない');
-        await era.printAndWait('また、お前を欺いたと思え');
-        await era.printAndWait('この日々は、幸せだった');
+        await era.printAndWait('……미안.');
+        await era.printAndWait('내가 또 너를 속였다고 생각해 줘.');
+        await era.printAndWait('이 기간 동안 나는 정말 행복했어.');
         await era.printAndWait(
-          'だが、この幸福は……俺のものではない。「モルモット君」のものだ',
+          '하지만 이 행복은…… 내 것이 아니라 「모르모트 군」의 것이야.',
         );
         await era.printAndWait(
-          'タキオンと出会えたこと……それが、人生でいちばん美しいことだ',
+          '타키온을 알게 된 것이…… 내 인생에서 가장 아름다운 일이었다고 생각해.',
         );
-        await era.printAndWait('だから、もう欺きたくない');
-        await era.printAndWait('だから、すまない');
-        await era.printAndWait('だから、許してくれ');
+        await era.printAndWait('그러니 더 이상은 속이고 싶지 않아.');
+        await era.printAndWait('그러니, 정말 미안해.');
+        await era.printAndWait('그러니, 미안해.');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' とモルモット君の物語は……ここで終わる',
+          '과 모르모트 군의 이야기는…… 여기서 끝이야.',
         ]);
-        await tachyon.say_and_wait('もし、あなたが望むなら……');
+        await tachyon.say_and_wait('만약 자네가 원한다면……');
         era.println();
-        await era.printAndWait('……すまない');
-        await era.printAndWait('だが、もうお前の足を引っ張りたくない');
-        await era.printAndWait('モルモット君は、ここで終わらせよう');
+        await era.printAndWait('……미안해.');
+        await era.printAndWait('하지만 나는 더 이상 네 발목을 붙잡고 싶지 않아.');
+        await era.printAndWait('모르모트 군의 이야기는 여기서 끝내기로 하자.');
       }
       era.println();
-      await era.printAndWait('すまない、タキオン。本当に眠い……もう、いいか？');
-      await tachyon.say_and_wait('……ええ。ゆっくり休みなさい。そばにいますわ');
+      await era.printAndWait('미안해, 타키온. 정말로 졸려…… 이제 됐을까?');
+      await tachyon.say_and_wait('……그래, 푹 자게. 내가 곁에 있어 줄테니.');
       era.drawLine();
-      await tachyon.print_and_wait('モルモット君は穏やかに目を閉じた');
+      await tachyon.print_and_wait('모르모트 군은 평온하게 눈을 감았다.');
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は泣かなかった。なぜなら……これが初めてではないから',
+        '은 울지 않았다. 왜냐하면…… 이번이 처음이 아니었기 때문이다.',
       ]);
       era.println();
-      await tachyon.print_and_wait('モルモット君との別れ');
-      await tachyon.print_and_wait('最初は、あの日の商店街だった');
-      await tachyon.print_and_wait('自分が席を外さなければ');
+      await tachyon.print_and_wait('모르모트 군과의 이별.');
+      await tachyon.print_and_wait('첫 번째는, 그날 상점가에서였다.');
+      await tachyon.print_and_wait('만약 자신이 떠나지 않았더라면.');
       await tachyon.print_and_wait([
-        '無理にでも',
+        '만약 강제로라도 ',
         you.sex,
-        'をそばに留めていれば',
+        '를 곁에 두었더라면.',
       ]);
-      await tachyon.print_and_wait('もし……');
-      await tachyon.print_and_wait('もし、などない');
+      await tachyon.print_and_wait('만약……');
+      await tachyon.print_and_wait('만약이란 건 없다.');
       era.println();
       if (plan_b) {
         await tachyon.print_and_wait('犯人を骨まで砕いて灰にしても');
