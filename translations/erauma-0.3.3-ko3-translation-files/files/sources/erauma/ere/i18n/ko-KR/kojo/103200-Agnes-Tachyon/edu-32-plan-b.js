@@ -30,7 +30,7 @@ module.exports = {
       c_call_t,
       arim_kin,
     ) => {
-      await tachyon.print_and_wait('有馬記念');
+      await tachyon.print_and_wait('아리마 기념');
       await tachyon.print_and_wait([
         callname,
         '의 말대로 이번 레이스가 끝나면 스스로에 대한 답을 얻을 것이다.',
@@ -194,7 +194,7 @@ module.exports = {
       c_call_t,
     ) => {
       await tachyon.print_and_wait([
-        '最初、',
+        '처음에는, ',
         tachyon.get_colored_name(),
         '은 그저 기다리고 있었다.',
       ]);
@@ -498,7 +498,7 @@ module.exports = {
         await tachyon.say_and_wait('끄악————');
         era.println();
         await era.printAndWait([
-          '突然、',
+          '갑자기, ',
           tachyon.get_colored_name(),
           '은 마치 정체 모를 힘에 머리를 맞은 듯, 순식간에 기절해버리고 말았다.',
         ]);
@@ -1498,19 +1498,19 @@ module.exports = {
         '실망할 일은 아니네. 처음 세운 계획대로 진행됐을 뿐이니까.',
       );
       era.println();
-      await you.say_as_passer_by_and_wait('記者A', [
+      await you.say_as_passer_by_and_wait('기자 A', [
         '타키온 ',
         tachyon.adult_sex_title,
         '! 오늘 개선문상 우승을 축하드립니다! 게다가 이번에는 역대 기록까지 경신하셨습니다!',
       ]);
       await you.say_as_passer_by_and_wait(
-        '記者A',
+        '기자 A',
         '이번 승리에 관해 경쟁 상대나 일본에 있는 가까운 분들에게 한 말씀 부탁드립니다.',
       );
       era.println();
       await tachyon.say_and_wait('……후후.');
       await tachyon.say_and_wait('그럼 마지막으로…… 한마디만 하겠네.');
-      await you.say_as_passer_by_and_wait('記者A', '最後……？');
+      await you.say_as_passer_by_and_wait('記者A', '마지막……?');
       await tachyon.say_and_wait([
         '나는 모든 ',
         tachyon.uma_sex_title,
@@ -1620,7 +1620,7 @@ module.exports = {
       await tachyon.print_and_wait(['앞서 달리는 ', tachyon.get_colored_name()]);
       await tachyon.print_and_wait('뒤를 바짝 쫓는 사냥개를 향해 도발을 던졌다.');
       era.drawLine();
-      await coffee.say_and_wait('……退屈');
+      await coffee.say_and_wait('……지루해');
       await coffee.say_and_wait('그런 짓을 해서 누가 기뻐하겠어?');
       await coffee.say_and_wait(
         '양보받지 않아도 난 정면에서 널 넘어서겠어…… 그리고 친구들도.',
@@ -1645,7 +1645,7 @@ module.exports = {
         tachyon.get_colored_name(),
         '의 일본 국내 마지막 무대일세.',
       ]);
-      await you.say_as_passer_by_and_wait('実況', [
+      await you.say_as_passer_by_and_wait('실황', [
         tachyon.get_colored_name(),
         '! 아니면 ',
         coffee.get_colored_name(),
@@ -1688,7 +1688,7 @@ module.exports = {
       await tachyon.say_and_wait('……기자회견이 곧 시작될 걸세.');
       era.println();
       await era.printAndWait([
-        '上半期最強',
+        '상반기 최강',
         tachyon.uma_sex_title,
         '의 총결산이니, 이런 레이스에 기자들이 몰리지 않을 리 없다.',
       ]);
@@ -1724,13 +1724,13 @@ module.exports = {
       ]);
       era.println();
       await you.say_as_passer_by_and_wait(
-        '記者A',
+        '기자 A',
         '왜 이렇게 갑작스럽게 결정하셨나요? 충분히 숙고한 뒤 내린 출전 결정입니까?',
       );
       await tachyon.say_and_wait(
         '트레이너 군과 말다툼한 끝에 내린 결정일세. 몇 달 전에 이미 정했지. 갑작스러운 일도 뜬금없는 일도 아니네. 그동안 언론에 알리지 않았을 뿐일세.',
       );
-      await you.say_as_passer_by_and_wait('記者B', [
+      await you.say_as_passer_by_and_wait('기자 B', [
         tachyon.get_colored_name(),
         ' ',
         tachyon.adult_sex_title,
@@ -1739,7 +1739,7 @@ module.exports = {
       await tachyon.say_and_wait([
         '그 점은 말씀드릴 수 없지만 한 가지는 보장하겠네. 올해 개선문상에는 반드시 출전할 걸세.',
       ]);
-      await you.say_as_passer_by_and_wait('記者B', [
+      await you.say_as_passer_by_and_wait('기자 B', [
         '……저기, 오늘 레이스는 정말 훌륭했습니다.',
         tachyon.get_colored_name(),
         ' ',
@@ -1790,7 +1790,7 @@ module.exports = {
     ) => {
       await era.printAndWait('아아, 그런 거였구나');
       era.println();
-      await era.printAndWait(['天皇賞（春）']);
+      await era.printAndWait(['천황상(봄)']);
       await era.printAndWait('마지막 직선에서 경쟁하는 두 사람을 보며');
       await era.printAndWait('드디어 깨달았다');
       era.println();
@@ -1853,7 +1853,7 @@ module.exports = {
       await era.printAndWait('모든 것을 비추는 빛이 그림자의 도피처를 빼앗을 것인가');
       await era.printAndWait('모든 것을 집어삼키는 어둠이 빛을 삼켜 버릴 것인가');
       era.println();
-      await you.say_as_passer_by_and_wait('実況', [
+      await you.say_as_passer_by_and_wait('실황', [
         '마지막 순간까지 서로 물고 늘어지는 대접전!',
         coffee.get_colored_name(),
         '! 아니면 ',
@@ -1890,8 +1890,8 @@ module.exports = {
         '에게 승리라는 보상을 안겨 준다',
       ]);
       if (tachyon_win) {
-        await era.printAndWait('結果');
-        await you.say_as_passer_by_and_wait('実況', [
+        await era.printAndWait('결과');
+        await you.say_as_passer_by_and_wait('실황', [
           tachyon.get_colored_name(),
           '! 초광속을 넘어 요도 언덕에 선 방패의 영광은 ',
           tachyon.get_colored_name(),
@@ -1900,7 +1900,7 @@ module.exports = {
       } else {
         await tachyon.print_and_wait('분명 그럴 예정이었는데, 그렇다면……');
         era.println();
-        await you.say_as_passer_by_and_wait('実況', [
+        await you.say_as_passer_by_and_wait('실황', [
           coffee.get_colored_name(),
           '! 초광속을 집어삼키고 요도 언덕에 선 방패의 영광은 ',
           coffee.get_colored_name(),
@@ -2026,7 +2026,7 @@ module.exports = {
         '에게 양보하고 자신은 뒤로 물러나는 것',
       ]);
       era.println();
-      await tachyon.print_and_wait('結果……');
+      await tachyon.print_and_wait('결과……');
       if (tachyon_win) {
         await tachyon.print_and_wait('이 통제 불가능하고 불안정한 문제아는');
         await tachyon.print_and_wait(
@@ -2145,7 +2145,7 @@ module.exports = {
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '来年……',
+        '내년……',
         call_25,
         '이(가) 출전하는 레이스라면…… 최선을 다해 한 경기도 빠짐없이 따라가겠네.',
       ]);
@@ -2966,7 +2966,7 @@ module.exports = {
      * @param {PrintedSpan} call_25 アグネスタキオンがマンハッタンカフェを呼ぶ名
      */
     const f = async (tachyon, coffee, you, callname, call_25) => {
-      await you.say_as_passer_by_and_wait('実況', [
+      await you.say_as_passer_by_and_wait('실황', [
         coffee.get_colored_name(),
         '! 재팬컵 기록을 경신했습니다…… 아니, 세계 기록입니다! 불과 몇 달 전 ',
         tachyon.get_colored_name(),
@@ -3728,12 +3728,12 @@ module.exports = {
       ]);
       await you.say_as_passer_by_and_wait('기자A', '큭…… 놓쳤나.');
       await you.say_as_passer_by_and_wait(
-        '記者B',
+        '기자 B',
         '빛나고 있지 않을 때는 생각보다 찾기 힘들군요……',
       );
       era.println();
       await you.say_as_passer_by_and_wait(
-        '記者C',
+        '기자 C',
         '……이쪽에서 대기해라. 절대 놓쳐선 안 돼.',
       );
       era.println();
@@ -4593,7 +4593,7 @@ module.exports = {
         1,
       );
       await era.input();
-      await tachyon.say_and_wait('……毎月？');
+      await tachyon.say_and_wait('……매달?');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
@@ -5284,12 +5284,12 @@ module.exports = {
       await you.say_as_passer_by_and_wait('상점가 아저씨', [
         '아리마 기념 예측! 내일 열릴 아리마 기념의 직전 예측입니다!',
       ]);
-      await you.say_as_passer_by_and_wait('観光客A', [
+      await you.say_as_passer_by_and_wait('관광객 A', [
         '내일 아리마 기념은 어떻게 되려나…… 그래도 이기는 건 역시 ',
         coffee.get_colored_name(),
         '겠지?',
       ]);
-      await you.say_as_passer_by_and_wait('観光客B', [
+      await you.say_as_passer_by_and_wait('관광객 B', [
         '재팬 컵 때의 모습은 정말 너무 강했어! ……사상 최강이라고 해도 과언이 아니지.',
       ]);
       era.println();
@@ -6029,7 +6029,7 @@ module.exports = {
           '가 되는 것은 아니다.',
         ]);
         await era.printAndWait([
-          '競走',
+          '경주',
           tachyon.uma_sex_title,
           '였다 하더라도 경기장이 아닌 다른 길을 걷는 것을 선택할 수 있다.',
         ]);
