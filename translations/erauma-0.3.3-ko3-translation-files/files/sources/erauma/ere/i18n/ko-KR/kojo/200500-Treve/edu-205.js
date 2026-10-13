@@ -1942,29 +1942,29 @@ module.exports = {
           `그러니까…… 읏, 훌쩍, 우리가 서로 끌리게 된 거잖아요, 안 그런가요?`,
         );
         await era.printAndWait(
-          `${you.name} は自分より十歳若い${treve.child_sex_title}を泣かせてしまった。`,
+          `${you.name}은(는) 자신보다 열 살이나 어린 ${treve.child_sex_title}를 울려버렸다.`,
         );
-        await era.printAndWait(`夜は少し冷たい。昼が暑かったので、薄着だ。`);
+        await era.printAndWait(`밤은 조금 쌀쌀했다. 낮에는 더웠기에 옷차림은 가벼웠다.`);
         await era.printAndWait(
-          `それでも二人寄り添い、虫のように体温で温め合えば、寒くはない。`,
+          `그래도 두 사람이 서로 꼭 붙어 체온으로 몸을 데운다면 추울 리 없었다.`,
         );
         await era.printAndWait(
-          `${treve.name} は依然として心配そうな顔で、${you.name} は${treve.sex}の頭を撫でる。`,
+          `${treve.name}는 여전히 불안한 표정을 짓고 있었고, ${you.name}은(는) ${treve.sex}의 머리를 쓰다듬었다.`,
         );
-        era.printButton(`「少し寒いか？」`, 1);
+        era.printButton(`「좀 춥지?」`, 1);
         await era.input();
-        await treve.say_and_wait(`……うん。`);
+        await treve.say_and_wait(`……네.`);
         era.printButton(
-          `「先に君の泊まってるホテルへ行こう。このままじゃ風邪を引く。」`,
+          `「일단 네가 머무는 호텔로 가자. 이대로면 감기에 걸릴 거야.」`,
           1,
         );
         await era.input();
-        await treve.say_and_wait(`ええ。`);
+        await treve.say_and_wait(`알겠어요.`);
         await era.printAndWait(
-          `${treve.sex}は ${you.name} の言うとおり、いっしょに歩く。`,
+          `${treve.sex}는 ${you.name}의 말에 따라 함께 걸었다.`,
         );
         await era.printAndWait(
-          `イルミネーションの光が、あなたたちの背を照らす。`,
+          `일루미네이션의 불빛이 두 사람의 뒷모습을 비추고 있었다.`,
         );
         era.drawLine();
         era.printButton(`「${treve.name}、これはどういう……！？」`, 1);
