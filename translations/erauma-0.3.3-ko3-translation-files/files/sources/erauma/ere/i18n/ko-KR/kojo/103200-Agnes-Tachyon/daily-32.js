@@ -2294,41 +2294,41 @@ module.exports = {
           async () => {
             await era.printAndWait([
               you.get_colored_name(),
-              ' は ',
+              '은(는) ',
               tachyon.get_colored_name(),
-              ' を枯れた樹洞の前へ連れていった。',
+              '을(를) 데리고 오래된 나무 구멍 앞으로 갔다.',
               tachyon.sex,
-              'は自分から、洞の縁に身を預けた。',
+              '는 스스로 나무 구멍의 가장자리에 몸을 기댔다.',
             ]);
             await era.printAndWait([
-              'だが今日遊ぶのはそれではない。',
+              '하지만 오늘 하려는 일은 그것과 달랐다.',
               you.get_colored_name(),
-              ' は首を振り、',
+              '은(는) 고개를 저으며 ',
               tachyon.get_colored_name(),
-              ' の肩に寄りかかった。',
+              '의 어깨에 기대었다.',
             ]);
             await you.say_and_wait(
-              '愚痴と圧を吐く場所なら、君も、悔しいことを叫んでみろ。',
+              '마음을 털어놓는 곳이라면, 너도 억울한 일을 큰 소리로 외쳐 보지 그래?',
             );
             await era.printAndWait([
-              'そう言って ',
+              '그렇게 말하며 ',
               you.get_colored_name(),
-              ' は',
+              '은(는) ',
               tachyon.sex,
               'の尻を軽く叩いた。聞きたいものが何か、それだけで十分だった。',
             ]);
             await era.printAndWait([
-              '頭の回転が速い天才',
+              '머리 회전이 빠른 천재 ',
               tachyon.uma_sex_title,
-              'は、即座に ',
+              '은(는) 곧바로 ',
               you.get_colored_name(),
-              ' の意図を読んだ。',
+              '의 의도를 알아차렸다.',
             ]);
             await era.printAndWait([
               tachyon.sex,
-              'は責めるように ',
+              '은(는) 원망스러운 눈길로 ',
               you.get_colored_name(),
-              ' を一目見て、それから樹洞へ『悔しい』を叫び始めた。',
+              '를 한 번 쳐다본 뒤, 나무 구멍을 향해 억울하다고 외치기 시작했다.',
             ]);
             await tachyon.say_and_wait([
               '乳頭を ',
@@ -2382,7 +2382,7 @@ module.exports = {
           async () => {
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は枯れた樹洞に身を預け、中を退屈そうに覗いていた。',
+              '은(는) 오래된 나무 구멍에 기대어 무료한 얼굴로 안을 들여다보고 있었다.',
             ]);
             await era.printAndWait([
               '外へ突き出した',
