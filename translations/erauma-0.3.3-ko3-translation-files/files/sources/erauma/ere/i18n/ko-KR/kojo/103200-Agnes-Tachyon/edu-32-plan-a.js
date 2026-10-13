@@ -924,7 +924,7 @@ module.exports = {
           'タキオン先輩……どうしたんですか？',
         );
         await tachyon.say_and_wait('な……なんでも……ただ……ただ……くっ……');
-        era.printButton('「時間もない。選手控室で準備しよう」', 1);
+        era.printButton('「시간도 없으니 선수 대기실에서 준비하자.」', 1);
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
@@ -939,10 +939,10 @@ module.exports = {
           '……まったく……そんなに嫉妬しないでください……後輩にまで焼き餅を……',
           you.sex_code === 1 ? '男なら、もう少し器を大きくなさいな' : '',
         ]);
-        era.printButton('「じゃあ、カフェのレースを見に行くよ」', 1, {
+        era.printButton('「그럼 카페의 레이스를 보러 갈게.」', 1, {
           disabled: !coffee_sank_hai,
         });
-        era.printButton('「じゃあ、後輩たちも心配してあげよう」', 2);
+        era.printButton('「그럼 후배들도 챙겨 줘야지.」', 2);
         await era.input();
         await tachyon.say_and_wait(
           '欲を煽っておいて、今さら他人のところへ行くつもり……それはいけませんわ',
