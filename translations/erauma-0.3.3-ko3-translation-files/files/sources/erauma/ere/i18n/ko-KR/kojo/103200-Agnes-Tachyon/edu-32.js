@@ -3410,7 +3410,7 @@ module.exports = {
               tachyon.sex,
               '의 말이 끝나자마자 즉시 추첨기의 손잡이를 돌렸다.',
             ]);
-            await you.say_as_passer_by_and_wait('가게 주인', '特等！ 温泉旅行券！');
+            await you.say_as_passer_by_and_wait('가게 주인', '특등! 온천 여행권!');
             era.println();
             await era.printAndWait('상점가 아저씨가 힘차게 종을 흔들었다.');
             await era.printAndWait('오늘의 최고 경품이 주인을 찾았음을 선포했다.');
@@ -3577,7 +3577,7 @@ module.exports = {
               '이(가) 타 주는 홍차보다도 달콤했다.',
             ]);
           } else {
-            await you.say_as_passer_by_and_wait('가게 주인', '特等！ 温泉旅行券！');
+            await you.say_as_passer_by_and_wait('가게 주인', '특등! 온천 여행권!');
             era.println();
             await era.printAndWait('상점가 아저씨가 힘차게 종을 흔들었다.');
             await era.printAndWait('오늘의 최고 경품이 주인을 찾았음을 선포했다.');
