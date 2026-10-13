@@ -2323,7 +2323,7 @@ cl_christmas:
                   content: %CHARA%
                 - 「메리 크리스마스, 트레이너.」
 
-# [번역 대상] cl_christmas_sex_end
+# [번역 완료] cl_christmas_sex_end
 cl_christmas_sex_end:
   - color: %COLOR%
     content:
@@ -2354,7 +2354,7 @@ cl_christmas_sex_end:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「好き！ %YOURNAME%が、好き！」
+      - 「좋아해! %YOURNAME%를 좋아해!」
   - color: %COLOR%
     content:
       - fontWeight: bold
