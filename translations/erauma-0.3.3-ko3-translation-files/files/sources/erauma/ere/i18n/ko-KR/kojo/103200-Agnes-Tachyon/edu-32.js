@@ -7757,191 +7757,191 @@ module.exports = {
             await era.printAndWait([
               '문득 ',
               you.get_colored_name(),
-              ' は',
+              '은(는) ',
               tachyon.sex,
               '의 말 속에서 어떤 영감을 얻었다.',
             ]);
             era.println();
             await era.printAndWait([
-              '知り合ってから、たぶん、おそらく、それほど長くはない',
+              '서로 알고 지낸 시간은 그리 길지 않을지도 모른다.',
             ]);
             await era.printAndWait([
-              'だが ',
+              '하지만 ',
               you.get_colored_name(),
-              ' の、',
+              '이(가) 파악한 ',
               tachyon.get_colored_name(),
-              ' という',
+              '이라는 ',
               tachyon.uma_sex_title,
-              'への理解によれば……',
+              '는……',
             ]);
             await era.printAndWait([
               tachyon.sex,
-              'は、無意味なことに時間を使わない',
+              '는 결코 무의미한 일에 시간을 낭비할 성격이 아니었다.',
             ]);
-            await era.printAndWait('そう、無意味なことには使わない');
-            await era.printAndWait('つまり');
+            await era.printAndWait('그래, 무의미한 일에는 절대 시간을 쓰지 않는다.');
+            await era.printAndWait('그렇다면 말을 뒤집어 보자.');
             era.println();
             await era.printAndWait([
               tachyon.sex,
-              'が時間を割くことには、必ず意味がある',
+              '가 시간을 내어 하는 일이라면 반드시 그럴 만한 의미가 있다는 뜻이다.',
             ]);
-            await era.printAndWait('では、問い1');
+            await era.printAndWait('그렇다면 질문 하나.');
             era.println();
-            await era.printAndWait([
-              tachyon.get_colored_name(),
-              ' がトレセン学園に入った理由は？',
-            ]);
-            era.println();
-            await era.printAndWait([
-              '本当に必要がなければ、',
-              tachyon.sex,
-              'はそう選ばない',
-            ]);
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' がトレセン入学で得る利益……',
-            ]);
-            await era.printAndWait([
-              '考えるまでもない。',
-              tachyon.sex,
-              'の目標から十分だ——',
-              tachyon.uma_sex_title,
-              'の可能性を探し、可能性の境界を超えること',
-            ]);
-            await era.printAndWait([
-              'ならば、まず',
-              tachyon.uma_sex_title,
-              'のすべてを解き明かしてから、限界を語る',
-            ]);
-            await era.printAndWait([
-              'だから、質の高い',
-              tachyon.uma_sex_title,
-              'が最も集まるトレセン学園は、最良の研究場だ。他にない',
-            ]);
-            await era.printAndWait([
-              'したがって退学は、',
-              tachyon.sex,
-              'が言うほどどうでもいい話ではない',
+              '이 트레센 학원에 들어온 이유는?',
             ]);
             era.println();
-            await era.printAndWait('問い2');
             await era.printAndWait([
-              'なぜ ',
+              '정말로 필요가 없다면 ',
+              tachyon.sex,
+              '는 결코 이런 선택을 하지 않았을 것이다.',
+            ]);
+            await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は生徒として学園に入ったのか',
+              '타키온이 학원에 들어와서 얻을 수 있는 이득은……',
+            ]);
+            await era.printAndWait([
+              '생각할 것도 없다. ',
+              tachyon.sex,
+              '의 목표인——',
+              tachyon.uma_sex_title,
+              '의 가능성을 찾고, 그 한계를 넘어서는 것.',
+            ]);
+            await era.printAndWait([
+              '그러기 위해선 먼저 ',
+              tachyon.uma_sex_title,
+              '의 모든 것을 철저히 연구해야만 한다.',
+            ]);
+            await era.printAndWait([
+              '그렇다면 고품질의 ',
+              tachyon.uma_sex_title,
+              '들이 모여 있는 트레센 학원이야말로 최적의 연구 장소임이 분명했다.',
+            ]);
+            await era.printAndWait([
+              '따라서 퇴학은 결코 ',
+              tachyon.sex,
+              '가 말한 것처럼 가벼운 문제가 아니었다.',
+            ]);
+            era.println();
+            await era.printAndWait('질문 둘.');
+            await era.printAndWait([
+              '왜 ',
+              tachyon.get_colored_name(),
+              '은 학생 신분으로 학원에 들어왔는가.',
             ]);
             era.println();
             await era.printAndWait([
-              'トレセンには生徒以外の支援職もあり、非競走',
+              '트레센 학원에는 학생 외에도 여러 지원 직종이 있고, 레이스에 출전하지 않는',
               tachyon.uma_sex_title,
-              '学科もある。面倒を避けるなら、最初からそちらへ行けばよかったのではないか？',
+              '관련 학과도 있다. 번거로운 일을 피하고 싶다면 왜 처음부터 그런 길을 선택하지 않았을까?',
             ]);
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
-              ' は閃きを掴んだ気がした',
+              '은(는) 어떤 단서를 포착했다.',
             ]);
             era.println();
             await era.printAndWait([
-              '競走',
+              '레이스 ',
               tachyon.uma_sex_title,
-              'になる理由は、レースに出るためだ',
+              '가 된 이유는, 경기장에서 달리기 위해서다.',
             ]);
             await era.printAndWait([
-              'レースに出ないなら、競走',
+              '레아스에 나갈 생각이 없다면 애당초 레이스 ',
               tachyon.uma_sex_title,
-              'を選ぶ必要はない',
+              '를 선택할 이유가 없기 때문이다.',
             ]);
             await era.printAndWait([
-              'ここまで来れば、',
+              '이쯤 되면 ',
               tachyon.get_colored_name(),
-              ' が先ほど言った「レースに出たくない」は……',
+              '이(가) 아까 말했던 레이스에 관심 없다는 말은……',
             ]);
             await era.printAndWait([
-              'わからない。',
+              '모르겠다. 왜 그런 거짓말을 했는지는 모르겠지만, ',
               tachyon.sex,
-              'が嘘をつく理由はわからない。だが',
+              '가 거짓말을 한 이유는 모르겠지만, ',
             ]);
             await era.printAndWait(
-              '目の前の関門を越えるだけなら、そこまで知る必要はない',
+              '일단 눈앞의 난관을 헤쳐 나가는 데는 그 이유까지 알 필요는 없었다.',
             );
             era.println();
-            era.printButton('「気にしている。実験に検証が要るからだ」', 1);
+            era.printButton('「너는 신경 쓰고 있어. 왜냐하면 실험에는 검증이 필요하니까」', 1);
             await era.input();
-            await era.printAndWait('間違いない');
-            await era.printAndWait('それがレースに出る理由だ');
-            await era.printAndWait('すべては研究と、最終目的のため');
+            await era.printAndWait('틀림없다.');
+            await era.printAndWait('이것이 레이스에 참가해야 하는 이유였다.');
+            await era.printAndWait('모든 것은 연구와 최종적인 목적을 위해서였다.');
             era.println();
             await you.say_and_wait([
-              '他の',
+              '만약 다른 ',
               tachyon.uma_sex_title,
-              '、同期すら勝てないなら、速度の限界超越など語れない',
+              '들이나 동기들조차 이기지 못한다면, 속도의 한계를 넘겠다는 말은 성립하지 않아.',
             ]);
             await you.say_and_wait([
-              '君も俺も、',
+              '나도 너도 ',
               tachyon.get_colored_name(),
-              ' が誰にでも勝てると信じている。それでも実験の検証は必須だ',
+              '이 누구에게든 이길 수 있다는 확신은 있지만, 실험의 검증은 여전히 필수적이야.',
             ]);
             era.println();
-            await era.printAndWait('1+1=2 と同じだ');
+            await era.printAndWait('마치 1+1=2라는 사실처럼.');
             await era.printAndWait(
-              '誰もが答えを知っていても、検算と式は必要だ',
+              '설령 모든 사람이 답을 알고 있다 하더라도, 그것을 증명하는 계산식은 존재해야 한다.',
             );
-            await era.printAndWait('余分な手順ではない。研究の厳密さだ');
+            await era.printAndWait('그것은 불필요한 과정이 아니라 연구의 엄격함이었다.');
             await tachyon.say_and_wait(
-              '……よく言いましたわ。ですが、模擬レースは？',
-            );
-            await tachyon.say_and_wait(
-              'レースでなくても、同期やより強い相手と競う機会は探せます。相手不足の心配もありません',
+              '……말은 잘하는군. 하지만 모의 레이스도 있지 않나?',
             );
             await tachyon.say_and_wait(
-              '私が本当に強さを示せるなら、本能に沈む獣たちは、私との勝負を逃しませんわ。違いますか？',
+              '꼭 공식 레이스가 아니더라도 나는 기회만 있다면 동기나 더 강한 상대와 겨룰 수 있어. 상대를 찾는 게 어렵지도 않을 테고.',
+            );
+            await tachyon.say_and_wait(
+              '만약 내가 압도적인 강함을 보여준다면, 본능에 충실한 맹수들이 나와 겨룰 기회를 놓치지 않을 걸세. 그렇지 않나?',
             );
             era.println();
-            await era.printAndWait('聞く分には、説得力がある');
+            await era.printAndWait('매우 설득력 있는 답변이었다.');
             await era.printAndWait([
-              '模擬でも、',
+              '모의 레이스라 할지라도 ',
               tachyon.get_colored_name(),
-              ' ほど強い',
+              '처럼 강력한 ',
               tachyon.uma_sex_title,
-              'と競えるなら、相手が100%を出さない心配はない',
+              '와 겨룰 기회가 생긴다면, 상대도 반드시 100%의 실력을 발휘할 것이기 때문이다.',
             ]);
-            await era.printAndWait('だが……');
+            await era.printAndWait('하지만……');
             era.println();
             era.printButton(
-              `「120%を出した${tachyon.uma_sex_title}を、見たことがありますか？」`,
+              `「120%의 실력을 발휘하는 ${tachyon.uma_sex_title}를 본 적 있어?」`,
               1,
             );
             await era.input();
-            await tachyon.say_and_wait('…………おや？');
+            await tachyon.say_and_wait('………… 호오?');
             await era.printAndWait(
-              '模擬レースが出せるのは、いつも日常の実力だけだ',
+              '모의 레이스에서 보여주는 것은 언제나 평범한 실력일 뿐이다.',
             );
             await era.printAndWait(
-              '限界を超えるなら、本物の競馬場でしかできない',
+              '한계를 넘어서는 것은 오직 진정한 승부의 세계에서만 가능하다.',
             );
-            await era.printAndWait('古今の大穴は、みなそうではなかったか？');
+            await era.printAndWait('동서고금을 막론하고 일어난 수많은 이변들이 그것을 증명하고 있었다.');
             era.printButton(
-              `「${tachyon.uma_sex_title}の特性は、競馬場でしか限界を超える実力を出せないことだ」`,
+              `「${tachyon.uma_sex_title}의 특성이란, 오직 실전 경기장에서만 한계를 넘는 힘을 발휘한다는 거야」`,
               1,
             );
             await era.input();
             await tachyon.say_and_wait(
-              '…………なるほど。それがトレーナーとしての見解ですの？ 他には？ まだ理由はありますか？',
+              '………… 과연. 그것이 자네가 트레이너로서 내린 견해인가? 그 외에는? 다른 이유도 있나?',
             );
             era.println();
             await era.printAndWait([
               tachyon.sex,
-              'は相変わらず、言い切れない遊び心の目で ',
+              '는 여전히 알 수 없는 묘한 눈빛으로 ',
               you.get_colored_name(),
-              ' を見る。',
+              '을(를) 바라보았고, ',
               you.get_colored_name(),
-              ' は少し落ち着かない',
+              '은(는) 자기도 모르게 몸이 움츠러들었다.',
             ]);
             await era.printAndWait([
-              'それでも ',
+              '하지만 ',
               you.get_colored_name(),
-              ' は、胸のいちばん奥に埋めていた理由を出した',
+              '은(는) 굴하지 않고 마음 깊은 곳에 담아두었던 진실한 이유를 꺼냈다.',
             ]);
             era.println();
             era.printButton('「…………見たい」', 1);
