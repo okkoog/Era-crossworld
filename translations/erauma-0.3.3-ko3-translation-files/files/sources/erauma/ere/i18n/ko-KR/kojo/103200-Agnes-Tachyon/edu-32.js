@@ -9599,177 +9599,177 @@ module.exports = {
         era.println();
         await era.printAndWait('…………이 녀석은 정말.');
       } else if (relation > 225) {
-        await tachyon.say_and_wait(['ははは！ ', callname, '！']);
+        await tachyon.say_and_wait(['하하하! ', callname, '！']);
         era.println();
         await era.printAndWait([
-          '明るい笑い声とともにトレーナー室の扉を開けたのは、大きな袋を背負った ',
+          '호탕한 웃음소리와 함께 트레이닝실 문을 박차고 들어온 것은, 뒤에 커다란 봉투를 든 ',
           tachyon.get_colored_name(),
-          ' だった',
+          '이었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'Merry Christmas？ Happy New Year？ とにかく何かの祝日ですわ。早く早く、私の贈り物を受け取りなさい！',
+          '메리 크리스마스? 해피 뉴 이어? 아무튼 무슨 기념일 축하하네. 자 자, 내 선물을 받게나!',
         );
-        era.printButton('「……バレンタイン、ということか？」', 1);
+        era.printButton('「……혹시, 발렌타인데이 말이야?」', 1);
         await era.input();
         await tachyon.say_and_wait(
-          'む……どうでもいいですわ。要するに、合法的に他人へ食物を押し込める日ですわよね？',
+          '음…… 중요하지 않아. 어쨌든 합법적으로 다른 이에게 음식을 먹일 수 있는 날 아닌가?',
         );
         era.println();
-        await era.printAndWait('……その解釈も、間違いではない？');
+        await era.printAndWait('……그렇게 해석한다면 틀린 말은 아닐지도?');
         await era.printAndWait([
-          'だが相手が ',
+          '하지만 상대가 ',
           tachyon.get_colored_name(),
-          ' だと考えると……',
+          '이라는 걸 생각하면……',
         ]);
-        era.printButton('「……何の薬を入れた」', 1);
-        era.printButton('「……何人に配った」', 2);
+        era.printButton('「……무슨 약을 넣었어?」', 1);
+        era.printButton('「……몇 명한테나 돌린 거야?」', 2);
         await era.input();
         await tachyon.say_and_wait(
-          'そんなことはどうでもいいですわ！ 受け取りなさい、私のバレンタイン！',
+          '그런 건 중요하지 않아! 어서 받게나, 나의 발렌타인 선물일세!',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は袋を漁り、とりわけ大きなチョコを取り出し、',
+          '은 가방 안을 뒤적거리더니 유독 큼직한 초콜릿 한 조각을 꺼내, ',
           you.get_colored_name(),
-          ' の許可も聞かず手に押し込んだ',
+          '의 허락도 구하지 않고 초콜릿을 손에 쥐여주었다.',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'の手つきは慣れている。道中、すでに何人にも配ったのだろう',
+          '의 숙련된 동작을 보니, 오는 길에 이미 꽤 많은 사람에게 뿌리고 온 모양이었다.',
         ]);
         await era.printAndWait(
-          '……明日は各方面へ謝らねばならない。だがまず、この場を生き抜け',
+          '……내일 사방팔방으로 사과하러 다녀야겠군. 하지만 우선은 이 고비를 넘겨야 한다.',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' は恐る恐るチョコを齧った',
+          '은(는) 조심스럽게 초콜릿을 한 입 베어 물었다.',
         ]);
         era.printButton('「！？」', 1);
         await era.input();
-        await era.printAndWait('発光、変形、頭が二つ、背に翼、液化……');
-        await era.printAndWait('どれも……起きなかった');
+        await era.printAndWait('발광, 변형, 머리가 두 개 자라남, 등에서 날개가 돋아남, 액체화……');
+        await era.printAndWait('그 어떤 변화도……… 일어나지 않았다.');
         await era.printAndWait(
-          '言うなれば、たぶん、おそらく、ただの普通のチョコだ',
+          '말하자면, 아마도, 어쩌면 그냥 평범한 초콜릿인 것 같았다.',
         );
         await era.printAndWait([
-          'だが、これは ',
+          '하지만, 이것은 ',
           tachyon.get_colored_name(),
-          ' 基準の「正常」だ',
+          ' 기준의 「정상」일 뿐.',
         ]);
-        await era.printAndWait('普通の人にとってのチョコかどうかは……');
-        era.printButton('なぜ……カツ丼味なんだ！？', 1);
+        await era.printAndWait('평범한 사람의 기준에서 정상적인 초콜릿인가 하면……');
+        era.printButton('왜…… 돼지고기 덮밥 맛이 나는 거야!?', 1);
         await era.input();
-        await era.printAndWait('豚肉、玉ねぎ、ソース……');
+        await era.printAndWait('돼지고기, 양파, 소스……');
         await era.printAndWait([
-          'チョコにあるはずのない味が、',
+          '초콜릿에는 있을 수 없는 맛이 ',
           you.get_colored_name(),
-          ' の口に広がった',
+          '의 입안을 가득 채웠다.',
         ]);
         era.println();
-        await tachyon.say_and_wait([callname, '？ その顔、おかしいですわよ？']);
+        await tachyon.say_and_wait([callname, '? 표정이 왜 그렇게 이상한가?']);
         await tachyon.say_and_wait(
-          '早く早く、効果は？……肉体に変化は見えません。内面に出るのですかしら……',
+          '어서 어서, 어떤 효과가 있지? ……육체적으로는 변화가 안 보이는데, 설마 내면에서부터 작용하는 건가……',
         );
         era.println();
         await era.printAndWait(
-          'この人は……自分でも薬効がわからないものを、他人に押しつけるのか',
+          '이 녀석…… 본인도 약효가 뭔지 모르면서 아무한테나 먹이고 다닌 건가.',
         );
         await era.printAndWait([
-          '他の日ならまだしも、カップルがきらめくこの日を ',
+          '다른 날이라면 몰라도, 커플들이 사방에서 염장을 지르는 이 날을 ',
           tachyon.get_colored_name(),
-          ' に壊されるとは…………',
+          '이 이런 식으로 망쳐놓다니…………',
         ]);
         await era.printAndWait([
-          'おかしい。急に、',
+          '이상하네, 어째서 갑자기 ',
           tachyon.get_colored_name(),
-          ' が正しい気がしてきた',
+          '이 잘했다는 생각이 드는 거지.',
         ]);
         await era.printAndWait([
-          '…………とにかく、',
+          '…………아무튼, ',
           tachyon.get_colored_name(),
-          ' には少しお灸が必要だ',
+          '에게 교훈을 좀 줘야겠다.',
         ]);
-        era.printButton('「効果は出ていないみたいだ」', 1);
-        era.printButton('「タキオンも食べてみろ」', 2);
+        era.printButton('「아무런 효과도 없는 것 같은데」', 1);
+        era.printButton('「타키온도 한번 먹어봐」', 2);
         await era.input();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の返事を待たず、',
+          '이 반응하기도 전에, ',
           you.get_colored_name(),
-          ' は一口齧ったチョコを ',
+          '은(는) 한 입 베어 문 초콜릿을 ',
           tachyon.get_colored_name(),
-          ' の口へ押し込んだ',
+          '의 입안에 밀어 넣었다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('む！？ ぐうっ！？');
+        await tachyon.say_and_wait('읍!? 끄윽!?');
         era.println();
         await era.printAndWait([
-          '不意を突かれた ',
+          '방심하고 있던 ',
           tachyon.get_colored_name(),
-          ' は、口いっぱいにチョコを詰められた',
+          '의 입안에 초콜릿이 가득 찼다.',
         ]);
         await era.printAndWait([
-          '口を開こうとして、',
+          '입을 열려던 ',
           tachyon.sex,
-          'は仕方なく飲み込んだ',
+          '는 얼떨결에 입안의 초콜릿을 삼켜버렸다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'ちょっと、何をするのです！ ',
+          '잠깐, 무슨 짓인가! ',
           callname,
-          '！？',
+          '!?',
         ]);
-        await tachyon.say_and_wait('うえ……なんです、この味は！？');
+        await tachyon.say_and_wait('우엑…… 이게 무슨 맛이야!?');
         await tachyon.say_and_wait([
-          '変な味ですわ！！ なぜチョコにカツの味があるのです！',
+          '정말 이상한 맛이군!! 어째서 초콜릿에서 돼지고기 맛이 나는 건가!',
         ]);
         era.println();
         await era.printAndWait([
-          '明日は報復されるだろう。だが今、',
+          '내일이면 아마 호되게 보복당하겠지만, 지금 이 순간 ',
           tachyon.get_colored_name(),
-          ' の驚愕と吐き気の顔を見て',
+          '의 경악과 역겨움이 섞인 얼굴을 보니.',
         ]);
-        await era.printAndWait([you.get_colored_name(), ' は、胸がすっとした']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 가슴 한구석이 시원해지는 것을 느꼈다.']);
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' と ',
+          '과(와) ',
           tachyon.get_colored_name(),
-          ' の、騒がしいバレンタインは終わった',
+          '의 시끌벅적한 발렌타인데이가 끝났다.',
         ]);
       } else {
         await tachyon.say_and_wait([
           callname,
-          '！ ははは、ハッピーバレンタイン！',
+          '! 하하하, 발렌타인데이 축하하네!',
         ]);
-        era.printButton('「……タキオン？」', 1);
+        era.printButton('「……타키온?」', 1);
         await era.input();
         await era.printAndWait([
-          'これほど高揚した ',
+          '유난히 들떠 보이는 ',
           tachyon.get_colored_name(),
-          ' を見て、',
+          '을 보자, ',
           you.get_colored_name(),
-          ' は警戒した',
+          '은(는) 자기도 모르게 경계심이 생겼다.',
         ]);
         await era.printAndWait([
-          '理由は単純だ。普段は冷たい ',
+          '다른 이유가 아니라, 평소에는 늘 냉담하던 ',
           tachyon.get_colored_name(),
-          ' が、今日は異常に浮かれていた',
+          '의 태도가 오늘따라 이상하게 고조되어 있었기 때문이다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'ん？',
+          '응? ',
           callname,
-          '？ どうしましたの。バレンタインおめでとうと言わないのですか？ もしかして……私のことが嫌い……ぐうっ……',
+          '? 왜 그러나, 나에게 발렌타인 축하 인사를 안 해줄 텐가? 설마…… 내가 싫어진 건가…… 끄윽……',
         ]);
-        await tachyon.say_and_wait('うう……む……頭……くらくらしますわ……');
+        await tachyon.say_and_wait('으으…… 윽…… 머리가…… 어지럽군……');
         era.println();
         await era.printAndWait([
-          'おかしい。今日の ',
+          '이상하다, 아무래도 오늘 ',
           tachyon.get_colored_name(),
-          ' は……どこか変だ',
+          '의 상태가…… 좀 이상하다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
