@@ -581,16 +581,16 @@ module.exports = {
       item,
     ) => {
       const ret = [];
-      await tachyon.print_and_wait(['気持ちよい。堪能している。']);
+      await tachyon.print_and_wait(['기분 좋군, 참으로 즐거워.']);
       await tachyon.print_and_wait([
-        '今日の私も、また ',
+        '오늘의 나 역시, 여전히 ',
         callname,
-        ' と ',
+        '과 ',
         t_call_c,
-        ' の睦言を肴にしている。',
+        '이 정을 나누는 소리를 반찬 삼고 있네.',
       ]);
       await tachyon.print_and_wait([
-        'こうして情愛に溺れるのも、悪いことばかりではないのかもしれない……',
+        '이렇게 애정에 빠져드는 것도 반드시 나쁜 일만은 아닐지도 모르겠군……',
       ]);
       era.println();
 
@@ -635,11 +635,11 @@ module.exports = {
       await coffee.say_and_wait(['……가엾군요, ', c_call_t, '.']);
       await tachyon.say_and_wait([t_call_c, ', 어째서……']);
       await coffee.say_and_wait([
-        'あんなに大きな声……',
+        '그렇게 크게 소리를 내다니…… ',
         tachyon.uma_sex_title,
-        'でない ',
+        '가 아닌 ',
         callname_25,
-        ' にしか、気づかれなかったのでしょう。',
+        ' 정도나 눈치채지 못하겠죠.',
       ]);
       era.println();
 
@@ -647,7 +647,7 @@ module.exports = {
       await tachyon.print_and_wait(['들키고 말았어.']);
       await tachyon.print_and_wait(['어쩌지, 어떻게 해야 좋을까.']);
       await tachyon.print_and_wait([
-        '哀れなことに、今の自分が一番大事だと思っているのは——',
+        '가련하게도, 지금 내게 가장 중요한 것은——',
       ]);
       await tachyon.print_and_wait([
         'どう ',
@@ -677,11 +677,11 @@ module.exports = {
         t_call_c,
         '가 원할 법한 것은……',
       ]);
-      await tachyon.print_and_wait(['自分が調合した、排卵促進剤？']);
+      await tachyon.print_and_wait(['직접 조제한, 배란 촉진제인가?']);
       await tachyon.print_and_wait([
-        '抑えきれず、腰から抜き取る……本来は自分と ',
+        '저도 모르게, 허리춤에서…… 원래는 오직 자신과 ',
         callname,
-        ' のためだけに調合した薬を。',
+        ' 만을 위해 조제했던 약제를 꺼내 들었다.',
       ]);
       era.println();
 
@@ -691,13 +691,13 @@ module.exports = {
       await tachyon.print_and_wait([
         '그녀는 자신이 무슨 말을 하는지 알고 있는 걸까?',
       ]);
-      await tachyon.print_and_wait(['妊娠をほぼ確実に促す薬を、自分の手で。']);
-      await tachyon.print_and_wait(['自ら捧げ、自ら渡してほしいと。']);
+      await tachyon.print_and_wait(['임신을 거의 확실하게 돕는 약을, 내 손으로.']);
+      await tachyon.print_and_wait(['내 손으로 직접 바치고, 내 손으로 넘겨주길 바라고 있었다.']);
       await tachyon.print_and_wait([
         '彼女が愛する人と睦み、本来自分のものであるはずの子を宿すために。',
       ]);
       await tachyon.print_and_wait([
-        '自分を足元に踏みつける、極限の辱めと言ってよい。',
+        '그야말로 자신을 발밑에 깔고 뭉개는, 굴욕의 극치라 할 수 있는 일이었다.',
       ]);
       await tachyon.print_and_wait(['하지만 어째서…… 손은 앞으로 뻗어나가는 거지.']);
       await tachyon.print_and_wait(['어째서 몸은 이토록 뜨겁게 달아오르는 걸까.']);
@@ -712,9 +712,9 @@ module.exports = {
       await tachyon.print_and_wait(['약을 부숴버려.']);
       await tachyon.print_and_wait(['아니면 차라리 자신이 마셔버리든가.']);
       await tachyon.print_and_wait([
-        'どうせ ',
+        '어차피 ',
         callname,
-        ' は隣にいる……飲んだあと、自分のものを取り返せばいい。',
+        '은 바로 옆방에 있어…… 마신 뒤에, 내 몫을 되찾아오면 되는 거야.',
       ]);
       await tachyon.print_and_wait(['그래, 바로 그거야.']);
       await tachyon.print_and_wait([
@@ -773,19 +773,19 @@ module.exports = {
       ret.push(await era.input());
       if (ret[0] === 1) {
         await tachyon.print_and_wait([
-          '自分より釣り合うのは、',
+          '자신보다 더 잘 어울리는 사람은 ',
           t_call_c,
-          ' のはず。',
+          '일 것이다.',
         ]);
         await tachyon.print_and_wait([
           you.sex,
-          'に相応しいのも、',
+          '에게 더 잘 어울리는 사람도 ',
           t_call_c,
-          ' のはず。',
+          '일 것이고.',
         ]);
         await tachyon.print_and_wait([
           you.sex,
-          'のためなら、自分は手放すべき……なの？',
+          '를 위한 길이라면, 여기서 포기를 선택해야 하는 걸까……?',
         ]);
         era.println();
 
@@ -919,7 +919,7 @@ module.exports = {
         await era.printAndWait([
           '말을 마친 뒤, ',
           coffee.get_colored_name(),
-          ' は扉を押して出ていった。',
+          '는 문을 열고 밖으로 나갔다.',
         ]);
         await era.printAndWait(['……도대체 무슨 일이 있었던 걸까.']);
         era.println();
