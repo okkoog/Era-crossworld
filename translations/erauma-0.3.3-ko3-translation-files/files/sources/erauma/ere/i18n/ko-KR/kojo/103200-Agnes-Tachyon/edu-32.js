@@ -3824,7 +3824,7 @@ module.exports = {
           ' も続けたい気持ちはある……',
         ]);
         era.println();
-        era.printButton('「……このあと Winning Live だ」', 1);
+        era.printButton('「……이제 위닝 라이브가 있잖아.」', 1);
         await era.input();
         await era.printAndWait([
           tachyon.sex,
