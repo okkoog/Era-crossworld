@@ -1527,7 +1527,7 @@ module.exports = {
       );
       await era.printAndWait(`푸른빛 도는 승부복을 입고 결승선을 통과하던 그 짜릿한 순간을.`);
       await era.printAndWait(
-        `中学生らしい率直さと正直さ、歳相応の負けず嫌い、活力に満ちた${treve.uma_sex_title}の感触。`,
+        `꾸밈없는 솔직함과 정직함, 지기 싫어하는 근성과 활력이 넘치던 ${treve.uma_sex_title}の感触。`,
       );
       await era.printAndWait(
         `그때 그 아이가 이렇게 자랐다. 키가 훌쩍 크더니 어느덧 늘씬한 모델 체형으로 변모해 가고 있었다.`,
@@ -1687,7 +1687,7 @@ module.exports = {
         await era.printAndWait(`그리고 ${you.name}은(는) 뼈저린 후회와 아쉬움을 느꼈다.`);
         await era.printAndWait(`${treve.name}는 끊임없이 이야기를 쏟아냈다.`);
         await treve.say_and_wait(
-          `……ねえ、${
+          `……있죠, ${
             you.actual_name
           }. 우리가 트레이너와 ${treve.uma_sex_title}가 아니었더라도 서로 만날 수 있었을까요?`,
         );
