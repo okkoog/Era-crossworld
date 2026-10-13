@@ -9539,21 +9539,21 @@ module.exports = {
         if (era.get('exp:0:性爱次数') === era.get('exp:0:睡奸次数')) {
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' が明らかに胸を突き出すのを見た',
+            '은(는) 누가 봐도 가슴을 앞으로 내밀었다',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は震える手を伸ばした',
+            '은(는) 떨리는 손을 뻗었다',
           ]);
           await era.printAndWait('가슴에 닿지 않도록 조심스럽게 초콜릿만 꺼냈다.');
         } else {
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' が明らかに胸を突き出すのを見た',
+            '은(는) 누가 봐도 가슴을 앞으로 내밀었다',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は遠慮なく手を伸ばし、チョコを取った',
+            '은(는) 거리낌 없이 손을 뻗어 초콜릿을 집었다',
           ]);
           await era.printAndWait([
             '途中で摘んだ、眼前の',
