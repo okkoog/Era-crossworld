@@ -724,11 +724,11 @@ module.exports = {
         `이렇게 ${you.name}와 나이스 네이처는 클래식급 마지막 도전 무대를 『아리마 기념』으로 정했다!`,
       );
       if (era.get('love:60') >= 75) {
-        era.printButton('「それから……これも祝いだ」', 1);
+        era.printButton('「그리고…… 이것도 축하 선물이야.」', 1);
         await era.input();
-        await nature.say_and_wait('えっ？ なになに？');
+        await nature.say_and_wait('어? 뭔데, 뭔데?');
         await era.printAndWait(
-          'ナイスネイチャの疑問にはすぐ答えず、背後で控え室の鍵をかけた',
+          '나이스 네이처의 의문에는 바로 답하지 않고, 뒤에서 대기실 문을 잠갔다.',
         );
         era.printButton('「うちの家系、自慢の染色体だよ」', 1);
         await era.input();
