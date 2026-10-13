@@ -612,7 +612,7 @@ ero_start:
 
 # [번역 대상] cannot_look_back
 cannot_look_back:
-  title: もう逃げられない逃げ
+  title: 더는 도망칠 수 없어
   lines:
     - 何かあったのだろう。数分前まで笑って話していたパーマーが、今は%YOU%に背を向けて黙っている
     - 浴室から出てきたばかりの%YOU%が、湯気の甘い香りを纏い、意図ありげに%SEX%の後ろへ座ったからか
@@ -793,7 +793,7 @@ mark_meek:
 
 # [번역 완료] report_preg_with_inmon
 report_preg_with_inmon:
-  title: 妊娠
+  title: 임신
   lines:
     - %CHARA%는 자연스럽게 %YOU%의 곁에 앉아 머리를 조심스럽게 어깨에 기댔다.
     - 손가락으로 넉넉한 치마 자락을 살짝 들어 올려 아랫배에 새겨진 기묘한 문양을 보여 주었다.
@@ -811,7 +811,7 @@ report_preg_with_inmon:
 
 # [번역 완료] report_preg_with_love
 report_preg_with_love:
-  title: 妊娠
+  title: 임신
   lines:
     - 새 생명을 알리는 검사기를 든 %CHARA%는 부끄러운 듯 손가락 뒤로 얼굴을 가리고 눈만 내밀어 %YOU%의 반응을 살폈다.
     - 아직 겉으로 티가 나지는 않지만 몸은 벌써 변화를 시작했고, 슬그머니 %YOU%의 곁으로 다가왔다.
@@ -824,7 +824,7 @@ report_preg_with_love:
 
 # [번역 완료] report_preg_after_raped_in_sleep
 report_preg_after_raped_in_sleep:
-  title: 妊娠
+  title: 임신
   lines:
     - 또다시 세면대에서 구토를 한 뒤, %CHARA%는 손에 쥔 검사기를 보고서야 현실을 받아들였다.
     - 아무리 생각해도 범인은 단 한 사람뿐이었다.
