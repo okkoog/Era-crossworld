@@ -1050,8 +1050,8 @@ module.exports = {
           ' はそう自分を欺くことにした',
         ]);
       }
-      era.printButton('「温泉の中は、まずいだろう……」', 1);
-      era.printButton('「部屋に戻ってから、では……？」', 2);
+      era.printButton('「온천 안에서는 좀 곤란하지 않을까……」', 1);
+      era.printButton('「방에 돌아가서 하는 건……?」', 2);
       await era.input();
       await tachyon.say_and_wait(
         '確認済みですわ……この数日、予約は私たちだけ。だからここで何をしても問題ありませんの',
