@@ -1825,33 +1825,33 @@ module.exports = {
      * @param {PrintedSpan} callname アグネスタキオンがプレイヤーを呼ぶ名
      */
     const f = async (tachyon, you, callname) => {
-      await era.printAndWait('やっと終わった……');
+      await era.printAndWait('드디어 끝났다……');
       await era.printAndWait([
         you.get_colored_name(),
-        ' は背伸びをして、思わずため息をつく。',
+        '은(는) 기지개를 켜며 무심코 한숨을 내쉬었다.',
       ]);
       await era.printAndWait([
-        '最近 ',
+        '최근 ',
         tachyon.get_colored_name(),
-        ' の実験は増え、複雑にも厄介にもなっている。',
+        '의 실험은 점점 많아지고, 복잡하고 골치 아파지고 있었다.',
       ]);
       await era.printAndWait([
-        '危険度は以前ほど高くないが、トレーナーの本業と合わせると忙しさは極まり、',
+        '위험성은 예전만큼 높지 않지만, 트레이너 본업까지 병행하느라 눈코 뜰 새 없이 바빠서,',
         you.get_colored_name(),
-        ' は危険な実験のほうを懐かしむほどだった。',
+        '은(는) 차라리 예전의 위험한 실험이 그리울 정도였다.',
       ]);
       era.println();
-      await tachyon.say_and_wait(['お疲れさまですわ、', callname, '……']);
+      await tachyon.say_and_wait(['수고하셨어요, ', callname, '……']);
       await tachyon.say_and_wait(
-        '安心なさい、あとでちゃんとご褒美を差し上げますわ',
+        '안심하세요. 나중에 제대로 보상해 드릴게요.',
       );
-      await era.printAndWait('\nご褒美……？');
+      await era.printAndWait('\n보상이라……?');
       await era.printAndWait([
-        '中身は分からないが、ご褒美という言葉は疲れた ',
+        '무엇을 줄지는 몰라도, 보상이라는 말은 지칠 대로 지친 ',
         you.get_colored_name(),
-        ' を励ました。',
+        '에게 조금이나마 힘이 되었다.',
       ]);
-      await era.printAndWait('\n実験器具を片付けたあと');
+      await era.printAndWait('\n실험 기구를 정리한 뒤');
       era.println();
       await tachyon.say_and_wait('では……ご褒美として、処理して差し上げますわ');
       await tachyon.say_and_wait('この数日、溜まったもの❤');
