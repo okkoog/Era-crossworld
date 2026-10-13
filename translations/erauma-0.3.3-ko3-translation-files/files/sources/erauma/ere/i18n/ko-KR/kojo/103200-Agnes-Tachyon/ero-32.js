@@ -399,19 +399,19 @@ module.exports = {
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['幻覚の', you.sex, 'が、体を寄せてくる。']);
+      await tachyon.print_and_wait(['환상 속의 ', you.sex, '이(가) 몸을 가까이한다.']);
       era.println();
 
-      await tachyon.print_and_wait(['ええ。']);
+      await tachyon.print_and_wait(['그래.']);
       await tachyon.print_and_wait(['ください、早くください。']);
-      await tachyon.print_and_wait(['もう走る価値のない私。']);
+      await tachyon.print_and_wait(['이제 달릴 가치조차 없는 나.']);
       await tachyon.print_and_wait([
         '残っているのは、女としての価値だけでしょう。',
       ]);
       await tachyon.print_and_wait(['私を満たして。']);
       await tachyon.print_and_wait(['私を注ぎ込んで。']);
       await tachyon.print_and_wait([
-        '心の空虚を、あなたの愛で、溢れかえるまで満たして。',
+        '텅 빈 내 마음을 당신의 사랑으로 넘칠 만큼 채워 줘.',
       ]);
       await tachyon.print_and_wait(['私を、あなただけの女にして。']);
       await tachyon.print_and_wait(['そしてあなたも、私だけの……']);
@@ -426,7 +426,7 @@ module.exports = {
 
       era.drawLine();
 
-      await tachyon.print_and_wait(['眼前の幻想が、形を変える。']);
+      await tachyon.print_and_wait(['눈앞의 환상이 형태를 바꾼다.']);
       await tachyon.print_and_wait([
         you.sex,
         'の下にいる者が、一瞬で姿を入れ替わる。',
@@ -611,7 +611,7 @@ module.exports = {
       await tachyon.print_and_wait(['문밖의 사람은 뭘 하려는 걸까?']);
       await tachyon.print_and_wait(['문을 열려는 걸까?']);
       await tachyon.print_and_wait([
-        '開けられたら、自分のこの姿、この卑しい姿が。',
+        '문이 열리면, 이런 추한 모습을 들킬 텐데.',
       ]);
       await tachyon.print_and_wait(['들키고 말 거야…… 들키고 말 거야.']);
       await tachyon.print_and_wait([
@@ -632,7 +632,7 @@ module.exports = {
       ]);
       era.println();
 
-      await coffee.say_and_wait(['……哀れですね、', c_call_t, '。']);
+      await coffee.say_and_wait(['……가엾군요, ', c_call_t, '。']);
       await tachyon.say_and_wait([t_call_c, '、どうして……']);
       await coffee.say_and_wait([
         'あんなに大きな声……',
