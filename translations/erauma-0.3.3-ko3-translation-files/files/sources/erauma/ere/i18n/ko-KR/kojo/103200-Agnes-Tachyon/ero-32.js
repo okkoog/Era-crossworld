@@ -633,7 +633,7 @@ module.exports = {
       era.println();
 
       await coffee.say_and_wait(['……가엾군요, ', c_call_t, '.']);
-      await tachyon.say_and_wait([t_call_c, '、どうして……']);
+      await tachyon.say_and_wait([t_call_c, ', 어째서……']);
       await coffee.say_and_wait([
         'あんなに大きな声……',
         tachyon.uma_sex_title,
@@ -643,9 +643,9 @@ module.exports = {
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['読みが外れた。']);
-      await tachyon.print_and_wait(['見つかった。']);
-      await tachyon.print_and_wait(['どうしよう、どうすればいい。']);
+      await tachyon.print_and_wait(['실책이군.']);
+      await tachyon.print_and_wait(['들키고 말았어.']);
+      await tachyon.print_and_wait(['어쩌지, 어떻게 해야 좋을까.']);
       await tachyon.print_and_wait([
         '哀れなことに、今の自分が一番大事だと思っているのは——',
       ]);
@@ -660,22 +660,22 @@ module.exports = {
 
       await tachyon.say_and_wait([callname, '、', you.sex, 'は……']);
       await coffee.say_and_wait([
-        '心配いりません……',
+        '걱정 마세요…… ',
         callname_25,
-        ' には、物を取りに出ると言ってあります。',
+        '에게는 물건을 좀 챙겨오겠다고 말해두었으니까요.',
       ]);
       await coffee.say_and_wait([
         c_call_t,
-        '……腰の薬筒……一本、いただけますか。',
+        '……허리에 있는 약병…… 하나 빌려주실 수 있나요?',
       ]);
-      await coffee.say_and_wait(['欲しい種類は……分かっていますよね。']);
+      await coffee.say_and_wait(['당신이라면…… 제가 어떤 것을 원하는지 알고 있겠죠.']);
       era.println();
 
-      await tachyon.print_and_wait(['ぼんやりと、相手を見る。']);
+      await tachyon.print_and_wait(['멍하니 상대를 바라보았다.']);
       await tachyon.print_and_wait([
-        '自分の腰の……',
+        '내 허리에 있는…… ',
         t_call_c,
-        ' が欲しいのは……',
+        '가 원할 법한 것은……',
       ]);
       await tachyon.print_and_wait(['自分が調合した、排卵促進剤？']);
       await tachyon.print_and_wait([
@@ -685,11 +685,11 @@ module.exports = {
       ]);
       era.println();
 
-      await coffee.say_and_wait([c_call_t, '、ください。もらえますか。']);
+      await coffee.say_and_wait([c_call_t, ', 저에게 주실 수 있나요?']);
       era.println();
 
       await tachyon.print_and_wait([
-        '彼女は、自分が何を言っているか分かっているの？',
+        '그녀는 자신이 무슨 말을 하는지 알고 있는 걸까?',
       ]);
       await tachyon.print_and_wait(['妊娠をほぼ確実に促す薬を、自分の手で。']);
       await tachyon.print_and_wait(['自ら捧げ、自ら渡してほしいと。']);
@@ -699,77 +699,77 @@ module.exports = {
       await tachyon.print_and_wait([
         '自分を足元に踏みつける、極限の辱めと言ってよい。',
       ]);
-      await tachyon.print_and_wait(['なのに、どうして……手は伸びてしまう。']);
-      await tachyon.print_and_wait(['どうして体は、こんなに灼ける。']);
+      await tachyon.print_and_wait(['하지만 어째서…… 손은 앞으로 뻗어나가는 거지.']);
+      await tachyon.print_and_wait(['어째서 몸은 이토록 뜨겁게 달아오르는 걸까.']);
       era.println();
 
-      await coffee.say_and_wait([c_call_t, '……そんなに遠いと、取れません。']);
-      await coffee.say_and_wait(['こっちへ来て、渡してください。']);
+      await coffee.say_and_wait([c_call_t, '……그렇게 멀리 있으면, 제가 받을 수 없잖아요?']);
+      await coffee.say_and_wait(['이쪽으로 와서, 건네주세요.']);
       era.println();
 
-      await tachyon.print_and_wait(['いや。']);
-      await tachyon.print_and_wait(['言うことを聞くな。']);
-      await tachyon.print_and_wait(['薬を叩きつけろ。']);
-      await tachyon.print_and_wait(['自分が飲んでもいい。']);
+      await tachyon.print_and_wait(['안 돼.']);
+      await tachyon.print_and_wait(['그녀의 말을 들어선 안 돼.']);
+      await tachyon.print_and_wait(['약을 부숴버려.']);
+      await tachyon.print_and_wait(['아니면 차라리 자신이 마셔버리든가.']);
       await tachyon.print_and_wait([
         'どうせ ',
         callname,
         ' は隣にいる……飲んだあと、自分のものを取り返せばいい。',
       ]);
-      await tachyon.print_and_wait(['そう、そのはず。']);
+      await tachyon.print_and_wait(['그래, 바로 그거야.']);
       await tachyon.print_and_wait([
-        '今、扉へ向かうのは、薬を渡すためではない。自分のために……',
+        '지금 문을 향해 걷는 것은, 약을 넘겨주기 위해서가 아니라…… 나 자신을 위해서……',
       ]);
-      await tachyon.print_and_wait(['えっ……手が、どうして……']);
+      await tachyon.print_and_wait(['에…… 손이, 어째서……']);
       era.println();
 
-      await coffee.say_and_wait(['……そこまでするとは、思いませんでした。']);
-      await coffee.say_and_wait(['本当に、気持ちが悪い。']);
-      await coffee.say_and_wait(['でも、私は酷い人間でもありません……']);
-      await coffee.say_and_wait(['聞くだけ、辛かったでしょう？']);
+      await coffee.say_and_wait(['……설마 정말로 이런 단계까지 올 줄은 몰랐네요.']);
+      await coffee.say_and_wait(['정말로, 구역질이 나요.']);
+      await coffee.say_and_wait(['하지만 저도 그렇게 모진 사람은 아니니까요……']);
+      await coffee.say_and_wait(['듣기만 하는 건, 꽤 괴로웠죠?']);
       era.println();
 
       await tachyon.print_and_wait([
-        '薬を渡した瞬間、魂まで一緒に渡してしまったかのようだった。',
+        '마치 약을 건네주는 순간, 자신의 영혼까지 함께 넘겨버린 듯한 기분이었다.',
       ]);
       await tachyon.print_and_wait([
-        '魂の抜けたまま眼前の影についていき、本来半分は自分のものであるはずの実験室へ入る。',
+        '넋이 나간 채로 앞서가는 형체를 따라, 본래라면 절반의 소유권이 자신에게 있었을 실험실로 발을 들였다.',
       ]);
       await tachyon.print_and_wait([
-        'だが……これほどしたあとでも、',
+        '하지만…… 이런 짓을 저지르고도, ',
         callname,
-        ' を見た瞬間、意識は勝手に戻ってしまう。',
+        '을 보는 순간 다시금 제정신이 돌아오고 말았다.',
       ]);
       era.println();
 
       await tachyon.say_and_wait([t_call_c, '……']);
       await coffee.say_and_wait([
-        '安心してください……友達が ',
+        '안심하세요…… 친구가 도와서 ',
         callname_25,
-        ' の目と耳を塞いでくれています……今の',
+        '의 눈과 귀를 가려두었으니까요…… 지금의 ',
         you.sex,
-        'には、私たちが見えませんし、聞こえません。',
+        '는 우리를 볼 수도, 들을 수도 없어요.',
       ]);
-      await tachyon.say_and_wait(['それは……']);
+      await tachyon.say_and_wait(['그 말은……']);
       await coffee.say_and_wait([
-        '選択は ',
+        '선택권은 ',
         c_call_t,
-        ' に預けます……混ざるか、一人で見るか。',
+        '에게 맡길게요…… 같이 섞일 건가요, 아니면 혼자서 지켜볼 건가요?',
       ]);
       await tachyon.say_and_wait(['……']);
       era.println();
 
-      await tachyon.print_and_wait(['最後の機会。']);
+      await tachyon.print_and_wait(['마지막 기회군.']);
       await tachyon.print_and_wait([
-        '最後……今ここで受ければ、まだ二人でいられる。',
+        '마지막으로…… 지금 승낙한다면, 아직 함께할 수 있어.',
       ]);
-      await tachyon.print_and_wait(['答えなければ、二度目はない。']);
-      await tachyon.print_and_wait(['そんな予感がある。']);
+      await tachyon.print_and_wait(['만약 대답하지 않는다면, 다시는 두 번 다시 기회는 없겠지.']);
+      await tachyon.print_and_wait(['그런 예감이 들었다.']);
       era.println();
 
-      await tachyon.print_and_wait(['だから……']);
-      era.printButton('口を開き、受け入れる', 1, { color: tachyon.color });
-      era.printButton('黙ったまま', 2, { color: tachyon.color });
+      await tachyon.print_and_wait(['그래서……']);
+      era.printButton('입을 열어 승낙한다', 1, { color: tachyon.color });
+      era.printButton('침묵을 지킨다', 2, { color: tachyon.color });
       ret.push(await era.input());
       if (ret[0] === 1) {
         await tachyon.print_and_wait([
