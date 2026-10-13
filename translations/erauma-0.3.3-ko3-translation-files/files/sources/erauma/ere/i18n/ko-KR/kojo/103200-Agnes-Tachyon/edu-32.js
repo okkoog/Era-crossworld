@@ -1504,7 +1504,7 @@ module.exports = {
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、',
+        '은(는) ',
         tachyon.get_colored_name(),
         '의 논리에 심취해 있던 아이들에게 작별 인사를 건넨 뒤, ',
         tachyon.get_colored_name(),
