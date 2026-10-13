@@ -3324,170 +3324,170 @@ module.exports = {
       await tachyon.print_and_wait(
         '사실 내면에서도 끊임없이 목소리가 들려오고 있었다. 이렇게 어리석은 몰골을 한 자신을 비웃는 목소리가.',
       );
-      await tachyon.print_and_wait('だが……');
+      await tachyon.print_and_wait('하지만……');
       era.println();
       await tachyon.print_and_wait(
-        '理性とは、この感情を捨てることだと言うなら',
+        '만약 이성이란 것이 이런 감정을 버려야 하는 것이라면,',
       );
       await tachyon.print_and_wait([
-        '客観とは、',
+        '만약 객관이란 것이 ',
         you.sex,
-        'への愛情を下げることだと言うなら',
+        '를 향한 사랑을 줄여야 하는 것이라면,',
       ]);
       era.println();
-      await tachyon.print_and_wait('なら、自分は理性を捨てる');
-      await tachyon.print_and_wait('情欲の炎の中で踊る道化になる');
+      await tachyon.print_and_wait('그렇다면 차라리 이성을 포기하겠다.');
+      await tachyon.print_and_wait('정욕의 불꽃 속에서 춤추는 광대가 되리라.');
       era.println();
-      await tachyon.say_and_wait('ああ……私、きっと狂っていますわ');
+      await tachyon.say_and_wait('아아…… 나, 분명 미친 거겠지.');
       era.println();
-      await tachyon.print_and_wait('間違いない');
-      await tachyon.print_and_wait('こんな自分は、きっと狂っている');
+      await tachyon.print_and_wait('틀림없다.');
+      await tachyon.print_and_wait('이런 자신은 분명 미쳐버린 것이다.');
       await tachyon.print_and_wait(
-        '以前の自分は言うまでもなく、一般の社会の恋人たちに比べても、自分の愛は狂気の域に達している',
+        '과거의 자신은 고사하고, 일반적인 사회 통념상의 연인들과 비교해 보아도 자신의 사랑은 광기 어린 수준에 도달해 있었다.',
       );
       await tachyon.print_and_wait(
-        'だが、狂っているかどうかなど、とうに定まっていたではありませんか',
+        '하지만, 미쳤는지 아닌지는 진작에 판가름 난 것 아니겠는가.',
       );
       era.println();
       await tachyon.print_and_wait([
-        '全世界が知っている。',
+        '온 세상이 다 안다. ',
         tachyon.get_colored_name(),
-        ' は狂った',
+        '은 미친 ',
         tachyon.uma_sex_title,
-        'だ',
+        '라는 것을.',
       ]);
       await tachyon.print_and_wait([
-        'だが ',
+        '하지만 ',
         tachyon.get_colored_name(),
-        ' は全世界など気にしない',
+        '은 온 세상 따위 신경 쓰지 않았다.',
       ]);
       await tachyon.print_and_wait([
         you.sex,
-        'は知っている。',
+        '가 안다면 그만이다. ',
         tachyon.get_colored_name(),
-        ' がそういう',
+        '이 이런 ',
         tachyon.uma_sex_title,
-        'だと',
+        '라는 것을.',
       ]);
       await tachyon.print_and_wait([
-        'そして ',
+        '그리고 ',
         tachyon.get_colored_name(),
-        ' が気にするのは',
+        '이 오로지 신경 쓰는 것은 ',
         you.sex,
-        'だけだ',
+        ' 뿐이었다.',
       ]);
       era.println();
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' が恐れるのは一事だけ。自分が',
+        '이 두려워하는 것은 단 한 가지, 바로 ',
         you.sex,
-        'に嫌われること',
+        '에게 미움받는 것이었다.',
       ]);
-      await tachyon.print_and_wait(['自分の行いは', you.sex, 'に釣り合うか？']);
-      await tachyon.print_and_wait(['自分の愛情を', you.sex, 'は好むか？']);
+      await tachyon.print_and_wait(['자신의 행보가 ', you.sex, '와 어울리는가?']);
+      await tachyon.print_and_wait(['자신의 애정을 ', you.sex, '가 좋아해 줄 것인가?']);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は、',
+        '은 과연 ',
         you.sex,
-        'と支え合い、一緒に歩いていける人か',
+        '와 서로 의지하며 함께 걸어갈 수 있는 사람인가.',
       ]);
       era.println();
-      await tachyon.print_and_wait('ああ、所詮はそういうことですわ');
+      await tachyon.print_and_wait('아아, 결국은 그렇게 귀결되는 문제였다.');
       era.println();
-      await tachyon.print_and_wait('燃える愛は眩しく、同時に儚い');
-      await tachyon.print_and_wait('そういう愛は、続かない');
-      await tachyon.print_and_wait('今の自分は、火光に囚われた飛蛾にすぎない');
+      await tachyon.print_and_wait('타오르는 사랑은 눈부시지만, 찰나에 사라진다.');
+      await tachyon.print_and_wait('그런 사랑은 지속되지 않는다.');
+      await tachyon.print_and_wait('지금의 자신은 그저 불꽃에 뛰어드는 불나방에 불과했다.');
       era.println();
-      await tachyon.print_and_wait('欲しい');
-      await tachyon.print_and_wait('欲しい');
-      await tachyon.print_and_wait('恒久の愛が欲しい、永遠の愛が欲しい');
+      await tachyon.print_and_wait('원해.');
+      await tachyon.print_and_wait('원해.');
+      await tachyon.print_and_wait('영원한 사랑을 원해, 불변의 사랑을 원해.');
       await tachyon.print_and_wait(
-        'ダイヤモンドのように、永遠で輝く愛が欲しい',
+        '다이아몬드처럼 영원하고도 영롱한 사랑을 원해.',
       );
       await tachyon.print_and_wait([
         you.sex,
-        'の傍に、当然のようにいる愛が欲しい',
+        '의 곁을 지키는 사랑을 원해.',
       ]);
       era.println();
-      await tachyon.print_and_wait('だが、こんな自分でいいのか');
-      await tachyon.print_and_wait('一生を託せる相手なのか？');
+      await tachyon.print_and_wait('하지만 이런 내가 정말 괜찮은 걸까.');
+      await tachyon.print_and_wait('정말로 일생을 맡길 수 있는 상대인 걸까?');
       await tachyon.print_and_wait([
         you.sex,
-        'は約束してくれるか、こんな自分を永遠に愛すると',
+        '는 영원히 이런 나를 사랑하겠다고 약속해 줄까.',
       ]);
       await tachyon.print_and_wait([
-        '自分は、こんな',
+        '나에게는, 영원히 이런 ',
         you.sex,
-        'を永遠に愛せますか',
+        '를 사랑할 방법이 있는 걸까.',
       ]);
       era.println();
-      tachyon.say('私は……');
-      era.printButton('永遠を選ぶ（関係を進める）', 1, {
+      tachyon.say('나는……');
+      era.printButton('영원을 선택한다 (관계를 진전시킨다)', 1, {
         buttonType: '',
         color: tachyon.color,
       });
-      era.printButton('燃え続ける（まだ進めない）', 2, {
+      era.printButton('계속 불타오른다 (아직 진전시키지 않는다)', 2, {
         buttonType: '',
         color: tachyon.color,
       });
       const ret = await era.input();
       if (ret === 1) {
-        await tachyon.print_and_wait([you.sex, 'と並ぶ']);
-        await tachyon.print_and_wait([you.sex, 'と手を取る']);
-        await tachyon.print_and_wait([you.sex, 'と家庭を築く']);
-        await tachyon.print_and_wait([you.sex, 'と命を産む']);
+        await tachyon.print_and_wait([you.sex, '와 어깨를 나란히 하고.']);
+        await tachyon.print_and_wait([you.sex, '의 손을 잡고.']);
+        await tachyon.print_and_wait([you.sex, '와 가정을 꾸리고.']);
+        await tachyon.print_and_wait([you.sex, '의 아이를 낳고.']);
         era.println();
-        await tachyon.print_and_wait('欲しい……安定した、穏やかな愛');
-        await tachyon.print_and_wait('答えが簡単すぎて、自分でも驚く');
+        await tachyon.print_and_wait('원하는 것은…… 안정되고 평온한 사랑.');
+        await tachyon.print_and_wait('답이 너무나 간단하여 스스로도 놀랄 정도였다.');
         era.println();
         await tachyon.print_and_wait([
-          '仕事を終えて帰り、家の前で待っている',
+          '퇴근하고 집에 돌아왔을 때, 이미 집 앞에서 자신을 기다리고 있는 ',
           you.sex,
-          'を見る',
+          '를 보는 것.',
         ]);
         await tachyon.print_and_wait([
-          '自分が早く帰れた日は、料理を用意して',
+          '만약 자신이 일찍 퇴근한다면 요리를 준비하며 ',
           you.sex,
-          'の帰りを待つ',
+          '가 돌아오기를 기다리는 것.',
         ]);
         await tachyon.print_and_wait([
-          '料理は得意ではないが、',
+          '비록 요리에 소질은 없지만, ',
           you.sex,
-          'のためなら、',
+          '를 위해서라면 ',
           tachyon.get_colored_name(),
-          ' はかつて研究に捧げる、と誓った両手を、炒め物と炊事に使う',
+          '은 한때 연구에 바치겠노라 맹세했던 양손을 기꺼이 프라이팬과 냄비를 잡는 데 쓸 용의가 있었다.',
         ]);
-        await tachyon.print_and_wait('休日は二人で出かける。どこでもいい');
+        await tachyon.print_and_wait('휴일에는 둘이서 외출한다. 어디라도 상관없었다.');
         await tachyon.print_and_wait(
-          '公園、家具屋、あるいは実験用具店、化学薬品店',
+          '공원, 가구점, 혹은 실험 도구점이나 화학 약품점이라 해도.',
         );
         await tachyon.print_and_wait([
           you.sex,
-          'と、ソファの置き場所のような些細なことで喧嘩する',
+          '와 소파 배치 같은 사소한 일로 다투는 것.',
         ]);
         await tachyon.print_and_wait(
-          '夜まで誤りを認めない拗ねた二人が、最後はどちらからともなく温かい抱擁で仲直りする',
+          '밤이 될 때까지 서로 잘못을 인정하지 않고 고집을 피우다가도, 결국 누군가 먼저 시작한 따스한 포옹 한 번에 다시 화해하는 것.',
         );
         await tachyon.print_and_wait([
-          '新居ができた当日は、きっと疲れるだろう。',
+          '새집에 입주한 당일에는 분명 몹시 피곤할 것이다. 아무리 ',
           tachyon.uma_sex_title,
-          'の体力でも持たないかもしれない',
+          '의 체력이라 해도 버티기 힘들겠지.',
         ]);
         await tachyon.print_and_wait([
-          'せっかくできた新しい家でゆっくり睦みたいのに、',
+          '어렵사리 마련한 새집에서 오붓한 시간을 보내고 싶었으나, 결국 그대로 ',
           you.sex,
-          'の腕の中へ倒れ、そのまま眠ってしまう',
+          '의 품에 안겨 잠들어버리는 것.',
         ]);
         if (tachyon.sex_code - 1 && you.sex_code === 1) {
           await tachyon.print_and_wait(
-            '妊娠した日、彼は絶対に大喜びするでしょう',
+            '임신 사실을 알게 되는 날, 그는 분명 깜짝 놀랄 것이다.',
           );
           await tachyon.print_and_wait(
-            'だが突然は言えない。あのとき放つ強光で、隣人が騒音だと怒るでしょうから',
+            '하지만 그렇게 갑작스럽게 말해선 안 된다. 그가 뿜어낼 강렬한 빛 때문에 이웃집에서 민원을 넣을지도 모르니까.',
           );
-          await tachyon.print_and_wait('いいタイミングを探す。昼、朝食のとき');
+          await tachyon.print_and_wait('좋은 타이밍을 봐서, 햇살 비치는 아침 식사 시간에.');
           await tachyon.print_and_wait(
-            '何事もない口調で「あなた、お父さんになりますわよ♡」と言う',
+            '아무렇지 않은 말투로 말하는 거다.「자기야, 당신 아빠가 될 거야♡」라고.',
           );
           await tachyon.print_and_wait(
             'そのときの彼は、どんな顔をするでしょう？',
