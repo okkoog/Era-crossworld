@@ -6561,14 +6561,14 @@ module.exports = {
           }
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             tachyon.get_colored_name(),
-            ' の言う精力剤を思い出した。一般に精力剤とは……そちらの薬だろう',
+            '이(가) 말했던 강장제를 떠올렸다. 보통 강장제란…… 그런 약을 가리키지 않던가.',
           ]);
           await era.printAndWait([
-            'なぜ ',
+            '어째서 ',
             tachyon.get_colored_name(),
-            ' がそんな薬を作るのか、疑問は残る。だが今は考えるときではない。なぜなら……',
+            '이(가) 그런 약을 만들었는지는 의문이었다. 그러나 지금은 생각할 때가 아니었다. 왜냐하면……',
           ]);
           era.println();
           await tachyon.say_and_wait([callname, '……身体が……熱いですわ……']);
@@ -6588,15 +6588,15 @@ module.exports = {
           if (!do_sex) {
             era.println();
             await era.printAndWait([
-              'だめだ。',
+              '안 된다. ',
               tachyon.sex,
-              'は ',
+              '은(는) ',
               you.get_colored_name(),
-              ' の担当',
+              '의 담당 트레이너',
               tachyon.uma_sex_title,
-              'だ。',
+              '다. ',
               you.get_colored_name(),
-              ' は、そんなことをしてはいけない',
+              '은(는) 그런 행동을 해서는 안 된다.',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
@@ -6620,9 +6620,9 @@ module.exports = {
             era.println();
             await era.printAndWait([
               you.get_colored_name(),
-              ' は必死に耐えた。だが視線は、どうしても ',
+              '은(는) 필사적으로 버텼다. 그러나 시선은 자꾸만 ',
               tachyon.get_colored_name(),
-              ' へ向く',
+              '에게 향했다.',
             ]);
             era.println();
             await era.printAndWait([
@@ -6649,13 +6649,13 @@ module.exports = {
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は ',
+              '은(는) ',
               you.get_colored_name(),
-              ' の視線に気づき、少し責めるように呼んだ。だが情欲に染まったその一声の ',
+              '의 시선을 알아차리고 약간 나무라듯 불렀다. 그러나 평소와 다른 그 한마디에 ',
               callname,
-              ' は色っぽく、',
+              '은(는) 당황했고, ',
               you.get_colored_name(),
-              ' は慌てて謝り、視線を戻した',
+              '은(는) 황급히 사과한 뒤 시선을 돌렸다.',
             ]);
             era.println();
             await era.printAndWait('버티고, 또 버티고, 계속 버텼다.');
