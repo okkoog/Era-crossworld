@@ -1156,297 +1156,297 @@ module.exports = {
       await tachyon.print_and_wait('만약이란 건 없다.');
       era.println();
       if (plan_b) {
-        await tachyon.print_and_wait('犯人を骨まで砕いて灰にしても');
-        await tachyon.print_and_wait('商店街を真っ赤に染めても');
-        await tachyon.print_and_wait([you.sex, 'は戻らなかった']);
+        await tachyon.print_and_wait('설령 범인을 가루로 만들어 흩뿌렸을지라도.');
+        await tachyon.print_and_wait('설령 상점가를 선혈로 물들였을지라도.');
+        await tachyon.print_and_wait([you.sex, '는 돌아올 수 없었다.']);
         await tachyon.print_and_wait([
-          'その赤では、',
+          '그 붉은 빛조차 ',
           you.sex,
-          'の腹から溢れた血は埋まらない',
+          '의 복부에서 흘러나온 피를 채울 수는 없었다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
           you.sex,
-          'は、やはり……私を責めませんでしたわ',
+          '는 역시…… 나를 원망하지 않았어.',
         ]);
         era.println();
-        await tachyon.print_and_wait('自分がこうしてしまっても');
+        await tachyon.print_and_wait('자신에 의해 이런 모습이 되었음에도.');
         await tachyon.print_and_wait(
-          '眼前のモルモット君の顔は、青春の名残に溢れている',
+          '눈앞의 모르모트 군의 얼굴에는 청춘의 흔적이 넘쳐흐르고 있었다.',
         );
         await tachyon.print_and_wait([
           you.sex,
-          'は、ここで去るべきではなかった',
+          '는 여기서 떠나선 안 되었다.',
         ]);
-        await tachyon.print_and_wait([you.sex, 'は、今去るべきではなかった']);
+        await tachyon.print_and_wait([you.sex, '는 지금 떠나선 안 되었다.']);
         await tachyon.print_and_wait([
-          'なのに、',
+          '하지만, ',
           tachyon.get_colored_name(),
-          ' のせいだ',
+          ' 때문에.',
         ]);
         await tachyon.print_and_wait([
           you.sex,
-          'が、誤った時間に、誤った場所で、出会ってしまった……誤った人に',
+          '는 잘못된 시간에, 잘못된 장소에서…… 잘못된 사람을 만나고 말았다.',
         ]);
       } else {
-        await tachyon.print_and_wait('犯人を骨まで砕いて灰にしても');
+        await tachyon.print_and_wait('설령 범인을 가루로 만들어 흩뿌렸을지라도.');
         await tachyon.print_and_wait(
-          '商店街で、自分が狂人のように駆け回っても',
+          '설령 상점가에서 자신이 미친 사람처럼 날뛰었을지라도.',
         );
-        await tachyon.print_and_wait([you.sex, 'は戻らなかった']);
+        await tachyon.print_and_wait([you.sex, '는 돌아올 수 없었다.']);
         await tachyon.print_and_wait([
-          '応急の処置では、',
+          '응급조치조차 ',
           you.sex,
-          'の腹から溢れた血は埋まらない',
+          '의 복부에서 흘러나온 피를 채울 수는 없었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'あんなに長く欺いてきたのですもの……もう一度欺いたところで、何ですの……',
+          '그렇게 오랫동안 속여왔으면서…… 마지막에 한 번 더 속여주는 게 뭐 그리 대수라고……',
         );
         era.println();
-        await tachyon.print_and_wait('最初から、わかっていた');
+        await tachyon.print_and_wait('처음부터 알고 있었다.');
         await tachyon.print_and_wait([
           you.sex,
-          'であり、',
+          '이기도 하고, ',
           you.sex,
-          'ではない',
+          '가 아니기도 하다는 것을.',
         ]);
         await tachyon.print_and_wait(
-          '懸命に取り繕っても、記憶を失った者の顔の茫然は、そう簡単には隠せない',
+          '필사적으로 꾸며냈을지 모르나, 기억을 잃은 사람 특유의 그 막막한 눈빛은 결코 쉽게 숨겨지는 것이 아니었다.',
         );
         await tachyon.print_and_wait(
-          'まして……そのあとの嘘は、あまりに拙かった',
+          '하물며…… 그 이후의 거짓말들은 또 얼마나 서툴렀던가.',
         );
         era.println();
         await tachyon.print_and_wait([
-          'だが……',
+          '하지만…… ',
           tachyon.get_colored_name(),
-          ' は構わない',
+          '은 개의치 않았다.',
         ]);
-        await tachyon.print_and_wait([you.sex, 'でありさえすればいい']);
+        await tachyon.print_and_wait([you.sex, '이기만 하면 되었다.']);
         await tachyon.print_and_wait(
-          '生きてくれればいい。生き続けてくれればいい',
+          '그저 살아있어 주기만 한다면, 계속 살아만 준다면 그것으로 충분했다.',
         );
-        await tachyon.print_and_wait('記憶がない？ それが何だというの');
+        await tachyon.print_and_wait('기억이 없다고? 그게 무슨 상관인가.');
         await tachyon.print_and_wait([
           you.sex,
-          'が続いてくれるなら、',
+          '가 계속 곁에 있어 주기만 한다면, ',
           tachyon.get_colored_name(),
-          ' は一生欺かれても甘んじる',
+          '은 기꺼이 평생이라도 속아줄 용의가 있었다.',
         ]);
-        await tachyon.print_and_wait('……なのに');
+        await tachyon.print_and_wait('……하지만.');
         await tachyon.print_and_wait([
-          'また同じだ。「今度」も、',
+          '마찬가지로, 설령 「이번」의 ',
           you.sex,
-          'は自分を、一生分欺いた',
+          '가 자신을 평생토록 속였을지라도.',
         ]);
         await tachyon.print_and_wait([
-          'それでも最後の最後に、もう一度だけ ',
+          '결국 마지막의 마지막 순간만큼은, ',
           tachyon.get_colored_name(),
-          ' を欺くことは、しなかった',
+          '을 속이는 것을 거부하고 말았다.',
         ]);
       }
       era.println();
-      await tachyon.print_and_wait('ベッド脇の紅茶を一口飲む');
+      await tachyon.print_and_wait('침대 곁에 놓인 홍차를 한 모금 마셨다.');
       await tachyon.print_and_wait([
-        '自分で淹れた紅茶は、',
+        '자신이 탄 홍차는 ',
         you.sex,
-        'が淹れたものと、理論上の成分はまったく同じだ',
+        '가 탔던 것과 이론적인 성분이 완벽하게 일치한다.',
       ]);
-      await tachyon.print_and_wait('何年も、自分で淹れてきたのだから');
+      await tachyon.print_and_wait('그도 그럴 것이, 이미 수년 동안 스스로 타왔기 때문이다.');
       await tachyon.print_and_wait(
-        '工夫できること、変えられることは、すでに最善まで研究し尽くした',
+        '연구할 수 있는 모든 것, 수정할 수 있는 모든 것을 최상의 상태로 다듬었다.',
       );
-      await tachyon.print_and_wait('だが、味は違う');
+      await tachyon.print_and_wait('하지만 맛이 다르다.');
       await tachyon.print_and_wait(
-        '同じにはならない。永遠に、同じにはならない',
+        '같을 수 없다. 영원히 같아질 수 없다.',
       );
-      await tachyon.print_and_wait('今日の紅茶は、永遠に昨日の味には勝てない');
+      await tachyon.print_and_wait('오늘의 홍차는 결코 어제의 맛을 이길 수 없다.');
       era.println();
-      await tachyon.say_and_wait('————では、次の実験を始めますわ');
+      await tachyon.say_and_wait('————그럼, 다음 실험을 시작해볼까.');
       era.drawLine();
-      await tachyon.print_and_wait('トレセン学園の地下室');
+      await tachyon.print_and_wait('트레센 학원의 지하실.');
       era.println();
-      await tachyon.say_and_wait('前回ここに来たのは……いつでしたかしら');
+      await tachyon.say_and_wait('마지막으로 여기 온 게…… 언제였더라.');
       era.println();
-      await tachyon.print_and_wait('三ヶ月？ 五ヶ月？ それとも……');
+      await tachyon.print_and_wait('3개월 전? 5개월 전? 아니면……');
       await tachyon.print_and_wait(
-        '「今度」は、モルモット君とどれだけ過ごした？',
+        '「이번」에는 모르모트 군과 얼마나 시간을 보냈더라?',
       );
       era.println();
-      await tachyon.say_and_wait('いいですわ。もう、どうでも');
+      await tachyon.say_and_wait('됐다. 중요하지 않아.');
       era.println();
-      await tachyon.print_and_wait('灯を入れる');
-      await tachyon.print_and_wait('目が光に慣れるのを待って');
-      await tachyon.print_and_wait('眼前に現れたのは、数千に及ぶ培養槽だった');
+      await tachyon.print_and_wait('불을 켰다.');
+      await tachyon.print_and_wait('눈이 서서히 빛에 적응하자.');
+      await tachyon.print_and_wait('눈앞에 나타난 것은 수천 개에 달하는 배양 수조였다.');
       era.println();
       await tachyon.print_and_wait([
-        'ああ、',
+        '아아, 만약 ',
         you.sex,
-        'が知ったら、',
+        '가 알게 된다면, ',
         you.sex,
-        'は絶対に許さないでしょうね',
+        '는 절대로 나를 용서하지 않겠지.',
       ]);
       await tachyon.print_and_wait([
-        'でも……',
+        '하지만…… ',
         you.sex,
-        'は、やはり私を責めなかった',
+        '는 결국 나를 원망하지 않았다.',
       ]);
-      await tachyon.print_and_wait('なら、それは黙認ですわ');
+      await tachyon.print_and_wait('그러니 이건 묵인한 셈이나 다름없다.');
       era.println();
       await tachyon.say_and_wait(
-        '第五十六回。記憶の回復傾向なし、身体に異状なし、生存期間五ヶ月……',
+        '제56차 실험, 기억 회복 경향 없음, 신체 이상 없음, 생존 기간 5개월……',
       );
       era.println();
       await tachyon.print_and_wait([
         you.sex,
-        'が去った日から、ようやく動き出した計画',
+        '가 떠난 그날부터 시작된 계획이었다.',
       ]);
-      await tachyon.print_and_wait('何度自分を呪ったかわからない');
-      await tachyon.print_and_wait('なぜ、こんなに遅く気づいたのか');
+      await tachyon.print_and_wait('자신을 수없이 원망했다.');
+      await tachyon.print_and_wait('어째서 이렇게 늦게서야 이 방법을 떠올렸느냐고.');
       await tachyon.print_and_wait(
-        '泡のような幸福に麻痺して、研究者として最低限の備えすら忘れたのか？',
+        '물거품 같은 행복에 취해 연구자의 기본인 유비무환조차 잊고 있었단 말인가.',
       );
-      await tachyon.print_and_wait('だから、こうなった');
+      await tachyon.print_and_wait('그 결과가 바로 이런 꼴이다.');
       era.println();
       await tachyon.print_and_wait([
-        '一滴ずつ、砂の城を積むように、',
+        '한 땀 한 땀, 모래성을 쌓듯이 ',
         you.sex,
-        'の身体を組み直した',
+        '의 신체를 다시 이어 붙여 만들었다.',
       ]);
       await tachyon.print_and_wait(
-        'だが、すべてを組み直しても、形のないものは、もう一度は作れない',
+        '하지만 모든 것을 이어 붙였음에도, 형체 없는 것만은 다시 빚어낼 수 없었다.',
       );
-      await tachyon.print_and_wait('人体でもっとも秘密を孕む脳————記憶');
+      await tachyon.print_and_wait('인체에서 가장 많은 비밀을 담고 있는 뇌———— 바로 기억이다.');
       await tachyon.print_and_wait(
-        '最初から、あったかどうかすらわからないものを、どう形を取り戻すというの',
+        '처음부터 존재했는지조차 알 수 없는 것을 대체 어떻게 재구성한단 말인가.',
       );
-      await tachyon.print_and_wait('こうするしかない');
-      await tachyon.print_and_wait('何度も実験し、何度も目覚めさせ');
-      await tachyon.print_and_wait('何度も……奇跡を待つ');
+      await tachyon.print_and_wait('그저 이렇게 할 수밖에 없었다.');
+      await tachyon.print_and_wait('반복되는 실험, 반복되는 각성.');
+      await tachyon.print_and_wait('그리고 되풀이되는…… 기적을 기다리는 일.');
       era.println();
       await tachyon.say_and_wait(
-        '失敗主因、多臓器不全による敗血症……生存意志、なし',
+        '실패 주요 원인, 다발성 장기 부전으로 인한 패혈증…… 생존 의지, 없음.',
       );
       era.println();
       await tachyon.print_and_wait(
-        '凡人の泥遊びでは、女神様には永遠に届かないのでしょうね',
+        '범인의 흙장난 따위는 역시 여신에게 비길 바가 못 되는 모양이다.',
       );
       await tachyon.print_and_wait([
-        'だから、毎回造り上げた',
+        '그래서 매번 만들어지는 ',
         you.sex,
-        'は、いつもこうなる',
+        '는 항상 이랬다.',
       ]);
-      await tachyon.print_and_wait('長くて半年、短くて……二週間');
-      await tachyon.print_and_wait('時が来れば、必ず何らかの理由で永眠する');
-      await tachyon.print_and_wait('……もちろん');
+      await tachyon.print_and_wait('길어야 반년, 짧으면…… 고작 2주.');
+      await tachyon.print_and_wait('시간이 다 되면, 항상 각양각색의 이유로 영면에 들고 만다.');
+      await tachyon.print_and_wait('……물론.');
       await tachyon.print_and_wait(
-        'これらの病は、どれほど言っても、常人の範囲だ',
+        '그 질병들은 어디까지나 상식적인 범주 내의 일이다.',
       );
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' の研究成果があれば',
+        '의 연구 성과를 이용한다면.',
       ]);
       await tachyon.print_and_wait(
-        '延命するなら、三年から五年は絶対に問題ない。それ以上も……可能だ',
+        '생명을 연장하는 것쯤이야 3년에서 5년은 거뜬했고, 심지어…… 그보다 훨씬 오래 살게 할 수도 있었다.',
       );
       await tachyon.print_and_wait(
-        '望むなら、三年から五年が一つあれば、二つ目、三つ目、四つ目と、永久に続けられる',
+        '마음만 먹는다면 첫 번째 5년, 그리고 두 번째, 세 번째, 네 번째…… 영원히 이어갈 수도 있었다.',
       );
       era.println();
-      await tachyon.say_and_wait([you.sex, 'は、やはり……言いませんでしたわ']);
+      await tachyon.say_and_wait([you.sex, '는 끝내 말하지 않았다.']);
       era.println();
-      await tachyon.print_and_wait('何度繰り返しても');
-      await tachyon.print_and_wait('身体をどう改変しても');
+      await tachyon.print_and_wait('아무리 반복해도.');
+      await tachyon.print_and_wait('아무리 신체를 개조해도.');
       await tachyon.print_and_wait([
-        '最後の最後、',
+        '마지막 순간에 ',
         you.sex,
-        'の言葉は、いつも大同小異だ',
+        '가 내뱉는 말은 늘 비슷했다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('もう終わりです');
-      await tachyon.say_and_wait('もう、十分です');
+      await tachyon.say_and_wait('이제 끝났어.');
+      await tachyon.say_and_wait('이걸로 만족해.');
       era.println();
       await tachyon.say_and_wait(
-        '冗談じゃありませんわ……冗談じゃありませんわ！',
+        '웃기지 마…… 웃기지 말라고!',
       );
       await tachyon.say_and_wait(
-        '誰が勝手に満足していいと言いましたの！ 言いなさい！ 私に言いなさい！ 生きたいと言いなさい！ 私と暮らし続けたいと言いなさい！',
+        '누가 마음대로 만족하라고 했나! 말하란 말이야! 내게 말해! 살고 싶다고! 계속 나와 함께 살아가고 싶다고 말하란 말이야!',
       );
       await tachyon.say_and_wait(
-        '記憶がなくても構いません。一生かけて思い出しても構いません。言って……なぜ言わないの……なぜ……私を一人にするの……',
+        '기억이 없어도 상관없어, 평생 기억을 찾아 헤매도 상관없으니까, 제발 말해줘…… 어째서 말하지 않는 거야…… 왜…… 왜 나를 혼자 두는 거냐고……',
       );
       era.println();
       await tachyon.print_and_wait([
-        'もし、',
+        '만약 ',
         you.sex,
-        'が憎んでいたなら。自分の命を奪った ',
+        '가 증오 때문에, 자신의 목숨을 앗아가게 만든 ',
         tachyon.get_colored_name(),
-        ' を憎み、死んでも ',
+        '을 원망하며 죽어서도 ',
         tachyon.get_colored_name(),
-        ' と暮らしたくないというなら、それなら受け入れられる',
+        '와 함께 살고 싶지 않다면, 그것은 받아들일 수 있었다.',
       ]);
       await tachyon.print_and_wait([
-        '本当にそうなら、',
+        '정말로 그렇다면 ',
         tachyon.get_colored_name(),
-        ' は二言なく',
+        '은 군말 없이 ',
         you.sex,
-        'の生活から離れ、最低限の医療接触だけにする',
+        '의 곁을 떠나, 최소한의 의료적 접촉만을 유지했을 것이다.',
       ]);
       await tachyon.print_and_wait([
-        '最後に、ほんの少しの迷いがあれば、あるいは ',
+        '마지막 순간에 조금이라도 망설이거나, 혹은 ',
         tachyon.get_colored_name(),
-        ' への、ほんの少しの嫌悪を見せれば',
+        '을 향한 혐오를 드러내 주기만 한다면.',
       ]);
       await tachyon.print_and_wait([
-        '心拍が止まっても、最後の瞬間に',
+        '설령 심장이 멈추더라도, 마지막 수단을 써서라도 ',
         you.sex,
-        'を救い出せる',
+        '를 다시 살려냈을 것이다.',
       ]);
-      await tachyon.print_and_wait('だが……五十六回のなかで');
-      await tachyon.print_and_wait('そんなことは、一度も起きなかった');
+      await tachyon.print_and_wait('하지만…… 56번의 실험 동안.');
+      await tachyon.print_and_wait('그런 일은 단 한 번도 일어나지 않았다.');
       era.println();
-      await tachyon.print_and_wait('足を引っ張りたくない');
-      await tachyon.print_and_wait('縛りたくない');
-      await tachyon.print_and_wait('すべてを失っても、命も、記憶も');
+      await tachyon.print_and_wait('자신을 끌어들이고 싶지 않아서.');
+      await tachyon.print_and_wait('자신을 구속하고 싶지 않아서.');
+      await tachyon.print_and_wait('설령 모든 것을 잃었음에도, 생명도, 기억도 잃었음에도.');
       await tachyon.print_and_wait([
-        '五十六回、毎回、',
+        '56번의 기회 속에서 매번 ',
         you.sex,
-        'が最後まで想っていたのは ',
+        '가 마지막까지 생각한 것은 오직 ',
         tachyon.get_colored_name(),
-        ' の可能性だった',
+        '의 가능성뿐이었다.',
       ]);
       era.println();
       await tachyon.print_and_wait([
-        'だが、',
+        '하지만 ',
         tachyon.get_colored_name(),
-        ' の可能性は、もう終わっている',
+        '의 가능성은 이미 끝났다.',
       ]);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' の時間は、もう止まっている',
+        '의 시간은 이미 멈춰버렸다.',
       ]);
-      await tachyon.print_and_wait('あの紅茶の味は、あの瞬間から固定された');
+      await tachyon.print_and_wait('그 홍차의 맛은 그 순간부터 이미 고정되어버렸다.');
       era.println();
-      await tachyon.say_and_wait('第五十七回、開始');
+      await tachyon.say_and_wait('제57차 실험, 개시.');
       era.println();
       await tachyon.print_and_wait(
-        '培養槽が栄養液を排出し、槽のなかの人影が解き放たれる',
+        '배양 수조의 영양액이 빠져나가며, 수조 안의 실루엣이 해방되었다.',
       );
       era.println();
       await tachyon.print_and_wait([
         you.sex,
-        'を終わらせてはならない。',
+        '를 끝내게 하지 않겠다. 결코 ',
         you.sex,
-        'を終わらせはしない',
+        '를 끝나게 두지 않을 것이다.',
       ]);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' とモルモット君の物語は、永遠に続けなければならない',
+        '과 모르모트 군의 이야기는 반드시 영원히 계속되어야만 한다.',
       ]);
       era.println();
       await tachyon.print_and_wait(
-        'こうして、過去を縛り、過去に縛られた科学者は、新たな実験を始めた',
+        '그리하여 과거에 얽매이고, 과거에 갇혀버린 과학자는 다시금 새로운 실험을 시작했다.',
       );
     };
     f.title = title;
