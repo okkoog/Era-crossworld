@@ -51,7 +51,7 @@ module.exports = {
         nature.sex,
         '는 자신의 말을 필사적으로 부정하려 했지만, 그 마음속에 심어진 연심의 씨앗은 이미 소리 없이 싹을 틔우고 있었다……',
       ]);
-      era.drawLine({ content: '얼마 후……' });
+      era.drawLine({ content: '얼마 후……', position: 'left' });
       await nature.print_and_wait([
         nature.get_colored_name(),
         ' は自室のベッドにひとり座っていた。もともと薄着の',
