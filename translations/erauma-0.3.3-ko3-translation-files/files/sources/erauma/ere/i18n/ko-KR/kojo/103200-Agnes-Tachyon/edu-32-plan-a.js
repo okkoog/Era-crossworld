@@ -877,11 +877,11 @@ module.exports = {
         tachyon.sex,
       ]);
       if (love >= 75 && tachyon.sex_code !== 1 && you.sex_code > 0) {
-        await era.printAndWait('……だが');
+        await era.printAndWait('……하지만');
         await era.printAndWait(
-          '自分の恋人を他人に囲まれるのは、同性同士でも少し嫉妬する',
+          '자신의 연인이 다른 사람들에게 둘러싸여 있으면, 동성끼리라도 조금 질투가 나기 마련이다.',
         );
-        await era.printAndWait('こんなときは……');
+        await era.printAndWait('이럴 때는……');
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
@@ -959,10 +959,10 @@ module.exports = {
         era.drawLine();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はレース場へ立った',
+          '은(는) 레이스장에 섰다.',
         ]);
         await era.printAndWait([
-          'ただ……今回ばかりは、',
+          '다만……이번만큼은,',
           tachyon.sex,
           'の勝負服がしっかり隠れているのが幸いだった。でなければ、妙に膨らんだ下腹に全員が気づいただろう',
         ]);
