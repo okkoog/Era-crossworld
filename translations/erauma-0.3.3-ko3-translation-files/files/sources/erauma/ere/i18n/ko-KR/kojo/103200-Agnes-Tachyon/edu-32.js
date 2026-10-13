@@ -4630,13 +4630,13 @@ module.exports = {
       if (ret === 1) {
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の目標と夢のため……そして、自分のほんの少しの私心のため',
+          '의 목표와 꿈…… 그리고, 자신의 아주 작은 사심을 위해.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は今の ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' を見た',
+          '의 현재 모습을 보았다.',
         ]);
         await era.printAndWait([
           '汗に濡れた運動着から透ける白い肌と、走行で付いた泥の斑点が鮮やかに対比し、密着した服が',
@@ -4661,56 +4661,56 @@ module.exports = {
           ' に反対を許さない',
         ]);
         await era.printAndWait([
-          '迷い、惜しみながらも、',
+          '망설임과 미안한 마음이 들었지만, ',
           you.get_colored_name(),
-          ' は',
+          '은(는) ',
           tachyon.sex,
-          'の不調を見て見ぬふりをして、トレーニングを続けさせた',
+          '에게 훈련을 계속하게 했다.',
         ]);
         await era.printAndWait([
-          '……',
+          '…… ',
           you.get_colored_name(),
-          ' の内心の汚さを察したのか、あるいはトレーニングの続行自体が気に入らないのか、',
+          '의 불순한 속마음을 눈치챈 것인지, 아니면 그저 훈련이 계속되는 것에 불만을 느낀 것인지, ',
           tachyon.get_colored_name(),
-          ' は何も言わず、それでも ',
+          '은 아무 말 없이 ',
           you.get_colored_name(),
-          ' を一睨みした',
+          '을(를) 쏘아보았다.',
         ]);
       } else {
         await era.printAndWait(
-          'トレーナーとして、理不尽な過度トレーニングは避けるべきだ',
+          '트레이너로서 부조리한 과잉 훈련은 피해야 마땅했다.',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' が一周走り終えると、すぐ停止を告げた',
+          '이 한 바퀴를 다 돌자마자 즉시 멈춰 세웠다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          '……終わり、ですの？ 実験は始まったばかりですわ。今日やる対照実……実験がまだ……あっ……',
+          '……종료? 실험은 이제 막 시작된 참이 아닌가. 오늘 끝내야 할 비교 실…… 실험…… 아……',
         );
         await era.printAndWait([
           tachyon.sex,
-          'の強気な言葉は途中で途切れ、抑えきれない吐息が漏れた',
+          '의 강경한 말투는 끝까지 이어지지 못하고 나지막한 신음으로 변했다.',
         ]);
         await era.printAndWait(
           '誰が想像しよう。ふくらはぎの内側を軽く押しただけで、あれほど強気な口から、こんな甘い声が出るとは',
         );
         await era.printAndWait([
-          'もちろん、',
+          '물론 ',
           you.get_colored_name(),
-          ' の指圧に即発情させる魔法があるわけではない。主因は ',
+          '의 마사지가 사람을 즉각 흥분시킬 만큼 신비한 것은 아니었다. 이 모든 것의 주원인은 ',
           tachyon.get_colored_name(),
-          ' 自身だ',
+          ' 본인에게 있었다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' はもう力が抜けた ',
+          '은(는) 이미 힘이 풀려 주저앉은 ',
           tachyon.get_colored_name(),
-          ' を支え、腫れ始めた',
+          '을 부축하며, 살짝 부어오른 ',
           tachyon.sex,
-          'のふくらはぎを優しく押した',
+          '의 다리를 가볍게 눌렀다.',
         ]);
         era.println();
         await tachyon.say_and_wait('……ん……やぁ……そんな……だめ……やめて……あん……');
@@ -4779,13 +4779,13 @@ module.exports = {
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は慌てて',
+          '은(는) 서둘러 ',
           tachyon.sex,
-          'に謝った',
+          '에게 사과했다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          '……わ、わかりましたわ……今日は、ここまでに……わ、私、少し休みが必要ですわ……',
+          '……아, 알았네…… 오늘은 여기까지만 하지…… 나, 나도 휴식이 필요할 것 같군……',
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
