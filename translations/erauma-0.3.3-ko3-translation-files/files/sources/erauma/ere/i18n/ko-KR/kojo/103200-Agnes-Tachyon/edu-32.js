@@ -360,7 +360,7 @@ module.exports = {
 
   // [번역 대상] be_crazy_fan
   be_crazy_fan: (() => {
-    const title = '止まった時計';
+    const title = '멈춰 버린 시계';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -368,217 +368,217 @@ module.exports = {
      * @param {boolean} plan_b Plan B に入っているか
      */
     const f = async (tachyon, you, t_call_c, plan_b) => {
-      await tachyon.say_and_wait('起きて');
-      await tachyon.say_and_wait('起きて');
-      await tachyon.say_and_wait('お願い……目を開けてくださいまし');
+      await tachyon.say_and_wait('눈을 떠봐.');
+      await tachyon.say_and_wait('정신 차려보게.');
+      await tachyon.say_and_wait('제발…… 눈을 떠줘.');
       era.drawLine();
-      await era.printAndWait('俺は誰だ');
+      await era.printAndWait('나는 누구지.');
       era.println();
       await tachyon.say_and_wait(
-        'あなたは……モルモット君。私の専属トレーナーですわ',
+        '자네는…… 모르모트 군, 나의 전속 트레이너라네.',
       );
       era.println();
-      await era.printAndWait('……あなたは誰だ');
+      await era.printAndWait('……너는 누구야?');
       era.println();
       await tachyon.say_and_wait([
-        '……私は ',
+        '……나는 ',
         tachyon.get_colored_name(),
-        '。あなたの担当',
+        '일세. 자네를 담당하는 ',
         tachyon.uma_sex_title,
-        'です',
+        '일세.',
       ]);
       await era.printAndWait('…………');
       era.println();
-      await tachyon.say_and_wait('……覚えていますか？');
+      await tachyon.say_and_wait('……자네, 기억하고 있나?');
       await era.printAndWait('…………');
       await tachyon.say_and_wait([
-        'だめ……黙らないで。私を覚えていますわよね？ 覚えていますか？ ここはトレセン学園の、私たちの研究室。あちらは ',
+        '아…… 아무 말도 안 하면 곤란하네. 나를 기억하고 있지? 그렇지? 여기는 트레센 학원 안에 있는 우리 실험실이고, 저쪽은 ',
         t_call_c,
-        ' の領域……',
+        '의 구역이고……',
       ]);
       era.println();
       if (plan_b) {
-        await era.printAndWait('……すまない');
+        await era.printAndWait('……미안.');
         era.println();
-        await era.printAndWait([you.get_colored_name(), ' は首を横に振った']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 고개를 저었다.']);
         await era.printAndWait([
-          '眼前の',
+          '눈앞의 ',
           tachyon.teen_sex_title,
-          '……なぜか、馴染みがある',
+          '…… 어째서인지 모르겠지만, 어딘가 그리운 느낌이 든다.',
         ]);
-        await era.printAndWait('だが自分は、本当に知らない');
+        await era.printAndWait('하지만 분명히, 조금도 알지 못하는 사람이다.');
         era.println();
         await tachyon.say_and_wait(
-          '……構いませんわ。記憶喪失も、一つの……一つの可能性……思い出せばいいだけです',
+          '……괜찮네. 기억 상실도 하나의…… 하나의 가능성일 뿐이야…… 그저 기억을 다시 되찾으면 될 일이지.',
         );
         era.println();
-        await era.printAndWait('……可能性');
-        await era.printAndWait('その言葉が、泥の中の閃きを起こした気がした');
-        await era.printAndWait('だが……');
-        await era.printAndWait('閃きは、いつも一瞬だけだ');
+        await era.printAndWait('……가능성.');
+        await era.printAndWait('그 단어가 진흙탕 같은 의식 속에서 어떤 영감을 깨우는 듯했다.');
+        await era.printAndWait('그러나……');
+        await era.printAndWait('영감은 언제나 찰나에 불과했다.');
         era.println();
-        await era.printAndWait('わからない');
-        await era.printAndWait('考えるほど、頭の空白は増える');
-        await era.printAndWait('それでも、思い出さねばならない');
-        await era.printAndWait('さっきの閃きに、もう一度届くように');
-        await era.printAndWait('理由は一つだけ');
+        await era.printAndWait('모르겠다.');
+        await era.printAndWait('생각하면 할수록 머릿속의 빈 공간이 늘어만 간다.');
+        await era.printAndWait('하지만, 역시 필사적으로 기억해내야만 한다.');
+        await era.printAndWait('방금 스쳐 지나간 영감을 다시 붙잡을 수 있기를 기도한다.');
+        await era.printAndWait('이유는 단 하나.');
         await era.printAndWait([
-          '眼前の、',
+          '비록 눈앞의 ',
           tachyon.get_colored_name(),
-          ' という名の',
+          '이라는 이름의 ',
           tachyon.teen_sex_title,
-          'を知らない',
+          '를 알지는 못하지만.',
         ]);
         await era.printAndWait([
-          'だが潜在意識が叫ぶ。',
+          '잠재의식이 외치고 있다. ',
           tachyon.sex,
-          'を傷つけていけない。',
+          '를 상처 입혀서는 안 된다고, ',
           tachyon.sex,
-          'を悲しませてはいけない',
+          '를 슬프게 해서는 안 된다고.',
         ]);
         era.println();
         await era.printAndWait([
-          'だから、',
+          '그렇기에, 주변을 가볍게 둘러보며 기억을 더듬어보자는 ',
           tachyon.sex,
-          'が周りを見て思い出してみよう、と言ったとき',
+          '의 제안에.',
         ]);
-        await era.printAndWait([you.get_colored_name(), ' は拒まなかった']);
+        await era.printAndWait([you.get_colored_name(), '은(는) 거절하지 않았다.']);
         await era.printAndWait([
           tachyon.sex,
-          'について、学園（',
+          '를 따라 학원(본인의 말에 따르면 그렇다고 한다) 안을 걸었다.',
           tachyon.sex,
-          'によればそうらしい）を歩いただけだ',
+          '를 따라, 학원(그녀의 말에 따르면 그렇다고 한다) 안을 걸었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'モルモット君……見てくださいまし。こちらがグラウンド。私たちが出会った場所ですわ',
+          '모르모트 군…… 보게나, 이쪽은 훈련장이라네. 우리가 처음 만난 곳이지.',
         );
         era.println();
-        await era.printAndWait('出会い……か');
+        await era.printAndWait('만남……?');
         era.println();
         await tachyon.say_and_wait(
-          'ええ。当時の私は、あなたを本当には見ていませんでしたけれど……あなたがそう言ったのです',
+          '그렇다네. 비록 당시의 나는 자네를 제대로 보지 못했지만…… 자네가 내게 말을 걸어주었지.',
         );
         era.println();
-        await era.printAndWait('そうか……');
+        await era.printAndWait('그랬구나……');
         await era.printAndWait(
-          'なら当時の自分は、タキオンの走りに魅せられたのだろう',
+          '그렇다면, 당시의 나는 분명 타키온의 달리기에 매료되었던 것이겠네.',
         );
         era.println();
-        await tachyon.say_and_wait('！……思、思い出しましたの！');
+        await tachyon.say_and_wait('!…… 자네, 기억이 난 건가!');
         era.println();
-        await era.printAndWait('……すまない');
+        await era.printAndWait('……미안.');
         await era.printAndWait(
-          'ただ、何かの感触で……タキオンが走れば、きっと綺麗だと思った',
-        );
-        era.println();
-        await tachyon.say_and_wait(
-          '………ええ、何度も言いましたわ……私にはわかりません。ただ走るだけなのに、何が人を惹きつけるのか',
-        );
-        era.println();
-        await era.printAndWait('……違う');
-        await era.printAndWait(
-          '他人はそうかもしれない。だがタキオンの走りは……自分を必ず魅せる、という感触がある',
+          '그저, 어떤 느낌이…… 타키온은, 달리기 시작하면 분명 무척 아름다울 것이라는 생각이 들어서.',
         );
         era.println();
         await tachyon.say_and_wait(
-          '……そうですか。では、一度走って見せましょうか？',
+          '………그래, 자네는 몇 번이나 그렇게 말했었지…… 나로서는 잘 이해가 안 가지만 말이야. 그저 평범한 달리기일 뿐인데, 대체 무엇이 그렇게 매력적이라는 건지.',
         );
         era.println();
-        await era.printAndWait('！ いいのか！');
-        await era.printAndWait('だが……タキオンの脚は……');
+        await era.printAndWait('……아니.');
+        await era.printAndWait(
+          '다른 사람들은 어떨지 몰라도, 타키온의 달리기만큼은…… 내게 확신을 줘. 분명 나를 매료시킬 거라고.',
+        );
         era.println();
-        await tachyon.say_and_wait('……覚、覚えていますの？');
+        await tachyon.say_and_wait(
+          '……그렇다면, 내가 한 바퀴 뛰는 것을 봐주겠나?',
+        );
+        era.println();
+        await era.printAndWait('!그래도 돼?');
+        await era.printAndWait('하지만…… 타키온의 다리는……');
+        era.println();
+        await tachyon.say_and_wait('……자네, 그걸 기억하고 있는 건가?');
         era.println();
         await era.printAndWait('……');
         era.println();
-        await era.printAndWait('沈黙が、いちばんの答えだった');
+        await era.printAndWait('침묵이 가장 확실한 대답이 되었다.');
         await era.printAndWait([
-          'ここで',
+          '만약 이 상황에서 ',
           tachyon.sex,
-          'を欺き、思い出したと言えば',
+          '에게 거짓말을 해서, 기억이 났다고 말한다면.',
         ]);
-        await era.printAndWait([tachyon.sex, 'はきっと喜ぶ']);
-        await era.printAndWait([tachyon.sex, 'を欺いて、いいのか']);
+        await era.printAndWait([tachyon.sex, '는 분명 아주 기뻐할 것이다.']);
+        await era.printAndWait([tachyon.sex, '를 속이는 것이 정말로 옳은 일일까?']);
         era.println();
-        await era.printAndWait('なぜか、胸の声がまた高く叫ぶ');
-        await era.printAndWait([tachyon.sex, 'を「また」欺くな']);
-        await era.printAndWait('自分を「また」欺くな');
-        await era.printAndWait('……なぜ「また」だ');
+        await era.printAndWait('어째서인지 가슴 속의 목소리가 다시금 외치기 시작한다.');
+        await era.printAndWait([tachyon.sex, '를 「더 이상」 속이지 마라.']);
+        await era.printAndWait('「더 이상」 자신을 속이지 마라.');
+        await era.printAndWait('……어째서「더 이상」인 걸까.');
         era.println();
-        await tachyon.say_and_wait('……構いませんわ。一周走ってきます');
+        await tachyon.say_and_wait('……괜찮네. 한 바퀴 뛰고 오겠네.');
         await tachyon.say_and_wait(
-          'そうすれば、何か思い出せるかもしれませんわ',
+          '그러면, 혹시 무언가 떠오를지도 모르니까 말이야.',
         );
         era.println();
-        await era.printAndWait([tachyon.sex, 'は一周走り終えた']);
+        await era.printAndWait([tachyon.sex, '는 운동장을 한 바퀴 달렸다.']);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が思ったとおり、心を動かす走りだった',
+          '이(가) 생각했던 대로, 그것은 몹시도 매혹적인 달리기였다.',
         ]);
-        await era.printAndWait('だが……それだけだ');
+        await era.printAndWait('하지만…… 그뿐이었다.');
         era.println();
-        await era.printAndWait([tachyon.sex, 'は一周を終え、止まろうとした']);
+        await era.printAndWait([tachyon.sex, '는 한 바퀴를 다 돌고 멈추려 했다.']);
         await era.printAndWait([
-          'だが、なお茫然とした ',
+          '그러나 여전히 멍한 눈을 하고 있는 ',
           you.get_colored_name(),
-          ' の目を見て、',
+          '을(를) 보자, ',
           tachyon.sex,
-          'はなぜか、また走り出した',
+          '는 웬일인지 다시 달리기 시작했다.',
         ]);
         await era.printAndWait([
-          '呆然とする ',
+          '넋을 잃고 보고 있는 ',
           you.get_colored_name(),
-          ' の前で、',
+          ' 앞에서, ',
           tachyon.sex,
-          'は一周また一周、暗くなるまで走った',
+          '는 날이 저물 때까지 몇 바퀴고 계속해서 달렸다.',
         ]);
         era.println();
-        await era.printAndWait('……すまない');
+        await era.printAndWait('……미안.');
         era.println();
         await tachyon.say_and_wait(
-          'いいえ、なんでも……ただ、走りたくなっただけですわ',
+          '아니, 아무것도 아니네…… 그저, 갑자기 달리고 싶어졌을 뿐이라네.',
         );
         era.println();
-        await era.printAndWait('嘘だ');
+        await era.printAndWait('거짓말이다.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' にはわかる。だが、指摘しなかった',
+          '은(는) 그것을 느꼈지만, 굳이 지적하지 않았다.',
         ]);
-        await era.printAndWait('指摘できるはずがない');
+        await era.printAndWait('지적할 수 있을 리가 없다.');
         await era.printAndWait([
-          'その',
+          '그 ',
           tachyon.teen_sex_title,
-          'の、徒労の哀しみを',
+          '의, 헛수고에 불과한 애처로움을 차마 입에 담을 수는 없었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          '……明日も、一緒に探しましょう。必ず、いつか取り戻せますわ',
+          '……내일, 다시 같이 찾아보세. 반드시, 언젠가는 되찾을 수 있을 걸세.',
         );
         era.println();
-        await era.printAndWait('だから、徒労だとわかっていても');
+        await era.printAndWait('그렇기에, 비록 이것이 헛된 일임을 알면서도.');
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、拒む言葉を吐けなかった',
+          '은(는) 끝내 거절의 말을 내뱉지 못했다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'モルモット君……見てくださいまし。普段はここで実験しています。毎回、私が薬を作って、あなたに飲ませるのですわ',
+          '모르모트 군…… 보게나, 평소에 우린 여기서 실험을 했다네. 매번 내가 약을 만들면 자네가 마셔주었지.',
         );
         era.println();
-        await era.printAndWait('ええ……それ、実験対象じゃないか？');
+        await era.printAndWait('에에…… 그거, 실험체 아니야?');
         era.println();
         await tachyon.say_and_wait(
-          '当然ですわ。モルモット君が何の意味だと思いましたの',
+          '당연하지. 자네는 모르모트 군이 무슨 뜻이라고 생각했나?',
         );
         era.println();
-        await era.printAndWait('……本当に実験動物のことだったのか');
+        await era.printAndWait('……정말로 실험 동물을 뜻하는 거였구나.');
         era.println();
         await tachyon.say_and_wait(
-          '……ですので、近いうちに研究しますわ。記憶を戻す薬を……手伝ってくれますわね？',
+          '……그러니 조만간 연구할 걸세. 기억을 되찾아주는 약을…… 자네도 도와줄 거지?',
         );
         era.println();
-        await era.printAndWait('……もちろん');
+        await era.printAndWait('……물론이지.');
         era.drawLine();
         await tachyon.say_and_wait([
           'モルモット君……あちらは ',
