@@ -3619,311 +3619,311 @@ module.exports = {
     const f = async (tachyon, you, callname) => {
       await tachyon.say_and_wait([
         callname,
-        '、私の名前を、一度呼んでくれます？',
+        ', 내 이름을 한 번 불러주겠나?',
       ]);
       era.println();
 
-      await era.printAndWait(['名前？']);
+      await era.printAndWait(['이름?']);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は不思議そうに ',
+        '은(는) 궁금하다는 듯 ',
         tachyon.get_colored_name(),
-        ' を見る。',
+        '을 바라보았다.',
       ]);
       await era.printAndWait([
-        '今日、トレーナー室へ入るなり、',
+        '오늘 트레이닝실에 들어오자마자 ',
         tachyon.get_colored_name(),
-        ' にソファへ押しつけられた。',
+        '에게 억지로 소파에 눕혀졌다.',
       ]);
       await era.printAndWait([
-        'それから',
+        '이어서 ',
         tachyon.sex,
-        'はトレーニング計画を書く小さなホワイトボードを引き出し、先生が講義を始めるような様子だ。これは……また何のつもりだろう。',
+        '는 훈련 계획을 쓰는 작은 화이트보드를 꺼내 들고는, 마치 선생님이 수업을 시작하려는 듯한 모습이었다. 이건 또 무슨 놀이인지 알 수가 없었다.',
       ]);
       era.println();
 
-      await tachyon.say_and_wait(['さあ、早く早く、呼んでくださいまし。']);
+      await tachyon.say_and_wait(['자, 어서 어서, 불러보게.']);
 
-      era.printButton('「アグネスタキオン」', 1);
+      era.printButton('「아그네스 타키온」', 1);
       await era.input();
 
       await era.printAndWait([
         tachyon.get_colored_name(),
-        '。自分だけのかけがえのない愛馬の名前。',
+        ', 자신에게 있어 유일무이한 담당 우마무스메의 이름.',
       ]);
       await era.printAndWait([
-        '聞いて、',
+        '이름을 듣자 ',
         tachyon.get_colored_name(),
-        ' は眼を細め、ひどく満悦そうだった',
+        '은 눈을 가늘게 뜨며, 무척 만족스러운 듯한 표정을 지었다.',
       ]);
       era.println();
 
-      await tachyon.say_and_wait(['ええ……よろしいですわ']);
+      await tachyon.say_and_wait(['음…… 좋군.']);
       await tachyon.say_and_wait([
-        'では……タキオン（tachyon）が何を意味するか、ご存知ですの？',
+        '그럼…… 타키온이 무슨 뜻인지 알고 있나?',
       ]);
       era.println();
 
-      await era.printAndWait(['タキオン？']);
+      await era.printAndWait(['타키온?']);
 
-      era.printButton('「知らない……」', 1);
-      era.printButton('「超光速の粒子、だよな？」', 2);
+      era.printButton('「모르겠는데……」', 1);
+      era.printButton('「그거…… 초광속 입자 아니야?」', 2);
 
       if ((await era.input()) === 1) {
         await tachyon.say_and_wait(
-          'ん……私のモルモットなら、少なくともこのくらいは頭に入れておいてくださいまし。',
+          '으음…… 내 모르모트라면 적어도 그 정도는 가슴속에 새겨두어야 하지 않겠나.',
         );
       } else {
-        await tachyon.say_and_wait('ええ、合格としておきましょう。');
+        await tachyon.say_and_wait('정답이네. 합격점을 주도록 하지.');
       }
 
       await tachyon.say_and_wait([
-        'タキオンは、光速を超える速度で、虚時間の中を航行する粒子ですわ。',
+        '타키온이란, 빛보다 빠른 속도로 허수의 시간 속을 항행하는 입자라네.',
       ]);
       await tachyon.say_and_wait([
-        '特殊相対性理論では、タキオンは空間的な四次元運動量と虚数の相対時間を持ち、通常物質との相互作用が目立たず、現在は検出できない仮想粒子です。電磁放射の機構から見ると……',
+        '특수 상대성 이론에서 타키온은 공간꼴의 4차원 운동량과 허수의 상대 시간을 가지며, 일반적인 물질과의 상호작용이 뚜렷하지 않아 현재로서는 관측할 수 없는 가상 입자라네. 전자기 복사 메커니즘에 근거하여 가정해 본다면……',
       ]);
 
-      era.printButton('「ま、待って！」', 1);
+      era.printButton('「잠, 잠깐만!」', 1);
       await era.input();
 
       await tachyon.say_and_wait([
-        '静粛に、',
+        '정숙하게, ',
         callname,
-        '。最後まで聞いてくださいまし。',
+        '. 내 말을 끝까지 듣게나.',
       ]);
       era.println();
 
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' がホワイトボードへ書きつける数式で頭がくらくらした ',
+        '화이트보드에 적히는 온갖 공식들에 머리가 어질어질해진 ',
         you.get_colored_name(),
-        ' は、急いで一旦止め、消化したかった。',
+        '은(는) 서둘러 설명을 멈추고 소화할 시간을 벌려 했다.',
       ]);
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         tachyon.get_colored_name(),
-        ' はホワイトボードを叩き、構わず話し続ける。',
+        '은 화이트보드를 툭툭 치며, 아랑곳하지 않고 설명을 이어갔다.',
       ]);
       era.println();
 
       await tachyon.say_and_wait([
-        'それから……時間的と空間的の区別があるため、タキオンの存在には、越えられない障害が二つありますわ。',
+        '그리고…… 시간성과 공간성의 차이 때문에 타키온의 존재에는 두 가지 넘을 수 없는 장벽이 존재한다네.',
       ]);
       era.println();
 
       await era.printAndWait([
-        'そこまで言って、',
+        '그 말을 내뱉고 ',
         tachyon.get_colored_name(),
-        ' は一息置く。',
+        '은 말을 멈추었다.',
       ]);
       await era.printAndWait([
-        'いい生徒なら、先生が明らかに間を取っているとき、機を見て質問すべきだろう。',
+        '착한 학생이라면 선생님이 대놓고 뜸을 들일 때 적절한 질문을 던져야 하는 법이다.',
       ]);
       await era.printAndWait([
-        'いつの間にか、',
+        '어느샌가 ',
         you.get_colored_name(),
-        ' も役に入り始めていた。',
+        '도 이 상황에 몰입하기 시작했다.',
       ]);
 
-      era.printButton('「障害？」', 1);
+      era.printButton('「장벽?」', 1);
       await era.input();
 
       await tachyon.say_and_wait([
-        'ええ……タキオンが本当に存在するとして、ぶつかる制限ですわ。',
+        '그렇다네…… 만약 타키온이 실제로 존재한다면 마주하게 될 제약이지.',
       ]);
       await tachyon.say_and_wait([
-        '簡単に申しますと……『光速下の物質と接触できない』、そして『光速以下へ減速できない』。まず一つ目から。接触できない理由は、因果律への違背……',
+        '간단히 말하자면…… 『광속 이하의 물질과는 접촉할 수 없다』는 것과, 『광속 이하로 속도를 줄일 수 없다』는 것이야. 우선 첫 번째부터 설명하자면, 접촉할 수 없는 이유는 인과율 위배에 따른……',
       ]);
       era.println();
 
-      await era.printAndWait([tachyon.get_colored_name(), ' は説明を続ける']);
+      await era.printAndWait([tachyon.get_colored_name(), '의 설명이 다시 시작되었다.']);
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         you.get_colored_name(),
-        ' の頭は、もう',
+        '의 머릿속에는 ',
         tachyon.sex,
-        'の、脳を知識で犯されるような難解な解析には留まっていない。',
+        '의 지식으로 뇌를 강간당하는 듯한 난해한 해석들이 더 이상 들어오지 않았다.',
       ]);
       era.println();
 
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' のせいだ。タキオンが超光速粒子の tachyon だと分かっていても、傍の ',
+        '과 함께 지내온 탓인지, 타키온이 초광속 입자를 뜻한다는 것을 알면서도 자꾸만 곁에 있는 ',
         tachyon.get_colored_name(),
-        ' を思わず連想してしまう。',
+        '을 떠올리게 되었다.',
       ]);
       await era.printAndWait([
-        '次第に、',
+        '점차 ',
         you.get_colored_name(),
-        ' の頭に、ある絵が浮かぶ。',
+        '의 머릿속에 어떤 장면 하나가 떠올랐다.',
       ]);
       era.println();
 
       await era.printAndWait([
-        'ある光速の上の世界。光速以下の物質が辿り着けない空間。',
+        '광속 너머의 어느 세계, 광속 이하의 물질은 도달할 수 없는 공간 속.',
       ]);
       await era.printAndWait([
-        '時間すら遅すぎると嫌われるその世界に、唯一存在する',
-        { color: tachyon.color, content: 'タキオン' },
-        '。',
+        '시간조차 너무나 느리다고 무시당하는 그 세계 속에서, 유일하게 존재하는 ',
+        { color: tachyon.color, content: '타키온' },
+        '.',
       ]);
       await era.printAndWait([
-        '光速以下の世界と相互作用できず、超光速の形でしか存在できない',
-        { color: tachyon.color, content: 'タキオン' },
-        '。',
+        '광속 이하의 세계와는 상호작용할 수 없고, 오직 초광속의 형태로만 존재할 수 있는 ',
+        { color: tachyon.color, content: '타키온' },
+        '.',
       ]);
-      await era.printAndWait(['絶対の速度、絶対の孤独。']);
+      await era.printAndWait(['절대적인 속도, 그리고 절대적인 고독.']);
       era.println();
 
       await tachyon.say_and_wait(['…………']);
       era.println();
 
       await era.printAndWait([
-        '気づくと、',
+        '어느샌가 ',
         you.get_colored_name(),
-        ' は、背景音だった解説がいつ止まったかも分からなかった。',
+        '은(는) 배경음악처럼 깔리던 설명 소리가 멈췄다는 것을 깨달았다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が我に返ると、',
+        '이(가) 정신을 차려보니, ',
         tachyon.get_colored_name(),
-        ' が自分を見つめている。いつから、そう見ていたのか分からない。',
+        '이 자신을 뚫어지게 쳐다보고 있었다. 언제부터 그러고 있었는지 알 수 없었다.',
       ]);
       era.println();
 
-      await tachyon.say_and_wait([callname, '？ 何を考えていますの？']);
+      await tachyon.say_and_wait([callname, '? 무슨 생각을 하고 있나?']);
 
-      era.printButton('「なんでもない……」', 1);
-      era.printButton('「ただ、そんなタキオンは孤独だと思った……」', 2);
+      era.printButton('「아무것도 아니야……」', 1);
+      era.printButton('「그냥, 그렇게 생각하니 타키온이 너무 외로울 것 같아서……」', 2);
       await era.input();
 
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の問いに、',
+        '의 질문에 ',
         you.get_colored_name(),
-        ' は自分の考えを吐く。',
+        '은(는) 자신의 생각을 솔직하게 털어놓았다.',
       ]);
       await era.printAndWait([
-        'ある意味、以前の ',
+        '어떤 의미에서 예전의 ',
         tachyon.get_colored_name(),
-        ' も、少しこうだった。',
+        '도 조금은 그런 면이 있었다.',
       ]);
       await era.printAndWait([
-        '才知が過ぎて、傍の者が',
+        '지나치게 뛰어난 재능 탓에, 주변 사람들은 ',
         tachyon.sex,
-        'と同じ世界を見られない。',
+        '와 같은 세계를 바라볼 수 없었다.',
       ]);
       await era.printAndWait([
-        '世界から孤立し、眼には自分の目標しかない',
-        { color: tachyon.color, content: 'Tachyon' },
-        '。',
+        '세상으로부터 고립되어, 눈앞의 목표만을 쫓던 ',
+        { color: tachyon.color, content: '타키온' },
+        '.',
       ]);
       await era.printAndWait([
-        'だが……そんな ',
+        '하지만…… 그런 ',
         tachyon.get_colored_name(),
-        ' ですら、人と触れ、人に影響される。',
+        '조차 결국 타인과 접촉하고, 영향을 주고받을 수 있었다.',
       ]);
       await era.printAndWait([
-        'もし物理の空間まで隔てられたら、',
-        { color: tachyon.color, content: 'タキオン' },
-        'は……',
+        '만약 물리적인 공간마저 격절되어 버린다면, ',
+        { color: tachyon.color, content: '타키온' },
+        '은……',
       ]);
       await era.printAndWait([
-        'いいえ、議論しているのは超光速粒子であって、',
+        '아니, 지금 이야기하는 건 초광속 입자이지 ',
         tachyon.get_colored_name(),
-        ' ではないはずでは？',
+        '이 아니지 않은가.',
       ]);
       await era.printAndWait([
-        'こんな脱線、',
+        '이렇게 엉뚱한 소리를 하면 ',
         tachyon.get_colored_name(),
-        ' は怒るだろう？',
+        '이 화를 내겠지?',
       ]);
       era.println();
 
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' が怒りを装って軽く窘めたあと、考えを正してくれる準備をしていた。',
+        '이 장난스럽게 나무라며 생각을 정정해 줄 것을 기다렸다.',
       ]);
-      await era.printAndWait(['だが……']);
+      await era.printAndWait(['하지만……']);
       era.println();
 
-      await tachyon.say_and_wait(['おや？ ', callname, '、そうお考えですの？']);
+      await tachyon.say_and_wait(['호오? ', callname, ', 자네는 그렇게 생각하는가?']);
       era.println();
 
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は平静に言い、ホワイトボードを押しのけ、ソファの ',
+        '은 평온하게 말하며 화이트보드를 밀어두고, 소파에 앉아 있는 ',
         you.get_colored_name(),
-        ' へ近づく。',
+        '에게 다가왔다.',
       ]);
       await era.printAndWait([
-        '沈んだ赤い双眸が ',
+        '탁한 붉은 눈동자가 ',
         you.get_colored_name(),
-        ' を見る。いつものように、',
+        '을(를) 응시했다. 여느 때처럼 ',
         tachyon.sex,
-        'が何を考えているか、読めない。',
+        '이 대체 무슨 생각을 하는지 읽어낼 수 없었다.',
       ]);
       era.println();
 
       await tachyon.say_and_wait([
-        'ですが、それが限界を越える代償だとしたら？ 仮定ですわよ……今あるすべてを失い、絶対の孤独になることが、限界を越えるために払う代価……受け入れられますの、',
+        '하지만, 만약 그것이 한계를 넘어서기 위한 대가라면 어떡하겠나? 만약…… 가정이긴 하지만, 현재의 모든 것을 잃고 절대적인 고독이 되는 것이 한계를 넘기 위해 지불해야 할 대가라면…… 자네는 그것을 받아들일 수 있겠나, ',
         callname,
-        '？',
+        '?',
       ]);
       era.println();
 
-      await era.printAndWait(['おかしい。']);
-      await era.printAndWait(['おかしい。']);
+      await era.printAndWait(['기묘했다.']);
+      await era.printAndWait(['참으로 이상했다.']);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' との距離は、近くも遠くもなっていない。',
+        '과의 거리는 가까워지지도, 멀어지지도 않았다.',
       ]);
       await era.printAndWait([
-        'だが眼前の ',
+        '하지만 눈앞의 ',
         tachyon.get_colored_name(),
-        ' が、不意に錯覚を与える。',
+        '은 갑자기 어떤 착각을 불러일으켰다.',
       ]);
-      await era.printAndWait(['近くて遠い。']);
-      await era.printAndWait(['手を伸ばせば触れそうなほど近い。']);
-      await era.printAndWait(['次の一秒で俗世から逃げるほど遠い。']);
+      await era.printAndWait(['가까우면서도 먼 듯한 느낌.']);
+      await era.printAndWait(['손을 뻗으면 닿을 것 같으면서도.']);
+      await era.printAndWait(['다음 순간이면 속세를 떠나 사라져 버릴 것만 같은.']);
       await era.printAndWait([
-        'だがそれらより今大事なのは、答えを出すことだろう？',
+        '하지만 그런 생각보다 지금 중요한 것은 대답을 하는 것이었다.',
       ]);
-      await era.printAndWait(['よく考えよう……']);
+      await era.printAndWait(['신중하게 생각해야 한다……']);
       era.println();
 
-      await era.printAndWait([you.get_colored_name(), ' は思う……']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 생각했다……']);
 
-      era.printButton('「できる」（関係を進める）', 1);
-      era.printButton('「できない」（まだ進めない）', 2);
+      era.printButton('「괜찮아」(관계 진전)', 1);
+      era.printButton('「안 돼」(관계 유지)', 2);
       const ret = await era.input();
       if (ret === 1) {
-        await era.printAndWait(['限界を越える代償がそれなら……']);
+        await era.printAndWait(['만약 한계를 넘는 대가가 정녕 그러하다면……']);
         await era.printAndWait([
-          'なら、その実験を支える者としてなすべきは、',
+          '그렇다면 그 실험을 지원하는 사람으로서 해야 할 일은 ',
           tachyon.sex,
-          'の決断を肯定し、',
+          '의 결정을 긍정하고, 목표를 향해 나아가는 ',
           tachyon.sex,
-          'を目標へ見送ることだ。',
+          '를 배웅하는 것뿐이리라.',
         ]);
         await era.printAndWait([
-          'それが自分の、「モルモット」としての責任だ。',
+          '그것이 「모르모트」로서 자신의 책임이었다.',
         ]);
         await era.printAndWait([
-          'だから、',
+          '그러므로 ',
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' のやり方を尊重する。',
+          '의 방식을 존중하기로 했다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' はそう、',
+          '은(는) 그렇게 ',
           tachyon.get_colored_name(),
-          ' に説明した。',
+          '에게 설명했다.',
         ]);
         era.println();
 
