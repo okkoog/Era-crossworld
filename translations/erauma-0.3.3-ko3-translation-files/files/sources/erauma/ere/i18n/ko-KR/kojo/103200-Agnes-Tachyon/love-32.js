@@ -1857,104 +1857,104 @@ module.exports = {
         ' たち二人で分け尽くされた',
       ]);
       era.println();
-      await you.say_and_wait('くそっ……！');
+      await you.say_and_wait('빌어먹을……!');
       era.println();
-      await era.printAndWait([you.get_colored_name(), ' は思わず大声で罵る']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 참지 못하고 욕설을 내뱉었다']);
       await era.printAndWait([
-        'この',
+        '이 ',
         tachyon.phy_sex_title.substring(0, 1),
-        'は何を考えている。死ぬなら道連れまで取るのか',
+        '는 대체 무슨 생각인가. 죽을 거면 혼자 죽지, 물귀신 작전이라도 쓰겠다는 건가?',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は険しく',
+        '은(는) ',
         tachyon.sex,
-        'を睨み、すぐ罵ろうとして……言葉が口へ出る寸前で止まる',
+        '를 매섭게 노려보며 당장이라도 폭언을 퍼부으려 했다…… 그러나 말이 입 밖으로 나오려는 순간 멈칫했다.',
       ]);
       era.println();
       era.println();
       era.println();
-      await era.printAndWait([tachyon.get_colored_name(), ' が泣いていた']);
+      await era.printAndWait([tachyon.get_colored_name(), '이 울고 있었다']);
       await era.printAndWait([
-        'いいえ……正確には、',
+        '아니…… 정확히 말하자면, ',
         tachyon.sex,
-        'は涙を流しながら、笑顔を絞り出そうとしている。だが最終的に浮かんだのは、泣くより見苦しい笑顔だった',
+        '는 눈물을 흘리면서도 억지로 미소를 지으려 애쓰고 있었지만, 결국 얼굴에 나타난 것은 우는 것보다 더 보기 흉한 미소였다.',
       ]);
       await era.printAndWait([
-        'これは ',
+        '이것은 ',
         you.get_colored_name(),
-        ' が',
+        '이(가) ',
         tachyon.sex,
-        'を知って以来、初めて見る',
+        '를 알게 된 이래, ',
         tachyon.sex,
-        'の、これほどみすぼらしい姿だ',
+        '의 이렇게나 초라한 모습은 처음 보았다',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'は……はははっ、',
+        '하…… 하하하, ',
         callname,
-        '、ごめんなさい、騙しましたわ',
+        ', 미안하네. 자네를 속였어.',
       ]);
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'は何事もない口調を装おうとするが、噎せる声がその行いをひどく難しくしている',
+        '는 아무렇지 않은 척 연기하려 했으나, 울먹이는 목소리 탓에 그 시도는 무척이나 힘겨워 보였다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'これ、毒などではありませんわ…………逆に、『始め直す』薬ですのよ',
+        '이건 말이지, 독약 같은 게 아니야………… 반대로, 「다시 시작하는」 약이라네.',
       );
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'はそう言うが、',
+        '는 그렇게 말했지만, 여전히 시험관을 들고 있는 ',
         tachyon.sex,
-        'が試験管を掲げた手は今も震え続け、',
+        '의 손은 멈추지 않고 떨리고 있었기에 ',
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'の言葉を信じられない',
+        '의 말을 신뢰할 수 없었다.',
       ]);
       era.println();
       await era.printAndWait(
-        '…………信じないでしょう？ 構いませんわ。薬が効けば分かります',
+        '…………믿지 못하겠지? 상관없네. 약효가 나타나면 알게 될 테니.',
       );
       era.println();
-      await era.printAndWait('ふざけるな……！');
+      await era.printAndWait('지금 장난해……!');
       await era.printAndWait([
         you.get_colored_name(),
-        ' はそう叫びたいが、体がもう動かないことに気づく',
+        '은(는) 소리를 지르고 싶었지만, 자신의 몸이 이미 움직이지 않게 되었다는 것을 깨달았다.',
       ]);
       if (era.get('cflag:32:扩展变量')?.choco > 0) {
         await era.printAndWait([
-          'それから、',
+          '그때, ',
           you.get_colored_name(),
-          ' の口に残った薬が、このとき不意に味を変える。もともと無色無臭だった薬の、今の味は……',
+          '의 입안에 남아있던 약제의 맛이 갑자기 변했다. 분명 마실 때는 무색무취였던 약이었는데, 지금의 맛은……',
         ]);
         era.println();
         if (era.get('exp:32:接吻次数') > 0) {
           await tachyon.say_and_wait(
-            '最後のキスの味が、豚丼だなんて、思いませんでしたわ',
+            '설마, 마지막 키스의 맛이 돼지고기 덮밥 맛일 줄이야.',
           );
         } else {
           await tachyon.say_and_wait(
-            '初キスの味が、豚丼だなんて、思いませんでしたわ',
+            '설마, 첫 키스의 맛이 돼지고기 덮밥 맛일 줄이야.',
           );
         }
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、バレンタインにもらったチョコレートを思い出す',
+          '은(는) 발렌타인데이 때 받았던 초콜릿을 떠올렸다.',
         ]);
         await era.printAndWait([
-          'あのときから、この',
+          '그때부터 이 ',
           tachyon.uma_sex_title,
-          'は奇妙な薬で自分を責め続けてきた',
+          '는 끊임없이 이런 이상한 약들로 자신을 괴롭혀왔다.',
         ]);
         await era.printAndWait(
-          '毎回、自分が薬を飲んだ反応を見て豪快に笑い、楽しむ',
+          '매번 자신이 약을 마신 뒤의 반응을 보며 하하하 웃고 즐거워했었다',
         );
         await era.printAndWait(
-          '今となって、もうこれに耐えられない自分の、何が悪い？',
+          '이제 와서, 더 이상 이 모든 것을 참지 않기로 한 자신에게 무슨 잘못이 있단 말인가?',
         );
       }
       await era.printAndWait([
