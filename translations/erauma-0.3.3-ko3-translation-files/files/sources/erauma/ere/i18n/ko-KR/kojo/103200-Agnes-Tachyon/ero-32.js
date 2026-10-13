@@ -327,7 +327,7 @@ module.exports = {
       await tachyon.print_and_wait(['자신의 온몸을 뜨겁게 만드는 그 사람을.']);
       era.println();
 
-      await tachyon.say_and_wait([callname, '……くださいまし……お願い……']);
+      await tachyon.say_and_wait([callname, '……부탁이네…… 나에게…… 주게……']);
       era.println();
 
       await tachyon.print_and_wait([
@@ -361,13 +361,13 @@ module.exports = {
       ]);
       await tachyon.print_and_wait(['어차피…… 이제 달릴 수 없는 몸인걸.']);
       await tachyon.print_and_wait([
-        'すべてを捨て、色に溺れたところで、何の問題がありましょう。',
+        '모든 것을 내던지고 정욕에 잠겨 취해버린들, 무슨 상관이란 말인가.',
       ]);
       era.println();
 
       await tachyon.say_and_wait([
         callname,
-        '……撫でて……抱いて……キスして……愛して……',
+        '……만져주게…… 안아주게…… 입 맞춰주게…… 사랑해주게……',
       ]);
       era.println();
 
@@ -403,7 +403,7 @@ module.exports = {
       era.println();
 
       await tachyon.print_and_wait(['그래.']);
-      await tachyon.print_and_wait(['ください、早くください。']);
+      await tachyon.print_and_wait(['주게, 어서 나에게 주게.']);
       await tachyon.print_and_wait(['이제 달릴 가치조차 없는 나.']);
       await tachyon.print_and_wait([
         '남은 것이라고는 여자로서의 가치뿐이지 않은가.',
@@ -413,7 +413,7 @@ module.exports = {
       await tachyon.print_and_wait([
         '텅 빈 내 마음을 당신의 사랑으로 넘칠 만큼 채워 줘.',
       ]);
-      await tachyon.print_and_wait(['私を、あなただけの女にして。']);
+      await tachyon.print_and_wait(['나를, 오직 자네만을 위한 여자로 만들어주게.']);
       await tachyon.print_and_wait(['그리고 자네 또한, 오직 나만의 것으로……']);
       era.println();
 
@@ -421,7 +421,7 @@ module.exports = {
       era.println();
 
       await tachyon.print_and_wait([
-        '心の妄想が、隣の実験室の嬌声で途切れる。',
+        '마음속의 망상은, 옆 실험실에서 들려오는 교성에 의해 중단되었다.',
       ]);
 
       era.drawLine();
@@ -455,9 +455,9 @@ module.exports = {
       era.println();
 
       await tachyon.say_and_wait([
-        'だめ……',
+        '안 돼…… ',
         callname,
-        '……お願い……私を見て……抱いて……愛して……',
+        '……부탁이네…… 나를 봐주게…… 안아주게…… 사랑해주게……',
       ]);
       era.println();
 
@@ -520,7 +520,7 @@ module.exports = {
       await tachyon.print_and_wait(['隣室の嬌声が壁を伝って耳へ届いた瞬間。']);
       await tachyon.print_and_wait(['下からも、濁った液体が噴き出した。']);
       await tachyon.print_and_wait(['触れていないのに……']);
-      await tachyon.print_and_wait(['我慢できていれば……']);
+      await tachyon.print_and_wait(['분명 꾹 참았더라면……']);
       era.println();
 
       await tachyon.print_and_wait(['이제 돌아갈 수 없었다.']);
