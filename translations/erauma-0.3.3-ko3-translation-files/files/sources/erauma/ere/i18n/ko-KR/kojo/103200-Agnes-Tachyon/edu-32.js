@@ -9424,117 +9424,117 @@ module.exports = {
         await era.printAndWait('ああ……「料理」された食材は、食べられる番だ');
       } else if (love >= 50) {
         await tachyon.say_and_wait([
-          'おや、',
+          '이런, ',
           callname,
-          '、ハッピーバレンタイン！',
+          ', 발렌타인데이 축하하네!',
         ]);
         era.println();
         await era.printAndWait([
-          '晴れた朝を破り、扉を開けて入ってきたのは、大きな袋を背負った ',
+          '화창한 어느 날, 고요한 아침의 정적을 깨고 문을 박차고 들어온 것은 커다란 봉투를 든 ',
           tachyon.get_colored_name(),
-          ' だった',
+          '이었다.',
         ]);
-        await era.printAndWait('……おかしい。今日はクリスマスではないはずだ');
+        await era.printAndWait('……이상하군, 오늘이 크리스마스는 아닐 텐데.');
         era.println();
         await tachyon.say_and_wait([
-          'ん？ これらですの？ 他の',
+          '응? 이거 말인가? 다른 ',
           tachyon.uma_sex_title,
-          'たちからの贈り物ですわよ？',
+          '들에게 받은 선물이라네.',
         ]);
         await tachyon.say_and_wait(
-          'まったく……要らないと言ったのに。こんなものより、実験に自ら身を提供してくれたほうが嬉しいですわ……',
+          '정말이지…… 필요 없다고 말했는데도. 이런 것보다는 자진해서 실험체가 되어주는 편이 훨씬 기쁠 텐데 말이야……',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は……そんなに人気なのか',
+          '은(는) 이렇게나 인기가 많았던 것인가.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' の胸に、わずかな嫉妬が湧いた',
+          '의 마음속에서 아주 작은 질투심이 솟아올랐다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'その話はいいですわ。とにかく ',
+          '그건 그렇고, 자 ',
           callname,
-          '、私のチョコを受け取りなさい！',
+          ', 어서 내 초콜릿을 받게나!',
         ]);
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は袋の中を漁り、大きさは少しずつ違うが似たようなチョコを探した',
+          '은 가방 안에서 크기가 제각각인 초콜릿들을 이것저것 뒤적거리기 시작했다.',
         ]);
         await era.printAndWait(
-          'まさか……他人からもらったチョコを、そのまま回しているだけか？',
+          '설마…… 그냥 다른 사람에게 받은 걸 대충 넘겨주려는 건 아니겠지?',
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' との関係はそこまでではないのに、自分は違うはずだ、特別に扱われるはずだ、と思ってしまう',
+          '과 그런 관계까지는 아니라고 생각하면서도, 내심 자신만은 특별한 대우를 받길 바라고 있었다.',
         ]);
-        era.printButton('「それは……義理チョコか？」', 1);
+        era.printButton('「그건…… 의리 초콜릿이야?」', 1);
         await era.input();
-        await era.printAndWait('指導者として、聞くべきではない質問だ');
-        await era.printAndWait('だが……やはり');
+        await era.printAndWait('트레이너로서 물어봐서는 안 될 질문이라는 건 알고 있었다.');
+        await era.printAndWait('하지만…… 역시.');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の本音が知りたい',
+          '의 진심을 알고 싶었다.',
         ]);
         era.println();
         await tachyon.say_and_wait('…………');
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' の言葉に、',
+          '의 말을 들은 ',
           tachyon.get_colored_name(),
-          ' は袋を漁る手を止めた',
+          '은 봉투를 뒤적이던 손을 멈추었다.',
         ]);
         await era.printAndWait([
-          '顔を上げ、',
+          '고개를 들어 ',
           you.get_colored_name(),
-          ' の目をじっと見た',
+          '의 눈을 똑바로 응시했다.',
         ]);
         await era.printAndWait([
-          'その美しい赤瞳は、',
+          '그 아름다운 붉은 눈동자는 마치 ',
           you.get_colored_name(),
-          ' の内側を見透かすようだった',
+          '의 내면을 꿰뚫어 보는 듯했다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'おや、その言葉はどういう意味ですの、',
+          '이런, 그 말은 무슨 뜻일까나, ',
           callname,
-          '？',
+          '?',
         ]);
-        await tachyon.say_and_wait('義理だとしたら、どうしますの？');
+        await tachyon.say_and_wait('만약 의리 초콜릿이라고 한다면, 어쩔 건가?');
         await tachyon.say_and_wait([
-          'それとも、あなたは……どんなチョコを望むのです？',
+          '아니면 자네는…… 어떤 유형의 초콜릿이길 바라는 거지?',
         ]);
-        era.printButton('「タキオンが特別にくれたものであってほしい」', 1);
+        era.printButton('「타키온이 특별히 주는 것이었으면 좋겠어」', 1);
         era.printButton(
-          '「タキオンが自分一人にだけくれるチョコであってほしい」',
+          '「타키온이 나에게만 주는 초콜릿이었으면 좋겠어」',
           2,
         );
         await era.input();
-        await era.printAndWait('最後まで、あの二字は言えなかった');
+        await era.printAndWait('결국, 끝내 그 두 글자는 입 밖으로 내지 못했다.');
         await era.printAndWait([
-          'トレーナーである自分が、担当',
+          '어떻게 그럴 수 있겠는가. 트레이너인 자신이, 담당 ',
           tachyon.uma_sex_title,
-          'に「本命」かどうかを聞くなど、できるはずがない',
+          '에게 자신을 향한 마음이 「진심」인지 묻다니.',
         ]);
         era.println();
-        await tachyon.say_and_wait('では、差し上げますわ');
+        await tachyon.say_and_wait('그럼, 이걸 주지.');
         era.println();
         await era.printAndWait(
-          'ようやく袋の底から、七色で絶対に見間違えない小さな包装を取り出したあと',
+          '마침내, 봉투 가장 밑바닥에서 절대 잘못 볼 리 없는 무지개색의 작은 포장을 찾아낸 뒤.',
         );
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はチョコを胸元の小さなポケットへ押し込んだ',
+          '은 초콜릿을 가슴팍의 작은 주머니에 찔러 넣었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          'さあ、愛しい実験動物へ。一年分の感謝……そして、感謝以外の❤',
+          '자, 사랑스러운 실험 동물에게 주는 지난 1년간의 감사의 표시…… 그리고, 감사 그 이상의 것❤',
         );
-        await tachyon.say_and_wait('ご自身の手で、取り出してくださいまし');
+        await tachyon.say_and_wait('자네가 직접, 꺼내 가보게나.');
         era.println();
         if (era.get('exp:0:性爱次数') === era.get('exp:0:睡奸次数')) {
           await era.printAndWait([
@@ -9566,38 +9566,38 @@ module.exports = {
         }
         era.println();
         await era.printAndWait([
-          '包装を剥き、',
+          '초콜릿 포장을 벗기고, ',
           you.get_colored_name(),
-          ' はチョコを口に含んだ',
+          '은(는) 초콜릿을 입에 물었다.',
         ]);
-        await era.printAndWait('口に入れた瞬間、チョコは溶けた');
-        era.printButton('「！？」', 1);
+        await era.printAndWait('입안에 넣은 순간, 초콜릿은 곧장 녹아내렸다.');
+        era.printButton('「!?」', 1);
         await era.input();
-        await era.printAndWait('豚肉、玉ねぎ、ソース……');
+        await era.printAndWait('돼지고기, 양파, 소스……');
         await era.printAndWait([
-          'チョコにあるはずのない味が、',
+          '초콜릿에서 도저히 날 리 없는 맛이 ',
           you.get_colored_name(),
-          ' の口に広がった',
+          '의 입안에 퍼졌다.',
         ]);
         era.println();
-        await tachyon.say_and_wait([callname, '？ その顔、おかしいですわよ？']);
+        await tachyon.say_and_wait([callname, '? 표정이 왜 그렇게 이상한가?']);
         await tachyon.say_and_wait(
-          '早く早く、効果は？……肉体に変化は見えません。内面に出るのですかしら……',
+          '어서 어서, 어떤 효과가 있지? ……육체적으로는 변화가 안 보이는데, 설마 내면에서부터 작용하는 건가……',
         );
         await era.printAndWait([
-          'さっきまでの曖昧な空気を一転させ、',
+          '조금 전까지의 묘한 분위기는 어디 가고, ',
           tachyon.get_colored_name(),
-          ' は興奮して ',
+          '은 신이 나서 ',
           you.get_colored_name(),
-          ' の反応を尋ねた',
+          '이(가) 먹은 초콜릿의 반응을 물어왔다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
           callname,
-          '？ 研究室で半日かけて調合したチョコの評価を、しないつもりですの？',
+          '? 설마 내가 실험실에서 반나절 동안 고생하며 조합해 만든 초콜릿에 대해 평가를 안 해주려는 건 아니겠지?',
         ]);
         era.println();
-        await era.printAndWait('…………この人は');
+        await era.printAndWait('…………이 녀석은 정말.');
       } else if (relation > 225) {
         await tachyon.say_and_wait(['ははは！ ', callname, '！']);
         era.println();
