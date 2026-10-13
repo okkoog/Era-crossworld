@@ -6516,37 +6516,37 @@ module.exports = {
           break;
         case 4:
           await era.printAndWait([
-            '薬は ',
+            '약은 ',
             you.get_colored_name(),
-            ' が飲む前に桃色の濃霧を噴き、',
+            '가 마시기도 전에 분홍색의 짙은 안개를 뿜어내어, ',
             you.get_colored_name(),
-            ' と ',
+            '와(과) ',
             tachyon.get_colored_name(),
-            ' を包んだ',
+            '을(를) 감쌌다.',
           ]);
           era.println();
-          await tachyon.say_and_wait('こっほっ！ なんですの！？');
+          await tachyon.say_and_wait('콜록! 이게 무슨 일인가요!?');
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は首を横に振った。薬効すら知らない自分が、理由を知るはずがない',
+            '은(는) 고개를 저었다. 약효조차 모르는 자신이 원인을 알 리 없었다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            'ただの普通の精力剤ですのに……まあいいですわ。窓と扉を開けて霧を出しましょう',
+            '그저 평범한 강장제인데…… 아무튼 창문과 문을 열어 안개를 빼내도록 하죠.',
           );
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' は急いで窓へ向かい、開けようとした。だが',
+            '은(는) 서둘러 창문으로 다가가 열려고 했다. 하지만 ',
           ]);
           era.println();
-          await tachyon.say_and_wait('くっ、力が入りません……！');
+          await tachyon.say_and_wait('큭, 힘이 들어가지 않아요……!');
           era.println();
           await era.printAndWait([
-            'その間、',
+            '그동안 ',
             you.get_colored_name(),
-            ' は椅子に座ったまま動けなかった。余裕があるからではない。',
+            '은(는) 의자에 앉은 채 움직이지 못했다. 여유가 있어서가 아니었다.',
           ]);
           if (you.sex_code !== 1) {
             await era.printAndWait([
@@ -6600,22 +6600,22 @@ module.exports = {
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' は冷静に',
+              '은(는) 침착하게 ',
               tachyon.sex,
-              'を拒んだ。幸い、',
+              '을(를) 거절했다. 다행히 ',
               tachyon.get_colored_name(),
-              ' も一定の冷静は保っていた',
+              '도 어느 정도 이성을 유지하고 있었다.',
             ]);
             era.println();
             await tachyon.say_and_wait(
-              '大丈夫ですわ……この薬の効きは、せいぜい一時間……一時間耐えれば……',
+              '괜찮아요…… 이 약의 효과는 길어야 한 시간…… 한 시간만 버티면……',
             );
             await era.printAndWait([
-              'それ以上は誰も言わなかった。',
+              '그 뒤로는 누구도 입을 열지 않았다.',
               you.get_colored_name(),
-              ' と、力が抜けて床に座った',
+              '와(과) 힘이 풀려 바닥에 주저앉은 ',
               tachyon.sex,
-              'は、黙って時を待った',
+              '은(는) 말없이 시간이 지나기를 기다렸다.',
             ]);
             era.println();
             await era.printAndWait([
@@ -6658,11 +6658,11 @@ module.exports = {
               ' は慌てて謝り、視線を戻した',
             ]);
             era.println();
-            await era.printAndWait('耐える、耐える、耐える');
+            await era.printAndWait('버티고, 또 버티고, 계속 버텼다.');
             await era.printAndWait([
-              'ようやく薬効が薄れ、',
+              '마침내 약효가 가라앉자 ',
               tachyon.get_colored_name(),
-              ' は辛うじて立ち上がり、今日はここまで、と置いてトレーナー室を慌てて出ていった……',
+              '은(는) 겨우 몸을 일으켜 오늘은 여기까지라며 황급히 트레이너실을 떠났다……',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
@@ -6672,14 +6672,14 @@ module.exports = {
             ]);
             era.println();
             await era.printAndWait([
-              'ちなみに事後、',
+              '덧붙여, 사건이 끝난 뒤 ',
               you.get_colored_name(),
-              ' が尋ねると、その精力剤は学内のある秘密の店に卸しているのだという。',
+              '이(가) 물어보니, 그 강장제는 학원 내 어느 비밀 상점에 납품한다고 했다.',
             ]);
             await era.printAndWait([
-              'それが',
+              '그것이 ',
               tachyon.sex,
-              'の研究資金の主な出所らしい。学園を歩けば、見つかるかもしれない……？',
+              '의 연구 자금을 대는 주된 수입원인 모양이다. 학원을 돌아다니면 발견할 수 있을지도……?',
             ]);
           }
           break;
