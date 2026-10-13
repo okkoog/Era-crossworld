@@ -999,9 +999,9 @@ module.exports = {
           '……口の中で……出してください、薬と一緒に……ちょうどいい。',
         ]);
         await coffee.say_and_wait([
-          '何の薬？……私たちの愛を結晶にする薬です。安心してください……',
+          '무슨 약이냐고요? ……우리의 사랑이 결실을 맺게 해줄 약이랍니다. 안심하세요…… ',
           c_call_t,
-          ' は、もう同意しています。',
+          '도 이미 동의했으니까요.',
         ]);
         era.println();
 
@@ -1047,7 +1047,7 @@ module.exports = {
         await coffee.say_and_wait([
           'ねえ……',
           callname_25,
-          '……いいえ、トレーナー君……',
+          '…… 아니, 트레이너 군……',
         ]);
         era.println();
 
@@ -1233,7 +1233,7 @@ module.exports = {
         await era.input();
 
         await tachyon.print_and_wait(['舐めているだけなのに。']);
-        await tachyon.print_and_wait([you.sex, 'が、不意に振り返る。']);
+        await tachyon.print_and_wait([you.sex, '가 갑자기 고개를 돌려 돌아보았다.']);
         await tachyon.print_and_wait(['기다리게.']);
         await tachyon.print_and_wait(['보지 말게.']);
         await tachyon.print_and_wait(['나의 이런 천한 몰골을 보지 말아주게.']);
@@ -1350,7 +1350,7 @@ module.exports = {
         await tachyon.print_and_wait([
           '睦んだ跡、二人の愛液と精液の混ざった白濁。',
         ]);
-        await tachyon.print_and_wait(['私は……']);
+        await tachyon.print_and_wait(['나는……']);
         await tachyon.print_and_wait([
           '気がつくと、',
           t_call_c,
@@ -1363,7 +1363,7 @@ module.exports = {
         ]);
         await tachyon.print_and_wait(['もう、ない……']);
         await tachyon.print_and_wait(['もっと、もっと、あの味が欲しい……']);
-        await tachyon.print_and_wait(['どんな代償を払っても……']);
+        await tachyon.print_and_wait(['그 어떤 대가를 치르더라도……']);
         era.println();
 
         await tachyon.print_and_wait([
@@ -1374,15 +1374,15 @@ module.exports = {
           ' の足を、慎重に自分の腹の上へ乗せる。',
         ]);
         await tachyon.print_and_wait([
-          '尊厳をどれほど踏みにじられても構わない。',
+          '자신의 존엄을 얼마나 짓밟든 상관없네.',
         ]);
-        await tachyon.print_and_wait(['また、ご褒美がもらえるなら。']);
+        await tachyon.print_and_wait(['다시 한번, 그 하사품을 얻을 수만 있다면.']);
         era.println();
 
-        await coffee.say_and_wait(['あら……いい子ですね。']);
-        await coffee.say_and_wait(['なかなか……いい見せ方です。']);
+        await coffee.say_and_wait(['어머나…… 정말 착한 아이네요.']);
+        await coffee.say_and_wait(['참으로…… 훌륭한 모습이에요.']);
         await coffee.say_and_wait([
-          'この芸が続けられるなら……たまに褒美をやるくらい、構いません……',
+          '계속해서 이런 연출을 보여준다면…… 가끔은, 당신에게 상을 주는 것도 나쁘지 않겠네요……',
         ]);
         era.println();
 
@@ -1403,9 +1403,9 @@ module.exports = {
         era.println();
 
         await tachyon.print_and_wait([
-          'それから、',
+          '그렇게 ',
           t_call_c,
-          ' はベッドへ戻る。',
+          '은 다시 침대로 돌아갔다.',
         ]);
         await tachyon.print_and_wait(['ベッドが、再び揺れ始める。']);
         await tachyon.print_and_wait([
@@ -1420,7 +1420,7 @@ module.exports = {
           '必死に自分を慰めながら、ベッド上の恋敵をも悦ばせる。',
         ]);
         await tachyon.print_and_wait([
-          'どうか、卑しい自分を憐れんで、ほんの少し、ほんの少しのご褒美を、と祈る。',
+          '상대가 이 미천한 자신을 가엽게 여겨, 아주 조금이라도 좋으니, 티끌만큼이라도 좋으니 자비를 베풀어주길 기도하면서.',
         ]);
       }
       return ret;
