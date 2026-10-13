@@ -3928,177 +3928,177 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait([
-          '…………そうですか。それが、あなたの選択ですの？',
+          '…………그런가. 그것이 자네의 선택인가?',
         ]);
         era.println();
 
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はなお',
+          '은(는) 여전히 ',
           tachyon.sex,
-          'の考えを見せず、口調は同じように平坦だ。',
+          '속마음을 드러내지 않았고, 말투 또한 평소처럼 덤덤했다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は少し心配になる。何か、間違ったことを言ったのではないか。',
+          '은(는) 혹시 자신이 말실수를 한 것은 아닐까 걱정되기 시작했다.',
         ]);
-        await era.printAndWait(['だが、選択はもうした。']);
+        await era.printAndWait(['하지만 선택은 이미 내려졌다.']);
         era.println();
 
-        era.printButton('「タキオンのモルモットなら、そうあるべきだ……」', 1);
-        era.printButton('「……でも、タキオンに追いつく努力はする！」', 2);
+        era.printButton('「타키온의 모르모트라면, 응당 그래야 하니까……」', 1);
+        era.printButton('「……하지만, 반드시 타키온을 따라잡고 말겠어!」', 2);
         await era.input();
 
         await era.printAndWait([
-          '自分は ',
+          '자신은 ',
           tachyon.get_colored_name(),
-          ' の成長を止めるべきではない。',
+          '의 성장을 가로막아서는 안 된다.',
         ]);
         await era.printAndWait([
-          'むしろ逆だ。自分は ',
+          '오히려 그 반대로, 자신이 노력해서 ',
           tachyon.get_colored_name(),
-          ' に追いつく努力をすべきだ。',
+          '을 따라잡아야만 한다.',
         ]);
         await era.printAndWait([
-          '光速を越えることが永遠の孤独を意味するなら。',
+          '광속을 넘는 것이 영원한 고독을 의미한다면.',
         ]);
         await era.printAndWait([
-          '自分がなすべきは、',
+          '자신이 해야 할 일은 ',
           tachyon.sex,
-          'を孤独にしないことだ。',
+          '가 더 이상 외롭지 않게 만드는 것이다.',
         ]);
         await era.printAndWait([
-          '自分一人でも、',
+          '설령 자신 한 사람뿐이라 할지라도, 온 힘을 다해 ',
           tachyon.sex,
-          'の傍にいようとする。',
+          '의 곁을 지키겠노라고.',
         ]);
         await era.printAndWait([
-          'それが ',
+          '이것이 ',
           tachyon.get_colored_name(),
-          ' の「モルモット」として、そして……',
+          '의 「모르모트」이자…… ',
           tachyon.get_colored_name(),
-          ' の恋人としての、内側の願いだ。',
+          '의 연인으로서 내린 진심 어린 소망이었다.',
         ]);
         era.println();
 
         await tachyon.say_and_wait(['…………']);
         await tachyon.say_and_wait([
-          'そういえば、まだ言っていませんでしたわね。',
+          '그러고 보니, 아직 말하지 않았군.',
         ]);
-        await tachyon.say_and_wait(['私の選択は———']);
+        await tachyon.say_and_wait(['나의 선택을———']);
         era.println();
 
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の表情は、恐ろしいほど平静だ。',
+          '의 표정은 공포스러울 정도로 평온했다.',
         ]);
-        await era.printAndWait(['嵐の前の海面のように、静かだ。']);
+        await era.printAndWait(['마치 폭풍전야의 바다처럼 고요했다.']);
         era.println();
 
         await tachyon.say_and_wait([
-          '私は、その線を越えます。光速を超え、限界を超えて———',
+          '나는 그 선을 넘어, 광속을 넘고, 한계를 초월할 걸세———',
         ]);
         era.println();
 
-        await era.printAndWait(['ああ、やはり。']);
+        await era.printAndWait(['아아, 역시 그랬던가.']);
         await era.printAndWait([
-          'それが ',
+          '이것이 바로 ',
           you.get_colored_name(),
-          ' の憧れた',
+          '이(가) 동경해 마지않는 ',
           tachyon.uma_sex_title,
-          'の出す答えだ。',
+          '이 내놓을 법한 대답이었다.',
         ]);
-        await era.printAndWait(['意外ではない。当然だと言うしかない。']);
-        await era.printAndWait(['だが……胸の薄い失落は、どこから来たのか？']);
+        await era.printAndWait(['의외라기보다는 오히려 당연한 결과였다.']);
+        await era.printAndWait(['하지만…… 가슴 한구석에서 느껴지는 이 묘한 상실감은 무엇일까?']);
         await era.printAndWait([
-          'ただ、',
+          '그러나 ',
           tachyon.get_colored_name(),
-          ' の言葉は、まだ終わっていない',
+          '의 말은 아직 끝나지 않았다.',
         ]);
         era.println();
 
-        await tachyon.say_and_wait(['————あなたと、一緒に。']);
+        await tachyon.say_and_wait(['————자네와 함께.']);
         era.println();
 
-        await era.printAndWait(['不意に。']);
-        await era.printAndWait(['嵐の前の静けさが、反転する。']);
+        await era.printAndWait(['순간.']);
+        await era.printAndWait(['폭풍전야 같던 고요함이 뒤집혔다.']);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、先の比喩が少し不当だったと気づく。',
+          '은(는) 방금 전 자신의 비유가 틀렸음을 깨달았다.',
         ]);
-        await era.printAndWait(['嵐の前の静けさではない。深海だ。']);
+        await era.printAndWait(['폭풍 전의 고요함이 아니라—— 심해였다.']);
         await era.printAndWait([
-          '風雨が来るのではない。自分は、すでにその中に沈んでいる。',
+          '폭풍이 몰아치려는 것이 아니라, 이미 그 심연 속에 깊이 빠져버린 것이었다.',
         ]);
         era.println();
 
         await tachyon.say_and_wait([
-          '二人で限界を越える———タキオン（Tachyon）になる。',
+          '둘이서 함께 한계를 넘어——— 타키온이 되는 거라네.',
         ]);
         era.println();
 
         await era.printAndWait([
-          '抑えきれず、',
+          '자신도 모르게 ',
           you.get_colored_name(),
-          ' は頷く。',
+          '은(는) 고개를 끄덕이며 약속했다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は',
+          '은(는) 빛나는 ',
           tachyon.sex,
-          'の両眼を見る。光が瞬く。',
+          '의 두 눈을 바라보았다.',
         ]);
         await era.printAndWait([
-          '深海と迷った小魚が、深海魚に呑まれる直前に見る、餌の光のようだ。',
+          '마치 심해에 잘못 들어온 작은 물고기가, 심해어에게 잡아먹히기 직전 마지막으로 본 미끼의 빛처럼.',
         ]);
 
         era.drawLine();
 
-        await tachyon.print_and_wait(['私は', you.sex, 'の両眼を見つめる。']);
-        await tachyon.print_and_wait(['中にあるのは、生半可な迷い。']);
-        await tachyon.print_and_wait(['胸は半分苛立ち、半分安堵。']);
+        await tachyon.print_and_wait(['그녀는 ', you.sex, '의 눈을 응시했다.']);
+        await tachyon.print_and_wait(['그 안에는 알 듯 말 듯한 망설임이 서려 있었다.']);
+        await tachyon.print_and_wait(['가슴속에는 절반의 노여움과 절반의 다행스러움이 교차했다.']);
         await tachyon.print_and_wait([
-          'どうして',
+          '어째서 ',
           you.sex,
-          'は、分からないの？',
+          '는 이해하지 못하는 걸까?',
         ]);
         await tachyon.print_and_wait([
-          'それでもよかった。',
+          '아니, 다행히도 ',
           you.sex,
-          'は、まだ分かっていない。',
+          '는 여전히 이해하지 못했다.',
         ]);
         era.println();
 
-        await tachyon.print_and_wait([you.sex, 'だけでもいい、ではない。']);
-        await tachyon.print_and_wait([you.sex, 'がいればいい。']);
-        await tachyon.print_and_wait(['自分は孤独を恐れない。']);
+        await tachyon.print_and_wait([you.sex, '「도」 있는 것이 아니다.']);
+        await tachyon.print_and_wait([you.sex, '「만」 있으면 되는 것이지.']);
+        await tachyon.print_and_wait(['고독 따위는 두렵지 않다.']);
         await tachyon.print_and_wait([
-          '自分が恐れるのは、傍に',
+          '내가 두려운 것은 오직 내 곁에 더 이상 ',
           you.sex,
-          'の姿がなくなることだけ。',
+          '의 모습이 보이지 않는 것뿐.',
         ]);
-        await tachyon.print_and_wait(['だから……']);
+        await tachyon.print_and_wait(['그러니까……']);
         era.println();
 
-        await tachyon.print_and_wait(['限界の彼方。']);
+        await tachyon.print_and_wait(['한계의 저편.']);
         await tachyon.print_and_wait([
-          '他の誰も辿り着けない、光速を超えた果て。',
+          '그 누구도 도달할 수 없는, 초광속의 끝.',
         ]);
-        await tachyon.print_and_wait(['そして……']);
+        await tachyon.print_and_wait(['그리고……']);
         await tachyon.print_and_wait([
-          '自分たち二人以外、誰も邪魔しない世界。',
+          '우리 두 사람 외에는 그 누구도 방해할 수 없는 세계.',
         ]);
         era.println();
 
         await tachyon.say_and_wait(
-          ['超光速の彼方でも、肉体も精神も燃え尽きても……'],
+          ['설령 초광속의 저편이라 해도, 육체와 정신이 모두 타버려 재가 된다 해도……'],
           true,
         );
         await tachyon.say_and_wait(
-          '永遠に、永遠に、私の傍にいてくださいまし？',
+          '영원히, 영원토록 내 곁에 있어주게나.',
           true,
         );
-        await tachyon.say_and_wait(['私の親愛なる ', callname, '❤️'], true);
+        await tachyon.say_and_wait(['나의 사랑스러운 ', callname, '❤️'], true);
       } else {
         await era.printAndWait([
           tachyon.get_colored_name(),
