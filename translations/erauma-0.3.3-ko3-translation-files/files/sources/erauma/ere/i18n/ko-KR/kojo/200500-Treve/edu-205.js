@@ -83,7 +83,7 @@ module.exports = {
       await era.printAndWait(`모든 것이 약동하도록.`);
       await treve.say_and_wait(`이길게. 당신의 ${treve.name}로서.`);
       era.printButton(`말없이 배웅한다 (호감도 +5)`, 1);
-      era.printButton(`「넌 이길 거야.」（好感+15）`, 2);
+      era.printButton(`「넌 이길 거야.」(호감도 +15)`, 2);
       return [await era.input()];
     };
     f.title = title;
@@ -796,7 +796,7 @@ module.exports = {
       );
       era.printButton(`「${montjeu.name}。」`, 1);
       await era.input();
-      await montjeu.say_and_wait(`何？`);
+      await montjeu.say_and_wait(`뭐라고?`);
       era.printButton(`「당신은 왜 선행에 능하지?」`, 1);
       await era.input();
       await era.printAndWait(
