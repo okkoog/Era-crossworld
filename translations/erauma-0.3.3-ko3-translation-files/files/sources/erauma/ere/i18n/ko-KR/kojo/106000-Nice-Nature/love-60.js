@@ -8,50 +8,50 @@ module.exports = {
   async 49(nature, you, callname, self_call) {
     const ret = [];
     await nature.print_and_wait([
-      'ある夜、',
+      '어느 날 밤, ',
       nature.get_colored_name(),
-      ' は、自分の ',
+      '는 서서히 ',
       you.get_colored_actual_name(),
-      ' への想いが、担当の枠を少しはみ出していることに気づきはじめていた。',
+      '에게 단순한 관계 이상의 미묘한 감정을 품고 있음을 깨닫기 시작했다.',
     ]);
     await nature.print_and_wait([
       you.sex,
-      ' と過ごした時間を思い出すたび、淡い温もりが、気づかないうちに胸の奥へ浮かんでくる。',
+      '와 함께 보냈던 시간들을 떠올리자, 무심결에 가슴 한구석에서 따스한 온기가 피어올랐다.',
     ]);
     await nature.say_and_wait([callname, '……']);
     await nature.print_and_wait(
-      'ひとりごとで名前を呼ぶだけでも、その顔がはっきりと目の前に浮かぶ。',
+      '그저 혼잣말로 이름을 불렀을 뿐인데도, 그 사람의 얼굴이 눈앞에 선명하게 떠올랐다.',
     );
     await nature.print_and_wait(
-      'それは年頃の淡いときめきなのか、それとも毎日隣にいたせいで生まれた錯覚なのか。',
+      '하지만 이것이 정말 철없는 시절의 풋사랑일까, 아니면 일상을 함께하며 생긴 감정의 착각일까?',
     );
     era.println();
 
     era.printButton(
-      `「あたし、${callname} のことが好きみたい……」（関係を進める）`,
+      `「나, 아무래도 ${callname}을(를) 좋아하는 것 같아……」（관계 진전）`,
       1,
     );
     era.printButton(
-      `「ううんううん、${self_call}がそんな気持ちになるわけないでしょ？」（まだ進めない）`,
+      `「아냐 아냐, ${self_call}가 그런 감정을 가질 리 없잖아?」(관계 진전 중지)`,
       2,
     );
     ret.push((ret.update = await era.input()));
     if (ret.update === 1) {
       await nature.print_and_wait([
-        '明かりの下で、',
+        '등불 아래서, ',
         nature.teen_sex_title,
-        'は大事にしている紙のトロフィーをいじりながら、思わずつぶやいていた。',
+        '는 소중히 여기는 종이 트로피를 만지작거리며 자기도 모르게 중얼거렸다.',
       ]);
       await nature.say_and_wait([
-        '待って！ 今なんて言ったのあたし！ 恋してる',
+        '잠깐! 나 지금 무슨 소리를 하는 거야! 마치 사랑에 빠진 ',
         nature.teen_sex_title,
-        'みたいじゃない！ あたし、そういう役じゃないってば！',
+        '같잖아! 난 그런 캐릭터가 아니라고!',
       ]);
       await nature.print_and_wait([
         nature.sex,
-        'は言葉を必死に否定する。それでも、想いの種はもう、静かに芽を出していた……',
+        '는 자신의 말을 필사적으로 부정하려 했지만, 그 마음속에 심어진 연심의 씨앗은 이미 소리 없이 싹을 틔우고 있었다……',
       ]);
-      era.drawLine({ content: 'それから少しして……', position: 'left' });
+      era.drawLine({ content: '얼마 후……' });
       await nature.print_and_wait([
         nature.get_colored_name(),
         ' は自室のベッドにひとり座っていた。もともと薄着の',
@@ -114,9 +114,9 @@ module.exports = {
       ]);
     } else {
       await nature.print_and_wait([
-        '夜のひとりごとだろう、と ',
+        '밤이라서 감상적이 된 것뿐이라 생각하며, ',
         nature.get_colored_name(),
-        ' は布団をかぶり、雑念を振り払うように早く眠ることにした。',
+        '는 이불을 머리 끝까지 덮고 잠을 청해 잡념을 떨쳐내기로 했다.',
       ]);
     }
     return ret;
