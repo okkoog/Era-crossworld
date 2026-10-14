@@ -428,7 +428,7 @@ module.exports = {
         maru.sex,
         '의 입 안으로 밀어 넣었고,',
         maru.sex,
-        '도 크게 저항하지 않고 그 불만을 부드럽게 받아들였다.',
+        '도 별다른 저항 없이 입맞춤을 부드럽게 받아들였다.',
       ]);
       await era.printAndWait(
         '수영장 물은 아직 차가운데 두 사람 주변만은 봄처럼 따뜻하다.',
@@ -436,7 +436,7 @@ module.exports = {
       await maru.say_and_wait([
         '우리 집 옆에 계속 비어 있는 방이 하나 있어.',
         callname,
-        '？',
+        '?',
       ]);
       await era.printAndWait([
         '입술이 떨어진 뒤 두 사람은 수영장에서 나와 마른 수건으로 몸을 닦던 중,',
