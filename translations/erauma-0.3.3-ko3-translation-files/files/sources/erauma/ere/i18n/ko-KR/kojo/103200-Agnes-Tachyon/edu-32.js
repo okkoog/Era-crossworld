@@ -9146,9 +9146,9 @@ module.exports = {
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          '은(는) 몸을 앞으로 기울이며,',,
+          '은(는) 몸을 앞으로 기울이며,',
           you.get_colored_name(),
-          '의 눈을 바라보며 누군가 먼저 나서기를 기다렸다.',,
+          '의 눈을 바라보며 누군가 먼저 나서기를 기다렸다.',
         ]);
         era.printButton('손을 뻗어 만진다', 1);
         era.printButton('거절한다', 2);
@@ -9156,7 +9156,7 @@ module.exports = {
         if (ret[0] === 1) {
           await era.printAndWait([
             you.get_colored_name(),
-            '은(는) 참지 못하고 손을 뻗었다.',,
+            '은(는) 참지 못하고 손을 뻗었다.',
             tachyon.get_colored_name(),
             '의 가슴께, 얇은 천 두 장으로는 도저히 다 가릴 수 없는 풍만한 굴곡으로.',
           ]);
@@ -9169,7 +9169,7 @@ module.exports = {
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            '은(는) 긴장했다. 자신의 힘이 부족한 걸까?',,
+            '은(는) 긴장했다. 자신의 힘이 부족한 걸까?',
           ]);
           era.println();
           await era.printAndWait('아무리 애써도 더 세게 해 달라는 말만 돌아왔다.');
@@ -9203,9 +9203,9 @@ module.exports = {
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            '의 반응은,',,
+            '의 반응은,',
             you.get_colored_name(),
-            '이(가) 상상한 것보다 훨씬 컸다.',,
+            '이(가) 상상한 것보다 훨씬 컸다.',
           ]);
           await era.printAndWait([
             '호기심이 생긴 ',
