@@ -4110,7 +4110,7 @@ module.exports = {
 
   // [번역 대상] ws_punishment2
   ws_punishment2: (() => {
-    const title = '実験記録：性奴隷改造';
+    const title = '실험 기록：성노예 개조';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk} you プレイヤー
@@ -4121,35 +4121,35 @@ module.exports = {
       era.println();
       if (love < 75) {
         await tachyon.say_and_wait(
-          'ちっちっち……モルモットさん、警告したはずですわよ？',
+          '쯧쯧쯧…… 모르모트 양, 내가 경고하지 않았나?',
         );
-        await tachyon.say_and_wait('もう一度やった末路……ふふ。');
+        await tachyon.say_and_wait('다시 한번 기회를 줬음에도 이런 꼴이라니…… 후후.');
       } else {
-        await tachyon.say_and_wait('モルモット君……みっともないですわね。');
+        await tachyon.say_and_wait('모르모트 군…… 정말 한심한 모습이군.');
         await tachyon.say_and_wait(
-          '恥ずかしい。こんな相手が恋人だなんて、認めたくもありませんわ。',
+          '창피해서, 이런 자가 내 연인이라고 인정하고 싶지 않을 정도야.',
         );
       }
       era.println();
-      await era.printAndWait('アグネスタキオンの研究室。');
+      await era.printAndWait('아그네스 타키온의 실험실.');
       await era.printAndWait(
-        'この時間は本来、タキオンが薬剤を調合し研究する時間だ。',
+        '이 시간은 원래 아그네스 타키온이 약제를 조제하고 연구해야 할 시간이었다.',
       );
       await era.printAndWait(
-        `だが新しい身分で戻ってきた ${you.name} を迎えるため、${tachyon.sex}は今日の予定をわざわざ取り消し、祝いの薬まで自ら調合した。`,
+        `하지만 새로운 신분으로 돌아온 ${you.name}을(를) 맞이하기 위해, ${tachyon.sex}는 특별히 오늘 일정을 취소하고 축하용 약까지 직접 조제했다.`,
       );
       era.println();
       await era.printAndWait('「しゅる……ちゅる……ちゅぐ……ぐちゅ……」');
       era.println();
       await tachyon.say_and_wait(
-        'それとも、これが本当にあなたが望んでいたことですの？',
+        '아니면, 사실 이게 자네가 기대하던 것인가?',
       );
       await tachyon.say_and_wait(
         '好き放題弄ばれ、自分の意志など持たない性奴隷になることを？',
       );
       era.println();
       await era.printAndWait(
-        'タキオンは両脚を開き、いつもの回転椅子にだらしなく身を預けていた。',
+        '아그네스 타키온은 두 다리를 벌린 채, 평소 자신이 즐겨 앉던 회전의자에 나른하게 누워 있었다.',
       );
       await era.printAndWait(
         `${tachyon.sex}の両脚の間では、馬耳を生やした女性が蹲っている。着ているのはタキオンと同型の、袖の長い白衣だが、いくつか違う。`,
