@@ -1038,7 +1038,7 @@ module.exports = {
           'むしろ前者だと思い込んだほうが、自分は興奮する。',
         ]);
         await tachyon.print_and_wait(['나의 연인.']);
-        await tachyon.print_and_wait(['나의 ', callname, '。']);
+        await tachyon.print_and_wait(['나의 ', callname, '.']);
         await tachyon.print_and_wait([
           '娼婦以下の存在に従わせ、騎乗されている姿。',
         ]);
@@ -1093,7 +1093,7 @@ module.exports = {
         await tachyon.print_and_wait([t_call_c, ', 자네는——————.']);
         era.println();
 
-        await coffee.say_and_wait(['정말 너무하네요, ', callname_25, '。']);
+        await coffee.say_and_wait(['정말 너무하네요, ', callname_25, '.']);
         era.println();
 
         await tachyon.print_and_wait([
@@ -1199,7 +1199,7 @@ module.exports = {
           callname,
           '의 입술은, 계속해서 어떤 단어를 중얼거리고 있었다.',
         ]);
-        await tachyon.print_and_wait(['그 이름은…… ', y_call_t, '。']);
+        await tachyon.print_and_wait(['그 이름은…… ', y_call_t, '.']);
         era.println();
 
         era.println();
@@ -2472,7 +2472,7 @@ module.exports = {
       era.println();
       await tachyon.say_and_wait([callname, '……어째서……']);
       era.println();
-      await you.print_and_wait(['붉어지기 시작한 뺨을 감싸는 ', y_call_t, '。']);
+      await you.print_and_wait(['붉어지기 시작한 뺨을 감싸는 ', y_call_t, '.']);
       await you.print_and_wait([
         '미안하지만……',
         tachyon.sex,
@@ -2588,7 +2588,7 @@ module.exports = {
             you.get_colored_name(),
             '은(는) 기침하며 바닥에 떨어진 액체에 핏줄기가 섞여 있는 것을 두려움 속에서 발견했다.',
           ]);
-          await tachyon.say_and_wait(['세 번째라네, ', callname, '。']);
+          await tachyon.say_and_wait(['세 번째라네, ', callname, '.']);
           await tachyon.say_and_wait(
             '고마워하게…… 명목상 자네는 내 실험동물이니까.',
           );
