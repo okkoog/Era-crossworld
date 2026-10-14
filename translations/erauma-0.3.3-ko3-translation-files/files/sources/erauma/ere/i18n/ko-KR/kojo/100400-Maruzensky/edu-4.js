@@ -1876,7 +1876,7 @@ module.exports = {
       ]);
       await maru.say_as_passer_by_and_wait('기자 A', [
         maru.actual_name_with_title,
-        '、 트로피를 손에 든 소감은 어떻습니까?',
+        ', 트로피를 손에 든 소감은 어떻습니까?',
       ]);
       await maru.say_and_wait(
         '보통이라면 정말 흥분하겠지? 이렇게 성대한 레이스인걸.',
@@ -1982,7 +1982,7 @@ module.exports = {
       await maru.say_and_wait([
         '트레이너인 ',
         you.adult_sex_title,
-        '、 부끄러워하지 말고 소감도 말해줘!',
+        ', 부끄러워하지 말고 소감도 말해줘!',
       ]);
       era.printButton(
         `어어어쨌든, 트레센의 신뢰에 감사드립니다. 담당 ${maru.uma_sex_title}이(가) 열심히 맞춰줘서……`,
@@ -2166,7 +2166,7 @@ module.exports = {
         '은(는) 바로 앞에서 멈춘 환영을 바라볼 수밖에 없다.',
       ]);
       await you.say_and_wait(
-        [maru.get_colored_name(), '、 드디어 네 감촉을 알았어!'],
+        [maru.get_colored_name(), ', 드디어 네 감촉을 알았어!'],
         true,
       );
       await era.printAndWait(
@@ -2557,7 +2557,7 @@ module.exports = {
       await maru.say_and_wait(
         `후우——훈련 뒤에는 조금 피곤하네. ${
           callname
-        }、 ${maru.elder_sibling_sex_title}와 함께 찻집에 갈래?`,
+        }, ${maru.elder_sibling_sex_title}와 함께 찻집에 갈래?`,
       );
       era.printButton('「물론이지.」', 1);
       await era.printAndWait(
@@ -3357,7 +3357,7 @@ module.exports = {
         `행인 ${maru.uma_sex_title} A`,
         `${maru.name}${
           maru.sex_code !== 1 ? '선배' : '선배'
-        }、 이번 GIII, ${you.name}이(가) 가르쳐준 방법으로 정말 이겼어요!`,
+        }, 이번 GIII, ${you.name}이(가) 가르쳐준 방법으로 정말 이겼어요!`,
       );
       await maru.say_as_passer_by_and_wait(
         `행인 ${maru.uma_sex_title} B`,
@@ -3562,7 +3562,7 @@ module.exports = {
       await era.printAndWait(`얼마 지나지 않아——`);
       await era.printAndWait(`공항`);
       era.println();
-      await maru.say_and_wait(`${you.actual_name}、여기까지면 돼.`);
+      await maru.say_and_wait(`${you.actual_name}, 여기까지면 돼.`);
       await you.say_and_wait(`파리에 도착하면 메시지 줘, 알겠지?`);
       await maru.say_and_wait(
         `후후~ 물론이지. 두 달짜리 여행이지만 드디어 에펠탑을 보러 갈 수 있네.`,
@@ -5031,7 +5031,7 @@ module.exports = {
         await maru.say_and_wait(
           `응…… 맞아.${
             maru.elder_sibling_sex_title
-          }、 제대로 반성했어. 푹 쉬고 나면 다시 한번 ${
+          }, 제대로 반성했어. 푹 쉬고 나면 다시 한번 ${
             maru.elder_sibling_sex_title
           }다운 모습을 보여줄게!`,
         );
@@ -5042,7 +5042,7 @@ module.exports = {
         era.printButton(
           `「${
             maru.name
-          }、 아름답고 강한 ${maru.uma_sex_title}, 붉은 불꽃처럼 쿨하고 화려한 ${
+          }, 아름답고 강한 ${maru.uma_sex_title}, 붉은 불꽃처럼 쿨하고 화려한 ${
             maru.elder_sibling_sex_title
           }님!」`,
           1,
@@ -5153,7 +5153,7 @@ module.exports = {
           await maru.say_and_wait(
             `응? 요즘 유행, 들어본 적도 없어.${
               maru.elder_sibling_sex_title
-            }、 아웃인 걸까?`,
+            }, 아웃인 걸까?`,
           );
           era.printButton(
             `「최첨단에 얻어맞은 ${maru.name}의 기분은 가라앉았고 회복 효과도 크게 떨어졌다」`,
@@ -5628,7 +5628,7 @@ module.exports = {
           `다음 주 훈련 계획에서 고칠 부분을 고민하느라 안색이 안 좋다.`,
           true,
         );
-        await maru.say_and_wait(`${callname}、수고했어.`);
+        await maru.say_and_wait(`${callname}, 수고했어.`);
         await era.printAndWait(
           `${maru.name}에게 습관처럼 머리를 쓰다듬어진다. 처음에는 강하게 저항했지만 오래 이어지자 트레이너로서의 긍지는 코웃음 두 번만 남았다.`,
         );
@@ -6749,7 +6749,7 @@ module.exports = {
         await maru.say_and_wait(
           `뭐야? ${callname}, 이렇게 아름다운 ${maru.teen_sex_title}에게도 관심이 안 생기는 거야? ${
             maru.elder_sibling_sex_title
-          }、 내 매력을 의심하게 되네.`,
+          }, 내 매력을 의심하게 되네.`,
         );
         await era.printAndWait(
           `귀를 축 늘어뜨린 ${maru.name}과(와) 평소 모습의 큰 격차가 오히려 짓궂은 마음을 자극했다.`,
