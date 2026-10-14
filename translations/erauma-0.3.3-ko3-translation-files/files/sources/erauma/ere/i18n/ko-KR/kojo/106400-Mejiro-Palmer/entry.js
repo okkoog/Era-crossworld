@@ -30,7 +30,7 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/106400-Mejiro-Palmer/e
           pama.get_colored_name(),
           '은(는) 조용히 ',
           you.get_colored_name(),
-          '의 곁에 앉아 있다. 하지만,',
+          '의 곁에 앉아 있다. 하지만, ',
           you.get_colored_name(),
           '이(가) 이쪽을 바라보는 시선을 불안한 듯 피하고 있다……',
         ];
