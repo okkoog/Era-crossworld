@@ -57,7 +57,7 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/106400-Mejiro-Palmer/e
         return [
           '조용한 기다림. 끊임없는 시선. 그리고……',
           pama.get_colored_name(),
-          '의, 악의 없는 미소……',
+          '의 악의 없는 미소……',
         ];
     }
     return [];
@@ -67,9 +67,9 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/106400-Mejiro-Palmer/e
   notify_go_shopping = (pama) => [
     '【',
     pama.get_colored_name(),
-    '와(과) 쇼핑하러 가자!】',
+    '와 함께 쇼핑하러 가자!】',
   ];
 
   // [번역 완료] notify_rooftop
-  notify_rooftop = (pama) => ['【', pama.get_colored_name(), '은(는) 옥상에서 기다리고 있다】'];
+  notify_rooftop = (pama) => ['【', pama.get_colored_name(), '가 옥상에서 기다리고 있다】'];
 };
