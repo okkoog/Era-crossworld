@@ -3741,17 +3741,17 @@ module.exports = {
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' が称賛も激励も言い終える前に、',
+          '이(가) 칭찬과 격려를 끝내기도 전에, ',
           tachyon.get_colored_name(),
-          ' は詰め寄り、',
+          '은(는) 바짝 다가서더니, ',
           you.get_colored_name(),
-          ' を壁へ押し付けた',
+          '을(를) 벽으로 밀어붙였다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'はあ……はあ……ごめんなさい、',
+          '하아…… 하아…… 미안하네, ',
           callname,
-          '……走りすぎて、興奮が止まらなくて……身体、少し貸してくださいまし',
+          '……너무 달려서 흥분이 가라앉지 않는군…… 잠시 자네의 도움이 필요하네.',
         ]);
         era.println();
         await era.printAndWait([
@@ -3768,9 +3768,9 @@ module.exports = {
         );
         era.println();
         await era.printAndWait([
-          '誰を説得しているのかわからない言葉が続く。',
+          '누구를 설득하려는 건지 알 수 없는 말이 이어졌다.',
           you.get_colored_name(),
-          ' に逃げる気がないと見極めると、',
+          '이(가) 도망칠 생각이 없다는 걸 확인하자, ',
           tachyon.sex,
           'はゆっくり蹲り、震える両手で ',
           you.get_colored_name(),
