@@ -204,7 +204,7 @@ module.exports = {
         treve.uma_sex_title,
         '와 다시 눈이 마주쳤다.',
       ]);
-      await era.printAndWait('밤색 털, 밝은 머리색이다.');
+      await era.printAndWait('밤색. 밝고 화사한 머리칼이다.');
       era.printButton('「……다른 특징은요?」', 1);
       await era.input();
       await taste.say_and_wait('특징! 뒷머리를 작게 양갈래로 묶고 있다네.');
@@ -215,7 +215,7 @@ module.exports = {
         '보충! 귀장식은 말이지, 왼쪽에 하얀 모자와 붉은 리본을 달고 있는데 꽤 눈에 띄어서 금방 알아볼 수 있을 거라네.',
       );
       await era.printAndWait(
-        '흔들리는 붉은 리본에 하얀 모자와 모자에 짙은 남색 선이 그어져 있는 것이 뚜렷하게 보였다.',
+        '하얀 모자와 붉은 리본이 함께 흔들렸고, 짙은 푸른색 선이 선명하게 드러났다.',
       );
       await era.printAndWait(
         `계속 빤히 쳐다보고 있음에도 불구하고, 그 밤색 머리의 ${treve.uma_sex_title}는 태연하게 ${you.name}을(를) 마주 보았다.`,
@@ -252,7 +252,7 @@ module.exports = {
         `${treve.sex}는 아주 잠깐 동안 입을 살짝 벌린 채 눈을 동그랗게 떴다.`,
       );
       await era.printAndWait(
-        `현지 트레이너들에게 둘러싸인 채 찾아온 사람이 이런 외국인이라니, ${treve.sex}를 실망하게 했을지도 모른다.`,
+        `현지 트레이너에게 스카우트 제의를 받을 줄 알았을 텐데, 상대가 낯선 외국인이니 ${treve.sex}는 실망했을지도 모른다.`,
       );
       await era.printAndWait(
         `하지만 그것은 기우였던 듯, ${treve.sex}는 자리에서 일어나 ${you.name}에게 다가와 오른손을 내밀었다.`,
@@ -366,7 +366,7 @@ module.exports = {
         await era.printAndWait(
           `분명 ${treve.sex}에게 기대를 거는 다른 트레이너가 있을 텐데.`,
         );
-        await era.printAndWait('바로 그때, 베누스 파크가 손가락을 튕겼다.');
+        await era.printAndWait('바로 그때, 트레브가 손가락을 튕겼다.');
         await treve.say_and_wait(
           '프랑스에 오셨다는 건, 사실 지금 엄청 한가하신 거 아닌가요?',
         );
