@@ -517,7 +517,7 @@ module.exports = {
       );
       await era.printAndWait([
         treve.get_colored_name(),
-        '는 중앙 트레센의 교복으로 갈아입고, 교사와 트레이닝실을 잇는 정원을 걸었다.',
+        '는 중앙 트레센의 교복으로 갈아입고, 교사동과 트레이너실 사이의 정원을 걸었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
