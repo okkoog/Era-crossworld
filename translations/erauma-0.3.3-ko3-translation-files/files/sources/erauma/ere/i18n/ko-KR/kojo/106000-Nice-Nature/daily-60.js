@@ -337,7 +337,7 @@ module.exports = {
       nature.sex,
       '에게 요령을 잔뜩 배웠지! 어때,',
       callname,
-      '？ ',
+      '? ',
       self_call,
       '가 한 수 가르쳐 줄까?',
     ]);
@@ -358,7 +358,7 @@ module.exports = {
       );
     } else {
       await nature.say_and_wait(
-        `오락실인가…… 어린애들이 자주 놀러 오는 곳이네. 나? 난 자주 오는 타입은 아니야! ${self_call}는 가사 전담파거든. 뭐, 가끔 같이 노는 건 나쁘지 않지. 아주 가끔이라면.`,
+        `오락실인가…… 어린애들이 자주 놀러 오는 곳이네. 나? 난 자주 오는 타입은 아니야! ${self_call}는 오락실보다 집안일을 좋아하는 쪽이거든. 뭐, 가끔 같이 노는 건 나쁘지 않지. 아주 가끔이라면.`,
       );
     }
   },
@@ -392,7 +392,7 @@ module.exports = {
     );
     await nature.say_and_wait(
       `천상의 목소리라니…… 너무 과장하잖아! ${callname}, ${self_call}에게 달콤한 말 해 봤자 얻을 건 없어!` +
-        `자! 다음은 ${callname} 차례야!`,
+        ` 자! 다음은 ${callname} 차례야!`,
     );
     await era.printAndWait(`${nature.name}와 즐거운 시간을 보냈다.`);
   },
@@ -522,7 +522,7 @@ module.exports = {
   // [번역 완료] s_r_lunch
   async s_r_lunch(nature, self_call) {
     await nature.say_and_wait(
-      `쨔잔! ${self_call}표 수제 도시락이야! 매일 영양 균형을 잘 맞춰야 한다니까!`,
+      `짜잔! ${self_call}표 수제 도시락이야! 매일 영양 균형을 잘 맞춰야 한다니까!`,
     );
   },
 
