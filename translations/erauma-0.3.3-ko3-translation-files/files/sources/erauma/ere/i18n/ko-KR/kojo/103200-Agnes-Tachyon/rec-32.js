@@ -17,7 +17,7 @@ module.exports = {
     era.print(
       `${tachyon.sex}가 스타트하는 순간, ${tachyon.sex}가 스퍼트를 올리는 순간, ${tachyon.sex}가 결승선을 통과하는 순간`,
     );
-    era.print('마치 빛처럼 빠르고, 빛처럼 눈부시며, 빛처럼…… 허무했다.');
+    era.print('마치 빛처럼 빠르고, 빛처럼 눈부시며, 빛처럼…… 공허했다.');
     await era.printAndWait(
       `안타깝게도 인파가 ${you.name}의 발걸음을 가로막았고, ${you.name}은(는) ${tachyon.sex}에게 말을 걸 기회를 얻지 못했다.`,
     );
@@ -27,7 +27,7 @@ module.exports = {
       `${you.name}은(는) 그 ${tachyon.uma_sex_title}를, 그 눈부신 빛을 다시 한번 보고 싶어 조바심이 났다.`,
     );
     await era.printAndWait(
-      `${you.name} 스스로도 왜 마지막에 그런 생각이 들었는지 알 수 없었다. 마치 「허무」라는 단어가 갑자기 ${you.name}의 뇌리에 스쳐 지나간 것만 같았다……`,
+      `${you.name} 스스로도 왜 마지막에 그런 생각이 들었는지 알 수 없었다. 마치 「공허」라는 단어가 갑자기 ${you.name}의 뇌리에 스쳐 지나간 것만 같았다……`,
     );
   },
   /**
@@ -102,7 +102,7 @@ module.exports = {
       `소문 때문이 아니라, 마치 팬이 우상을 만나기 직전에 느끼는 감정과 비슷했다.`,
     );
     era.print(
-      `이 문 너머에 지난 사흘간 밤낮으로 생각하며 마치 홀린 듯 찾아 헤매던 ${tachyon.sex}가 있다.`,
+      `이 문 너머에 지난 사흘간 식사도 제대로 못 할 만큼 홀린 듯 찾아 헤매던 ${tachyon.sex}가 있다.`,
     );
     await era.printAndWait(
       `너무 오래 기다리게 한 탓일까, ${you.name}이(가) 결심을 굳히기도 전에 문이 먼저 열렸다.`,
@@ -115,7 +115,7 @@ module.exports = {
     era.print(
       `그리고 ${tachyon.sex}의 다리는…… 의외로 가냘팠다. 바지를 입었음에도 알 수 있을 정도였다. 대부분의 ${tachyon.uma_sex_title}들이 가느다란 몸에 믿기지 않는 괴력을 숨기고 있다지만, ${tachyon.sex}의 다리는 분명 다른 ${tachyon.uma_sex_title}들에 비해서도 훨씬 가늘어 보였다.`,
     );
-    era.print(`그것이 그날 ${you.name}이(가) 느꼈던 「허무」의 정체였다.`);
+    era.print(`그것이 그날 ${you.name}이(가) 느꼈던 「공허」의 정체였다.`);
     era.print(`하지만 다리보다 더 충격적인 것은 ${tachyon.sex}의 눈이었다.`);
     era.print('마치 블라인드처럼, 공허하게 가라앉은 붉은 눈동자.');
     await era.printAndWait('분명 자신을 바라보고 있음에도, 마치 아무것도 담고 있지 않은 듯했다.');
