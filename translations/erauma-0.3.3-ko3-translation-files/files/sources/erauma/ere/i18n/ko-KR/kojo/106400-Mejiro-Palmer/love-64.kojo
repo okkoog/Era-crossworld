@@ -73,7 +73,7 @@ distance:
 # [번역 완료] pre-happy
 pre-happy:
   - color: %COLOR%
-    content: 【만약 어느 날，%CHARA%나 %YOU%이(가) 잠에 든다면……】
+    content: 【만약 어느 날,%CHARA%나 %YOU%이(가) 잠에 든다면……】
 
 # [번역 완료] happy
 happy:
@@ -1562,7 +1562,7 @@ nega_dis:
 
 # [번역 완료] come_for_you
 come_for_you:
-  title: 밤이 되면，너를 위해 온다
+  title: 밤이 되면,너를 위해 온다
   lines:
     # 依存心所持、不安以上のときターン終了でランダム発生、ウマ娘×男トレーナー
     - 밤, 이미 꿈속에 빠져 있던 %YOU%은(는) 알 수 없는 소란스러운 소리에 잠에서 깼다.
@@ -1739,14 +1739,14 @@ pre-rooftop:
 # イベントタイトル定義用
 # [번역 완료] rooftop
 rooftop:
-  title: 기다림，혹은……
+  title: 기다림,혹은……
   lines:
     -
 
     # イベントタイトル定義用
 # [번역 완료] rooftop_3
 rooftop_3:
-  title: 기다림，혹은……기대
+  title: 기다림,혹은……기대
   lines:
     -
 
