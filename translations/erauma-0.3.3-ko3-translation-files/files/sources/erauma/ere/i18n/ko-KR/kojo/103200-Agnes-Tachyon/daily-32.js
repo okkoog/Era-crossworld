@@ -4587,9 +4587,9 @@ module.exports = {
       era.println();
 
       await era.printAndWait([
-        'これほど惨めな光景を見ても、',
+        '이토록 비참한 광경을 보고도, ',
         tachyon.get_colored_name(),
-        ' に憐れみも同情もなかった。',
+        '은(는) 연민도 동정도 느끼지 않았다.',
       ]);
       await era.printAndWait(
         `${tachyon.sex}は容赦なく足を上げ、${you.name} の腹を踏んだ。`,
