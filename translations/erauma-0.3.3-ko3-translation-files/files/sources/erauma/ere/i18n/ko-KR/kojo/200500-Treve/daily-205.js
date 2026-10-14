@@ -163,7 +163,7 @@ module.exports = {
       await era.printAndWait(
         '뒤이어 하늘을 뒤덮은 먹구름에서 장대비가 쏟아지기 시작했고, 주변 사람들은 일제히 하늘을 올려다보았다.',
       );
-      await treve.say_and_wait([callname, '，이쪽이에요!']);
+      await treve.say_and_wait([callname, ', 이쪽이에요!']);
       await era.printAndWait(
         `쏟아지는 빗속에서 ${treve.name}는 서둘러 ${you.name}의 손을 잡아끌었다.`,
       );
@@ -188,7 +188,7 @@ module.exports = {
       await era.printAndWait(
         `${treve.name}는 생긋 웃으며 그렇게 말했다. 그러고는 문을 열고 ${you.name}에게 수건을 건넨 뒤, 황급히 문을 쾅 닫아버렸다. 방 안에서 무언가를 거칠게 정리하는 소리가 요란하게 들려왔다. ${you.name}이(가) 건네받은 수건으로 얼굴을 닦으며 기다리기를 몇 분, ${treve.name}가 문틈으로 슬그머니 얼굴을 내밀었다.`,
       );
-      await treve.say_and_wait(['들어오세요, ', callname, '，어서 들어오세요.']);
+      await treve.say_and_wait(['들어오세요, ', callname, ', 어서 들어오세요.']);
       await treve.say_and_wait('조금 지저분하긴 하지만요.');
       await era.printAndWait(
         `등을 떠밀리듯 ${you.name}은(는) ${treve.name}의 방 안으로 발을 들여놓았다.`,
@@ -308,7 +308,7 @@ module.exports = {
       );
       await treve.say_and_wait([
         callname,
-        '，당신은 이제 일본으로 돌아갈 수 없어요…… 영원히 저의 것, 오직 저만을 위해 살아가는 사람이 되어주실 거죠……?',
+        ', 당신은 이제 일본으로 돌아갈 수 없어요…… 영원히 저의 것, 오직 저만을 위해 살아가는 사람이 되어주실 거죠……?',
       ]);
       await era.printAndWait(
         `${treve.name}는 황홀한 미소를 지으며 요염한 눈빛을 보냈다. 발그레하게 상기된 뺨을 한 채 ${you.name}의 얼굴로 바짝 다가온 ${treve.sex}는, 이내 숨결마저 삼켜버릴 듯 밀착한 거리에서 나지막이 속삭였다.`,
