@@ -828,7 +828,7 @@ module.exports = {
         '가 레이스나 질주 중에 기쁨을 느끼는 가장 큰 이유는 칭찬과 관객의 지지를 받는 것이라네……',
       ]);
       await tachyon.used_to_say_and_wait(
-        '中高生の年齢ですもの、認められたいと思うのは自然ですわ',
+        '인정받고 싶어 하는 건 누구에게나 자연스러운 감정이지.',
       );
       await tachyon.used_to_say_and_wait(
         '나 자신은 그런 것에 영향받지 않는다고 생각하지만…… 실험인 이상 모든 가능성을 고려해야 하네.',
@@ -918,12 +918,12 @@ module.exports = {
           tachyon.uma_sex_title + 'B',
           '타키온 선배…… 오늘 레이스 꼭 힘내세요!',
         );
-        await tachyon.say_and_wait('ええっ……か……必ず……');
+        await tachyon.say_and_wait('그으으…… 으응…… 반드시……');
         await you.say_as_passer_by_and_wait(
           tachyon.uma_sex_title + 'C',
           '타키온 선배…… 무슨 일 있으신가요?',
         );
-        await tachyon.say_and_wait('な……なんでも……ただ……ただ……くっ……');
+        await tachyon.say_and_wait('아…… 아무것도 아니네…… 단지…… 단지…… 윽……');
         era.printButton('「시간도 없으니 선수 대기실에서 준비하자.」', 1);
         await era.input();
         await era.printAndWait([
@@ -936,7 +936,7 @@ module.exports = {
         ]);
         era.println();
         await tachyon.say_and_wait([
-          '……まったく……そんなに嫉妬しないでください……後輩にまで焼き餅を……',
+          '……정말이지…… 그렇게 질투하지 말게나…… 후배들까지 질투하다니……',
           you.sex_code === 1 ? '남자라면 좀 더 대범하게 굴어야 하지 않겠나.' : '',
         ]);
         era.printButton('「그럼 카페의 레이스를 보러 갈게.」', 1, {
