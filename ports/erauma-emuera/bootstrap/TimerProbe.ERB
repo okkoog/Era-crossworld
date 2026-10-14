@@ -1,0 +1,30 @@
+@SYSTEM_TITLE
+#DIM STATE
+#DIM TICKS
+#DIMS MESSAGE
+#DIMS VERDICT
+CALLSHARP EraUmaBridge("timer-game","",STATE,MESSAGE)
+WHILE STATE == 4 && TICKS < 100
+    ; A hidden WinForms window has no paint event to arm TINPUTS's internal timer.
+    ; This unattended test pumps real elapsed callbacks; Game.ERB uses TINPUTS.
+    AWAIT 50
+    CALLSHARP EraUmaBridge("tick","",STATE,MESSAGE)
+    TICKS += 1
+WEND
+IF STATE == 1 && TICKS > 0
+    CALLSHARP EraUmaBridge("assert-timer-buttons","",STATE,MESSAGE)
+ENDIF
+IF STATE == 1
+    CALLSHARP EraUmaBridge("resume","3",STATE,MESSAGE)
+ENDIF
+IF STATE == 2
+    CALLSHARP EraUmaBridge("assert-timer-finish","",STATE,MESSAGE)
+ENDIF
+IF STATE == 2
+    VERDICT = PASS: real elapsed timer dispatches delayed choice on ERB thread
+ELSE
+    VERDICT = FAIL: delayed input did not resume
+ENDIF
+CALLSHARP EraUmaBridge("report",VERDICT,STATE,MESSAGE)
+CALLSHARP EraUmaBridge("exit","",STATE,MESSAGE)
+QUIT

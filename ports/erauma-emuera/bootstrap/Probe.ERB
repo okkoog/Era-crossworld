@@ -1,0 +1,22 @@
+@SYSTEM_TITLE
+#DIM STATE
+#DIMS MESSAGE
+#DIMS INPUT_TEXT
+#DIMS VERDICT
+CALLSHARP EraUmaBridge("start","",STATE,MESSAGE)
+IF STATE != 1
+    VERDICT = FAIL: initial input suspension
+ELSE
+    ; Automated repeatable bridge test. Manual version replaces this with INPUTS.
+    INPUT_TEXT = 5
+    CALLSHARP EraUmaBridge("resume",INPUT_TEXT,STATE,MESSAGE)
+    IF STATE == 2 && GLOBAL:0 == 105
+        VERDICT = PASS: CALLSHARP -> JS -> print/input-resume/GLOBAL
+    ELSE
+        VERDICT = FAIL: resumed state or GLOBAL mismatch
+    ENDIF
+ENDIF
+PRINTFORML %VERDICT%
+PRINTFORML %MESSAGE%
+CALLSHARP EraUmaBridge("report",VERDICT,STATE,MESSAGE)
+QUIT

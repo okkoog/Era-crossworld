@@ -1,0 +1,11 @@
+era.println('EraUma interactive compatibility check');
+era.println('Step 1: type 5 and press Enter.');
+era.set('global:0',100);
+if(await era.input()!==5)throw Error('Expected 5');
+era.add('global:0',5);
+era.println('Step 2: type Trainer and press Enter.');
+if(await era.input()!=='Trainer')throw Error('Text input differs');
+era.println('Step 3: click the Finish button.');
+era.printButton('Finish',7);
+if(await era.input()!==7)throw Error('Button input differs');
+era.println('PASS: number, string and button input resumed JavaScript.');
