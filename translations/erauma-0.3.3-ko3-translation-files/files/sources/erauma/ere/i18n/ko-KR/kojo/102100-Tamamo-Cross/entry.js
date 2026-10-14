@@ -45,7 +45,7 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/102100-Tamamo-Cross/en
     tama,
     {
       color: tama.color,
-      content: '！',
+      content: '!',
     },
   ];
 
