@@ -5732,7 +5732,7 @@ module.exports = {
                 await era.printAndWait('잠깐 쉬기만 하면…… 하아.');
                 era.println();
                 await you.say_and_wait('안 돼.');
-                await tachyon.say_and_wait('！？');
+                await tachyon.say_and_wait('!?');
                 era.println();
                 await era.printAndWait([
                   you.get_colored_name(),
@@ -7628,7 +7628,7 @@ module.exports = {
             ', 우리가 처음 만났을 때를 기억하나? 그때 이미 퇴학 위협은 한 번 겪었네. 내가 정말 그런 걸 신경 쓸 거라 생각하나?',
           ]);
           era.println();
-          await you.say_and_wait('！', true);
+          await you.say_and_wait('!', true);
           await era.printAndWait('순간 허점을 찔리고 말았다.');
           await era.printAndWait([
             '기억을 더듬어 보면, 당시의 자신은 퇴학당할지도 모른다는 소리를 듣고 정신없이 ',
@@ -8027,7 +8027,7 @@ module.exports = {
           await you.say_and_wait(
             '물론, 혹시라도, 정말 만약에라도, 타키온이 레이스에서 지고 바닥에 엎드려서 분해하는 고통스러운 모습도 보고 싶어!',
           );
-          await tachyon.say_and_wait('！');
+          await tachyon.say_and_wait('!');
           era.println();
           era.printButton('（오호, 도발이 먹혔나?）', 1);
           await era.input();
@@ -9646,7 +9646,7 @@ module.exports = {
           you.get_colored_name(),
           '은(는) 조심스럽게 초콜릿을 한 입 베어 물었다.',
         ]);
-        era.printButton('「！？」', 1);
+        era.printButton('「!?」', 1);
         await era.input();
         await era.printAndWait('발광, 변형, 머리가 두 개 자라남, 등에서 날개가 돋아남, 액체화……');
         await era.printAndWait('그 어떤 변화도……… 일어나지 않았다.');
@@ -9898,7 +9898,7 @@ module.exports = {
         await era.printAndWait([
           '초콜릿은 두 사람의 입안에서 녹아 끊어지며 각자의 입속으로 사라졌다.',
         ]);
-        era.printButton('「！？」', 1);
+        era.printButton('「!?」', 1);
         await era.input();
         await era.printAndWait('……독은 없군.');
         await era.printAndWait([
