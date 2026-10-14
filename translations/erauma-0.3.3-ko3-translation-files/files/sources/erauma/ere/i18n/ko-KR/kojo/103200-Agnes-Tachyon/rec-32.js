@@ -37,10 +37,10 @@ module.exports = {
   async rec_final(tachyon, you) {
     era.print(`${you.name}은(는) 며칠 전 이곳에서 보았던 그 주법을 여전히 잊지 못했다.`);
     era.print(
-      `${you.name}은(는) 아직 데뷔하지 않은 ${tachyon.uma_sex_title}들이 나타날 법한 곳인 훈련장, 모의 레이스장, 체육관, 식당 등을 샅샅이 뒤졌다.`,
+      `${you.name}은(는) 데뷔 전인 그 ${tachyon.uma_sex_title}가 있을 법한 곳은 모조리 찾아보았다. 훈련장, 모의 레이스장, 체육관, 식당까지.`,
     );
     await era.printAndWait(
-      `하지만 지난 며칠간 ${you.name}은(는) 그 ${tachyon.uma_sex_title}의 모습을 단 한 번도 보지 못했다. 마치 연기처럼 사라져 버린 듯했다.`,
+      `하지만 지난 며칠간 ${you.name}은(는) 그 ${tachyon.uma_sex_title}의 모습을 단 한 번도 보지 못했다. 마치 허공으로 사라져 버린 듯했다.`,
     );
     era.println();
 
@@ -69,7 +69,7 @@ module.exports = {
     era.print(
       `${you.name}은(는) 흥분을 감출 수 없었으나, 곧 방금 전 학생이 했던 말을 떠올렸다.`,
     );
-    era.print(`(트레이너가 없다면…… 결국……)`);
+    era.print(`(트레이너가 붙지 않는다면…… 아마……)`);
     await era.printAndWait(`${you.name}은(는) 급히 자리를 박차고 달려 나갔다.`);
     era.println();
 
@@ -82,7 +82,7 @@ module.exports = {
     era.print(`??? 「수업에는 통 얼굴을 안 비춰요.」`);
     era.print(`??? 「빈 교실을 마음대로 점거해서 자기 실험실로 쓰고 있대요.」`);
     era.print(
-      `??? 「눈에 띄는 ${tachyon.uma_sex_title}들에게 이상한 약물을 먹이려 한다니까요.」`,
+      `??? 「마주치는 ${tachyon.uma_sex_title}들에게 이상한 약을 떠넘긴다니까요.」`,
     );
     era.print(`??? 「타키온 선배의 약은 달콤해서 맛있어!」`);
     await era.printAndWait(
@@ -97,12 +97,12 @@ module.exports = {
     await era.printAndWait(`안에서 나른한 목소리가 들려왔다.`);
     era.println();
 
-    era.print(`하지만 ${you.name}은(는) 갑자기 겁이 났다.`);
+    era.print(`하지만 ${you.name}은(는) 갑자기 주눅이 들었다.`);
     era.print(
-      `소문 때문이 아니라, 마치 팬이 우상을 만나기 직전에 느끼는 감정과 비슷했다.`,
+      `소문 때문이 아니라, 마치 팬이 아이돌을 만나기 직전의 감정과 비슷했다.`,
     );
     era.print(
-      `이 문 너머에 지난 사흘간 식사도 제대로 못 할 만큼 홀린 듯 찾아 헤매던 ${tachyon.sex}가 있다.`,
+      `이 문 너머에 지난 사흘간 먹을 것도 마실 것도 제대로 넘기지 못하며 홀린 듯 찾아 헤매던 ${tachyon.sex}가 있다.`,
     );
     await era.printAndWait(
       `너무 오래 망설였던 걸까, ${you.name}이(가) 결심을 굳히기도 전에 문이 먼저 열렸다.`,
@@ -132,7 +132,7 @@ module.exports = {
     era.println();
 
     await era.printAndWait(
-      `그 후, ${you.name}은(는) ${tachyon.sex}의 지시에 따라 일련의 불평등 계약서에 서명했다. 여기에는 반드시 ${tachyon.sex}의 시약 실험을 도와야 한다는 것과, 트레이닝이나 레이스 참가 여부는 ${tachyon.sex}의 기분에 따라 결정한다는 내용 등이 포함되어 있었다.`,
+      `그 후, ${you.name}은(는) ${tachyon.sex}의 지시에 따라 일련의 불평등 조약에 서명했다. 여기에는 반드시 ${tachyon.sex}의 시약 실험을 도와야 한다는 것과, 트레이닝이나 레이스 참가 여부는 ${tachyon.sex}의 기분에 따라 결정한다는 내용 등이 포함되어 있었다.`,
     );
     era.println();
 
