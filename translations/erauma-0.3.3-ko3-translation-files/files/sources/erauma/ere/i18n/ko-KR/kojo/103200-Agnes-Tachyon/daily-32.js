@@ -4891,20 +4891,20 @@ module.exports = {
             'さまに道具で掃除しているところを見られたら、もっと惨めになるから？',
           ]);
           await era.printAndWait(
-            'この惨めさで、こんな暮らしから抜け出そうと自分を戒めるため？',
+            '아니면 이런 비참한 처지를 스스로에게 각인시켜 어떻게든 이곳을 벗어나기 위해 노력하려는 의지였을까?',
           );
           await era.printAndWait(
             'それとも……タキオンの言う通り、精液と肉棒のためなら体面も捨てて床を舐める下衆なのか？',
           );
           era.println();
-          await era.printAndWait('そんな理由は、もうどうでもよかった。');
+          await era.printAndWait('이유 따위는 이제 중요하지 않았다.');
           await era.printAndWait([
             '地に伏せた ',
             you.get_colored_name(),
             ' の目に映り、耳に入り、口に乗るのは、床にも、自分の体にも、挿れる穴から流れ出る白濁の精だけだった。',
           ]);
           era.println();
-          await era.printAndWait('「たっ……たっ……」');
+          await era.printAndWait('「뚜벅…… 뚜벅……」');
           await era.printAndWait([
             you.uma_sex_title,
             'の鋭い耳が、',
@@ -4923,7 +4923,7 @@ module.exports = {
           ]);
         } else {
           await era.printAndWait(
-            '肉体は改造されても、せめて精神までは捨てられない。',
+            '육체는 비록 개조되었을지언정, 적어도 정신만큼은 포기할 수 없었다.',
           );
           era.println();
           await era.printAndWait([
@@ -4957,38 +4957,38 @@ module.exports = {
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' はそれでも意地を張って立ち、箒と塵取りで無駄な掃除を続けた。',
+            '은(는) 그럼에도 고집스럽게 서서 빗자루와 쓰레받기로 청소를 이어나갔다.',
           ]);
           await era.printAndWait(
             '自分は人間だ。ウマ娘でも、性奴隷でも、孕袋でもない。',
           );
           await era.printAndWait([
-            'その意地は、まだ ',
+            '그런 마지막 자존심이 ',
             you.get_colored_name(),
-            ' の胸に残っている。',
+            '의 마음속에 여전히 남아 있었다.',
           ]);
-          await era.printAndWait('だが……');
+          await era.printAndWait('하지만……');
           era.println();
-          await era.printAndWait('「たっ……たっ……」');
+          await era.printAndWait('「뚜벅…… 뚜벅……」');
           await era.printAndWait([
             you.uma_sex_title,
-            'の鋭い耳が、',
+            '의 예민한 귀는 ',
             you.get_colored_name(),
-            ' に、廊下手前からこちらへ歩いてくる足音を正確に捉えさせた。',
+            '에게 복도에서 이쪽으로 다가오는 누군가의 발소리를 정확히 들려주었다.',
           ]);
           await era.printAndWait(
             '今日の使用者か。答えるまでもない。薬が漏れやすいこの廊下へ近づく理由など、それ以外に思いつかない。',
           );
           await era.printAndWait([
-            'だが ',
+            '하지만 ',
             you.get_colored_name(),
-            ' はそれでも意地を張って立ち、聞こえないふりをして、人間としての誇りを守った。',
+            '은(는) 그럼에도 굳세게 서서 못 들은 척하며 인간으로서의 긍지를 지키려 했다.',
           ]);
           era.println();
           await era.printAndWait([
-            '——————たとえそれが、五分後には ',
+            '――――설령 그것이 불과 5분 뒤에는 ',
             you.get_colored_name(),
-            ' 自身が自ら捨てるものだとしても。',
+            ' 스스로 내던지게 될 무언가일지라도 말이다.',
           ]);
         }
         era.setColor();
