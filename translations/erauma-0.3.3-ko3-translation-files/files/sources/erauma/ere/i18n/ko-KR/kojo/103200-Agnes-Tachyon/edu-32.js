@@ -7131,7 +7131,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_15
+  // [번역 완료] ws_15
   ws_15: (() => {
     const title = '실험 과제 책정';
     /**
@@ -7294,80 +7294,80 @@ module.exports = {
           tachyon.uma_sex_title,
           '의 손에서 벗어난다고? ',
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
           '에게 미쳤다는 소리를 들을지언정 바보는 아니었다. 불가능한 망상은 하지 않았다.',
         ]);
         era.println();
         await era.printAndWait('흰 가운 아래에는 은은한 광택이 도는 검은 팬티스타킹이 있었다.');
         await era.printAndWait(
-          '朝から豊かな尻と細い脚を封じ込めてきた蒸れたパンストは、一日の熟成を経て、内も外も完全に味が沁みている',
+          '아침부터 풍만한 엉덩이와 가느다란 다리를 감싸고 있던 팬티스타킹에는 하루 종일 쌓인 열기와 냄새가 안팎으로 배어 있었다.',
         );
         await era.printAndWait([
-          'しかも履いているのは、普段から生活がだらしない ',
+          '게다가 그것을 입은 사람은 평소 생활습관도 엉망인 ',
           tachyon.get_colored_name(),
         ]);
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は恐怖で首を振った。だがもう遅い',
+          '은(는) 공포에 질려 고개를 저었다. 하지만 이미 늦었다.',
         ]);
         era.println();
         await era.printAndWait([
           tachyon.sex,
-          'はゆっくりパンストを下ろす。尻から外れた瞬間、',
+          '은(는) 천천히 팬티스타킹을 내렸다. 엉덩이에서 벗겨지는 순간,',
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           tachyon.get_colored_name(),
-          ' の身体が、その弾む尻の反動で小さく揺れたように見えた',
+          '의 몸이 탄력적인 엉덩이의 반동에 따라 살짝 흔들리는 것 같다고 느꼈다.',
         ]);
         await era.printAndWait([
-          'パンストが股まで下り、今まで醸してきた匂いを逃したくないかのように、黒い絹はまだ',
+          '팬티스타킹이 사타구니까지 내려왔다. 지금까지 품어 왔던 향기를 놓치기 싫다는 듯, 검은 천은 아직 ',
           tachyon.child_sex_title,
-          'の両脚のあいだの神秘な部位と糸を引いていた————',
+          '의 양다리 사이 은밀한 곳과 실처럼 이어져 있었다————',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'は今日、下着を履いていないのか？ ',
+          '은(는) 오늘 속옷을 입지 않은 건가? ',
           you.get_colored_name(),
-          ' はふと思った。この糸を見れば、答えは自明だ',
+          '은(는) 문득 생각했다. 그 실 같은 흔적만 봐도 답은 분명했다.',
         ]);
         await era.printAndWait(
-          '舞台の幕が上がるように、下の白い腿が露出する——それは、惨たらしい悲劇の開演でもあった',
+          '무대의 막이 오르듯 아래쪽의 흰 허벅지가 드러났다——동시에 처참한 비극의 막도 올랐다.',
         );
         era.println();
-        await tachyon.say_and_wait(['さあ、', callname, '、口を開けて～～']);
-        era.printButton('「むぐぐぐ！！」', 1);
+        await tachyon.say_and_wait(['자, ', callname, ', 입을 벌리세요～～']);
+        era.printButton('「으그그그!!」', 1);
         await era.input();
         await era.printAndWait([
-          'このままではだめだ。内心に駆られ、',
+          '이대로는 안 된다. 마음속의 절박함에 떠밀려, ',
           you.get_colored_name(),
-          ' はそれでも徒労の抵抗を試みた',
+          '은(는) 헛된 줄 알면서도 저항하려 했다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は慌てて四つん這いで実験室から逃げようとしたが、案の定、一歩目で ',
+          '은(는) 다급히 네 발로 기어 실험실을 벗어나려 했지만, 예상대로 첫걸음을 떼자마자 ',
           tachyon.get_colored_name(),
-          ' に人間には反応できない速度で背中に跨がれた',
+          '에게 인간이 반응할 수 없는 속도로 등을 깔렸다.',
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'は ',
+          '은(는) ',
           you.get_colored_name(),
-          ' の背に跨がり、パンストで ',
+          '의 등에 올라타 팬티스타킹으로 ',
           you.get_colored_name(),
-          ' の口を絞めた。口枷のように ',
+          '의 입을 틀어막았다. 재갈처럼 ',
           you.get_colored_name(),
-          ' を固定し、締め付けに耐えかねた ',
+          '을(를) 고정한 채, 압박을 견디지 못한 ',
           you.get_colored_name(),
-          ' が口を開くと、パンストはそのまま頬と口角に食い込んだ',
+          '이(가) 입을 벌리자 팬티스타킹이 그대로 뺨과 입가를 파고들었다.',
         ]);
         await era.printAndWait([
-          '瞬間、酸っぱく濃い臭いが ',
+          '순간 시큼하고 진한 냄새가 ',
           you.get_colored_name(),
-          ' の口に広がり、濡れた感触と、股間から来る淡い匂いが鼻腔を侵す。猛烈な匂いの襲撃に、',
+          '의 입안에 퍼졌다. 축축한 감촉과 사타구니에서 풍겨 오는 희미한 냄새가 콧속을 파고들었다. 거센 냄새에 휩싸인 ',
           you.get_colored_name(),
-          ' は四肢の力を失って膝をついた',
+          '은(는) 팔다리에 힘이 풀려 무릎을 꿇었다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
@@ -7381,9 +7381,9 @@ module.exports = {
         );
         era.println();
         await era.printAndWait([
-          '匂いの目眩で意識が落ちる直前、',
+          '냄새에 취해 의식을 잃기 직전, ',
           you.get_colored_name(),
-          ' の最後の考えは——意見があっても、口を開かせてくれ、というものだった……',
+          '의 마지막 생각은——반대 의견이 있다 해도 제발 입은 벌리게 해 달라는 것이었다……',
         ]);
       } else {
         if (
@@ -7484,89 +7484,89 @@ module.exports = {
           era.println();
           await tachyon.say_and_wait(['……？ ', callname, '？']);
           era.printButton(
-            '「タキオンが走るとき、その大きな尻が揺れるのを見たい」',
+            '「타키온이 달릴 때, 그 풍만한 엉덩이가 흔들리는 모습을 보고 싶어」',
             1,
           );
           await era.input();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は',
+            '은(는) ',
             tachyon.sex,
-            'の豊かな尻を強く叩いた',
+            '의 풍만한 엉덩이를 세게 때렸다.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'の全身が震え、ちょうど密着したパンストに黒い波が幾重も立った',
+            '의 온몸이 떨리며 몸에 달라붙은 팬티스타킹에 검은 물결이 여러 겹 일었다.',
           ]);
           await you.say_and_wait(
-            'レースのあと、控え室でタキオンの中を白く満たしたい',
+            '레이스가 끝난 뒤 대기실에서 타키온의 안을 하얗게 채우고 싶어.',
           );
           await era.printAndWait([
             you.get_colored_name(),
-            ' の口調はさっきの称賛と同じく柔らかい。中身だけが、ひどく下品だ',
+            '의 말투는 방금 칭찬할 때와 똑같이 부드러웠다. 말의 내용만 지독하게 외설스러웠다.',
           ]);
           await era.printAndWait([
-            '錯覚かもしれないが、',
+            '착각일지도 모르지만, ',
             tachyon.get_colored_name(),
-            ' の耳はかえってピンと立ったように見えた',
+            '의 귀는 오히려 쫑긋 서는 것 같았다.',
           ]);
           era.println();
           await you.say_and_wait(
-            'それからバイブで塞いで、そのまま Winning Live に立たせる',
+            '그다음엔 바이브레이터로 막아 놓고 그대로 위닝 라이브 무대에 세우고 싶어.',
           );
           await you.say_and_wait(
-            '衣装を着たタキオンが、腹の膨らみを抱えたまま舞台中央に……',
+            '의상을 입은 타키온이 부푼 배를 안고 무대 한가운데에 서 있는 모습……',
           );
           await era.printAndWait([
             you.get_colored_name(),
-            ' はゆっくり',
+            '은(는) 천천히 ',
             tachyon.sex,
-            'の腹を撫で、言葉を終えようとした……',
+            '의 배를 쓰다듬으며 말을 마치려 했다……',
           ]);
           await era.printAndWait([
-            'だが、',
+            '하지만, ',
             you.get_colored_name(),
-            ' の手は握られた',
+            '의 손이 붙잡혔다.',
           ]);
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' が振り返る。いつの間にか、暗紅色の瞳は情欲に濡れた薄桃色になっていた',
+            '이(가) 돌아보았다. 어느새 짙은 붉은빛의 눈동자가 욕망에 젖은 연분홍색으로 변해 있었다.',
           ]);
           era.println();
           await tachyon.say_and_wait([
             callname,
-            '……そんな言葉で私を煽って……末路が何か、わかっていますわね……❤',
+            '……그런 말로 절 흥분시켜 놓고…… 어떤 결말이 기다리는지 알고 계시죠……❤',
           ]);
           era.println();
-          await era.printAndWait('ああ、やりすぎた');
+          await era.printAndWait('아, 너무 지나쳤다.');
           await era.printAndWait([
-            'いつからか、',
+            '언제부터인지, ',
             tachyon.get_colored_name(),
-            ' の尻が ',
+            '의 엉덩이가 ',
             you.get_colored_name(),
-            ' の下腹に乗っている',
+            '의 아랫배 위에 올라와 있었다.',
           ]);
           await era.printAndWait(
-            '擦り続けている。主人の調教を待つ子犬のように',
+            '계속 몸을 비비고 있었다. 주인의 훈련을 기다리는 강아지처럼.',
           );
           era.println();
           await era.printAndWait([
-            'このまま始めてもいい……だが、最初の ',
+            '이대로 시작해도 좋겠지만…… 처음에 ',
             you.get_colored_name(),
-            ' の目的は何だったか……？',
+            '이(가) 하려던 일은 대체 뭐였지……?',
           ]);
           era.println();
           await tachyon.say_and_wait([
-            'レースは出ますわ❤️三冠❤️目標は三冠でいい❤️さあ……',
+            '레이스에는 나갈게요❤️ 삼관❤️ 목표는 삼관이면 되죠❤️ 자……',
             callname,
-            '❤️早く❤️来て❤️',
+            '❤️어서요❤️ 와 주세요❤️',
           ]);
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' は微笑み、身を翻して ',
+            '은(는) 미소 지으며 몸을 돌려 ',
             tachyon.get_colored_name(),
-            ' を下に敷いた',
+            '을(를) 아래에 눕혔다.',
           ]);
         } else if (relation <= 225) {
           era.printButton('이익으로 유혹한다', 1);
