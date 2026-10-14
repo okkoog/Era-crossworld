@@ -28,7 +28,7 @@ module.exports = {
     await era.printAndWait([
       '며칠 전 파리 트레센 학원의 원장이 이미 ',
       taste.get_colored_name(),
-      '과 한차례 회담을 가졌고, 그 결과는——',
+      '과 한 차례 회담을 가졌고, 그 결과는——',
     ]);
     await era.printAndWait(
       `머지않아 우수한 프랑스의 주니어 우마무스메들을 선발해 중앙으로 교류차 보낼 예정이며, ${you.name}이(가) 양측의 교섭을 담당할 책임자로 발탁되었다는 것이었다.`,
@@ -155,7 +155,7 @@ module.exports = {
         `${you.name}의 얼굴은 누가 봐도 눈에 띄게 일그러져 무서워 보였는지, 주변의 ${treve.uma_sex_title}들이 슬금슬금 피했다.`,
       );
       await era.printAndWait(
-        `그런 생각을 하며 걷다가 통화하는 사이 길가 벤치에 앉았다. 맞은편 벤치에 앉아있던 한 ${treve.uma_sex_title}와 눈이 마주쳤다.`,
+        `그런 생각을 하며 걷다가 통화하는 사이 길가 벤치에 앉았다. 맞은편 벤치에 앉아 있던 한 ${treve.uma_sex_title}와 눈이 마주쳤다.`,
       );
       await era.printAndWait(
         `${you.name}이(가) 손에 든 휴대폰을 가볍게 흔들어 보이자, 갈색 털의 ${treve.sex}는 고개를 끄덕였다.`,
@@ -487,7 +487,7 @@ module.exports = {
             `${treve.sex}에게 아직 남아 있는 앳됨은 마치 하늘이 내린 재능의 상징 같았다. ${treve.name}는 그 젊음에 걸맞은 강렬한 힘을 품고 있었다.`,
           );
           await treve.say_and_wait(
-            '가족들과 친구들, 그리고 더 많은 분이 저를 응원해주고 계시니까요. 그래서, 그 모든 기대에 보답하고 싶어요!',
+            '가족들과 친구들, 그리고 더 많은 분이 저를 응원해 주고 계시니까요. 그래서, 그 모든 기대에 보답하고 싶어요!',
           );
           await era.printAndWait(
             `그렇게 말하고는 쏜살같이 달려 나가는 ${treve.sex}의 뒷모습이 점점 멀어졌다.`,
