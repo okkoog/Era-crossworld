@@ -1453,7 +1453,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_begin_race
+  // [번역 완료] before_begin_race
   before_begin_race: (() => {
     const title = '과제의 실현 가능성';
     /**
@@ -1587,33 +1587,33 @@ module.exports = {
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'は後ろから ',
+          '은(는) 뒤에서 ',
           you.get_colored_name(),
-          ' を抱き、細い手が不潔に ',
+          '을(를) 껴안았다. 가느다란 손은 거리낌 없이 ',
           you.get_colored_name(),
-          ' の身体を撫で回り、最後は書類の下の位置に留まった',
+          '의 몸을 훑더니 마침내 서류 아래쪽의 위치에 멈췄다.',
         ]);
         if (tachyon.sex_code - 1 && you.sex_code === 1) {
           await era.printAndWait([
             tachyon.sex,
-            'はズボン越しに膨らみの形をゆっくり辿り、',
+            '은(는) 바지 위로 부풀어 오른 윤곽을 천천히 훑었고,',
             you.get_colored_name(),
-            ' の身体が目覚めるにつれ、描く手つきは握り、扱くに変わった',
+            '의 몸이 반응하기 시작하자 그 손길은 움켜쥐고 문지르는 움직임으로 바뀌었다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            '安心しなさい。女性より、満たされる感覚のほうが好みですわ',
+            '안심하세요. 저는 여자보다는 충족되는 느낌 그 자체를 더 좋아한답니다.',
           );
           era.println();
           await era.printAndWait([
             tachyon.sex,
-            'は ',
+            '은(는) ',
             you.get_colored_name(),
-            ' の耳に寄り、蘭のような息で言った',
+            '의 귀 가까이 다가가 난초처럼 향긋한 숨결로 속삭였다.',
           ]);
           era.println();
           await tachyon.say_and_wait(
-            'ただし……あなたが女性になっても、受け入れられるかもしれませんわね？',
+            '하지만…… 당신이 여자가 된다 해도, 받아들일 수 있을지도 모르겠네요?',
           );
           era.println();
         }
@@ -6241,7 +6241,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] try_drug
+  // [번역 완료] try_drug
   try_drug: (() => {
     const title = '시약';
     /**
@@ -6551,12 +6551,12 @@ module.exports = {
           if (you.sex_code !== 1) {
             await era.printAndWait([
               you.get_colored_name(),
-              ' のそこが、すでに溢れかえっていたからだ',
+              '의 그곳이 벌써 넘쳐흐르고 있었기 때문이다.',
             ]);
           } else {
             await era.printAndWait([
               you.get_colored_name(),
-              ' の下半身の兄弟が、すでに立ち上がっていたからだ',
+              '의 아랫도리가 벌써 반응하고 있었기 때문이다.',
             ]);
           }
           await era.printAndWait([
@@ -6571,19 +6571,19 @@ module.exports = {
             '이(가) 그런 약을 만들었는지는 의문이었다. 그러나 지금은 생각할 때가 아니었다. 왜냐하면……',
           ]);
           era.println();
-          await tachyon.say_and_wait([callname, '……身体が……熱いですわ……']);
+          await tachyon.say_and_wait([callname, '……몸이…… 뜨거워요……']);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' はハートになった両目で ',
+            '은(는) 하트 모양이 된 눈으로 ',
             you.get_colored_name(),
-            ' を見た。わずかな恐慌と、それ以上の情欲が混じっている',
+            '을(를) 바라보았다. 약간의 공포와 그보다 훨씬 큰 욕정이 섞여 있었다.',
           ]);
           await era.printAndWait([
             tachyon.sex,
-            'のその姿を見て、',
+            '의 그런 모습을 보자,',
             you.get_colored_name(),
-            ' は……',
+            '은(는)……',
           ]);
           if (!do_sex) {
             era.println();
