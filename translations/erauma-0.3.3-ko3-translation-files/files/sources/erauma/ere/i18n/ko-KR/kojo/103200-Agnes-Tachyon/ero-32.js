@@ -293,7 +293,7 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] betrayed1
+  // [번역 완료] betrayed1
   betrayed1: (() => {
     /**
      * 仕組み上はマンハッタンカフェの調教終了イベント
@@ -315,7 +315,7 @@ module.exports = {
       era.println();
 
       await tachyon.print_and_wait(['가슴이 뜨겁다.']);
-      await tachyon.print_and_wait(['秘部が灼ける。']);
+      await tachyon.print_and_wait(['은밀한 곳이 타들어 간다.']);
       era.println();
 
       await tachyon.say_and_wait([callname, '……', callname, '……']);
@@ -355,9 +355,9 @@ module.exports = {
       ]);
       await tachyon.print_and_wait([
         you.sex,
-        'に弄ばれたい、',
+        '에게 농락당하고 싶다.',
         you.sex,
-        'に壊されたい。',
+        '에게 망가뜨려지고 싶다.',
       ]);
       await tachyon.print_and_wait(['어차피…… 이제 달릴 수 없는 몸인걸.']);
       await tachyon.print_and_wait([
@@ -371,31 +371,31 @@ module.exports = {
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['ああ、侵略的な愛撫。']);
+      await tachyon.print_and_wait(['아아, 침략하듯 밀려오는 애무.']);
       await tachyon.print_and_wait([
         '하지만 실제로 움직이고 있는 건 자신의 가늘고 연약한 손가락뿐이다.',
       ]);
       await tachyon.print_and_wait([
-        '今、自分を撫でているのが、',
+        '지금 자신을 어루만지는 것이 ',
         you.sex,
-        'の指なら。',
+        '의 손가락이라면.',
       ]);
       await tachyon.print_and_wait([
-        'もし、',
+        '만약 ',
         you.sex,
-        'の舌で自分を舐められたなら。',
+        '의 혀로 자신을 핥아 준다면.',
       ]);
       await tachyon.print_and_wait([
-        'もし、',
+        '만약 ',
         you.sex,
-        'の口づけで慰められたなら。',
+        '의 입맞춤으로 위로받는다면.',
       ]);
       await tachyon.print_and_wait([
-        'もし、内も外も',
+        '만약 몸 안팎이 모두 ',
         you.sex,
-        'に満たされ、',
+        '으로 채워지고,',
         you.sex,
-        'に愛されたなら。',
+        '에게 사랑받는다면.',
       ]);
       era.println();
 
@@ -408,8 +408,8 @@ module.exports = {
       await tachyon.print_and_wait([
         '남은 것이라고는 여자로서의 가치뿐이지 않은가.',
       ]);
-      await tachyon.print_and_wait(['私を満たして。']);
-      await tachyon.print_and_wait(['私を注ぎ込んで。']);
+      await tachyon.print_and_wait(['나를 채워 줘.']);
+      await tachyon.print_and_wait(['나에게 전부 쏟아부어 줘.']);
       await tachyon.print_and_wait([
         '텅 빈 내 마음을 당신의 사랑으로 넘칠 만큼 채워 줘.',
       ]);
@@ -417,7 +417,7 @@ module.exports = {
       await tachyon.print_and_wait(['그리고 자네 또한, 오직 나만의 것으로……']);
       era.println();
 
-      await coffee.say_and_wait(['ん……あっ……', callname_25, '……お願い……']);
+      await coffee.say_and_wait(['으응……아앗……', callname_25, '……부탁해……']);
       era.println();
 
       await tachyon.print_and_wait([
@@ -429,20 +429,20 @@ module.exports = {
       await tachyon.print_and_wait(['눈앞의 환상이 형태를 바꾼다.']);
       await tachyon.print_and_wait([
         you.sex,
-        'の下にいる者が、一瞬で姿を入れ替わる。',
+        '의 아래에 있던 사람이 순식간에 다른 모습으로 바뀌었다.',
       ]);
       await tachyon.print_and_wait([
         '검은 머리와 금빛 눈동자. 변하지 않은 것은 눈에 담긴 애정뿐이었다.',
       ]);
       era.println();
 
-      await coffee.say_and_wait([callname_25, '……私を……満たしてください。']);
+      await coffee.say_and_wait([callname_25, '……저를……채워 주세요.']);
       era.println();
 
       await tachyon.print_and_wait([
-        '錯覚のように、幻想の',
+        '착각인지, 환상 속의 ',
         you.sex,
-        'は、先刻の自分相手より興奮している。',
+        '은(는) 조금 전 자신을 상대할 때보다 더 흥분해 있었다.',
       ]);
       await tachyon.print_and_wait([
         '부정하고 싶지만, 옆에서 벌어지는 현실이다.',
@@ -503,22 +503,22 @@ module.exports = {
         '지금 그곳에 손을 대면 더는 돌이킬 수 없으리라는 예감이 든다.',
       ]);
       await tachyon.print_and_wait([
-        '愛する人と、その',
+        '사랑하는 사람과, 그 ',
         you.sex,
-        'の女の睦まじさを妄想の材料にしたら。',
+        '의 연인이 사랑을 나누는 모습을 망상의 소재로 삼는다면.',
       ]);
       await tachyon.print_and_wait(['두 번 다시 돌아갈 수 없게 될 것이었다……']);
       await tachyon.print_and_wait(['그러니……']);
       await tachyon.print_and_wait(['그만둬……']);
       era.println();
 
-      await coffee.say_and_wait([callname_25, '……強く……もっと強く……愛して。']);
+      await coffee.say_and_wait([callname_25, '……세게……좀 더 세게……사랑해 줘.']);
       era.println();
 
       await tachyon.print_and_wait(['아아……']);
       await tachyon.print_and_wait(['더는 무리였다.']);
-      await tachyon.print_and_wait(['隣室の嬌声が壁を伝って耳へ届いた瞬間。']);
-      await tachyon.print_and_wait(['下からも、濁った液体が噴き出した。']);
+      await tachyon.print_and_wait(['옆방의 신음소리가 벽을 타고 귓가에 닿은 순간.']);
+      await tachyon.print_and_wait(['아래쪽에서도 탁한 액체가 뿜어져 나왔다.']);
       await tachyon.print_and_wait(['아무것도 만지지 않았는데……']);
       await tachyon.print_and_wait(['분명 꾹 참았더라면……']);
       era.println();
@@ -527,29 +527,29 @@ module.exports = {
       await tachyon.print_and_wait([
         '조금 전 참아 둔 것을 한꺼번에 되찾으려는 듯.',
       ]);
-      await tachyon.print_and_wait(['容赦なく、蹂躙と言ってよい力で。']);
-      await tachyon.print_and_wait(['掻き、掘り、揉み、挿れる。']);
+      await tachyon.print_and_wait(['용서 없이, 유린이라고 불러도 좋을 만큼 거칠게.']);
+      await tachyon.print_and_wait(['긁고, 파고들고, 주무르고, 밀어 넣는다.']);
       await tachyon.print_and_wait([
-        'あらゆるやり方で、刺激と痛みと快感を与える。',
+        '온갖 방법으로 자극과 고통과 쾌감을 안겨 주었다.',
       ]);
-      await tachyon.print_and_wait(['自分を情欲へ沈める。']);
-      await tachyon.print_and_wait(['欲火に、身を囲ませる。']);
+      await tachyon.print_and_wait(['스스로를 욕정 속으로 가라앉힌다.']);
+      await tachyon.print_and_wait(['욕망의 불길이 온몸을 에워싸도록 내버려 둔다.']);
       era.println();
 
-      await tachyon.say_and_wait(['気持ちよい……気持ちよいですわ……']);
+      await tachyon.say_and_wait(['기분 좋아……너무 기분 좋아요……']);
       era.println();
 
       await tachyon.print_and_wait([
-        '頭の中の',
+        '머릿속의 ',
         you.couple_title,
-        'は、まだ睦まじい。',
+        '은(는) 여전히 사랑을 나누고 있었다.',
       ]);
       await tachyon.print_and_wait([
-        '頭の中の自分は、',
+        '머릿속의 자신은 ',
         you.couple_title,
-        'の睦まじさを見て、くすくすと指を噛んでいる。',
+        '이(가) 사랑을 나누는 모습을 보며 낄낄 웃고 손가락을 깨물었다.',
       ]);
-      await tachyon.print_and_wait(['下から、また潮が噴き出した。']);
+      await tachyon.print_and_wait(['아래쪽에서 다시 액체가 뿜어져 나왔다.']);
     };
     f.title = '방향족 탄화수소 의존';
     return f;
