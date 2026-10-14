@@ -373,7 +373,7 @@ module.exports = {
 
       await tachyon.print_and_wait(['ああ、侵略的な愛撫。']);
       await tachyon.print_and_wait([
-        'だが実際に動いているのは、自分の細く弱い指だ。',
+        '하지만 실제로 움직이고 있는 건 자신의 가늘고 연약한 손가락뿐이다.',
       ]);
       await tachyon.print_and_wait([
         '今、自分を撫でているのが、',
@@ -496,11 +496,11 @@ module.exports = {
       ]);
       era.println();
 
-      await tachyon.print_and_wait(['無意識に、手が下へ伸びる。']);
+      await tachyon.print_and_wait(['무의식중에 손이 아래로 향한다.']);
       await tachyon.print_and_wait(['안 돼……']);
       await tachyon.print_and_wait(['안 된다고……']);
       await tachyon.print_and_wait([
-        '今あそこを触ったら、もう戻れない、という予感がある。',
+        '지금 그곳에 손을 대면 더는 돌이킬 수 없으리라는 예감이 든다.',
       ]);
       await tachyon.print_and_wait([
         '愛する人と、その',
@@ -519,13 +519,13 @@ module.exports = {
       await tachyon.print_and_wait(['더는 무리였다.']);
       await tachyon.print_and_wait(['隣室の嬌声が壁を伝って耳へ届いた瞬間。']);
       await tachyon.print_and_wait(['下からも、濁った液体が噴き出した。']);
-      await tachyon.print_and_wait(['触れていないのに……']);
+      await tachyon.print_and_wait(['아무것도 만지지 않았는데……']);
       await tachyon.print_and_wait(['분명 꾹 참았더라면……']);
       era.println();
 
       await tachyon.print_and_wait(['이제 돌아갈 수 없었다.']);
       await tachyon.print_and_wait([
-        'さっき我慢した分を、一度に取り返すように。',
+        '조금 전 참아 둔 것을 한꺼번에 되찾으려는 듯.',
       ]);
       await tachyon.print_and_wait(['容赦なく、蹂躙と言ってよい力で。']);
       await tachyon.print_and_wait(['掻き、掘り、揉み、挿れる。']);
@@ -1407,7 +1407,7 @@ module.exports = {
           t_call_c,
           '은 다시 침대로 돌아갔다.',
         ]);
-        await tachyon.print_and_wait(['ベッドが、再び揺れ始める。']);
+        await tachyon.print_and_wait(['침대가 다시 흔들리기 시작했다.']);
         await tachyon.print_and_wait([
           'ベッド下の ',
           tachyon.get_colored_name(),
