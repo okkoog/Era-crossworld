@@ -401,7 +401,7 @@ module.exports = {
     const buffer = [
       () =>
         treve.say_and_wait(
-          '안심하고 제 손을 잡으세요. 설령 멀리 도망친다 해도 괜찮으니까요.',
+          '안심하고 제 손을 잡으세요. 설령 멀리 날아가 버려도 괜찮으니까요.',
         ),
       () =>
         treve.say_and_wait('그으…… 로맨스 알레르기에 눈치 하나도 없는 당신 때문에 속 터져 죽겠어요.'),
@@ -452,7 +452,7 @@ module.exports = {
   async o_s_drawing(treve, callname) {
     const buffer = [
       () => treve.say_and_wait(`와아아…… ${callname}! 제 용돈 좀 가불해 주세요.`),
-      () => treve.say_and_wait('파리 4박 5일 호화 여행…… 진짜로 당첨되면 일정을 어떻게 짤까요?'),
+      () => treve.say_and_wait('파리 4박 5일 호화 여행…… 정말 당첨되면 어떻게 할까요?'),
     ];
     await get_random_entry(buffer)();
   },
@@ -475,7 +475,7 @@ module.exports = {
   // [번역 완료] o_s_movie
   async o_s_movie(treve) {
     const buffer = [
-      () => treve.say_and_wait('엄청난 몰입감을 주는 명작이네요. impeccable à tous les sens.'),
+      () => treve.say_and_wait('몰입감이 뛰어난 수작이네요. impeccable à tous les sens.'),
     ];
     if (treve.sex_code !== 1 && era.get('cflag:0:性别') === 1) {
       buffer.push(() =>
@@ -562,7 +562,7 @@ module.exports = {
       () => treve.say_and_wait('짜잔! 오늘 점심의 퀄리티는 꽤 훌륭하답니다.'),
       () =>
         treve.say_and_wait(
-          '랍스터, 대하, 구운 새우, 홍합에 구운 오징어, 사이드 메뉴는 감자튀김과 해물죽이에요. 몸보신 톡톡히 하세요.',
+          '랍스터, 대하, 구운 새우, 홍합에 구운 오징어, 곁들임 메뉴는 감자튀김과 해물 솥밥이에요. 몸보신 톡톡히 하세요.',
         ),
     ];
     await get_random_entry(buffer)();
