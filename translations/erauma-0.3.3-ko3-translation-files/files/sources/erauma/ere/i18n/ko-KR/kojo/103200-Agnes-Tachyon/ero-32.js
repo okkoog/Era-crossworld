@@ -1957,69 +1957,69 @@ module.exports = {
         '은(는) 다급하게 코를 성기 가까이 대고 깊이 여러 번 냄새를 들이마셨다.',
       ]);
       await era.printAndWait(
-        '落ち着かない手が、ぐちゅぐちゅと蜜穴を掻き、呻きが漏れる',
+        '진정하지 못한 손이 축축한 곳을 뒤적이자 신음이 흘러나왔다.',
       );
       await era.printAndWait(
-        '理も情も認めたこの雄の前では、雌である自分は跪いて服従するしかない',
+        '이성도 감정도 인정한 이 남자 앞에서, 자신은 무릎을 꿇고 복종할 수밖에 없었다.',
       );
       era.println();
-      await tachyon.say_and_wait('すぅ……はぁ……すぅ……');
-      await tachyon.say_and_wait('肉棒……肉棒の匂い');
+      await tachyon.say_and_wait('스읍……하아……스읍……');
+      await tachyon.say_and_wait('성기……성기의 냄새……');
       await tachyon.say_and_wait([
-        'お願い……もっと嗅がせて……',
+        '부탁해요……더 맡게 해 주세요……',
         callname,
-        ' の……肉棒を……',
+        '의……성기 냄새를……',
       ]);
-      await tachyon.say_and_wait('鼻腔の中……全部……雄の匂い');
+      await tachyon.say_and_wait('콧속 가득……전부……남자의 냄새……');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、先走りだらけの肉棒を握る',
+        '은(는) 분비물로 젖은 성기를 움켜쥐었다.',
       ]);
       await era.printAndWait([
-        '悪戯に、いつの間にか眼前に跪いていた ',
+        '장난스럽게, 어느새 눈앞에 무릎 꿇은 ',
         tachyon.get_colored_name(),
-        ' の鼻先を擦る',
+        '의 코끝을 문질렀다.',
       ]);
       await era.printAndWait([
-        '印をつけるように、汁と匂いを ',
+        '표식을 남기듯 액체와 냄새를 ',
         tachyon.get_colored_name(),
-        ' の鼻へ塗りつける',
+        '의 코에 묻혔다.',
       ]);
       era.println();
       await tachyon.say_and_wait(
-        'ひどい……こんな匂いを……嗅いだら……本当に……戻れなくなりますわ……',
+        '너무해……이런 냄새를……맡아 버리면……정말……되돌아갈 수 없을 거예요……',
       );
       era.println();
       await era.printAndWait('싫다면 그만둘까?');
       await era.printAndWait([
         you.get_colored_name(),
-        ' が身を引く素振りを見せると、',
+        '이(가) 물러날 듯한 기색을 보이자,',
         tachyon.get_colored_name(),
-        ' は一歩ずつついてきて、鼻は一センチたりとも肉棒から離れない',
+        '은(는) 한 걸음씩 뒤따라오며 코를 성기에서 단 1센티미터도 떼지 않았다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('匂いだけで……いきそうですわ……');
+      await tachyon.say_and_wait('냄새만 맡아도……절정에 이를 것 같아요……');
       era.println();
       await era.printAndWait('다시 장난을 당할까 두려워하는 듯');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' のほうが、鼻先で ',
+        '쪽에서 오히려 코끝으로 ',
         you.get_colored_name(),
-        ' の亀頭の先を擦り続ける',
+        '의 귀두 끝을 계속 문질렀다.',
       ]);
-      await era.printAndWait('この匂いを忘れまいと、肉棒の臭いを強く嗅ぐ');
+      await era.printAndWait('이 냄새를 잊지 않으려는 듯 성기의 냄새를 깊이 들이마셨다.');
       era.println();
-      await tachyon.say_and_wait('だめ……堪えられませんわ……');
-      await tachyon.say_and_wait('含ませて……お願い、舐めさせて');
+      await tachyon.say_and_wait('안 돼……참을 수 없어요……');
+      await tachyon.say_and_wait('입에 넣어 주세요……부탁이에요, 핥게 해 주세요.');
       era.println();
-      await era.printAndWait('早く舐めたい');
-      await era.printAndWait('肉棒を吸う許可が欲しい');
-      await era.printAndWait('恋人の肉棒が眼前にある');
+      await era.printAndWait('어서 핥고 싶었다.');
+      await era.printAndWait('성기를 빨아도 된다는 허락이 필요했다.');
+      await era.printAndWait('연인의 성기가 바로 눈앞에 있었다.');
       await era.printAndWait([
-        '匂いを味わう ',
+        '냄새를 음미하던 ',
         tachyon.get_colored_name(),
-        ' は、それでも堪えきれず唾を呑む',
+        '은(는) 그래도 참지 못하고 침을 삼켰다.',
       ]);
       era.println();
       await tachyon.say_and_wait('ぐちゅ');
