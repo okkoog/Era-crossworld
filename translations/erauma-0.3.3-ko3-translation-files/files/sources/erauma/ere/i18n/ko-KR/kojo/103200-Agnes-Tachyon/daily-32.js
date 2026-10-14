@@ -1302,7 +1302,7 @@ module.exports = {
         await tachyon.say_and_wait([callname]);
         era.println();
         await tachyon.say_and_wait([you.actual_name, '군']);
-        await era.printAndWait('！？');
+        await era.printAndWait('!?');
         await era.printAndWait([
           you.get_colored_name(),
           '은(는) 화들짝 뒤돌아봤지만 눈앞의 ',
@@ -1460,9 +1460,9 @@ module.exports = {
         await era.printAndWait([
           '…………',
           tachyon.get_colored_name(),
-          '？',
+          '?',
           tachyon.teen_sex_title,
-          '？',
+          '?',
         ]);
         await era.printAndWait(
           '원래라면 어울리지 않을 두 단어가 지금은 이상할 만큼 잘 어울렸다.',
@@ -1951,7 +1951,7 @@ module.exports = {
         await tachyon.say_and_wait([
           '………그건 성희롱일세, ',
           callname,
-          '。',
+          '.',
         ]);
       },
       async () => {
@@ -2180,7 +2180,7 @@ module.exports = {
         await tachyon.say_and_wait([
           '내 말이 무슨 뜻인지 알겠지, ',
           callname,
-          '。',
+          '.',
         ]);
         await tachyon.say_and_wait(
           '실생활에서 전혀 쓰이지 않는 걸 배워 봤자 쓸모없지.',
@@ -2558,7 +2558,7 @@ module.exports = {
           await era.printAndWait(
             '눈동자에는 아무런 감정도 없이 그저 하늘 풍경만 비쳤다.',
           );
-          await tachyon.say_and_wait(['……무슨 일이라도 있나? ', callname, '？']);
+          await tachyon.say_and_wait(['……무슨 일이라도 있나? ', callname, '?']);
           await era.printAndWait([
             '어째서인지 ',
             you.get_colored_name(),
@@ -3123,7 +3123,7 @@ module.exports = {
           await tachyon.say_and_wait([
             '대사를 찾아보는 것도 포함해서 말일세. 그렇지 않나, 화면 너머의 ',
             callname,
-            '？',
+            '?',
           ]);
           await tachyon.say_and_wait(
             '무슨 말이냐고? 후후, 글쎄. 누가 알겠나?',
@@ -3838,7 +3838,7 @@ module.exports = {
     await taste.say_and_wait([
       '각 트레이너는 즉시 담당 우마무스메의 도시락을 만들어 주시기 바랍니다. 요리를 못하는 트레이너는 사무국장님, 가정과 선생님 또는 ',
       tama.get_colored_name(),
-      '、',
+      ', ',
       amazon.get_colored_name(),
       ' 또는 ',
       akebono.get_colored_name(),
