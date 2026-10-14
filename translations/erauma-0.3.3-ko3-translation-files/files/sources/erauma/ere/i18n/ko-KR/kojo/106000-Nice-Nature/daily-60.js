@@ -28,7 +28,7 @@ module.exports = {
      */
     const f = async (nature, callname, self_call) => {
       await nature.say_and_wait(
-        '여보세요? 나야. 보이스 피싱 아니고 본인 맞으니까 끊지 마?',
+        '여보세요? 나야. 보이스피싱 아니고, 진짜 나 맞아!',
       );
       await era.printAndWait(
         '수화기 너머로 익숙한 목소리, 나이스 네이처의 목소리가 들려왔다.',
@@ -119,7 +119,7 @@ module.exports = {
       await era.printAndWait(
         '이른 아침 학원에 도착하자 나이스 네이처가 기다렸다는 듯 교문에 나타났다.',
       );
-      await nature.say_and_wait('에…… 저기…… 뭐, 이따가 훈련장에서 봐!');
+      await nature.say_and_wait('어…… 저기…… 그럼 이따 트레센에서 봐!');
       await era.printAndWait(
         `${nature.teen_sex_title}는 무언가 말하고 싶은 듯했지만 결국 입을 다문 채 교문 안으로 뛰어 들어갔다.`,
       );
@@ -130,7 +130,7 @@ module.exports = {
       );
       await nature.say_and_wait(`${callname}에게 줄 좋은 게 있어. 바로 이 초……`);
       await era.printAndWait(
-        '나이스 네이처는 말을 더듬으며 뭔가 꺼내기 힘든 이야기가 있는 듯했다.',
+        '나이스 네이처는 말을 흐리며 좀처럼 다음 말을 꺼내지 못했다.',
       );
       await nature.say_and_wait(
         `초…… 초특가 메밀국수 쿠폰! 예전에 상점가 아주머니가 몇 장 주셨는데 나 혼자 다 못 써서 ${callname}에게 주는 거야! 하하하하…… 그럼 나중에 봐!`,
@@ -138,7 +138,7 @@ module.exports = {
       await era.printAndWait(
         '나이스 네이처는 묘하게 이상한 모습으로 식당을 빠져나갔다.',
       );
-      era.drawLine({ content: '⏰저녁시간⏰' });
+      era.drawLine({ content: '⏰밤이 되었다⏰' });
       await nature.say_and_wait('여기까지만 배웅해 줘도 괜찮아.');
       await era.printAndWait(
         '나이스 네이처를 릿토 생활관 앞까지 데려다주고 돌아서려는데 옷소매를 붙잡혔다.',
