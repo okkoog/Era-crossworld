@@ -3928,10 +3928,10 @@ module.exports = {
       era.drawLine();
       await emperor.say_and_wait(`……다행이군.`);
       await era.printAndWait(
-        `황제는 곧게 멀어지는 등을 바라본다. ${maru.sex}은(는) 이를 핥으며 일종의 광희가 자연스럽게 솟는다.`,
+        `황제는 곧게 멀어지는 등을 바라본다. ${maru.sex}는 이를 핥으며 일종의 광희가 자연스럽게 솟는다.`,
       );
       await era.printAndWait(
-        `황제에게는 아직 이루지 못한 일이 많다. 그렇기에 더욱 자신을 증명할 필요가 있다——${maru.sex}이(가) 유일무이하다는 것을. 동세대에서 무적일 뿐 아니라 지나간 영광을 깨뜨리고 미래의 영광까지 제압할 수 있다는 것을.`,
+        `황제에게는 아직 이루지 못한 일이 많다. 그렇기에 더욱 자신을 증명할 필요가 있다——${maru.sex}만이 유일무이하다는 것을. 동세대에서 무적일 뿐 아니라 지나간 영광을 깨뜨리고 미래의 영광까지 제압할 수 있다는 것을.`,
       );
       era.println();
       await emperor.say_and_wait(
@@ -4606,7 +4606,7 @@ module.exports = {
         `먼저 쌓은 우위는 불꽃에 녹는 눈처럼 빠르게 사라진다.`,
       );
       await era.printAndWait(`마지막 스퍼트의 순간.`);
-      await era.printAndWait(`황제이(가) ${maru.name}의 등에 따라붙었다.`);
+      await era.printAndWait(`황제가 ${maru.name}의 등에 따라붙었다.`);
       await era.printAndWait(`하지만 ${maru.name}은(는) 한 걸음을 내디뎠다.`);
       await era.printAndWait(`황제: 설마 이렇게 될 줄이야. 재미있군.`);
       await you.say_as_passer_by_and_wait(
@@ -6115,7 +6115,7 @@ module.exports = {
       await era.printAndWait(
         `${maru.uma_sex_title}의 안내를 받아 밤의 학생회실에 왔다.`,
       );
-      await era.printAndWait(`eclipse first，the rest nowhere。`);
+      await era.printAndWait(`이클립스가 1착, 나머지는 모두 순위 밖.`);
       await era.printAndWait(
         `거대한 편액과 서류에 몰두한 황제를 보며 식은땀이 흘렀다.`,
       );
