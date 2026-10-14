@@ -890,9 +890,9 @@ module.exports = {
         era.println();
         await you.say_as_passer_by_and_wait(
           tachyon.uma_sex_title + 'A',
-          'タキオン先輩！ サインください！',
+          '타키온 선배! 저 사인 좀 해주실 수 있을까요!',
         );
-        await tachyon.say_and_wait('ふふ、もちろん……むっ！');
+        await tachyon.say_and_wait('후후, 물론이…… 윽!');
         era.println();
         await era.printAndWait([
           'サインの瞬間に起動した小さな玩具で、',
@@ -900,14 +900,14 @@ module.exports = {
           ' のサインは少し歪んだ',
         ]);
         await era.printAndWait(
-          '幸い、崇拝の眼差しの小さなファンは、その程度を気にしなかった',
+          '다행히 동경하는 눈빛을 반짝이던 팬은 그 정도 실수는 신경 쓰지 않았다.',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は振り返り、',
+          '은(는) 뒤를 돌아보며 ',
           you.get_colored_name(),
-          ' をじっと睨んだ',
+          '을(를) 빤히 노려보았다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
@@ -916,12 +916,12 @@ module.exports = {
         era.println();
         await you.say_as_passer_by_and_wait(
           tachyon.uma_sex_title + 'B',
-          'タキオン先輩……今日のレース、頑張ってください！',
+          '타키온 선배…… 오늘 레이스 꼭 힘내세요!',
         );
         await tachyon.say_and_wait('ええっ……か……必ず……');
         await you.say_as_passer_by_and_wait(
           tachyon.uma_sex_title + 'C',
-          'タキオン先輩……どうしたんですか？',
+          '타키온 선배…… 무슨 일 있으신가요?',
         );
         await tachyon.say_and_wait('な……なんでも……ただ……ただ……くっ……');
         era.printButton('「시간도 없으니 선수 대기실에서 준비하자.」', 1);
