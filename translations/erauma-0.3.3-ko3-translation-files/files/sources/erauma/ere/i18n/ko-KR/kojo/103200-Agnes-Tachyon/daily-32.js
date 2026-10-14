@@ -2598,7 +2598,7 @@ module.exports = {
     ]);
   },
 
-  // [번역 대상] slave_end
+  // [번역 완료] slave_end
   slave_end: (() => {
     const title = '금전의 대가';
     /**
@@ -2737,17 +2737,17 @@ module.exports = {
       await era.printAndWait('마치 이미 잠에서 깬 사람이 다시 꿈속으로 돌아갈 수 없는 것과 같았다.');
       era.println();
       await tachyon.say_as_passer_by_and_wait(
-        '立ちんぼの少女',
-        'お客さん、ひとりは寂しそうですよ……ご一緒に、春のひとときを過ごしませんか？♡',
+        '거리의 여성',
+        '손님, 혼자서는 외로워 보이시네요…… 저와 함께 봄날 같은 시간을 보내 보시겠어요?♡',
       );
       era.println();
       await era.printAndWait([
-        'いつの間にか、華やかな賭場も後ろに捨て、風俗街へ入った ',
+        '어느새 화려한 카지노를 뒤로하고 유흥가에 들어선 ',
         you.get_colored_name(),
-        ' のもとへ、夜の女たちの柔郷が訪れた',
+        '에게 밤거리의 여성들이 달콤한 유혹을 건넸다.',
       ]);
       await era.printAndWait(
-        'このまま彼女たちの肢体に沈めたら、きっとこの上なく幸せだろう……',
+        '이대로 그녀들의 품에 빠져든다면 틀림없이 더없이 행복할 것이다……',
       );
       era.println();
       await tachyon.say_as_unknown_and_wait('돈을 빌려달라고?');
@@ -2755,10 +2755,10 @@ module.exports = {
       await tachyon.say_as_unknown_and_wait('하지만 규칙은……');
       era.println();
       await era.printAndWait('아아.');
-      await era.printAndWait([you.get_colored_name(), ' は少女の誘いを断った']);
+      await era.printAndWait([you.get_colored_name(), '은(는) 그 여성의 제안을 거절했다.']);
       await era.printAndWait('아무런 반응도 없었다.');
       await era.printAndWait(
-        '本来なら好みのはずの娘でも、今は体にわずかな反応すら起きない',
+        '평소라면 분명 마음에 들었을 상대에게도 지금은 몸이 조금도 반응하지 않았다.',
       );
       era.println();
       await era.printAndWait([
