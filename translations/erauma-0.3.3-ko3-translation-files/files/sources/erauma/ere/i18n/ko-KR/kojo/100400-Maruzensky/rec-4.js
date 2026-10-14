@@ -84,7 +84,7 @@ module.exports = {
     era.print(
       `${maru.name}는 스마트폰을 내려놓고, 운동장에서 연습하는 후배 우마무스메들을 바라보며 콧노래에 맞춰 꼬리를 살랑살랑 흔들고 있었다.`,
     );
-    await maru.say_and_wait('역시 맑은 날씨에 먹는 도시락이 제일 즐거워♪');
+    await maru.say_and_wait('역시 맑은 날 야외에서 먹는 도시락이 최고야♪');
     era.print(
       `${maru.name}는 도시락통을 열며 무심코 시선을 앞으로 던지다가 ${you.name}의 존재를 눈치챘다.`,
     );
@@ -117,7 +117,7 @@ module.exports = {
     await era.input();
     await maru.say_and_wait('!');
     era.print(
-      `${maru.name}의 귀가 눈에 띄게 파르르 떨렸고, ${maru.name}가 ${you.name}을(를) 유심히 살핌에 따라 꼬리가 리드미컬하게 흔들렸다.`,
+      `${maru.name}의 귀가 눈에 띄게 파르르 떨렸고, ${maru.name}가 ${you.name}을(를) 유심히 살피는 동안 꼬리가 리듬에 맞춰 흔들렸다.`,
     );
     await maru.say_and_wait(
       '……그럼 이렇게 하자, 차라리 네가 나의 트레이너가 되어줄래?',
