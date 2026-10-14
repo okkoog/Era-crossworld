@@ -870,7 +870,7 @@ module.exports = {
       ]);
       await era.printAndWait('습기를 머금은 바람이 바다에서 육지로 불어왔다.');
       await era.printAndWait('모래사장을 아쉬워하듯 좀처럼 떠나지 않는다.');
-      await maru.say_and_wait(['바람이 멎었네, ', callname, '。']);
+      await maru.say_and_wait(['바람이 멎었네, ', callname, '.']);
       await era.printAndWait([
         maru.get_colored_name(),
         '은(는) 오랫동안 그 바다를 바라봤다.',
