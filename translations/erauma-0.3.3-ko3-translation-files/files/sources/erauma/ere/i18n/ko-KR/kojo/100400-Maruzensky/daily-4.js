@@ -70,13 +70,13 @@ module.exports = {
         });
       } else if (era.get('love:4') >= 50) {
         buffer.push(() => {
-          maru.say(`${callname}에게는 아직 깨어나지 않은 힘이 잠들어 있는 것 같네.`);
+          maru.say(`${callname}에게는 아직 드러나지 않은 잠재력이 있는 것 같네.`);
           maru.say('아직 약하지만 곧 모습을 드러내지 않을까?');
           era.print([
             maru.get_colored_name(),
-            '은(는) 골똘히 생각하듯 ',
+            '은(는) 생각에 잠긴 채 ',
             you.get_colored_name(),
-            '을(를) 평가하듯 바라보고 있다.',
+            '을(를) 유심히 바라보고 있다.',
           ]);
         });
         buffer.push(() => {
