@@ -559,7 +559,7 @@ module.exports = {
   async office_cook(maru, callname) {
     const buffer = [];
     buffer.push(
-      () => maru.say_and_wait('정말 그리운 냄새네. 그럼 사양 않고 잘 먹을게?'),
+      () => maru.say_and_wait('정말 그리운 맛이네. 그럼 사양 않고 잘 먹을게?'),
       () =>
         maru.say_and_wait(
           `${callname}은 그냥 여기 앉아서 내가 요리하는 거 구경이나 하렴…… 어머? 나랑 같이 요리하고 싶어?`,
