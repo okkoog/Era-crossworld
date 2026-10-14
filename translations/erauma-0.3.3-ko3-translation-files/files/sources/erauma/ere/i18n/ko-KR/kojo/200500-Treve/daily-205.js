@@ -420,7 +420,7 @@ module.exports = {
         treve.say_and_wait([
           '으윽, 져버렸어요……',
           you.get_colored_actual_name(),
-          '、저기 있는 【펀치력 측정기】에서 다시 한판 붙어요.',
+          ', 저기 있는 【펀치력 측정기】에서 다시 한판 붙어요.',
         ]),
     ];
     if (call_target) {
