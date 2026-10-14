@@ -1596,7 +1596,7 @@ module.exports = {
      * @param {PrintedSpan} call_25 アグネスタキオンがマンハッタンカフェを呼ぶ名
      */
     const f = async (tachyon, coffee, you, callname, call_25) => {
-      await tachyon.say_and_wait(['하아…… 하아…… 카……', call_25, '……！']);
+      await tachyon.say_and_wait(['하아…… 하아…… 카……', call_25, '……!']);
       era.println();
       await tachyon.print_and_wait('전력을 다해 짜낸 외침');
       await tachyon.print_and_wait('레이스 도중 말을 건다는 것은');
@@ -5029,7 +5029,7 @@ module.exports = {
       ]);
       await coffee.say_and_wait(['난 반드시 ', c_call_t, '를 뛰어넘겠어.']);
       await tachyon.say_and_wait('……흠흠, 할 수 있다면 한번 해 보게.');
-      await tachyon.say_and_wait(['한계를 뛰어넘게!', call_25, '！']);
+      await tachyon.say_and_wait(['한계를 뛰어넘게!', call_25, '!']);
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
