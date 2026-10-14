@@ -46,7 +46,7 @@ module.exports = {
 
     era.print(`${you.name}은(는) 경기장 울타리에 기대어 자신도 모르게 한숨을 내뱉었다.`);
     await era.printAndWait(
-      `그때, ${you.name}의 귀에 누군가의 대화 소리가 들려왔다.`,
+      `그때, ${you.name}의 귀에 누군가가 나누는 띄엄띄엄 끊기는 대화가 들려왔다.`,
     );
     era.println();
 
@@ -64,10 +64,10 @@ module.exports = {
     ]);
     era.println();
 
-    era.print(`타키온(Tachyon), 빛보다 빠른 입자.`);
+    era.print(`타키온(Tachyon), 현재 알려진 가장 빠른 입자.`);
     era.print(`빛처럼 달리는 ${tachyon.sex}에게 이보다 더 잘 어울리는 이름이 있을까.`);
     era.print(
-      `${you.name}은(는) 흥분을 감출 수 없었으나, 곧 누군가가 했던 말을 떠올렸다.`,
+      `${you.name}은(는) 흥분을 감출 수 없었으나, 곧 방금 전 학생이 했던 말을 떠올렸다.`,
     );
     era.print(`(트레이너가 없다면…… 결국……)`);
     await era.printAndWait(`${you.name}은(는) 급히 자리를 박차고 달려 나갔다.`);
