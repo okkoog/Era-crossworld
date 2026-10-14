@@ -3723,7 +3723,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] race_end_win
+  // [번역 완료] race_end_win
   race_end_win: (() => {
     const title = '레이스 승리';
     /**
@@ -3756,15 +3756,15 @@ module.exports = {
         era.println();
         await era.printAndWait([
           tachyon.sex,
-          'は右手で壁を押さえ、',
+          '은(는) 오른손으로 벽을 짚고,',
           you.get_colored_name(),
-          ' の逃げ道を塞ぎ、左膝を上げて ',
+          '의 도망갈 길을 막은 다음 왼쪽 무릎을 들어 ',
           you.get_colored_name(),
-          ' の股間に押し当てた',
+          '의 사타구니에 밀어 붙였다.',
         ]);
         era.println();
         await tachyon.say_and_wait(
-          '大丈夫……大丈夫……一度だけ……少しだけでいい……',
+          '괜찮아…… 괜찮아…… 한 번만…… 조금만 하면 돼……',
         );
         era.println();
         await era.printAndWait([
@@ -3772,67 +3772,67 @@ module.exports = {
           you.get_colored_name(),
           '이(가) 도망칠 생각이 없다는 걸 확인하자, ',
           tachyon.sex,
-          'はゆっくり蹲り、震える両手で ',
+          '은(는) 천천히 쪼그려 앉아 떨리는 양손으로 ',
           you.get_colored_name(),
-          ' のズボンを下ろした',
+          '의 바지를 내렸다.',
         ]);
         era.println();
-        await era.printAndWait('ぴん');
+        await era.printAndWait('퉁.');
         await era.printAndWait([
-          '一日こもった熱気と一緒に、肉棒が ',
+          '하루 종일 갇혀 있던 열기와 함께 성기가 튀어나와 ',
           tachyon.get_colored_name(),
-          ' の顔へ弾ける',
+          '의 얼굴 앞에서 흔들렸다.',
         ]);
         await era.printAndWait(
-          '狂っていた両目が、突然焦点を失い、微かに震える生殖器しか映さなくなる',
+          '광기로 흐려져 있던 두 눈은 갑자기 초점을 잃고 희미하게 떨리는 성기만을 바라보게 되었다.',
         );
         await era.printAndWait(
-          '猫じゃらしを見た子猫のように、揺れるそれを追い始める',
+          '고양이 장난감을 발견한 새끼 고양이처럼 흔들리는 그것을 눈으로 쫓기 시작했다.',
         );
         await era.printAndWait(
-          'だがレースの刺激で発情した身体は、その熟れた匂いを嗅いだ瞬間に力を失い、追えるのは腥い匂いを嗅ぎ続ける鼻だけになった',
+          '하지만 레이스의 자극으로 흥분한 몸은 그 진한 냄새를 맡는 순간 힘이 빠졌다. 이제는 코로 비릿한 냄새를 계속 맡는 것밖에 할 수 없었다.',
         );
         era.println();
         if (era.get('relation:32:0') <= 0) {
           await era.printAndWait([
-            '身体に力の入らない ',
+            '온몸에 힘이 들어가지 않는 ',
             tachyon.get_colored_name(),
-            ' は、かろうじて懇願の声だけを出せた',
+            '은(는) 겨우 애원하는 목소리만 낼 수 있었다.',
           ]);
-          await era.printAndWait('感情では無関心、むしろ嫌悪するこの人');
-          await era.printAndWait('身体では渇望し、満たされたいと願うこの人');
-          await era.printAndWait('ついには、身体の渇望が感情の冷淡を上回った');
+          await era.printAndWait('감정으로는 무관심하고 오히려 혐오하는 사람.');
+          await era.printAndWait('하지만 몸은 갈망하고, 채워지기를 바라는 사람.');
+          await era.printAndWait('마침내 몸의 갈망이 마음의 냉담함을 넘어섰다.');
           era.println();
-          await era.printAndWait('幸い、相手は悪い意味で期待を裏切らなかった');
+          await era.printAndWait('다행히 상대는 나쁜 의미로 기대를 저버리지 않았다.');
           await era.printAndWait([
-            'やはり、担当の',
+            '역시 담당 ',
             tachyon.uma_sex_title,
-            'に手を出すことを躊躇わない屑だ',
+            '에게 손대기를 주저하지 않는 쓰레기다.',
           ]);
           era.println();
           await era.printAndWait([
-            '一歩前に出たトレーナーの肉棒で、涎の出るほど飢えた口を満たされながら、',
+            '한 걸음 다가선 트레이너의 성기로 굶주린 입을 채우면서,',
             tachyon.get_colored_name(),
-            ' は幸福にそう思った',
+            '은(는) 행복하게도 그렇게 생각했다.',
           ]);
         }
         era.println();
         await era.printAndWait([
           tachyon.sex,
-          'の幸福そうな顔を見て、',
+          '의 행복해 보이는 얼굴을 보고,',
           you.get_colored_name(),
-          ' も続けたい気持ちはある……',
+          '도 계속하고 싶은 마음은 있었지만……',
         ]);
         era.println();
         era.printButton('「……이제 위닝 라이브가 있잖아.」', 1);
         await era.input();
         await era.printAndWait([
           tachyon.sex,
-          'は睨んだが、',
+          '은(는) 노려보았지만,',
           you.get_colored_name(),
-          ' は無情にも肉棒を',
+          '은(는) 냉정하게 성기를 ',
           tachyon.sex,
-          'の口から引き抜いた',
+          '의 입에서 빼냈다.',
         ]);
         await era.printAndWait([
           '앞서 세웠던 ',
