@@ -169,7 +169,7 @@ talk:
                 content:
                   - fontWeight: bold
                     content: %CHARA%
-                  - 「니 코스에 있는 저 풀떼기 묵어도 되는 거 아이가……」
+                  - 「저 코스 잔디도 묵을 수 있으려나……」
 
 office_gift:
   - color: %COLOR%
@@ -355,7 +355,7 @@ o_s_shopping:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「내한테 이래 귀한 선물을 주겠다고……? 마음만 받을게……」
+          - 「이래 비싼 걸 내 받아도 되는 기가……? 안 되겠제……」
   - random: true
     lines:
       - color: %COLOR%
@@ -394,7 +394,7 @@ s_a_dating:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「하, 내 진짜 배를 잘못 탔구마……」
+          - 「으, 이왕 올라탄 배 아이가……」
 
 s_r_lunch:
   - random: true
@@ -410,7 +410,7 @@ s_r_lunch:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「역시 니네, 억수로 맛있다!」
+          - 「역시 대단하네, 억수로 맛있다!」
   - random: true
     lines:
       - color: %COLOR%
@@ -440,7 +440,7 @@ office_cook:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「그라믄 %CALLNAME% 한테 내 전공인 콩나물무침 솜씨 함 보여주께!」
+          - 「%CALLNAME%한테 내 특기인 콩나물볶음 솜씨 함 보여주께!」
 
 office_study:
   - random: true
