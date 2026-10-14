@@ -832,7 +832,7 @@ module.exports = {
         maru.get_colored_name(),
         '은(는) 놀라 몸을 움찔했고 잠시 뒤 정신을 차렸다.',
       ]);
-      await maru.say_and_wait([callname, '！']);
+      await maru.say_and_wait([callname, '!']);
       await era.printAndWait([
         maru.get_colored_name(),
         '은(는) 깊게 숨을 쉬며 마음을 진정시키려 한다.',
