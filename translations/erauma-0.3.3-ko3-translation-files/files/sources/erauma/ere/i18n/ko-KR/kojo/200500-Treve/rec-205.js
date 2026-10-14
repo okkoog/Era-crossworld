@@ -455,7 +455,7 @@ module.exports = {
           await era.printAndWait(
             '다음 모의 레이스에서는 선행 전략을 써보자. 하지만 연상의 상대들을 맞이해야 하는데……',
           );
-          await treve.say_and_wait(['제가 이길 거예요, ', callname, '。']);
+          await treve.say_and_wait(['제가 이길 거예요, ', callname, '.']);
           await era.printAndWait(
             '자신의 실력을 냉정하게 꿰뚫고 있기에 가질 수 있는 자신감.',
           );
