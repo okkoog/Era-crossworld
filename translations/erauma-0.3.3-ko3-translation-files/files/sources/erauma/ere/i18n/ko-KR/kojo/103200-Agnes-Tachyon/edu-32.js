@@ -3221,7 +3221,7 @@ module.exports = {
             await era.printAndWait([
               '딱 한 입 크기로 잘라 ',
               you.get_colored_name(),
-              '의 입가로 가져왔다.。',
+              '의 입가로 가져왔다.',
             ]);
             await you.say_and_wait('어, 이건……');
             era.println();
