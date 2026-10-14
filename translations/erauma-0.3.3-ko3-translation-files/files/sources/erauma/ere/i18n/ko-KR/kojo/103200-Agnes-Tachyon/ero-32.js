@@ -555,7 +555,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] betrayed2
+  // [번역 완료] betrayed2
   betrayed2: (() => {
     /**
      * 仕組み上はマンハッタンカフェの調教終了イベント
@@ -595,7 +595,7 @@ module.exports = {
       era.println();
 
       await tachyon.print_and_wait(['갑자기 다정한 속삭임이 멈췄다.']);
-      await tachyon.print_and_wait(['絶頂の寸前で寸止めされたように、焦る。']);
+      await tachyon.print_and_wait(['절정 직전에 갑자기 멈춰 세워진 것처럼 초조해졌다.']);
       await tachyon.print_and_wait(['어째서 계속하지 않는 거지?']);
       await tachyon.print_and_wait(['왜 멈춘 거지?']);
       await tachyon.print_and_wait(['속삭임이 멎는 순간 방 안은 고요해졌다.']);
@@ -618,7 +618,7 @@ module.exports = {
         '숨어야 해. 이런 모습을 보여줄 수는 없어. 어디든 숨어야 해.',
       ]);
       await tachyon.print_and_wait([
-        'なのに……どうして、手がまた勝手に動くの……',
+        '그런데도…… 어째서 손은 다시 멋대로 움직이는 거지……',
       ]);
       era.println();
 
@@ -628,7 +628,7 @@ module.exports = {
         '문밖에 나타난 검은 머리와 금빛 눈동자의 그림자를 본 순간.',
       ]);
       await tachyon.print_and_wait([
-        '絶頂は極みへ達し、今まででいちばん興奮した頂きを迎えた。',
+        '절정은 정점에 이르렀고, 지금껏 느껴 본 적 없는 가장 격렬한 흥분에 도달했다.',
       ]);
       era.println();
 
@@ -650,15 +650,15 @@ module.exports = {
         '가련하게도, 지금 내게 가장 중요한 것은——',
       ]);
       await tachyon.print_and_wait([
-        'どう ',
+        '어떻게 ',
         t_call_c,
-        ' に頼めば、',
+        '에게 부탁해야,',
         you.couple_title,
-        'の交わる声を聞いて自分を慰めることを許してもらえるか、それだけだ。',
+        '이(가) 사랑을 나누는 소리를 들으며 자신을 위로하도록 허락받을 수 있을까. 그것뿐이었다.',
       ]);
       era.println();
 
-      await tachyon.say_and_wait([callname, '、', you.sex, 'は……']);
+      await tachyon.say_and_wait([callname, ', ', you.sex, '은(는)……']);
       await coffee.say_and_wait([
         '걱정 마세요…… ',
         callname_25,
@@ -694,7 +694,7 @@ module.exports = {
       await tachyon.print_and_wait(['임신을 거의 확실하게 돕는 약을, 내 손으로.']);
       await tachyon.print_and_wait(['내 손으로 직접 바치고, 내 손으로 넘겨주길 바라고 있었다.']);
       await tachyon.print_and_wait([
-        '彼女が愛する人と睦み、本来自分のものであるはずの子を宿すために。',
+        '그녀가 사랑하는 사람과 몸을 섞고, 원래는 자기 것이었어야 할 아이를 품을 수 있도록.',
       ]);
       await tachyon.print_and_wait([
         '그야말로 자신을 발밑에 깔고 뭉개는, 굴욕의 극치라 할 수 있는 일이었다.',
@@ -940,7 +940,7 @@ module.exports = {
           '미안하네…… 하지만…… 좀 더 깊이…… 나를 사랑해줄 수 있겠나……',
         ]);
         await tachyon.say_and_wait([
-          '今の私には……もっと温かくて、熱いものが要るんです。体を内から外まで温めるものが。',
+          '지금 제게는…… 조금 더 따뜻하고 뜨거운 것이 필요해요. 몸을 안에서부터 밖까지 데워 줄 무언가가요.',
         ]);
         await tachyon.say_and_wait([
           callname,
@@ -948,10 +948,10 @@ module.exports = {
         ]);
         era.println();
 
-        await era.printAndWait(['懇願と恐れと情欲の混じった眼を見る。']);
+        await era.printAndWait(['애원과 두려움, 욕정이 뒤섞인 눈동자를 바라보았다.']);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は身を翻し、彼女を下へ押さえた。',
+          '은(는) 몸을 돌려 그녀를 아래로 눌렀다.',
         ]);
         era.drawLine();
         await era.printAndWait(['아이템 ', item, '를 획득했다……']);
@@ -971,9 +971,9 @@ module.exports = {
         await tachyon.print_and_wait(['지금의 기분은, 의외로…… 참으로 홀가분해.']);
         await tachyon.print_and_wait(['확실히, 나는 정말 가련한 여자로군.']);
         await tachyon.print_and_wait([
-          '愛する人が、その',
+          '사랑하는 사람이 그 ',
           you.sex,
-          'の女と絡む姿を見て。',
+          '의 연인과 몸을 섞는 모습을 보고.',
         ]);
         await tachyon.print_and_wait(['내가…… 웃음을 짓고 있다니.']);
         era.println();
@@ -991,12 +991,12 @@ module.exports = {
         await coffee.say_and_wait([
           '……',
           c_call_t,
-          ' の話をしたら、そんな顔をなさるんですか？ ごめんなさい？ でも……そう言いながら、下はこんなに硬くなっている。',
+          '의 얘기를 했다고 그런 표정을 지으시나요? 미안하다고요? 하지만…… 그렇게 말씀하면서 아래쪽은 이렇게 단단해졌잖아요.',
         ]);
         await coffee.say_and_wait([
-          'ぐちゅ……ちゅる……ぷはっ……',
+          '질척……츄릅……푸핫……',
           callname_25,
-          '……口の中で……出してください、薬と一緒に……ちょうどいい。',
+          '……입안에……내주세요. 약과 함께……딱 좋겠네요.',
         ]);
         await coffee.say_and_wait([
           '무슨 약이냐고요? ……우리의 사랑이 결실을 맺게 해줄 약이랍니다. 안심하세요…… ',
@@ -1022,30 +1022,30 @@ module.exports = {
 
         await tachyon.print_and_wait([
           t_call_c,
-          ' が',
+          '이(가) ',
           you.sex,
-          'の体へ跨る。',
+          '의 몸 위로 올라탔다.',
         ]);
         await tachyon.print_and_wait([
-          'それから、最下等の娼婦ですら恥じるような嬌声を上げる。',
+          '그리고 가장 천한 창녀조차 부끄러워할 법한 신음을 내질렀다.',
         ]);
         await tachyon.print_and_wait(['……아니, 이건 그저 나의 색안경일 뿐이겠지.']);
         await tachyon.print_and_wait([
-          '実際は、幸福で、喜びに満ちた喘ぎなのだろう。',
+          '실제로는 행복과 기쁨으로 가득 찬 신음일 것이다.',
         ]);
         await tachyon.print_and_wait(['하지만, 상관없어.']);
         await tachyon.print_and_wait([
-          'むしろ前者だと思い込んだほうが、自分は興奮する。',
+          '오히려 전자라고 믿어 버리는 편이 자신에게는 더 자극적이었다.',
         ]);
         await tachyon.print_and_wait(['나의 연인.']);
         await tachyon.print_and_wait(['나의 ', callname, '.']);
         await tachyon.print_and_wait([
-          '娼婦以下の存在に従わせ、騎乗されている姿。',
+          '창녀보다 못한 존재에게 복종하고 그 아래에 깔린 모습.',
         ]);
         era.println();
 
         await coffee.say_and_wait([
-          'ねえ……',
+          '저기……',
           callname_25,
           '…… 아니, 트레이너 군……',
         ]);
@@ -1143,13 +1143,13 @@ module.exports = {
         await tachyon.print_and_wait(['부외자는 바로 나……']);
         era.println();
 
-        await coffee.say_and_wait(['んっ……急に……急にこんなに強く……❤️。']);
-        await coffee.say_and_wait(['ねえ……', callname_25, '……中に……中で……']);
+        await coffee.say_and_wait(['으응……갑자기……이렇게 갑자기 세게……❤️']);
+        await coffee.say_and_wait(['저기……', callname_25, '……안에……안에……']);
         await coffee.say_and_wait([
           c_call_t,
-          ' が嫌がったことは、全部させてあげます……',
+          '이(가) 싫어했던 것은 전부 제가 해 드릴게요……',
           c_call_t,
-          ' はあなたを拒みましたが、私は、彼女の何倍も満たしてあげます。',
+          '은(는) 당신을 거절했지만, 전 그녀보다 몇 배나 더 만족시켜 드릴게요.',
         ]);
         era.println();
 
@@ -1183,18 +1183,18 @@ module.exports = {
         ]);
         await tachyon.print_and_wait([
           callname,
-          ' が ',
+          '이(가) ',
           t_call_c,
-          ' を後背位でベッドへ押さえつける。',
+          '을(를) 뒤에서 침대에 눌러 엎드리게 했다.',
         ]);
         await tachyon.print_and_wait([
-          'すべてを吐き出すように、止まらないピストン。',
+          '모든 것을 쏟아내려는 듯 거침없이 움직였다.',
         ]);
         await tachyon.print_and_wait([
           t_call_c,
-          ' は白目を剥き、舌まで出している。',
+          '은(는) 눈을 뒤집고 혀까지 내밀고 있었다.',
         ]);
-        await tachyon.print_and_wait(['なのに……', you.sex, 'の口の形。']);
+        await tachyon.print_and_wait(['그런데도……', you.sex, '의 입 모양은.']);
         await tachyon.print_and_wait([
           callname,
           '의 입술은, 계속해서 어떤 단어를 중얼거리고 있었다.',
@@ -1213,26 +1213,26 @@ module.exports = {
         await tachyon.print_and_wait(['그렇다면…… 설령 내가……']);
         era.println();
 
-        await coffee.say_and_wait(['ちゅ……ちゅ……']);
+        await coffee.say_and_wait(['쪽……쪽……']);
         era.println();
 
-        await tachyon.print_and_wait(['肉竿ではない。']);
-        await tachyon.print_and_wait(['玉袋でもない。']);
+        await tachyon.print_and_wait(['성기가 아니다.']);
+        await tachyon.print_and_wait(['고환도 아니다.']);
         await tachyon.print_and_wait([
           you.sex,
-          'を捨てた私に、',
+          '을(를) 버린 내게는,',
           you.sex,
-          'へそんな越権をする資格はない。',
+          '에게 그런 월권을 저지를 자격이 없다.',
         ]);
-        await tachyon.print_and_wait(['ただ、二人の結合部から溢れた液体。']);
+        await tachyon.print_and_wait(['오직 두 사람이 맞닿은 곳에서 흘러넘친 액체뿐.']);
         await tachyon.print_and_wait([
-          '自分を、掃除道具のような物として扱う。',
+          '자신을 청소 도구 같은 물건으로 취급한다.',
         ]);
 
         era.printButton('「！？」', 1);
         await era.input();
 
-        await tachyon.print_and_wait(['舐めているだけなのに。']);
+        await tachyon.print_and_wait(['그저 핥고 있을 뿐인데.']);
         await tachyon.print_and_wait([you.sex, '가 갑자기 고개를 돌려 돌아보았다.']);
         await tachyon.print_and_wait(['기다리게.']);
         await tachyon.print_and_wait(['보지 말게.']);
@@ -1255,10 +1255,10 @@ module.exports = {
         await coffee.say_and_wait([
           '그녀는…… 당신과 마찬가지로, ',
           callname_25,
-          ' に憧れている子です。',
+          '을(를) 동경하는 분이에요.',
         ]);
         await coffee.say_and_wait([
-          'ただ……この子は恥ずかしがり屋なので、友達に頼んで、顔を隠してもらっています……',
+          '그저……부끄러움이 많으셔서 친구에게 부탁해 얼굴을 가리고 계세요……',
         ]);
         await coffee.say_and_wait([
           '아니면…… ',
@@ -1308,35 +1308,35 @@ module.exports = {
           '이미 이토록 구제 불능이 되어버린 나를 용서한다면……',
         ]);
         await tachyon.print_and_wait([
-          'そのあと再び ',
+          '그리고 다시 ',
           t_call_c,
-          ' へ売り渡したとき、',
+          '에게 넘겨 버렸을 때,',
           you.sex,
-          'はどんな、興奮する顔をするだろう。',
+          '은(는) 얼마나 흥분한 표정을 지을까.',
         ]);
         era.println();
 
         await coffee.say_and_wait([
-          'でも……この子は、本当に ',
+          '하지만……이분은 정말로 ',
           callname_25,
-          ' が好きなんです。',
+          '을(를) 좋아한답니다.',
         ]);
         await coffee.say_and_wait([
-          'だから、',
+          '그러니, ',
           callname_25,
-          ' が構わないなら……この子を、傍で見させてあげてもらえますか。',
+          '이(가) 괜찮으시다면……이분이 곁에서 지켜보게 해 주시겠어요?',
         ]);
         await coffee.say_and_wait([
-          '安心してください、見るだけです……保証します、この子はもう勝手には動きません……ね？',
+          '안심하세요. 보기만 할 거예요……보증하죠. 이분은 이제 제멋대로 움직이지 않을 테니까요……그렇죠?',
         ]);
         era.println();
 
         await tachyon.print_and_wait([
           t_call_c,
-          ' はベッドの縁に座り、足で私の顎を持ち上げる。',
+          '은(는) 침대 가장자리에 앉아 발로 내 턱을 들어 올렸다.',
         ]);
         await tachyon.print_and_wait([
-          '言うことを聞かない子犬を躾けるように。',
+          '말을 듣지 않는 강아지를 훈육하듯.',
         ]);
         await tachyon.print_and_wait([
           '분명, 나의 연적이며 라이벌이거늘.',
@@ -1344,34 +1344,34 @@ module.exports = {
         await tachyon.print_and_wait(['하지만……']);
         await tachyon.print_and_wait([
           t_call_c,
-          ' の股からゆっくり流れ、脹脛を伝って落ちるのを見る。',
+          '의 사타구니에서 천천히 흘러나와 종아리를 타고 떨어지는 것을 보았다.',
         ]);
-        await tachyon.print_and_wait(['足背まで、爪先まで。']);
+        await tachyon.print_and_wait(['발등까지, 발끝까지.']);
         await tachyon.print_and_wait([
-          '睦んだ跡、二人の愛液と精液の混ざった白濁。',
+          '사랑을 나눈 흔적. 두 사람의 애액과 정액이 섞인 흰 액체.',
         ]);
         await tachyon.print_and_wait(['나는……']);
         await tachyon.print_and_wait([
-          '気がつくと、',
+          '정신을 차려 보니, ',
           t_call_c,
-          ' の足を舐めていた。',
+          '의 발을 핥고 있었다.',
         ]);
-        await tachyon.print_and_wait(['甘く、苦く、辱められ、興奮する。']);
-        await tachyon.print_and_wait(['さまざまな味が、口の中で弾ける。']);
+        await tachyon.print_and_wait(['달콤하고, 씁쓸하고, 굴욕적이며, 흥분된다.']);
+        await tachyon.print_and_wait(['갖가지 맛이 입안에서 터져 나온다.']);
         await tachyon.print_and_wait([
-          'いつの間にか、足全体を舐め尽くしていた。',
+          '어느새 발 전체를 남김없이 핥고 있었다.',
         ]);
-        await tachyon.print_and_wait(['もう、ない……']);
-        await tachyon.print_and_wait(['もっと、もっと、あの味が欲しい……']);
+        await tachyon.print_and_wait(['이제, 없어……']);
+        await tachyon.print_and_wait(['더, 더……그 맛을 더 느끼고 싶어……']);
         await tachyon.print_and_wait(['그 어떤 대가를 치르더라도……']);
         era.println();
 
         await tachyon.print_and_wait([
-          '私は床に寝そべり、服従の姿勢を見せる。',
+          '나는 바닥에 엎드려 복종하는 자세를 보였다.',
         ]);
         await tachyon.print_and_wait([
           t_call_c,
-          ' の足を、慎重に自分の腹の上へ乗せる。',
+          '의 발을 조심스레 자신의 배 위에 올려놓았다.',
         ]);
         await tachyon.print_and_wait([
           '자신의 존엄을 얼마나 짓밟든 상관없네.',
@@ -1396,7 +1396,7 @@ module.exports = {
         era.println();
 
         await coffee.say_and_wait([
-          '存分に私を悦ばせてください、',
+          '저를 마음껏 즐겁게 해 주세요, ',
           c_call_t,
           ' ❤️。',
         ]);
@@ -1409,15 +1409,15 @@ module.exports = {
         ]);
         await tachyon.print_and_wait(['침대가 다시 흔들리기 시작했다.']);
         await tachyon.print_and_wait([
-          'ベッド下の ',
+          '침대 아래의 ',
           tachyon.get_colored_name(),
-          ' は、舌を出したまま。',
+          '은(는) 여전히 혀를 내밀고 있었다.',
         ]);
         await tachyon.print_and_wait([
-          '専属の特等席で、蛙のように惨めに体を震わせる。',
+          '자신만의 특등석에서 개구리처럼 비참하게 몸을 떨었다.',
         ]);
         await tachyon.print_and_wait([
-          '必死に自分を慰めながら、ベッド上の恋敵をも悦ばせる。',
+          '필사적으로 자신을 위로하면서 침대 위의 연적까지 기쁘게 했다.',
         ]);
         await tachyon.print_and_wait([
           '상대가 이 미천한 자신을 가엽게 여겨, 아주 조금이라도 좋으니, 티끌만큼이라도 좋으니 자비를 베풀어주길 기도하면서.',
