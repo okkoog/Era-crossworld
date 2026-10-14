@@ -76,7 +76,7 @@ module.exports = {
             maru.get_colored_name(),
             '은(는) 생각에 잠긴 채 ',
             you.get_colored_name(),
-            '을(를) 유심히 바라보고 있다.',
+            '을(를) 가늠하듯 살펴보고 있다.',
           ]);
         });
         buffer.push(() => {
@@ -234,7 +234,7 @@ module.exports = {
   // [번역 완료] select_sister_annoyance
   select_sister_annoyance(maru) {
     maru.say('더 큰 무대에서 달리면 기분까지 반짝반짝해지네♪');
-    maru.say(`무슨 일 있으면 반드시 ${maru.elder_sibling_sex_title}에게 상담해 줘?`);
+    maru.say(`무슨 일 있으면 꼭 ${maru.elder_sibling_sex_title}에게 상의하렴, 알겠지?`);
     maru.say('……우리 사이에 비밀이 없으면 좋을 텐데.');
   },
   /**
@@ -420,7 +420,7 @@ module.exports = {
           buffer.push(
             () =>
               maru.say_and_wait(
-                `${callname}, 이 휴대폰 어떻게 켜는지 좀 봐줄래? 어머? 이렇게 간단한 거였어?`,
+                `${callname}, 이 휴대폰 어떻게 여는지 좀 봐줄래? 어머? 이렇게 간단한 거였어?`,
               ),
             () =>
               maru.say_and_wait(
@@ -443,7 +443,7 @@ module.exports = {
           buffer.push(
             () =>
               maru.say_and_wait(
-                `오늘 상태 좋은걸! ${callname}이 보기엔 어때?`,
+                `오늘 컨디션은 나쁘지 않은데! ${callname}, 너는 어때?`,
               ),
             () =>
               maru.say_and_wait(
