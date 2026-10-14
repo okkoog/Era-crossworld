@@ -1903,7 +1903,7 @@ module.exports = {
       await era.printAndWait('그러니까…… 보상이라기보다는 핑계였던 건가……');
       era.println();
       await era.printAndWait([
-        '그렇게 생각하자,',,
+        '그렇게 생각하자,',
         you.get_colored_name(),
         '의 마음속에 장난기가 솟아올랐다.',
       ]);
@@ -2120,7 +2120,7 @@ module.exports = {
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '다음 실험도 잘 부탁드릴게요,',,
+        '다음 실험도 잘 부탁드릴게요,',
         callname,
         ' ',
       ]);
@@ -2138,7 +2138,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ero_start_reward3
+  // [번역 완료] ero_start_reward3
   ero_start_reward3: (() => {
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -2150,87 +2150,87 @@ module.exports = {
         callname,
         '~오늘 실험도 수고 많으셨어요.',
       ]);
-      await tachyon.say_and_wait('では……ご褒美が要りますの❤️');
-      await you.say_and_wait('頼む');
-      await tachyon.print_and_wait('やはり、この穴ではないでしょう？');
-      await tachyon.print_and_wait('下のいやらしい穴も、疼いて仕方ないのに');
-      await tachyon.print_and_wait('どうして挿っているのは、そんなところ');
-      await tachyon.print_and_wait('しかも、こんな……こんな体勢');
+      await tachyon.say_and_wait('그럼……보상이 필요하겠죠❤️');
+      await you.say_and_wait('부탁해.');
+      await tachyon.print_and_wait('역시 이 구멍은 아닌 것 같은데요?');
+      await tachyon.print_and_wait('아래의 음란한 구멍도 가려워 견딜 수 없는데.');
+      await tachyon.print_and_wait('어째서 하필 그런 곳에 넣고 있는 건가요.');
+      await tachyon.print_and_wait('게다가 이런……이런 자세라니.');
       era.println();
       await tachyon.print_and_wait([
-        'きつい後穴が、',
+        '단단히 조이는 뒤쪽 구멍이,',
         callname,
-        ' の太い肉棒を包んでいる',
+        '의 굵은 성기를 감싸고 있었다.',
       ]);
       await tachyon.print_and_wait([
-        '穴より皺の多い菊座は、',
+        '주름이 더 많은 뒤쪽 구멍은 ',
         callname,
-        ' により多くの快感を与えると同時に、自分にも穴の倍の快感をもたらす',
+        '에게 더 큰 쾌감을 주는 동시에 자신에게도 다른 구멍의 몇 배에 달하는 쾌감을 안겨 주었다.',
       ]);
       await tachyon.print_and_wait(
-        '性欲を満たす条件としては、穴より使い勝手がいいのかもしれない……だが……',
+        '성욕을 해소하기에는 다른 구멍보다 편리할지도 모른다……하지만……',
       );
       era.println();
       await tachyon.say_and_wait(
-        '子犬のような体勢……それにこの穴……これでは本当の子犬ですわ❤️',
+        '강아지 같은 자세……게다가 이 구멍……이러면 정말 강아지가 된 기분이에요❤️',
         true,
       );
       era.println();
       await tachyon.print_and_wait(
-        'だが……よく考えれば、悪くないかもしれませんわ❤️',
+        '그런데……잘 생각해 보면 나쁘지 않을지도 모르겠네요❤️',
       );
-      await tachyon.print_and_wait([callname, ' は、自分専属の ', callname]);
+      await tachyon.print_and_wait([callname, '은(는) 자신의 전용 ', callname]);
       await tachyon.print_and_wait([
         tachyon.get_colored_name(),
-        ' は ',
+        '은(는) ',
         callname,
-        ' 専属の雌犬',
+        ' 전용 암캐였다.',
       ]);
       await tachyon.print_and_wait(
-        'そう思うと、体はすぐ役に入り込んだように、嬉しそうに尻尾を振り、主人の機嫌を取る',
+        '그렇게 생각하자 역할에 완전히 몰입한 듯 기쁜 마음으로 꼬리를 흔들며 주인의 기분을 맞췄다.',
       );
       era.drawLine();
       await era.printAndWait([
-        '下の者が余計なことを考えているのを察したのか、',
+        '아래에 깔린 상대가 쓸데없는 생각을 하는 것을 눈치챘는지,',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の尻を叩き、',
+        '의 엉덩이를 때리며,',
         tachyon.sex,
-        'に集中を促す',
+        '에게 집중하라고 재촉했다.',
       ]);
       await era.printAndWait([
-        'だが完全に役へ入った ',
+        '하지만 역할에 완전히 빠져든 ',
         tachyon.get_colored_name(),
-        ' は、より強く尻を振り、自分の尻穴を締め付ける',
+        '은(는) 오히려 엉덩이를 더욱 세게 흔들며 뒤쪽 구멍을 조였다.',
       ]);
       await era.printAndWait([
-        '突然の攻撃に、',
+        '갑작스러운 자극에,',
         you.get_colored_name(),
-        ' は一瞬、精の関を失う',
+        '은(는) 순간적으로 절제를 잃었다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の腰を押さえ、尻穴の中へ、数日分溜めた精液をすべて排泄する',
+        '의 허리를 붙잡고, 며칠 동안 쌓아 둔 정액을 뒤쪽 구멍 안으로 모두 쏟아냈다.',
       ]);
       await era.printAndWait([
-        '股下の ',
+        '사타구니 아래의 ',
         tachyon.get_colored_name(),
-        ' もこのとき、幸福を主人へ伝えたい雌犬のように',
+        '도 그 순간, 행복을 주인에게 전하고 싶어 하는 강아지처럼,',
       ]);
-      await era.printAndWait('嬉しそうに小便を漏らして、今の気持ちを見せる');
+      await era.printAndWait('기쁜 듯 소변을 흘리며 지금의 감정을 드러냈다.');
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         you.get_colored_name(),
-        ' が反応する前に、二発目の重い衝撃が来る',
+        '이(가) 반응하기도 전에 두 번째 묵직한 충격이 찾아왔다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('わん……わんわん❤️');
+      await tachyon.say_and_wait('멍……멍멍❤️');
       await era.printAndWait([
         you.get_colored_name(),
-        '의 당황한 얼굴을 보고,',,
+        '의 당황한 얼굴을 보고,',
         tachyon.get_colored_name(),
         '은(는) 자신이 무슨 짓을 했는지 깨닫고 갑자기 정신을 차린 듯했다.',
       ]);
