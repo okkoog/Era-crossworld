@@ -31,7 +31,7 @@ module.exports = {
         '여보세요? 나야. 보이스피싱 아니고, 진짜 나 맞아!',
       );
       await era.printAndWait(
-        '수화기 너머로 익숙한 목소리, 나이스 네이처의 목소리가 들려왔다.',
+        '수화기 너머에서 익숙한 목소리가 들려왔다. 나이스 네이처였다.',
       );
       await nature.say_and_wait(
         '저기 말이야, 지금 공원으로 좀 와 줄 수 있어? 지금 바로…… 응, 이따 봐!',
@@ -41,7 +41,7 @@ module.exports = {
       await era.printAndWait('멀리서 손을 흔드는 나이스 네이처의 모습이 보였다.');
       await era.printAndWait('오늘은 크리스마스다.');
       await nature.say_and_wait(
-        `뭐, 별일은 아니고. ${self_call}가 보기에 일정이 비어 있는 것 같아서 같이 크리스마스를 보내자고 부른 것뿐이야!`,
+        `뭐, 별일은 아니고. ${self_call}는 딱히 일정도 없어서 같이 크리스마스를 보내자고 불러 본 것뿐이야!`,
       );
       await nature.say_and_wait('안…… 돼?');
       await era.printAndWait(
@@ -136,7 +136,7 @@ module.exports = {
         `초…… 초특가 메밀국수 쿠폰! 예전에 상점가 아주머니가 몇 장 주셨는데 나 혼자 다 못 써서 ${callname}에게 주는 거야! 하하하하…… 그럼 나중에 봐!`,
       );
       await era.printAndWait(
-        '나이스 네이처는 묘하게 이상한 모습으로 식당을 빠져나갔다.',
+        '나이스 네이처는 어색한 기색을 감추지 못한 채 식당을 빠져나갔다.',
       );
       era.drawLine({ content: '⏰밤이 되었다⏰' });
       await nature.say_and_wait('여기까지만 배웅해 줘도 괜찮아.');
