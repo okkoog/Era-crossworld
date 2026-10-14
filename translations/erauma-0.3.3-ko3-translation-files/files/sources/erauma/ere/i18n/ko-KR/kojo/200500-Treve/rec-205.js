@@ -116,7 +116,7 @@ module.exports = {
       );
       await era.printAndWait('인정하기 싫어도 어쩔 수 없었다. 자신은 이곳에 어울리지 않는 사람이었다.');
       await era.printAndWait(
-        `돌길을 걷다 체육복을 입은 몇몇 ${treve.uma_sex_title}들과 스쳐 지나갔다.`,
+        `돌바닥 길을 걷다 체육복을 입은 몇몇 ${treve.uma_sex_title}들과 스쳐 지나갔다.`,
       );
       await era.printAndWait(
         `그때 ${you.name}의 주머니에 넣어 둔 휴대전화가 울렸다.`,
