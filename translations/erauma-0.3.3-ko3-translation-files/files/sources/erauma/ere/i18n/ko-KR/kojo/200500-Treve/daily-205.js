@@ -37,7 +37,7 @@ module.exports = {
   // [번역 완료] office_prepare
   async office_prepare(treve, callname) {
     const buffer = [
-      () => treve.say_and_wait("당신에게 최고의 선물을 선사할 수 있게 해 주세요."),
+      () => treve.say_and_wait("당신에게 최고의 선물을."),
       () =>
         treve.say_and_wait(`오늘의 승리는 제가 차지하겠어요. ${callname}을(를) 위해서요.`),
     ];
@@ -515,7 +515,7 @@ module.exports = {
   // [번역 완료] office_cook
   async office_cook(treve) {
     const buffer = [
-      () => treve.say_and_wait('프랑스 요리는 뭐라고 해야 할까…… 아하하하, 이 이야기는 일단 넘어가죠.'),
+      () => treve.say_and_wait('프랑스 요리는 말이죠…… 아하하, 지금은 됐어요.'),
       () => treve.say_and_wait('으윽, 누군가가 속을 꽉 움켜쥐는 것 같아요.'),
     ];
     await get_random_entry(buffer)();
@@ -530,7 +530,7 @@ module.exports = {
         ),
       () =>
         treve.say_and_wait(
-          '왠지 당신이 곁에 있으면 더 잘 뛸 수 있을 것 같아요…… 어때요, 멋지죠?',
+          '당신이 곁에 있으면 더 잘 뛸 수 있을 것 같아요…… 어때요, 나쁘지 않죠?',
         ),
       () => treve.say_and_wait('잠깐 멈춰요! 아무리 변태라지만 이런 식으로 지도하는 게 어디 있어요!'),
     ];
@@ -607,7 +607,7 @@ module.exports = {
           era.get('love:205') >= 50 &&
             buffer.push(() =>
               treve.say_and_wait(
-                '당신에게 『내 사랑』이라고 말할 수 있다니, 정말 좋은 느낌이네요.',
+                '당신을 『내 연인』이라고 부를 수 있다니, 정말 기분이 좋아요.',
               ),
             );
           break;
@@ -620,7 +620,7 @@ module.exports = {
           break;
         case 0:
           buffer.push(
-            () => treve.say_and_wait('당신을 기다리는 건 정말 쉬운 일이 아니네요.'),
+            () => treve.say_and_wait('당신을 기다리는 건 정말 힘들었어요.'),
             () =>
               treve.say_and_wait(
                 '제가 『초보』 트레이너 씨를 위해 시범을 보여 드려야겠어요.',
