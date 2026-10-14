@@ -5986,7 +5986,7 @@ module.exports = {
     );
   },
 
-  // [번역 대상] train_sex
+  // [번역 완료] train_sex
   async train_sex(tachyon, you) {
     await tachyon.say_and_wait(
       '훈련? 그래요…… 오늘 약을 먹고 나서 하도록 하죠.',
@@ -5996,10 +5996,10 @@ module.exports = {
     );
     await tachyon.say_and_wait('흠…… 이제 슬슬 때가 되었군요.');
     await tachyon.say_and_wait(
-      '今日の薬は、雌性ホルモン・雄性ホルモン・コルチゾール・成長ホルモン・バソプレシンを平均以上に引き上げるもの。通俗に言えば、媚薬ですわ❤️',
+      '오늘 약은 여성 호르몬·남성 호르몬·코르티솔·성장 호르몬·바소프레신을 평균치 이상으로 끌어올리는 약이랍니다. 쉽게 말해 최음제죠❤️',
     );
-    await tachyon.say_and_wait('トレーニングなど、終わってからで結構ですわ❤️');
-    era.printButton('ここは下半身の声に従う……', 1);
+    await tachyon.say_and_wait('훈련은 모든 게 끝난 다음에 하면 된답니다❤️');
+    era.printButton('여기서는 몸의 욕구에 따른다……', 1);
     era.printButton('「장난 그만하고 어서 훈련하러 가자!」', 2, {
       disabled: era.get('talent:0:钢之意志') > 0,
     });
@@ -6007,11 +6007,11 @@ module.exports = {
     if (ret === 1) {
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' の誘惑に負け、',
+        '의 유혹에 넘어가,',
         you.get_colored_name(),
-        ' は',
+        '은(는) ',
         tachyon.sex,
-        'を実験室の小さなベッドへ押し倒した……',
+        '을(를) 실험실의 작은 침대 위로 쓰러뜨렸다……',
       ]);
     } else {
       await era.printAndWait([
@@ -9301,7 +9301,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] ws_95_6
+  // [번역 완료] ws_95_6
   ws_95_6: (() => {
     const title = '발렌타인데이';
     /**
@@ -9556,9 +9556,9 @@ module.exports = {
             '은(는) 거리낌 없이 손을 뻗어 초콜릿을 집었다',
           ]);
           await era.printAndWait([
-            '途中で摘んだ、眼前の',
+            '도중에 꼬집었던, 눈앞의 ',
             tachyon.uma_sex_title,
-            'を甘い声にさせる肉塊は？',
+            '에게 달콤한 소리를 내게 했던 살덩이는?',
           ]);
           await era.printAndWait(
             '착각이겠지. 초콜릿을 놓는 선반이 말을 할 리 없으니까.',
