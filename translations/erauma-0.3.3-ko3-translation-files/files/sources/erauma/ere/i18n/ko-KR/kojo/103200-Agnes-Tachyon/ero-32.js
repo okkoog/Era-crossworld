@@ -1853,41 +1853,41 @@ module.exports = {
       ]);
       await era.printAndWait('\n실험 기구를 정리한 뒤');
       era.println();
-      await tachyon.say_and_wait('では……ご褒美として、処理して差し上げますわ');
-      await tachyon.say_and_wait('この数日、溜まったもの❤');
+      await tachyon.say_and_wait('그럼……보상으로 처리해 드릴게요.');
+      await tachyon.say_and_wait('지난 며칠 동안 쌓아 둔 것들을요❤');
       era.println();
       await era.printAndWait('……네?');
       era.println();
       await tachyon.say_and_wait('그 반응은…… 설마 거절하시는 건가요?');
       await tachyon.say_and_wait('우리 연인 사이잖아요?');
       era.println();
-      await era.printAndWait('眼前に運ばれた肉を、食べない道理がない！');
+      await era.printAndWait('눈앞에 내밀어진 고기를 마다할 이유가 어디 있겠는가!');
       await era.printAndWait(
-        'それに……この数日は実験の都合で、欲もほとんど発散できていなかった……',
+        '게다가……지난 며칠은 실험 때문에 욕구를 거의 해소하지 못했다……',
       );
       await era.printAndWait(
-        'なら、恋人に手伝ってもらうくらい……行き過ぎではないだろう',
+        '그렇다면 연인의 도움을 조금 받는 정도는……지나친 일이 아니겠지.',
       );
       era.println();
       await era.printAndWait([
-        '気がつけば、',
+        '어느새 ',
         you.get_colored_name(),
-        ' はズボンを下ろしていた',
+        '은(는) 바지를 내리고 있었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('すぅ……');
+      await tachyon.say_and_wait('스읍……');
       era.println();
       await era.printAndWait([
-        'アニメのように湯気まで立つほどではないが、一日蒸れた肉棒は、どんな',
+        '애니메이션처럼 김이 날 정도는 아니었지만, 하루 종일 열기가 갇혀 있던 성기는 어떤 ',
         tachyon.uma_sex_title,
-        'の性欲も唆す匂いを放っていた',
+        '이(가) 맡아도 욕망을 자극할 만한 냄새를 풍겼다.',
       ]);
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は眼前の肉棒から、視線を外せない',
+        '은(는) 눈앞의 성기에서 시선을 떼지 못했다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('だめ……堪えられませんわ……❤');
+      await tachyon.say_and_wait('안 돼……참을 수가 없어요……❤');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
@@ -1909,26 +1909,26 @@ module.exports = {
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' が肉棒を出したまま動かないのを見て、',
+        '이(가) 성기를 드러낸 채 움직이지 않는 것을 보고,',
         tachyon.get_colored_name(),
-        ' は焦りながら ',
+        '은(는) 초조한 눈길로 ',
         you.get_colored_name(),
-        ' を見る',
+        '을(를) 바라보았다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '……何を待っていらっしゃるの、早く、入って',
+        '……무엇을 기다리시는 거예요? 어서, 넣어 주세요.',
       ]);
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は唇を突き出し、唇の間の桃色の舌を前後に動かし、',
+        '은(는) 입술을 내밀고 그 사이로 분홍빛 혀를 앞뒤로 움직이며,',
         you.get_colored_name(),
-        ' の情欲を煽ろうとする',
+        '의 욕망을 자극하려 했다.',
       ]);
       await era.printAndWait([
-        'だが ',
+        '하지만 ',
         you.get_colored_name(),
         '은(는) 움직이지 않았다. 그 의도를 알아차린 ',
         tachyon.get_colored_name(),
@@ -1939,22 +1939,22 @@ module.exports = {
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は床にしゃがみ、懇願するように、高く反った肉棒を見上げる',
+        '은(는) 바닥에 쪼그려 앉아 애원하듯 위로 솟은 성기를 올려다보았다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
-        'お願いですわ、',
+        '부탁이에요,',
         callname,
-        '……ちゅぽちゅぽと……しっかり味わわせて……',
+        '……쪽쪽……충분히 맛보게 해 주세요……',
         callname,
-        ' の肉棒を……❤️',
+        '의 성기를……❤️',
       ]);
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' がようやく近づくと、',
+        '이(가) 마침내 가까이 다가오자,',
         tachyon.get_colored_name(),
-        ' は慌てて鼻を肉棒へ寄せ、深く何度も嗅いだ',
+        '은(는) 다급하게 코를 성기 가까이 대고 깊이 여러 번 냄새를 들이마셨다.',
       ]);
       await era.printAndWait(
         '落ち着かない手が、ぐちゅぐちゅと蜜穴を掻き、呻きが漏れる',
