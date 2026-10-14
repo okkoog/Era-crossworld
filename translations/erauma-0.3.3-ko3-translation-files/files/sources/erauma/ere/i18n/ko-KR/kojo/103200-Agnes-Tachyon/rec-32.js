@@ -24,7 +24,7 @@ module.exports = {
     era.println();
 
     era.print(
-      `${you.name}은(는) 다시 한번 그 ${tachyon.uma_sex_title}를, 그 빛을 보고 싶다는 조바심을 느꼈다.`,
+      `${you.name}은(는) 그 ${tachyon.uma_sex_title}를, 그 눈부신 빛을 다시 한번 보고 싶어 조바심이 났다.`,
     );
     await era.printAndWait(
       `${you.name} 스스로도 왜 마지막에 그런 생각이 들었는지 알 수 없었다. 마치 「허무」라는 단어가 갑자기 ${you.name}의 뇌리에 스쳐 지나간 것만 같았다……`,
@@ -122,7 +122,7 @@ module.exports = {
     era.println();
 
     await era.printAndWait(
-      `${you.name}은(는) 긴장한 나머지 준비했던 모집 멘트가 전부 머릿속에서 사라졌고, 그저 더듬거리며 상대방을 스카우트하고 싶다는 의사를 간신히 전달했다.`,
+      `${you.name}은(는) 너무 긴장한 나머지 준비했던 스카우트 멘트를 모두 잊어버렸다. 그저 말을 더듬으며 담당 트레이너가 되고 싶다는 뜻을 간신히 전했다.`,
     );
     era.println();
 
