@@ -2876,6 +2876,11 @@ module.exports = {
     return f;
   })(),
 
+  // [번역 완료] fall_heaven_end
+  async fall_heaven_end() {
+    await era.printAndWait('플레이해 주셔서 감사합니다!');
+  },
+
   // [번역 완료] gentle_wind
   gentle_wind: (() => {
     const title = 'TRUE END 다정한 바람이 세상을 분다';
