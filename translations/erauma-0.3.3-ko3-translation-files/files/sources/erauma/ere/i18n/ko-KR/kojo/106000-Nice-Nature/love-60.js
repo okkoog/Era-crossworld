@@ -187,7 +187,7 @@ module.exports = {
       nature.sex,
       '는 말했다.',
       callname,
-      '에게 전해 달라면서.。',
+      '에게 전해 달라면서.',
     ]);
     await nature.print_and_wait([
       '부탁받은 이상 ',
