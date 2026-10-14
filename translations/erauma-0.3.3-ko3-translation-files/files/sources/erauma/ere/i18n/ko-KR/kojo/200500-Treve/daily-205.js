@@ -427,7 +427,7 @@ module.exports = {
       buffer.push(() =>
         treve.say_and_wait([
           callname,
-          '！',
+          '!',
           call_target,
           ' 인형이 있네요! 하나 뽑아도 될까요?',
         ]),
