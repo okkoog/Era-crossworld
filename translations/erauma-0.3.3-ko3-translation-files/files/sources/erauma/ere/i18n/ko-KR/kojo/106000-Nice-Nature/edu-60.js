@@ -730,10 +730,10 @@ module.exports = {
         await era.printAndWait(
           '나이스 네이처의 의문에는 바로 답하지 않고, 뒤에서 대기실 문을 잠갔다.',
         );
-        era.printButton('「うちの家系、自慢の染色体だよ」', 1);
+        era.printButton('「우리 집안 자랑인 염색체야.」', 1);
         await era.input();
         await nature.say_and_wait(
-          '……えっ？ 待って待って待って？ ここでするの？ ここ控え室だよ！',
+          '……어? 잠깐, 잠깐만! 여기서 하려고? 여긴 대기실이잖아!',
         );
         await era.printAndWait(
           `${you.name} がいきなり服を脱ぎはじめると、ナイスネイチャの頬が一気に赤くなり、ソファの後ろへ縮こまる。`,
@@ -745,9 +745,9 @@ module.exports = {
         await era.printAndWait(
           `レースを終えたばかりの${nature.uma_sex_title}は、高速で駆けた熱をまだ体に溜め、発情に近い状態になる。今がまさにそれで、勝負服の下のスパッツさえ、わずかに湿っているのがわかる`,
         );
-        await nature.say_and_wait('で……でも、汗臭くて——');
+        await nature.say_and_wait('하, 하지만…… 땀 냄새가 나서——');
         era.printButton(
-          '「ネイチャの汗が臭いはずない。むしろそれがいい！」',
+          '「네이처한테 땀 냄새가 날 리 없잖아. 오히려 그게 좋아!」',
           1,
         );
         await era.input();
