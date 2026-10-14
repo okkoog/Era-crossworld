@@ -4,7 +4,7 @@ const era = require('#/era-electron');
 module.exports = {
   ...require("#/i18n/ja-JP/kojo/106000-Nice-Nature/love-60"),
 
-  // [번역 대상] 49
+  // [번역 완료] 49
   async 49(nature, you, callname, self_call) {
     const ret = [];
     await nature.print_and_wait([
@@ -54,63 +54,63 @@ module.exports = {
       era.drawLine({ content: '얼마 후……', position: 'left' });
       await nature.print_and_wait([
         nature.get_colored_name(),
-        ' は自室のベッドにひとり座っていた。もともと薄着の',
+        '은(는) 자신의 방 침대에 홀로 앉아 있었다. 평소에도 가볍게 입는 ',
         nature.sex,
-        'は、灰色のショートパンツに手をかけ、下着ごと下ろす。',
+        '은(는) 회색 반바지에 손을 대고 속옷과 함께 내렸다.',
       ]);
       await nature.print_and_wait([
         nature.sex,
-        'の手にはTシャツ。想いを寄せる相手の、その一枚。',
+        '의 손에는 티셔츠가 들려 있었다. 마음에 두고 있는 그 사람의 옷이었다.',
       ]);
       await nature.print_and_wait([
         nature.sex,
-        'はTシャツを鼻先に押し当てたまま、すでに湿りはじめた秘部へ手を伸ばす。入口をこすり、ときには突起を指ではさみ、行為は少しずつ深くなっていく。',
+        '은(는) 티셔츠에 코를 묻은 채 이미 젖기 시작한 은밀한 곳으로 손을 뻗었다. 입구를 문지르고 때로는 돌기를 손가락 사이에 끼우며 조금씩 더 깊이 빠져들었다.',
       ]);
-      nature.say(['トレーナー、', you.adult_sex_title, '、もっと……ほしい……']);
+      nature.say(['트레이너, ', you.adult_sex_title, '……조금만 더……원해……']);
       await nature.print_and_wait([
         nature.get_colored_name(),
-        ' の手は、もう真っ赤に充血し蜜を滴らせる秘所を、乱れながら刺激し、一段ずつ先へ進んでいく。',
+        '의 손은 이미 새빨갛게 달아올라 분비물이 흘러내리는 은밀한 부위를 어지럽게 자극하며 한 단계씩 더 나아갔다.',
       ]);
       await nature.print_and_wait([
-        '十分に緩んだと判断したのか、',
+        '충분히 느슨해졌다고 판단했는지,',,
         nature.sex,
-        'はより快感の得られる場所へ指を沈める。吸い込まれた指が内壁と擦れ、粘る音を立てた。',
+        '은(는) 더 큰 쾌감을 얻을 수 있는 곳으로 손가락을 밀어 넣었다. 빨려 들어간 손가락이 안쪽 벽과 마찰하며 끈적한 소리를 냈다.',
       ]);
-      await nature.say_and_wait('ん～～～～！！');
+      await nature.say_and_wait('으으으～～～～!!');
       await nature.print_and_wait([
-        'はっきりと絶頂を迎えた ',
+        '분명하게 절정에 도달한 ',
         nature.get_colored_name(),
-        ' は、声にならない喘ぎを漏らし、荒い息をつく。呼吸を整えるため、',
+        '은(는) 목소리도 되지 않는 신음을 흘리며 거칠게 숨을 몰아쉬었다. 호흡을 가다듬으려고,',,
         nature.sex,
-        'は一度手を止め、それからまた指を動かしはじめる。',
+        '은(는) 잠시 손을 멈췄다가 다시 손가락을 움직이기 시작했다.',
       ]);
       nature.say([
         callname,
         '、',
         callname,
-        '……こんな下品なことしてるの、',
+        '……이렇게 음란한 짓을 하고 있는 건,',,
         callname,
-        ' のこと考えて、こうなっちゃったから……',
+        '을(를) 생각하다가 이렇게 되어 버렸으니까……',
       ]);
       await nature.print_and_wait([
         nature.sex,
-        'の中で攪拌する指が、速度を上げる。ぐちゅぐちゅと淫らな音が鳴るたび、',
+        '의 안쪽을 휘젓는 손가락이 점점 빨라졌다. 질척질척한 소리가 울릴 때마다,',,
         nature.sex,
-        'の意識も乱れていく。',
+        '의 의식도 흐트러져 갔다.',
       ]);
       nature.say([
-        'あたし……あたし、',
+        '나…… 나는,',,
         callname,
-        ' が好き、大好き！ だから、もっと激しく……！',
+        '을(를) 좋아해, 정말 좋아해! 그러니까, 좀 더 격하게……!',
       ]);
-      nature.say(['いく、いく、', callname, '、いっちゃう～～～～！！']);
+      nature.say(['가, 가버려,',, callname, '……가버려～～～～!!']);
       await nature.print_and_wait([
         nature.get_colored_name(),
-        ' は体を反らせ、腰を止めどなく震わせ、潮を噴き出した。シーツを汚さないよう敷いてあったタオルを越え、シーツまでびしょ濡れにする。長い絶頂に',
+        '은(는) 몸을 뒤로 젖히고 허리를 쉴 새 없이 떨며 액체를 뿜어냈다. 시트가 더러워지지 않도록 깔아 둔 수건을 넘어 침대 시트까지 흠뻑 젖었다. 길게 이어진 절정에 ',
         nature.sex,
-        'の全身が震え、満たされた余韻のなかで、',
+        '의 온몸이 떨렸고, 충족감에 젖은 여운 속에서,',,
         nature.sex,
-        'は深く眠りに落ちた。',
+        '은(는) 깊은 잠에 빠져들었다.',
       ]);
     } else {
       await nature.print_and_wait([
