@@ -9,7 +9,7 @@ module.exports = class extends require("#/i18n/ja-JP/kojo/105000-Narita-Taishin/
 
   // [번역 완료] debuff_desc
   debuff_desc =
-    '체력·기력 상한-300, 의욕 상한이 2단계 내려간다. 부상이 치료되면 자연스럽게 사라진다.';
+    '체력·기력 상한-300, 의욕 상한이 2단계 내려간다. 부상이나 질병이 나으면 자연스럽게 사라진다.';
 
   // 한국어 작업 모듈 연결: edu
   edu = require("#/i18n/ko-KR/kojo/105000-Narita-Taishin/edu-50.kojo");
