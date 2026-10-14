@@ -4756,7 +4756,7 @@ module.exports = {
       era.println();
       await tachyon.say_and_wait('でも、気持ちよかったのでしょう？ ねえ？');
       era.println();
-      await era.printAndWait('タキオンの顔に、嗜虐の笑みが広がった。');
+      await era.printAndWait('타키온의 얼굴에 가학적인 미소가 번졌다.');
       era.println();
       await tachyon.say_and_wait([
         'その浮かれた顔を見るに、字を書かれたとき、',
@@ -4770,7 +4770,7 @@ module.exports = {
       );
       era.println();
       if (era.get('love:32') >= 75) {
-        await tachyon.say_and_wait('冗談ですわ。');
+        await tachyon.say_and_wait('농담일세.');
         era.println();
         await era.printAndWait(
           `ふいにタキオンは ${you.name} の顔を支え、${you.name} の口を塞いでいたボールギャグを優しく外した。`,
@@ -4784,26 +4784,26 @@ module.exports = {
         );
         era.println();
 
-        await tachyon.say_and_wait('……大丈夫ですわ、モルモット君。');
+        await tachyon.say_and_wait('……괜찮네, 모르모트 군.');
         era.println();
         await era.printAndWait(
           `タキオンは吐瀉物のついていない袖で、${you.name} の口元を優しく拭った。`,
         );
         era.println();
         await tachyon.say_and_wait(
-          '言いましたわよね。あなたを捨てたりしません。どんな姿になっても同じですわ。',
+          '내가 말하지 않았나? 난 자네를 버리지 않아. 어떤 모습이 되어도 마찬가지라네.',
         );
         era.println();
         await era.printAndWait(
           `${you.name} が反応する前に、${tachyon.sex}は ${you.name} の唇に口づけた。この数日どれほど苛まれ、どれだけの相手に汚され、今また何を吐いたかなど、構わずに。`,
         );
-        await era.printAndWait('柔らかく、温かく、包み込むようなキス。');
+        await era.printAndWait('부드럽고, 따스하며, 모든 것을 포용하는 입맞춤이었다.');
         await era.printAndWait(
           `いつの間にか ${you.name} は、昔の日々に戻ったような気がした。`,
         );
         era.println();
 
-        await era.printAndWait('……だが、それも『ような』だけだ。');
+        await era.printAndWait('……하지만 그저 착각일 뿐이었다.');
         era.println();
 
         await era.printAndWait(
@@ -4814,14 +4814,14 @@ module.exports = {
         );
         era.println();
 
-        await tachyon.say_and_wait('いいですの？ モルモット君？');
+        await tachyon.say_and_wait('괜찮겠나? 모르모트 군?');
         era.println();
 
         await era.printAndWait(
           `${you.name} は答えず、ただ従順に地へ跪き、今日最初の奉仕を始めた。`,
         );
       } else {
-        await tachyon.say_and_wait('これでまだ言い逃れするつもりですの？');
+        await tachyon.say_and_wait('이 꼴을 하고도 발뺌하려는 겐가?');
         era.println();
 
         await era.printAndWait(
@@ -4830,13 +4830,13 @@ module.exports = {
         await era.printAndWait(
           `外した瞬間、先の衝撃と、${you.name} の腹にまだ残っていた精液のせいで、${you.name} は堪らずタキオンへ向かい、腹の中の精液、愛液、胃酸を残らず吐き出そうとした。`,
         );
-        await era.printAndWait('だが……');
+        await era.printAndWait('그러나……');
         era.println();
 
-        await tachyon.say_and_wait('何をするつもりですの、モルモット君。');
+        await tachyon.say_and_wait('무슨 짓을 하려는 건가, 모르모트 군.');
         era.println();
 
-        await era.printAndWait('ああ、とっくに分かっていたはずだ。');
+        await era.printAndWait('아아, 진작 알았어야 했다.');
         await era.printAndWait(
           `${tachyon.sex}がわざわざギャグを外して楽をさせてくれるはずがない。`,
         );
@@ -4845,7 +4845,7 @@ module.exports = {
         );
         era.println();
         await tachyon.say_and_wait(
-          'この数日は実験で忙しくて、私自身はまだ使っていませんでしたわ。',
+          '요 며칠 실험하느라 바빠서 나 자신은 아직 쓰지도 못했거든.',
         );
         era.println();
         await era.printAndWait(
@@ -4867,7 +4867,7 @@ module.exports = {
           `今日最初の奉仕を終えた ${you.name} は虚ろな目で虚空を見つめ、いったい何がこうなるまで進んだのかを考えた。`,
         );
         await era.printAndWait(
-          '……だが、そんな思考にも意味はない。改造手術のときに聞いた通り、もう戻れない。',
+          '……하지만 그런 생각조차 이제는 아무 의미 없었다. 개조 수술 때 들었던 말처럼, 모든 것은 이미 되돌릴 수 없으니까.',
         );
         await era.printAndWait([
           you.get_colored_name(),
@@ -4885,7 +4885,7 @@ module.exports = {
             you.get_colored_name(),
             ' が残した痕を舐めた。',
           ]);
-          await era.printAndWait('理由は何だろう。');
+          await era.printAndWait('그 원인은 무엇이었을까?');
           await era.printAndWait([
             tachyon.uma_sex_title,
             'さまに道具で掃除しているところを見られたら、もっと惨めになるから？',
