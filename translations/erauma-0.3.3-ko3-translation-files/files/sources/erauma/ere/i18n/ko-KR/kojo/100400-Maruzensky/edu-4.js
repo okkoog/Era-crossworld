@@ -1411,26 +1411,26 @@ module.exports = {
       );
       await you.say_as_passer_by_and_wait(
         `지나가던 트레이너`,
-        `애초에 ${you.actual_name}은(는) 괴물 같은 ${maru.name}에게 변덕스럽게 마음에 든 행운아일 뿐이야. 운 좋은 녀석이지.`,
+        `애초에 ${you.actual_name}은(는) 괴물 같은 ${maru.name}의 변덕으로 선택받은 행운아일 뿐이야. 정말 운이 좋았지.`,
       );
       await you.say_and_wait(`괴물에게 변덕스럽게 마음에 든 행운아, 라고?`);
       await era.printAndWait(
         `말한 대로 ${maru.name}을(를) 영입하려 했던 트레이너 중에는 평생 뛰어난 성적을 남긴 베테랑도 적지 않다.`,
       );
       await era.printAndWait(
-        `자신과 그들을 비교하면 좋게 봐도 경험 차이가 크다. ${maru.name}에게 선택된 건 우연히 마음의 현을 건드렸을 뿐이다.`,
+        `그들과 비교하면 자신은 좋게 봐도 경험이 한참 부족했다. ${maru.name}에게 선택받은 것도 그저 우연히 마음을 움직였기 때문일 것이다.`,
       );
       await era.printAndWait(`다음에도 이렇게 운이 좋을 수 있을까?`);
       await era.printAndWait(`억지로 주의를 업무로 돌렸다.`);
       await era.printAndWait(`스마트폰을 슬쩍 본다. 잠금 화면의 시각은 6:05.`);
       await you.say_and_wait(`앞으로 더 열심히 해야 해.`);
       await era.printAndWait(
-        `봉투를 서랍에 넣고 ${you.actual_name}은(는) 다시 일 속으로 도망쳤다.`,
+        `봉투를 서랍에 넣은 뒤, ${you.actual_name}은(는) 다시 일에 몰두하며 잡념을 떨쳐냈다.`,
       );
       era.drawLine();
       await era.printAndWait(`슬슬 출발할 시간이다.`);
       await era.printAndWait(
-        `훈련실에서 교사 옥상까지 약 10분. 예의를 생각하면 10분 정도 일찍 도착하는 게 딱 좋다.`,
+        `훈련실에서 학교 건물 옥상까지 약 10분. 예의를 생각하면 10분 정도 일찍 도착하는 편이 좋겠다.`,
       );
       await era.printAndWait(`이때 잠금 화면의 시각은 정확히 7시.`);
       era.printButton(`「출발!」`, 1);
