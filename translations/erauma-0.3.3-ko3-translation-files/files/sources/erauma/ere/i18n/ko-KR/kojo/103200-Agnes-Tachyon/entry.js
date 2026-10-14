@@ -30,7 +30,7 @@ module.exports = class extends (
 
   // [번역 완료] limited_tachyon_desc
   limited_tachyon_desc = (uma) =>
-    `밝고, 뜨겁고, 눈부시다. 하지만 거기까지다. 이것이 우마${uma}아그네스 타키온의 한계. 트레이닝 효과+50%.`;
+    `밝고, 뜨겁고, 눈부시다. 하지만 거기까지다. 이것이 우마${uma} 아그네스 타키온의 한계. 트레이닝 효과+50%.`;
 
   // 한국어 작업 모듈 연결: love
   love = proxy_kojo_js(
@@ -42,5 +42,5 @@ module.exports = class extends (
 
   // [번역 완료] uma_limit_desc
   uma_limit_desc = (uma) =>
-    `${uma}의 한계. 하지만 우마${uma}아그네스 타키온의 한계는 아니다. 레이스 시에만 모든 능력이 매우 크게 상승한다.`;
+    `${uma}의 한계. 하지만 우마${uma} 아그네스 타키온의 한계는 아니다. 레이스 시에만 모든 능력이 매우 크게 상승한다.`;
 };
