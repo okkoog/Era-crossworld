@@ -1817,7 +1817,7 @@ module.exports = {
     );
   },
 
-  // [번역 대상] ero_start_reward1
+  // [번역 완료] ero_start_reward1
   ero_start_reward1: (() => {
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -2022,101 +2022,101 @@ module.exports = {
         '은(는) 그래도 참지 못하고 침을 삼켰다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('ぐちゅ');
-      await tachyon.say_and_wait('んちゅるるる……ちゅる……ちゅぐ……');
+      await tachyon.say_and_wait('질척……');
+      await tachyon.say_and_wait('츄르르……츄르……츄륵……');
       era.println();
       await era.printAndWait([
-        '許可が出る前に、',
+        '허락이 떨어지기도 전에, ',
         tachyon.get_colored_name(),
-        ' はもう肉棒を吸い始めていた',
+        '은(는) 이미 성기를 빨기 시작했다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' も息を吐く。これ以上続ければ、堪えきれなくなるのは ',
+        '도 숨을 내쉬었다. 이 이상 계속한다면 참지 못하게 되는 것은 오히려 ',
         you.get_colored_name(),
-        ' のほうだ',
+        '쪽일 것이다.',
       ]);
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は大きく口を開き、一気に根元まで肉棒を呑む',
+        '은(는) 입을 크게 벌려 한 번에 뿌리까지 성기를 삼켰다.',
       ]);
-      await era.printAndWait('上下に吸い続け、下品な水音を立てる');
+      await era.printAndWait('위아래로 계속 빨면서 외설적인 물소리를 냈다.');
       era.println();
-      await tachyon.say_and_wait('おいしい……おいしいですわ……');
-      await tachyon.say_and_wait(['肉棒……', callname, ' の臭い肉棒❤❤']);
+      await tachyon.say_and_wait('맛있어……너무 맛있어요……');
+      await tachyon.say_and_wait(['성기……', callname, '의 진한 냄새가 나는 성기❤❤']);
       era.println();
-      await era.printAndWait(['根元から亀頭まで、余さず包んで吸う']);
+      await era.printAndWait(['뿌리부터 귀두까지 남김없이 감싸 빨아들였다.']);
       await era.printAndWait(
-        '口紅を塗るように、肉棒の味を口の中へ残さず擦りつけたい',
+        '립스틱을 바르듯 성기의 맛을 입안 구석구석에 문질러 남기고 싶었다.',
       );
       era.println();
       await era.printAndWait('저녁 무렵, 대부분이 집이나 기숙사로 돌아간 시간이었다.');
       await era.printAndWait(
-        '実験室に、ひどく淫らな水音が響く。わざと出しているのか、もう音など気にする余裕がないのか？',
+        '실험실에 몹시 외설적인 물소리가 울려 퍼졌다. 일부러 내는 소리일까, 아니면 이제 그런 소리를 신경 쓸 여유조차 없는 걸까?',
       );
       await era.printAndWait([
         you.get_colored_name(),
-        ' への渇望、肉棒への渇望、あるいはこれほど淫らな行いへの背徳感',
+        '에 대한 갈망, 성기에 대한 갈망, 혹은 이렇게 외설적인 행위를 한다는 배덕감.',
       ]);
       await era.printAndWait(
-        '肉棒に仕えながら、揺れる尻も床と指に擦りつけ、慰めを求める',
+        '성기에 봉사하는 동안 흔들리는 엉덩이마저 바닥과 손가락에 비벼 위안을 구했다.',
       );
       await era.printAndWait(
-        'だが……いちばんおいしいのは、やはり口の中の肉棒だ',
+        '하지만……역시 가장 맛있는 것은 입안의 성기였다.',
       );
       await era.printAndWait([
-        '愛情のこもった奉仕が、無言で ',
+        '애정이 담긴 봉사는 아무 말 없이도 ',
         tachyon.get_colored_name(),
-        ' の眼前の肉棒への執着を語っている',
+        '의 눈앞에 있는 성기에 대한 집착을 보여 주었다.',
       ]);
       await era.printAndWait([
-        '今ここで一生肉棒の奴隷として生きると誓わせても、',
+        '지금 당장 평생 성기의 노예로 살겠다고 맹세하게 해도, ',
         tachyon.sex,
-        'は頷くだろう',
+        '은(는) 고개를 끄덕일 것이다.',
       ]);
       era.println();
       await era.printAndWait([
-        '不意に、',
+        '느닷없이, ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         tachyon.get_colored_name(),
-        ' の頭を軽く叩く',
+        '의 머리를 가볍게 두드렸다.',
       ]);
-      await era.printAndWait(['従順な', tachyon.sex, 'は、すぐに意味を察した']);
+      await era.printAndWait(['순종적인 ', tachyon.sex, '은(는) 곧 그 뜻을 알아차렸다.']);
       era.println();
       await tachyon.say_and_wait(
-        '中に……出してくださいまし……私の口穴に……全部……飲みますわ❤❤',
+        '안에……내주세요……제 입안에……전부……삼킬게요❤❤',
       );
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'はすぐ、より深く ',
+        '은(는) 즉시 더 깊이 ',
         you.get_colored_name(),
-        ' の肉棒を含んで吸う',
+        '의 성기를 입에 넣고 빨아들였다.',
       ]);
-      await era.printAndWait('ついに、白濁が口の中で弾ける');
+      await era.printAndWait('마침내 입안에서 하얀 액체가 터져 나왔다.');
       era.println();
-      await tachyon.say_and_wait('ちゅ……ぐちゅ………ぷはっ');
-      await tachyon.say_and_wait('はあっ……はっ……ん……ちゅ……');
+      await tachyon.say_and_wait('츄……질척……푸핫……');
+      await tachyon.say_and_wait('하아……하앗……으응……츄……');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は、口の中へ射精された精液をゆっくり噛む',
+        '은(는) 입안에 사정된 정액을 천천히 굴려 음미했다.',
       ]);
       await era.printAndWait(
-        'わざとぐちゅ、と音を立ててから、精液をすべて飲み下す',
+        '일부러 질척 소리를 낸 다음 정액을 전부 삼켰다.',
       );
-      await era.printAndWait('残った精液を一滴残さず飲み干すため');
+      await era.printAndWait('남은 정액까지 한 방울도 빠짐없이 삼키기 위해.');
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は再び垂れた肉棒を含み、啜り続けて肉棒を掃除する',
+        '은(는) 다시 늘어진 성기를 입에 물고 계속 빨아 청소했다.',
       ]);
       await era.printAndWait([
         tachyon.sex,
-        'の執着した様子を見て、',
+        '의 집착 어린 모습을 보고, ',
         you.get_colored_name(),
-        ' の下は、また勝手に硬くなった',
+        '의 아랫도리는 다시 저절로 단단해졌다.',
       ]);
       era.println();
       await tachyon.say_and_wait([
@@ -2129,9 +2129,9 @@ module.exports = {
       era.println();
       await era.printAndWait([
         tachyon.sex,
-        'のとろけた流し目を見て、',
+        '의 녹아내릴 듯한 곁눈질을 보고, ',
         you.get_colored_name(),
-        ' は、命令ばかり吐くその小さな口を、もう一度塞ぐことにした',
+        '은(는) 명령만 내뱉던 그 작은 입을 다시 한번 막기로 했다.',
       ]);
     };
     f.title = '실험의 보상·첫 번째';
