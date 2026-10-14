@@ -17,12 +17,12 @@ module.exports = {
   async rec(treve, taste, may, you, callname) {
     const ret = [];
     await era.printAndWait(
-      `어느 휴일, ${you.name}은(는) ${taste.name}과 파리 트레센 학원 측으로부터 동시에 연락 메일을 받았다.`,
+      `어느 휴일, ${you.name}은(는) ${taste.name}과 파리 트레센 학원 양측으로부터 동시에 연락을 받았다.`,
     );
     await era.printAndWait('내용은 조금씩 달랐지만, 결국 뜻하는 바는 하나였다.');
     if (era.get('flag:当前声望') >= 1000) {
       await era.printAndWait(
-        `단기간에 연이어 국제 G1 레이스 우승을 차지한 ${you.name}은(는) 이미 각국 레이스계에서 결코 무시할 수 없는 존재가 되었다.`,
+        `단기간에 국제 G1 레이스에서 연승을 거둔 ${you.name}은(는) 이미 각국 경마계에서 무시할 수 없는 존재가 되었다.`,
       );
     }
     await era.printAndWait([
@@ -36,7 +36,7 @@ module.exports = {
     await era.printAndWait([
       '이사장의 소꿉친구인 ',
       may.get_colored_name(),
-      '가 모든 여정에 걸쳐 ',
+      '이(가) 여정 내내 ',
       you.get_colored_name(),
       '을(를) 서포트할 예정이다.',
     ]);
@@ -91,10 +91,10 @@ module.exports = {
         );
       }
       await era.printAndWait(
-        '으슬으슬 떨며 의자에서 일어나, 방구석에 걸려 있던 코트를 집어 들었다. 창밖을 올려다보니 우중충한 하늘이 보였다. 잿빛 채광이 적막한 트레이닝실을 비추고 있었다.',
+        '으슬으슬 떨며 의자에서 일어나 방 한구석에 걸려 있던 코트를 집어 들었다. 창밖에는 잔뜩 흐린 하늘이 펼쳐져 있었다. 잿빛 햇살이 적막한 트레이너실을 비추고 있었다.',
       );
       await era.printAndWait(
-        '가을이 다가오고 있었다. 외투가 없다면 슬슬 떨려오는 이 몸이 견디기 힘들 것 같았다.',
+        '가을이 다가오고 있었다. 이제 외투 없이는 쌀쌀한 날씨를 견디기 힘들 것 같았다.',
       );
       await era.printAndWait(
         `옷걸이에 걸린 중절모를 쓰고, 오른손에 봉투를 쥔 채 나섰다. 문을 닫는 순간, ${you.name}은(는) 이 방을 잠시 물끄러미 바라보았다. 별 의미 없는 것들뿐이었다.`,
@@ -114,12 +114,12 @@ module.exports = {
       await era.printAndWait(
         '경기장과는 정반대 방향으로 걸어가며, 스카우트에 열을 올렸던 옛 시절을 떠올렸다.',
       );
-      await era.printAndWait('싫더라도 이해할 수밖에 없다, 자신은 이곳에 어울리지 않는다는 것을.');
+      await era.printAndWait('인정하기 싫어도 어쩔 수 없었다. 자신은 이곳에 어울리지 않는 사람이었다.');
       await era.printAndWait(
         `돌길을 걷다 체육복을 입은 몇몇 ${treve.uma_sex_title}들과 스쳐 지나갔다.`,
       );
       await era.printAndWait(
-        `그런 상황 속에서 또다시 ${you.name}의 귀를 자극한 것은, 주머니에 넣어둔 휴대폰의 벨소리였다.`,
+        `그때 ${you.name}의 주머니에 넣어 둔 휴대전화가 울렸다.`,
       );
       await era.printAndWait(
         `상대가 누군지 확인하지도 않고 전화를 받는 것은 정보에 좌우되는 ${you.name}의 직업병이었다.`,
