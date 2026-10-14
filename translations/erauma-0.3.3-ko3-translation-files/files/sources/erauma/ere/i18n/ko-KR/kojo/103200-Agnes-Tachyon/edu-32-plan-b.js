@@ -1102,9 +1102,9 @@ module.exports = {
         '一文字だったものが双唇のように開き、唇の間にさっき盗み食いした白い液が残る穴口も',
       );
       await era.printAndWait('股間が、また硬くなった');
-      await era.printAndWait([tachyon.sex, 'は察したように、尻を少し揺する']);
+      await era.printAndWait([tachyon.sex, '은(는) 눈치챈 듯 엉덩이를 살짝 흔들었다.']);
     }
-    await era.printAndWait('部屋に戻れば、また一戦になりそうだ……');
+    await era.printAndWait('방에 돌아가면 다시 한바탕 소동이 벌어질 것 같았다……');
     await era.printAndWait([
       '그 전에, ',
       you.get_colored_name(),
