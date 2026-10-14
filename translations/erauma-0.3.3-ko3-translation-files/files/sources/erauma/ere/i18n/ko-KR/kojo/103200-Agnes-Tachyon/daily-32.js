@@ -2270,7 +2270,7 @@ module.exports = {
     await get_random_entry(buffer)();
   },
 
-  // [번역 대상] school_atrium
+  // [번역 완료] school_atrium
   async school_atrium(tachyon, you, callname, plan_b) {
     const buffer = [];
     if (!plan_b) {
@@ -2315,7 +2315,7 @@ module.exports = {
               you.get_colored_name(),
               '은(는) ',
               tachyon.sex,
-              'の尻を軽く叩いた。聞きたいものが何か、それだけで十分だった。',
+              '의 엉덩이를 가볍게 때렸다. 무엇을 듣고 싶은지는 그것만으로도 충분히 전해졌다.',
             ]);
             await era.printAndWait([
               '머리 회전이 빠른 천재 ',
@@ -2331,52 +2331,52 @@ module.exports = {
               '를 한 번 쳐다본 뒤, 나무 구멍을 향해 억울하다고 외치기 시작했다.',
             ]);
             await tachyon.say_and_wait([
-              '乳頭を ',
+              '유두를 ',
               callname,
-              ' に摘まれるだけでイってしまうのが悔しいですわ❤️',
+              '이(가) 꼬집기만 해도 절정에 이르는 게 너무 분해요❤️',
             ]);
             await tachyon.say_and_wait([
-              'お穴が雑魚すぎて、',
+              '그곳이 너무 쉽게 반응해서,',
               callname,
-              ' に触られただけで濡れるのが悔しいですわ❤️',
+              '이(가) 만지기만 해도 젖어 버리는 게 너무 분해요❤️',
             ]);
             await tachyon.say_and_wait([
               callname,
-              ' の匂いを嗅いだだけで頭が交尾しか残らない痴女になるのが悔しいですわ❤️',
+              '의 냄새만 맡아도 머릿속에 교미 생각밖에 남지 않는 음란한 여자가 되어 버리는 게 너무 분해요❤️',
             ]);
             await tachyon.say_and_wait([
-              'おちんぽを含んだ瞬間、',
+              '성기를 입에 문 순간,',
               callname,
-              ' の一生オナホになりたくなるのが悔しいですわ❤️',
+              '의 평생 전용 도구가 되고 싶어지는 게 너무 분해요❤️',
             ]);
             await tachyon.say_and_wait([
-              '我慢しろと命じられているのに、',
+              '참으라고 명령받았는데도,',
               callname,
-              ' が射精するたび飲み込んで罰せられるのが悔しいですわ❤️',
+              '이(가) 사정할 때마다 삼켜 버려 벌을 받는 게 너무 분해요❤️',
             ]);
             await tachyon.say_and_wait(
-              '毎回薬に頼っても、おちんぽ様に勝てないのが悔しいですわ❤️',
+              '매번 약에 의지해도 그분의 성기를 이기지 못하는 게 너무 분해요❤️',
             );
             await tachyon.say_and_wait(
-              'おちんぽ様を満足させる前に自分が先にイってしまうのが悔しいですわ❤️',
+              '그분을 만족시키기도 전에 제가 먼저 절정에 이르는 게 너무 분해요❤️',
             );
             await era.printAndWait([
-              '一声叫ぶたびに ',
+              '한 번 외칠 때마다 ',
               you.get_colored_name(),
-              ' はご褒美に',
+              '은(는) 상으로 ',
               tachyon.sex,
-              'の尻を叩いた。叩かれるたび',
+              '의 엉덩이를 때렸다. 맞을 때마다 ',
               tachyon.sex,
-              'はより熱心に腰を揺らし、さらに過激な『悔しい』を吐き出した。',
+              '은(는) 더욱 열심히 허리를 흔들며 점점 더 노골적인 불만을 쏟아냈다.',
             ]);
             await era.printAndWait([
-              '最後、周囲の',
+              '마지막에는 주변 ',
               tachyon.uma_sex_title,
-              'の羞恥に染まった視線の中、',
+              '들의 부끄러운 시선 속에서,',
               you.get_colored_name(),
-              ' は両脚を震わせて歩けなくなった ',
+              '은(는) 다리가 떨려 제대로 걷지 못하는 ',
               tachyon.get_colored_name(),
-              ' の手を引き、実験室へ戻った。',
+              '의 손을 잡고 실험실로 돌아갔다.',
             ]);
           },
           async () => {
@@ -2385,38 +2385,38 @@ module.exports = {
               '은(는) 오래된 나무 구멍에 기대어 무료한 얼굴로 안을 들여다보고 있었다.',
             ]);
             await era.printAndWait([
-              '外へ突き出した',
+              '밖으로 내밀어진 ',
               tachyon.sex,
-              'の尻を見て、',
+              '의 엉덩이를 보자, ',
               you.get_colored_name(),
-              ' は欲を抑えきれなくなった。',
+              '은(는) 욕망을 억누르기 어려워졌다.',
             ]);
-            await tachyon.say_and_wait([callname, '……んっ❤️']);
+            await tachyon.say_and_wait([callname, '……으응❤️']);
             await era.printAndWait([
               you.get_colored_name(),
-              ' は',
+              '은(는) ',
               tachyon.sex,
-              'の、まだ幼さを残す尻を叩いた。布越しの弾力が、打ち下ろした力を掌へ跳ね返した。',
+              '의 엉덩이를 손바닥으로 때렸다. 옷감 너머의 탄력이 손바닥에 그대로 되튀어 왔다.',
             ]);
             await tachyon.say_and_wait([
               '……',
               callname,
-              '、ここ、残響が……大きいですわ❤️……戻って、戻ってからにしましょう、いいですわね❤️',
+              '……여긴 메아리가…… 크게 울린답니다❤️……돌아가서, 돌아간 다음에 하시면 안 될까요❤️',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' は',
+              '은(는) ',
               tachyon.sex,
-              'の懇願を聞かず、もう一度強く叩いた。',
+              '의 애원을 듣지 않고 한 번 더 세게 때렸다.',
             ]);
             await era.printAndWait([
               tachyon.sex,
               '은(는) 다급히 입을 틀어막았지만, 그래도 소리가 새어 나왔다.',
             ]);
-            await tachyon.say_and_wait('んひぃ❤️❤️❤️');
-            await tachyon.say_and_wait('ん……❤️');
-            await tachyon.say_and_wait('んぅ……❤️');
-            await tachyon.say_and_wait('待って、入れないでええええ❤️❤️❤️');
+            await tachyon.say_and_wait('히이익❤️❤️❤️');
+            await tachyon.say_and_wait('으응……❤️');
+            await tachyon.say_and_wait('으으……❤️');
+            await tachyon.say_and_wait('기다려, 넣으면 안 돼애애애❤️❤️❤️');
             await era.printAndWait([
               '마지막으로, ',
               you.get_colored_name(),
@@ -2450,7 +2450,7 @@ module.exports = {
       if (era.get('love:32') > 75) {
         buffer.push(async () => {
           await tachyon.say_and_wait([
-            'ん……',
+            '으응……',
             callname,
             ' ❤️……남들이 감정을 털어놓는 나무 구멍 앞에서 이런 짓이라니…… 누가 듣기라도 하면 어쩌실 건가요❤️',
           ]);
