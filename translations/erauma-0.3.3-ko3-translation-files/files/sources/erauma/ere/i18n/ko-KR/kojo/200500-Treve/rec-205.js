@@ -59,7 +59,7 @@ module.exports = {
         '이 나이에 장거리 여행을 안 해본 것도 아니고, 이 정도 어려움은 쉽게 이겨낼 수 있을 거라 생각했다.',
       );
       await era.printAndWait(
-        '하지만 기차를 타기 전에 버스를 한 번 더 타야 했고, 점심도 굶은 채 물만 마실 줄 누가 알았겠는가.',
+        '하지만 기차를 타기 전에 버스도 한 번 탔고, 점심도 먹지 못한 채 물만 마셨다.',
       );
       await era.printAndWait('지금 당장 배가 고프지는 않았지만, 피로가 꽤 쌓여 있었다.');
       await era.printAndWait(
@@ -109,10 +109,10 @@ module.exports = {
       era.printButton('「데뷔전인가?」', 1);
       await era.input();
       await era.printAndWait(
-        `수많은 ${treve.uma_sex_title}들이 실전 레이스에서 실력을 뽐내며 스카우트될 기회를 얻는 곳. 젊은 트레이너들이 모여드는 그 장소.`,
+        `수많은 ${treve.uma_sex_title}들이 실전에 가까운 레이스에서 실력을 뽐내며 스카우트될 기회를 얻는 곳. 젊은 트레이너들이 모여드는 그 장소.`,
       );
       await era.printAndWait(
-        '경기장과는 정반대 방향으로 걸어가며, 스카우트에 열을 올렸던 옛 시절을 떠올렸다.',
+        '운동장과는 정반대 방향으로 걸어가며, 스카우트에 열을 올렸던 옛 시절을 떠올렸다.',
       );
       await era.printAndWait('인정하기 싫어도 어쩔 수 없었다. 자신은 이곳에 어울리지 않는 사람이었다.');
       await era.printAndWait(
@@ -146,7 +146,7 @@ module.exports = {
         `농담! 그게… 어쨌든 자네라면 실력이 있으니, 그곳에서 ${treve.sex}를 거둬줄 수 없을까 싶어서 말이네.`,
       );
       await era.printAndWait(
-        '이 시치미 떼는 작자는 귓구멍으로 바람이라도 통하게 열어둔 건가.',
+        '저 젊은 척하는 이사장의 귀는 바람이나 통하라고 뚫려 있는 걸까.',
       );
       await era.printAndWait(
         `왜 이 땅에 막 도착한 트레이너에게 프랑스의 ${treve.uma_sex_title}를 맡기려는 걸까.`,
@@ -393,7 +393,7 @@ module.exports = {
         );
         await era.printAndWait('대처하기 곤란할 만큼 맑은 눈동자였다.');
         await treve.say_and_wait(
-          `그럼, 제가 이유를 하나 만들어 드릴게요. 개선문상을 연패할 ${treve.uma_sex_title}를 담당하게 된다면, 사회인으로서 트레이너님의 평가도 엄청 올라가지 않겠어요?`,
+          `그럼, 제가 이유를 하나 만들어 드릴게요. 개선문상에서 연속 우승할 ${treve.uma_sex_title}를 담당하게 된다면, 사회인으로서 트레이너님의 평가도 엄청 올라가지 않겠어요?`,
         );
         era.printButton('「그 자신감은 도대체 어디서 나오는 거야?」', 1);
         await era.input();
