@@ -102,7 +102,7 @@ module.exports = {
       await era.printAndWait(`${treve.name}는 당당하게 가슴을 폈다.`);
       era.printButton('「그래도 돼?」', 1);
       await era.input();
-      await era.printAndWait(`밑져야 본전으로 물어보자, ${treve.name}는 활기차게 고개를 끄덕였다.`);
+      await era.printAndWait(`별 기대 없이 물었지만, ${treve.name}는 활기차게 고개를 끄덕였다.`);
       await treve.say_and_wait(
         '그럼 우선, 저기에 맛있는 가게가 있으니 들어가 봐요.',
       );
@@ -124,10 +124,10 @@ module.exports = {
       );
       await treve.say_and_wait('보셨나요……?');
       await era.printAndWait(
-        `${treve.name}의 질문에 ${you.name}은(는) 저도 모르게 고개를 가로저었다.`,
+        `${treve.name}의 질문에 ${you.name}은(는) 자기도 모르게 고개를 가로저었다.`,
       );
       await era.printAndWait(
-        `${treve.sex}는 이내 미소를 지으며 『다행이네요!』 라고 하더니, ${you.name}의 손을 잡고 달리기 시작했다.`,
+        `${treve.sex}는 이내 미소 지으며 『다행이네요!』라고 하더니, ${you.name}의 손을 잡고 달리기 시작했다.`,
       );
       await era.printAndWait(
         `${you.name}의 머릿속에는 ${treve.name}가 숨기려 했던 사진이 계속 맴돌았다. 아주 찰나의 순간이었지만, 틀림없었다.`,
@@ -145,7 +145,7 @@ module.exports = {
         `그것은 ${you.name}이(가) 카메라를 정면으로 바라보고 찍은 사진이 아니었으며, 그런 사진을 찍힌 기억조차 없었다.`,
       );
       await era.printAndWait(
-        `명백히 어둠 속에서 몰래 촬영한 도촬 사진이었다. 문제는 ${treve.name}가 대체 왜 그런 것을 가지고 있느냐는 점이었다.`,
+        `분명 어둠 속에서 몰래 찍은 사진이었다. 문제는 ${treve.name}가 대체 왜 그런 사진을 가지고 있느냐는 점이었다.`,
       );
       await era.printAndWait(
         '우연히 그런 사진을 주운 걸까? 그렇다 쳐도 너무 소름 끼쳤다. 혹시 스토커인 걸까?',
