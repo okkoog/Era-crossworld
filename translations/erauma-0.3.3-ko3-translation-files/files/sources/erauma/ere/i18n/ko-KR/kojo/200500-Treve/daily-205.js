@@ -16,7 +16,7 @@ module.exports = {
   good_morning(treve) {
     const buffer = [
       () => treve.say("그럼 다음엔 뭘 하고 놀까요?"),
-      () => treve.say("지금 힘이 넘쳐나서, 에너지가 너무 가득해 조금 곤란할 정도예요."),
+      () => treve.say("지금은 기운이 넘쳐서 오히려 주체하기 힘들 정도예요."),
     ];
     if (era.get('love:205') >= 50) {
       buffer.push(
@@ -27,7 +27,7 @@ module.exports = {
     }
     if (era.get('love:205') >= 75) {
       buffer.push(
-        () => treve.say('당신을 만나기 전까지는 제가 한 사람만 바라보는 사람이라고 생각했어요.'),
+        () => treve.say('당신을 만나기 전까지는 제가 일편단심인 줄 알았어요.'),
         () =>
           treve.say('당신에게 다가갈 때면 첫사랑을 시작한 것처럼 심장이 두근거려요.'),
       );
