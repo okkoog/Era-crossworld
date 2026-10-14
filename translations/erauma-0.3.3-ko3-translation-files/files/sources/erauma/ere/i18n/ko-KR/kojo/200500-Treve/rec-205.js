@@ -355,7 +355,7 @@ module.exports = {
         era.printButton('「왜 그래?」', 1);
         await era.input();
         await treve.say_and_wait('저를 스카우트하시는 건……');
-        await era.printAndWait('어쩐지 비에 흠뻑 젖은 소동물이 연상되었다.');
+        await era.printAndWait('어쩐지 물에 젖은 작은 동물이 떠올랐다.');
         await era.printAndWait('정직하고 실력도 있으며 포부도 크다.');
         await era.printAndWait(
           `${treve.name}는 이렇게까지 거절당한 상황에서도 필사적으로 머리를 굴리고 있었다.`,
@@ -364,7 +364,7 @@ module.exports = {
           `${treve.sex}는 ${you.name}을(를) 구원의 배라고 여길지 모르지만, 이 진흙 배는 가라앉고 있는 중이다.`,
         );
         await era.printAndWait(
-          `분명 ${treve.sex}에게 기대를 거는 다른 트레이너가 있을 텐데.`,
+          `분명 ${treve.sex}에게 기대를 거는 다른 트레이너도 있을 텐데.`,
         );
         await era.printAndWait('바로 그때, 트레브가 손가락을 튕겼다.');
         await treve.say_and_wait(
@@ -395,7 +395,7 @@ module.exports = {
         await treve.say_and_wait(
           `그럼, 제가 이유를 하나 만들어 드릴게요. 개선문상을 연패할 ${treve.uma_sex_title}를 담당하게 된다면, 사회인으로서 트레이너님의 평가도 엄청 올라가지 않겠어요?`,
         );
-        era.printButton('「그 근거 없는 자신감은 도대체 어디서 나오는 거야?」', 1);
+        era.printButton('「그 자신감은 도대체 어디서 나오는 거야?」', 1);
         await era.input();
         await era.printAndWait(
           `말은 그렇게 해도, 실력은 ${taste.name}와 레이스 결과가 이미 보증하고 있다.`,
@@ -513,7 +513,7 @@ module.exports = {
       await era.printAndWait('연노랑빛 회랑, 투명하고 커다란 유리창, 각진 파사드.');
       await era.printAndWait('현대적인 스타일의 캠퍼스 건물이 새파란 하늘과 어우러져 반짝였다.');
       await era.printAndWait(
-        '은행나무, 소나무, 그리고 안뜰의 고목나무도 모두 따스한 햇살을 받고 있었다.',
+        '은행나무와 소나무, 안뜰의 고사목에 난 구멍까지도 모두 햇살을 받고 있었다.',
       );
       await era.printAndWait([
         treve.get_colored_name(),
