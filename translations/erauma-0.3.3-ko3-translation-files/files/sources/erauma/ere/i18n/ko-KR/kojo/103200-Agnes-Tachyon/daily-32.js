@@ -2411,7 +2411,7 @@ module.exports = {
             ]);
             await era.printAndWait([
               tachyon.sex,
-              'は慌てて口を押さえたが、それでも声は漏れ出た。',
+              '은(는) 다급히 입을 틀어막았지만, 그래도 소리가 새어 나왔다.',
             ]);
             await tachyon.say_and_wait('んひぃ❤️❤️❤️');
             await tachyon.say_and_wait('ん……❤️');
@@ -2436,7 +2436,7 @@ module.exports = {
             await era.printAndWait([
               '품에 안긴 ',
               tachyon.get_colored_name(),
-              '……人目も構わず、力の抜けた両手で抱擁をねだる',
+              '……주변 시선은 아랑곳하지 않고 힘 빠진 두 팔로 끊임없이 포옹을 갈구하는 ',
               tachyon.sex,
               'は、',
             ]);
@@ -2452,11 +2452,11 @@ module.exports = {
           await tachyon.say_and_wait([
             'ん……',
             callname,
-            ' ❤️……人の気持ちを吐く樹洞の前で、こんなこと……聞かれたらどうしますの❤️',
+            ' ❤️……남들이 감정을 털어놓는 나무 구멍 앞에서 이런 짓이라니…… 누가 듣기라도 하면 어쩌실 건가요❤️',
           ]);
-          await tachyon.say_and_wait('性欲を吐くのも、発散のうち？');
+          await tachyon.say_and_wait('성욕을 푸는 것도 감정을 털어놓는 일의 하나라고요?');
           await tachyon.say_and_wait(
-            'まったく❤️……見つかっても知りませんわよ❤️',
+            '정말이지❤️……나중에 들켜도 전 모른답니다❤️',
           );
         });
       }
