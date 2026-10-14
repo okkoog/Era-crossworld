@@ -1519,7 +1519,7 @@ module.exports = {
         ]);
         await era.printAndWait('이건……………');
         era.println();
-        await tachyon.say_and_wait([callname, '！！！！！！！！！！！！！！']);
+        await tachyon.say_and_wait([callname, '!!!!!!!!!!!!!!']);
         era.drawLine({ offset: 8, width: 8 });
         await era.printAndWait('【학원에서 알려드립니다】', { align: 'center' });
         await era.printAndWait(
@@ -1639,7 +1639,7 @@ module.exports = {
           '………아니, 그건 냄새도 맛도 약과 비슷하지 않나. 그러니 차라리 내 약을 직접 마시면 되겠군.',
         );
         era.println();
-        await you.say_and_wait('！？');
+        await you.say_and_wait('!?');
         await era.printAndWait(['아무래도 ', tachyon.sex, '은(는) 더 이상 속일 생각도 없는 모양이다.']);
         await era.printAndWait([
           tachyon.get_colored_name(),
