@@ -10,9 +10,9 @@ module.exports = {
     const title = (tachyon) => [
       '「',
       tachyon.name,
-      '」？「',
+      '」?「',
       tachyon.uma_sex_title,
-      'A」？',
+      'A」?',
     ];
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
@@ -285,7 +285,7 @@ module.exports = {
       ]);
       await tachyon.print_and_wait([callname, '과 내가…… 연애……']);
       era.println();
-      await tachyon.say_and_wait('………！？');
+      await tachyon.say_and_wait('………!?');
       era.println();
       await tachyon.print_and_wait(
         '그 생각이 뇌리를 스친 순간 심장에 강심제를 주입한 듯 고동이 거세졌고, 지나친 혈류 탓에 뺨이 뜨겁게 달아올랐다.',
@@ -1353,7 +1353,7 @@ module.exports = {
       ]);
       era.printButton('「사랑해, 아그네스 타키온」', 1);
       await era.input();
-      await tachyon.say_and_wait('！！！！？？？？');
+      await tachyon.say_and_wait('!!!!????');
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
@@ -1708,7 +1708,7 @@ module.exports = {
         '의 손에 다시 쥐여주었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait(['…………', callname, '？']);
+      await tachyon.say_and_wait(['…………', callname, '?']);
       era.printButton('「지쳤어. 마시고 싶으면 너나 마셔.」', 1);
       await era.input();
       await era.printAndWait('언제부터였을까? 원인은 무엇이었을까?');
@@ -3187,8 +3187,8 @@ module.exports = {
       t_call_p,
     ) => {
       await tachyon.say_and_wait([callname, '～～']);
-      await tachyon.say_and_wait([callname, '～～～？']);
-      await tachyon.say_and_wait([callname, '！！']);
+      await tachyon.say_and_wait([callname, '～～～?']);
+      await tachyon.say_and_wait([callname, '!!']);
       await tachyon.say_and_wait([
         callname,
         '…………아, ',
@@ -3234,9 +3234,9 @@ module.exports = {
       ]);
       await tachyon.print_and_wait([
         pocket.get_colored_name(),
-        '、',
+        ', ',
         shakur.get_colored_name(),
-        '、',
+        ', ',
         digital.get_colored_name(),
         ', 심지어 아끼는 후배인 ',
         scarlet.get_colored_name(),
