@@ -550,7 +550,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] hot_spring_b
+  // [번역 완료] hot_spring_b
   hot_spring_b: (() => {
     const title = '또 다른 가능성';
     /**
@@ -1040,7 +1040,7 @@ module.exports = {
       if (tachyon.sex_code !== 1) {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は、タオルの下にほのかに見える、少し湿った隙間を見た',
+          '은(는) 수건 아래로 희미하게 드러난, 조금 젖어 있는 틈을 보았다.',
         ]);
         await era.printAndWait('……아마 온천물일 것이다.');
         await era.printAndWait([
@@ -1054,29 +1054,29 @@ module.exports = {
       era.printButton('「방에 돌아가서 하는 건……?」', 2);
       await era.input();
       await tachyon.say_and_wait(
-        '確認済みですわ……この数日、予約は私たちだけ。だからここで何をしても問題ありませんの',
+        '이미 확인했답니다…… 며칠 동안 예약한 손님은 우리뿐이에요. 그러니 여기서 무엇을 하든 문제없어요.',
       );
       await tachyon.say_and_wait(
-        'それに……誰も来ませんから、抵抗しようとしても無駄ですわよ♡',
+        '게다가…… 아무도 오지 않으니 저항해 봐야 소용없답니다♡',
       );
-      await tachyon.say_and_wait('力を抜いて、楽しむことですわ');
+      await tachyon.say_and_wait('긴장을 풀고 즐기세요.');
       era.println();
 
       if (tachyon.sex_code !== 1 && you.sex_code > 0) {
         await era.printAndWait([
-          'いつタオルを脱いだのか、裸で湯に入った ',
+          '언제 수건을 벗었는지, 알몸으로 탕에 들어간 ',
           tachyon.get_colored_name(),
-          ' が ',
+          '이(가) ',
           you.get_colored_name(),
-          ' に覆いかぶさり、湯に入る前から完全に濡れていた淡い隙間を、太い棒へ合わせる……',
+          '에게 몸을 포개며, 탕에 들어오기 전부터 이미 흠뻑 젖어 있던 틈을 굵은 성기에 맞댄다……',
         ]);
       } else {
         await era.printAndWait([
-          'いつタオルを脱いだのか、裸で湯に入った ',
+          '언제 수건을 벗었는지, 알몸으로 탕에 들어간 ',
           tachyon.get_colored_name(),
-          ' が ',
+          '이(가) ',
           you.get_colored_name(),
-          ' に覆いかぶさり、',
+          '에게 몸을 포개고,',',
         ]);
       }
     };
@@ -1084,7 +1084,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] hot_spring_b_sex_end
+  // [번역 완료] hot_spring_b_sex_end
   async hot_spring_b_sex_end(tachyon, you) {
     await era.printAndWait([
       '일이 끝나자, ',
@@ -1094,14 +1094,14 @@ module.exports = {
     if (tachyon.sex_code !== 1 && you.sex_code > 0) {
       await era.printAndWait([
         you.get_colored_name(),
-        ' は、満足げにやや膨らんだ腹を撫でる',
+        '은(는) 만족스러운 듯 살짝 부풀어 오른 배를 쓰다듬고 있는 ',
         tachyon.sex,
-        'の姿と、太腿を伝って流れ落ちる、温泉水か何かの透明な液体を見る',
+        '의 모습과 허벅지를 타고 흘러내리는, 온천물인지 다른 것인지 모를 투명한 액체를 보았다.',
       ]);
       await era.printAndWait(
-        '一文字だったものが双唇のように開き、唇の間にさっき盗み食いした白い液が残る穴口も',
+        '한 줄기 틈이었던 곳은 두 입술처럼 벌어져 있었고, 그 사이에는 조금 전 삼킨 흰 액체가 남아 있었다.',
       );
-      await era.printAndWait('股間が、また硬くなった');
+      await era.printAndWait('사타구니가 다시 단단해졌다.');
       await era.printAndWait([tachyon.sex, '은(는) 눈치챈 듯 엉덩이를 살짝 흔들었다.']);
     }
     await era.printAndWait('방에 돌아가면 다시 한바탕 소동이 벌어질 것 같았다……');
