@@ -4377,7 +4377,7 @@ tenn_sho_win:
 # 天皇賞（秋）敗北
 # [번역 완료] tenn_sho_lose
 tenn_sho_lose:
-  title: 아이고，좀 아쉽긴 하네
+  title: 아이고, 좀 아쉽긴 하네
   lines:
     - color: %COLOR%
       content:
@@ -4631,7 +4631,7 @@ s_arim_kin_win_clothe1:
 # クリスマス勝負服
 # [번역 완료] s_arim_kin_win_clothe46
 s_arim_kin_win_clothe46:
-  title: 도망친 곳의 종착지는，바로 여기
+  title: 도망친 곳의 종착지는, 바로 여기
   lines:
     - 해설 「추격할 수 있을까요! 추격할 수 있을까요!」
     - 아리마 기념 후반전, 이미 레이스는 최고조에 달했다.
