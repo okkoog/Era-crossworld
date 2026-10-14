@@ -201,7 +201,7 @@ module.exports = {
         tachyon.uma_sex_title,
         'A』일까요?',
       ]);
-      await tachyon.say_and_wait('……違……');
+      await tachyon.say_and_wait('……그렇지 않아……');
       await coffee.say_and_wait([
         '반대로 말하자면, 그것들 말고 ',
         tachyon.get_colored_name(),
@@ -502,7 +502,7 @@ module.exports = {
     await tachyon.print_and_wait(['고작 ', callname, ' ']);
     await tachyon.print_and_wait('하지만…… 순수한 공포와는 다른 감정이었다.');
     await tachyon.print_and_wait('이 복잡한 감정의 정체는 또 무엇일까?');
-    await tachyon.print_and_wait('緊張、焦燥、不安、興奮、喜悦、恐怖、混乱');
+    await tachyon.print_and_wait('긴장, 초조, 불안, 흥분, 희열, 공포, 혼란');
     await tachyon.print_and_wait(
       '어떤 감정에도 닿아 있는 듯하면서 어느 하나에도 속하지 않는 것.',
     );
@@ -664,7 +664,7 @@ module.exports = {
     await tachyon.print_and_wait('의심을 품을 때마다 머릿속 공포도 조금씩 커져 갔다.');
     era.println();
     await tachyon.print_and_wait('무섭다.');
-    await tachyon.print_and_wait('不安');
+    await tachyon.print_and_wait('불안하다.');
     await tachyon.print_and_wait('괴롭다.');
     era.println();
     await tachyon.print_and_wait('이것이 좋아한다는 것인가?');
