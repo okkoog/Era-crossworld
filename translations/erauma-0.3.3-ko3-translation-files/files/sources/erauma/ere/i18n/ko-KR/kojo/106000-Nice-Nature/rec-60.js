@@ -16,9 +16,9 @@ module.exports = {
       nature.get_colored_name(),
       '!',
     ]);
-    await nature.say_as_unknown_and_wait('으음— 뭐, 평소대로의 실력이네.');
+    await nature.say_as_unknown_and_wait('으음— 뭐, 평소처럼 달렸네.');
     await era.printAndWait([
-      '목소리가 들려온 곳에는, 푹신푹신한 트윈 테일을 한 붉은 머리의 ',
+      '목소리가 들린 쪽을 바라보니, 풍성한 트윈 테일을 한 붉은 머리의 ',
       nature.uma_sex_title,
       '가 게시판의 순위를 바라보며 혼잣말을 하고 있었다.',
     ]);
