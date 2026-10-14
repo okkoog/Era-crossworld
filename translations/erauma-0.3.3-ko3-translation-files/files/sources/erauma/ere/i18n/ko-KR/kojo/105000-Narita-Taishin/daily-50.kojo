@@ -53,7 +53,7 @@ o_s_arcade:
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「리듬 게임, 같이 할래? 상관없지만 쉬운 곡으로 할 거야……」
+      - 「리듬 게임, 같이 할래? 좋아. 대신 쉬운 곡으로 할 거야……」
   - 결국 쉬운 곡인데도 이런 게임을 해 본 적 없는 %YOU%은(는) 상대가 되지 못했다.
   - 반면 타이신의 화면에는 커다란 FULL COMBO가 떠 있었다.
 
@@ -148,7 +148,7 @@ o_s_ktv:
     content:
       - fontSize: bold
         content: %CHARA%
-      - 「노래 부를래? 별로 자신은 없어. 우승 무대에서 부르는 정도가 한계야. 다음은 네 차례니까 불러, %CALLNAME%.」
+      - 「노래 부를래? 별로 자신 없는데. 우승 무대에서 부르는 정도가 한계야. 다음은 네 차례니까 불러, %CALLNAME%.」
 
 
 # [번역 완료] o_s_movie
@@ -159,7 +159,7 @@ o_s_movie:
         content:
           - fontSize: bold
             content: %CHARA%
-          - 「『떠들썩한 우리들의 경마장』. 지방의 우마 %UMA%가 주인공인 이야기네. 나쁘지 않겠어. 이걸로 할래.」
+          - 「『떠들썩한 우리들의 경마장』. 지방 출신 %UMA%가 주인공인 이야기네. 나쁘지 않겠어. 이걸로 할래.」
       - divider: true
         content: ⏰영화 종료 후⏰
         position: left
