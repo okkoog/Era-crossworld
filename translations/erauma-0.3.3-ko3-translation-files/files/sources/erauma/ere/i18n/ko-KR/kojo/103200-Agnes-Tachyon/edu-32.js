@@ -6627,21 +6627,21 @@ module.exports = {
             era.println();
             await era.printAndWait([
               tachyon.get_colored_name(),
-              ' は全身が汗だくだ——',
+              '은(는) 온몸이 땀투성이였다——',
               you.get_colored_name(),
-              ' も同じだろう——白衣に隠され、透けては見えない',
+              '도 마찬가지일 것이다——흰 가운에 가려져 비쳐 보이지는 않았지만',
             ]);
             era.println();
             await era.printAndWait([
-              'だが抜けはあった。一回り大きい白衣が汗で湿り、',
+              '하지만 빈틈은 있었다. 한 치수 큰 흰 가운이 땀에 젖어,',
               tachyon.get_colored_name(),
-              ' の体の線にぴったり沿った。',
+              '의 몸선을 따라 딱 달라붙었다.',
             ]);
             if (tachyon.sex_code !== 1) {
               await era.printAndWait([
-                '丸い腰と、その奥の深い溝から、胸のさほど大きくないが張りのある峰まで、はっきり ',
+                '둥근 허리와 그 뒤로 이어지는 깊은 굴곡, 크지는 않아도 탄탄한 가슴의 윤곽까지 선명하게 ',
                 you.get_colored_name(),
-                ' の目に描かれた',
+                '의 눈에 들어왔다',
               ]);
             }
             era.println();
