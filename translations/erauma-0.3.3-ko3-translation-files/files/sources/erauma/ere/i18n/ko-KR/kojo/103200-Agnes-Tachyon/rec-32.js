@@ -75,9 +75,9 @@ module.exports = {
 
     era.print(`${tachyon.sex}를 찾는 과정은 의외로 쉬웠다.`);
     era.print([
-      `이름이 `,
+      `이름을 대자, `,
       tachyon.get_colored_name(),
-      `이라고 하니, 많은 학생이 그녀를 기억하고 있었다.`,
+      `을(를) 아는 학생이 많았다.`,
     ]);
     era.print(`??? 「수업에는 통 얼굴을 안 비춰요.」`);
     era.print(`??? 「빈 교실을 마음대로 점거해서 자기 실험실로 쓰고 있대요.」`);
@@ -115,7 +115,7 @@ module.exports = {
     era.print(
       `그리고 ${tachyon.sex}의 다리는…… 의외로 가냘팠다. 바지를 입었음에도 알 수 있을 정도였다. 대부분의 ${tachyon.uma_sex_title}들이 가느다란 몸에 믿기지 않는 괴력을 숨기고 있다지만, ${tachyon.sex}의 다리는 분명 다른 ${tachyon.uma_sex_title}들에 비해서도 훨씬 가늘어 보였다.`,
     );
-    era.print(`그것이 그날 ${you.name}이(가) 느꼈던「허무」의 정체였다.`);
+    era.print(`그것이 그날 ${you.name}이(가) 느꼈던 「허무」의 정체였다.`);
     era.print(`하지만 다리보다 더 충격적인 것은 ${tachyon.sex}의 눈이었다.`);
     era.print('마치 블라인드처럼, 공허하게 가라앉은 붉은 눈동자.');
     await era.printAndWait('분명 자신을 바라보고 있음에도, 마치 아무것도 담고 있지 않은 듯했다.');
