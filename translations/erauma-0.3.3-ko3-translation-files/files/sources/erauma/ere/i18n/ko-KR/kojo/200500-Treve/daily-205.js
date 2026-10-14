@@ -516,7 +516,7 @@ module.exports = {
   async office_cook(treve) {
     const buffer = [
       () => treve.say_and_wait('프랑스 요리는 뭐라고 해야 할까…… 아하하하, 이 이야기는 일단 넘어가죠.'),
-      () => treve.say_and_wait('으우, 나쁜 사람한테 위장을 붙잡혀 버리겠어요.'),
+      () => treve.say_and_wait('으윽, 누군가가 속을 꽉 움켜쥐는 것 같아요.'),
     ];
     await get_random_entry(buffer)();
   },
@@ -614,7 +614,7 @@ module.exports = {
         case 1:
           buffer.push(
             () =>
-              treve.say_and_wait('사람마다 저마다의 이야기가 있어서, 전 듣는 걸 무척 좋아해요.'),
+              treve.say_and_wait('누구에게나 저마다의 이야기가 있어서, 전 그런 얘기를 듣는 걸 무척 좋아해요.'),
             () => treve.say_and_wait('앞으로도 계속 절 보살펴 주셨으면 좋겠어요.'),
           );
           break;
