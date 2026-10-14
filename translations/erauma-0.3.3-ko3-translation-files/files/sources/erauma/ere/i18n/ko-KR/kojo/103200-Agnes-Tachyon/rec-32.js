@@ -105,7 +105,7 @@ module.exports = {
       `이 문 너머에 지난 사흘간 식사도 제대로 못 할 만큼 홀린 듯 찾아 헤매던 ${tachyon.sex}가 있다.`,
     );
     await era.printAndWait(
-      `너무 오래 기다리게 한 탓일까, ${you.name}이(가) 결심을 굳히기도 전에 문이 먼저 열렸다.`,
+      `너무 오래 망설였던 걸까, ${you.name}이(가) 결심을 굳히기도 전에 문이 먼저 열렸다.`,
     );
     era.println();
 
