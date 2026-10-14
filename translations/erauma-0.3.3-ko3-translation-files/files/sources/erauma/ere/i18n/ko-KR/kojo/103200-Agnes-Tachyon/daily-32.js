@@ -4552,17 +4552,17 @@ module.exports = {
       call_36,
       call_94,
     ) => {
-      await tachyon.say_and_wait('ふんふんふん～～');
+      await tachyon.say_and_wait('흥흥흥～～');
       era.println();
 
       await era.printAndWait(
-        'アグネスタキオンは嬉しそうに鼻歌を口ずさみ、見慣れた廊下を歩いていた。',
+        '아그네스 타키온은 즐겁게 콧노래를 흥얼거리며 익숙한 복도를 걸었다.',
       );
       await era.printAndWait(
-        '普段、この階の廊下は奇妙な薬が吹き出す研究室のせいで生徒に敬遠されている……が、最近はまた少し人が戻ってきたらしい。',
+        '평소 이 층 복도는 정체불명의 약물이 뿜어져 나오는 연구실 탓에 학생들이 기피하곤 했다…… 하지만 최근에는 다시 사람들이 조금씩 돌아오는 모양이었다.',
       );
       await era.printAndWait(
-        `だが${tachyon.sex}は自分の研究室を通り過ぎ、ある掃除道具棚の前で止まった。`,
+        `하지만 ${tachyon.sex}는 자신의 연구실을 지나쳐 어느 청소도구 보관함 앞에 멈춰 섰다.`,
       );
       era.println();
 
@@ -4578,7 +4578,7 @@ module.exports = {
       );
       era.println();
 
-      await tachyon.say_and_wait('モルモット君？ 起きなさい。');
+      await tachyon.say_and_wait('모르모트 군? 일어나게.');
       era.println();
 
       await era.printAndWait(
@@ -4609,17 +4609,17 @@ module.exports = {
         tachyon.uma_sex_title,
         `の体液で満たされている。だがこの一杯では ${you.name} の穴から出た量の三分の一にも満たず、残りは床に飛び散り、掃除係の厄介になった。`,
       ]);
-      await era.printAndWait('まあ、汚した者が掃除する。当然のことだ。');
+      await era.printAndWait('어질러 놓은 사람이 치우는 건 당연한 일이다.');
       era.println();
 
-      await tachyon.say_and_wait('モルモット君～今回の実験は大成功ですわよ～');
+      await tachyon.say_and_wait('모르모트 군～ 이번 실험은 대성공일세～');
       era.println();
 
       await era.printAndWait(
-        'タキオンは何事もなかったように、興奮して実験の話を分け与えた。',
+        '타키온은 아무 일도 없었던 것처럼 들뜬 목소리로 실험 이야기를 늘어놓았다.',
       );
       await era.printAndWait(
-        `だが……何事もなかった、というのは ${you.name} の甘い錯覚にすぎない。`,
+        `하지만…… 아무 일도 없었다는 생각은 ${you.name}의 안일한 착각에 불과했다.`,
       );
       era.println();
       if (era.get('cflag:25:招募状态') === recruit_flags.yes) {
