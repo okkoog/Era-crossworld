@@ -1991,7 +1991,7 @@ module.exports = {
         'ひどい……こんな匂いを……嗅いだら……本当に……戻れなくなりますわ……',
       );
       era.println();
-      await era.printAndWait('嫌なら、やめておくか？');
+      await era.printAndWait('싫다면 그만둘까?');
       await era.printAndWait([
         you.get_colored_name(),
         ' が身を引く素振りを見せると、',
@@ -2001,7 +2001,7 @@ module.exports = {
       era.println();
       await tachyon.say_and_wait('匂いだけで……いきそうですわ……');
       era.println();
-      await era.printAndWait('また悪戯されるのを恐れるように');
+      await era.printAndWait('다시 장난을 당할까 두려워하는 듯');
       await era.printAndWait([
         tachyon.get_colored_name(),
         ' のほうが、鼻先で ',
@@ -2051,7 +2051,7 @@ module.exports = {
         '口紅を塗るように、肉棒の味を口の中へ残さず擦りつけたい',
       );
       era.println();
-      await era.printAndWait('夕方、ほとんどの者が家か寮へ戻った時間');
+      await era.printAndWait('저녁 무렵, 대부분이 집이나 기숙사로 돌아간 시간이었다.');
       await era.printAndWait(
         '実験室に、ひどく淫らな水音が響く。わざと出しているのか、もう音など気にする余裕がないのか？',
       );
@@ -2120,12 +2120,12 @@ module.exports = {
       ]);
       era.println();
       await tachyon.say_and_wait([
-        '次の実験も、お願いいたしますわよ、',
+        '다음 실험도 잘 부탁드릴게요,',,
         callname,
         ' ',
       ]);
-      await tachyon.say_and_wait('……もちろん、ご褒美はありますわ');
-      await tachyon.say_and_wait('断りませんわね……あなた❤');
+      await tachyon.say_and_wait('……물론 보상은 있답니다.');
+      await tachyon.say_and_wait('거절하지는 않으시겠죠…… 당신❤');
       era.println();
       await era.printAndWait([
         tachyon.sex,
