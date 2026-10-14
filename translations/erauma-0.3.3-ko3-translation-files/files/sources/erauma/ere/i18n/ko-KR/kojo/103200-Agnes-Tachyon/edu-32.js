@@ -7285,21 +7285,21 @@ module.exports = {
         ]);
         await era.printAndWait([
           tachyon.sex,
-          'は白衣の裾をゆっくり持ち上げた。この時点で ',
+          '은(는) 흰 가운 자락을 천천히 들어 올렸다. 이때 이미 ',
           you.get_colored_name(),
-          ' の危機の予感は頂点だ。だが逃げたくても、どこへ？',
+          '의 위기감은 최고조에 달했다. 하지만 도망치고 싶어도 어디로 가겠는가?',
         ]);
         await era.printAndWait([
-          'まして',
+          '하물며 ',
           tachyon.uma_sex_title,
-          'の手から逃げる？ ',
+          '의 손에서 벗어난다고? ',
           you.get_colored_name(),
           ' は ',
           tachyon.get_colored_name(),
-          ' に狂気と呼ばれても、愚か者ではない。不可能な妄想はしない',
+          '에게 미쳤다는 소리를 들을지언정 바보는 아니었다. 불가능한 망상은 하지 않았다.',
         ]);
         era.println();
-        await era.printAndWait('白衣の下は、潤んだ光を返す黒いパンストだった');
+        await era.printAndWait('흰 가운 아래에는 은은한 광택이 도는 검은 팬티스타킹이 있었다.');
         await era.printAndWait(
           '朝から豊かな尻と細い脚を封じ込めてきた蒸れたパンストは、一日の熟成を経て、内も外も完全に味が沁みている',
         );
