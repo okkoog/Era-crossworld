@@ -9141,22 +9141,22 @@ module.exports = {
       era.println();
       if (love >= 50 && tachyon.sex_code !== 1) {
         await tachyon.say_and_wait(
-          '見るだけ……で足りるのです？ 自分の手で、確かめたくはありませんの？',
+          '보기만 하는 걸로…… 충분하신가요? 직접 손으로 확인해 보고 싶지 않으세요?',
         );
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は身を乗り出し、',
+          '은(는) 몸을 앞으로 기울이며,',,
           you.get_colored_name(),
-          ' の目を見て、誰かが踏み出すのを待った',
+          '의 눈을 바라보며 누군가 먼저 나서기를 기다렸다.',,
         ]);
-        era.printButton('手を伸ばして触る', 1);
+        era.printButton('손을 뻗어 만진다', 1);
         era.printButton('거절한다', 2);
         ret.push(await era.input());
         if (ret[0] === 1) {
           await era.printAndWait([
             you.get_colored_name(),
-            ' は我慢できず手を伸ばした。',
+            '은(는) 참지 못하고 손을 뻗었다.',,
             tachyon.get_colored_name(),
             ' の胸元、二枚の薄い布では到底収まらない実へ',
           ]);
@@ -9169,7 +9169,7 @@ module.exports = {
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は緊張した。自分の腕が足りないのか？',
+            '은(는) 긴장했다. 자신의 힘이 부족한 걸까?',,
           ]);
           era.println();
           await era.printAndWait('どう頑張っても、もっと強く、と言われる');
@@ -9203,9 +9203,9 @@ module.exports = {
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
-            ' の反応は、',
+            '의 반응은,',,
             you.get_colored_name(),
-            ' の想像よりはるかに大きかった',
+            '이(가) 상상한 것보다 훨씬 컸다.',,
           ]);
           await era.printAndWait([
             '好奇心が湧いた ',
