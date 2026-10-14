@@ -138,7 +138,7 @@ module.exports = {
       era.printButton('「무슨 일인가요?」', 1);
       await era.input();
       await taste.say_and_wait(
-        `고지! 실은, 그쪽의 ${treve.uma_sex_title} 중 데뷔전에서 훌륭한 모습을 보여준 아이가 있는데 아무도 말을 걸지 않았다는군. 실력도 뛰어나고 레이스에서도 1착을 한 것 같은데, 왜 스카우트되지 않았는지 정말 불가사의하다네.`,
+        `보고! 실은, 그쪽의 ${treve.uma_sex_title} 중 데뷔전에서 훌륭한 모습을 보여준 아이가 있는데 아무도 말을 걸지 않았다는군. 실력도 뛰어나고 레이스에서도 1착을 한 것 같은데, 왜 스카우트되지 않았는지 정말 불가사의하다네.`,
       );
       era.printButton('「이사장님이 내정해 둔 아이니까 그렇겠죠.」', 1);
       await era.input();
@@ -179,7 +179,7 @@ module.exports = {
       await taste.say_and_wait('건강! 모든 게 아무 문제 없다네.');
       era.printButton('「그럼 왜 아직 아무도 스카우트를 안 한 건가요?」', 1);
       await era.input();
-      await taste.say_and_wait('난감! 나도 그게 알고 싶다네!');
+      await taste.say_and_wait('유감! 나도 그게 알고 싶다네!');
       await era.printAndWait(
         '전화 너머로 한숨 소리가 들려오는 걸 보니, 정말 확신하고 있는 듯했다.',
       );
@@ -224,11 +224,11 @@ module.exports = {
         `아쿠아마린 같은 눈동자가 미동도 없이 ${you.name} 쪽을 향하고 있었다.`,
       );
       await taste.say_and_wait(
-        `걱정! 그쪽 학원이 워낙 넓고 지금 데뷔전을 치르는 ${treve.uma_sex_title}들도 많아서, 찾기 좀 어려울지도 모르겠군.`,
+        `어때? 그쪽 학원이 워낙 넓고 지금 데뷔전을 치르는 ${treve.uma_sex_title}들도 많아서, 찾기 좀 어려울지도 모르겠군.`,
       );
       era.printButton('「……아니, 금방 찾을 수 있을 것 같네요.」', 1);
       await era.input();
-      await taste.say_and_wait('최고! 찾을 수 있다니 다행이군. 그럼 이만.');
+      await taste.say_and_wait('완벽! 찾을 수 있다니 다행이군. 그럼 이만.');
       await era.printAndWait(
         `그리고 ${you.name}은(는) 무기질적인 신호음과 함께 전화를 끊었다.`,
       );
