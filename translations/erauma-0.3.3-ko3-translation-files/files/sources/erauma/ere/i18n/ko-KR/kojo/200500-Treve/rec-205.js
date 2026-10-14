@@ -389,7 +389,7 @@ module.exports = {
           `걸음을 떼려 했지만, ${treve.sex}가 코트를 꽉 붙잡고 놔주지 않았다.`,
         );
         await era.printAndWait(
-          `몇 년을 입은 낡은 코트가 찢어지는 것도 원치 않았기에, 어쩔 수 없이 돌아서자 ${treve.name}가 다시 정면으로 ${you.name}의 눈을 들여다보았다.`,
+          `이대로 코트가 찢어지면 오랜 친구에게 낯을 들 수 없을 터였다. 어쩔 수 없이 돌아서자 ${treve.name}가 다시 정면으로 ${you.name}의 눈을 들여다보았다.`,
         );
         await era.printAndWait('대처하기 곤란할 만큼 맑은 눈동자였다.');
         await treve.say_and_wait(
@@ -421,8 +421,8 @@ module.exports = {
           await treve.say_and_wait(
             '왜냐하면 트레이너 선생님은 아직 제가 달리는 모습을 본 적이 없잖아요. 지금 당장 보지 않으면 아무것도 시작되지 않는다구요?',
           );
-          await treve.say_and_wait('그 뭐냐, 쇠뿔을 뜨겁게 달궈라 라는 말도 있잖아요.');
-          era.printButton('「뜨겁게 달구고 빼야지.」', 1);
+          await treve.say_and_wait('그 뭐더라, 쇠는 뜨거울 때 두드리라는 말도 있잖아요.');
+          era.printButton('「두드리는 건 불이 아니라 쇠지.」', 1);
           await era.input();
           await era.printAndWait(
             `${treve.name}의 자신감은 확실한 실력으로 증명되었다. 그것은 본격적으로 훈련을 시작하고 나서야 ${you.name}도 확실히 깨닫게 되었다.`,
