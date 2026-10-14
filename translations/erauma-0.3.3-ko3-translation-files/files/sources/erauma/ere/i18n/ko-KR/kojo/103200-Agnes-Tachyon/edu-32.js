@@ -4571,7 +4571,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] tr_incm_cmb
+  // [번역 완료] tr_incm_cmb
   tr_incm_cmb: (() => {
     const title = '불완전 연소';
     /**
@@ -4639,18 +4639,18 @@ module.exports = {
           '의 현재 모습을 보았다.',
         ]);
         await era.printAndWait([
-          '汗に濡れた運動着から透ける白い肌と、走行で付いた泥の斑点が鮮やかに対比し、密着した服が',
+          '땀에 젖은 운동복 너머로 비치는 흰 피부와 달리다 묻은 진흙 자국이 선명하게 대비되었고, 몸에 달라붙은 옷은 ',
           tachyon.sex,
-          'の肢体をいっそう際立たせる',
+          '의 몸매를 한층 더 두드러지게 했다.',
         ]);
         await era.printAndWait(
-          '丸みを帯びた胸と尻、疲労の吐息と赤らんだ頬。ただのトレーニングなのに、想像が勝手に走る',
+          '둥글게 굴곡진 가슴과 엉덩이, 지친 숨소리와 상기된 뺨. 그저 평범한 훈련일 뿐인데 상상은 멋대로 달려 나갔다.',
         );
         await era.printAndWait(
-          '跳ね続けるその丸みを、自分のものとして掌で思うままに揉めたなら',
+          '계속 흔들리는 그 굴곡을 자신의 손으로 마음껏 움켜쥐고 주무를 수 있다면.',
         );
         await era.printAndWait(
-          '普段はそっけないその口を唇と舌で塞ぎ、甘い吐息しか出せなくできたなら',
+          '평소 무뚝뚝한 그 입을 입술과 혀로 막아 달콤한 숨소리만 내게 할 수 있다면.',
         );
         await era.printAndWait(
           '트레이너로서, 한 사람의 어른으로서 결코 허용될 수 없는 생각이었다.',
@@ -4713,31 +4713,31 @@ module.exports = {
           '의 다리를 가볍게 눌렀다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('……ん……やぁ……そんな……だめ……やめて……あん……');
+        await tachyon.say_and_wait('……으응……아……그런……안 돼……그만……아앙……');
         era.println();
         await era.printAndWait([
           tachyon.sex,
-          'の口から、酔わせるような嬌声が止まない',
+          '의 입에서는 사람을 취하게 할 듯한 신음이 그치지 않았다.',
         ]);
         await era.printAndWait([
-          '白い肌はすでに赤みを帯び、押す場所が変わるたび',
+          '흰 피부는 벌써 붉게 물들었고, 누르는 부위가 바뀔 때마다 ',
           tachyon.sex,
-          'は想像を誘う声を上げる。まるで ',
+          '은(는) 상상력을 자극하는 소리를 냈다. 마치 ',
           you.get_colored_name(),
-          ' がしているのは健全なマッサージではなく、もっと邪悪で下品な行為であるかのように',
+          '이(가) 하는 일이 건전한 마사지가 아니라 훨씬 사악하고 외설스러운 행위라도 되는 것처럼.',
         ]);
         await era.printAndWait([
-          '神聖な競技場でそんなことをすれば、当然人目は集まる。いつの間にか、まだ鍛えている年下の',
+          '신성한 경기장에서 그런 소리를 내니 당연히 사람들의 시선이 모였다. 어느새 아직 훈련 중인 후배 ',
           tachyon.uma_sex_title,
-          'たちも ',
+          '들도 ',
           tachyon.get_colored_name(),
-          ' の嬌声に引き寄せられていた',
+          '의 신음소리에 이끌려 다가왔다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
-          '待って……',
+          '잠깐……',
           callname,
-          '……いっ……だめ……人が……ああ～～♡',
+          '……앗……안 돼……사람들이……아아～～♡',
         ]);
         era.println();
         await era.printAndWait([
@@ -4746,26 +4746,26 @@ module.exports = {
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' の脚は、',
+          '의 다리는 ',
           you.get_colored_name(),
-          ' の想像以上に細く柔らかい。軽く握った感触は、',
+          '이(가) 상상했던 것보다 훨씬 가늘고 부드러웠다. 가볍게 쥐었을 때의 감촉은 ',
           you.get_colored_name(),
-          ' に、',
+          '에게 ',
           tachyon.sex,
-          'の生殺与奪を握った錯覚を与えた',
+          '의 생사를 마음대로 쥐고 있다는 착각마저 주었다.',
         ]);
         await era.printAndWait([
-          'ベッドの上で、不服そうにしながらも喘ぎを抑えられない',
+          '침대 위에서 불만스러워하면서도 신음을 참지 못하는 ',
           tachyon.sex,
-          'を見て、両脚を掴んで開いたなら——その征服感は、世の何物にも勝るだろう',
+          '을(를) 보며 두 다리를 잡아 벌릴 수 있다면——그 정복감은 세상 어떤 것과도 비교할 수 없을 것이다.',
         ]);
         era.println();
-        await tachyon.say_and_wait('……！ そこはだめですわ！');
+        await tachyon.say_and_wait('……! 거기는 안 됩니다!');
         era.println();
         await era.printAndWait([
-          'いつの間にか熱を帯びた ',
+          '어느새 뜨거워진 ',
           you.get_colored_name(),
-          ' の手は、腿のほうへ上がっていた',
+          '의 손은 허벅지 쪽까지 올라가 있었다.',
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
