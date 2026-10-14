@@ -2418,23 +2418,23 @@ module.exports = {
             await tachyon.say_and_wait('んぅ……❤️');
             await tachyon.say_and_wait('待って、入れないでええええ❤️❤️❤️');
             await era.printAndWait([
-              '最後、',
+              '마지막으로, ',
               you.get_colored_name(),
-              ' は樹洞の上でぐったりし、顔を赤くした ',
+              '은(는) 나무 구멍 위에서 기진맥진한 채 얼굴을 붉힌 ',
               tachyon.get_colored_name(),
-              ' を抱き、トレーナー室へ連れて帰った。',
+              '을(를) 품에 안고 트레이너실로 돌아갔다.',
             ]);
             await era.printAndWait([
-              '道行く生徒たちは、思わず ',
+              '길을 지나던 학생들은 무심코 ',
               you.get_colored_name(),
-              ' たちに注目した。',
+              ' 일행에게 시선을 돌렸다.',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' にとって、この視線はもう慣れたものだった。',
+              '은(는) 그런 시선에 이미 익숙해져 있었다.',
             ]);
             await era.printAndWait([
-              '腕の中の ',
+              '품에 안긴 ',
               tachyon.get_colored_name(),
               '……人目も構わず、力の抜けた両手で抱擁をねだる',
               tachyon.sex,
