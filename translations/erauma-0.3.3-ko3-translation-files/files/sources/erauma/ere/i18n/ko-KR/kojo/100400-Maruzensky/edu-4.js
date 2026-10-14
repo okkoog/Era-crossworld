@@ -3324,7 +3324,7 @@ module.exports = {
           );
         } else {
           await you.say_and_wait(`기다려, ${maru.name}.`);
-          await maru.say_and_wait(`미안해.、${callname}。`);
+          await maru.say_and_wait(`미안해, ${callname}.`);
           await maru.say_and_wait(`여긴 소리가 너무 커서 질문이 안 들려.`);
           await maru.say_and_wait(`무슨 일이 있으면 돌아가서 이야기해도 될까?`);
           await era.printAndWait(
@@ -3966,7 +3966,7 @@ module.exports = {
      */
     const f = async (maru, you, callname) => {
       await era.printAndWait(`대기실\n`);
-      await maru.say_and_wait(`네! ${callname} ！`);
+      await maru.say_and_wait(`네! ${callname}!`);
       await era.printAndWait(
         `위닝 라이브에서 내려온 ${maru.name}이(가) 대기실로 돌아왔다.`,
       );
@@ -4230,7 +4230,7 @@ module.exports = {
       await era.printAndWait(
         `${maru.name}은(는) 망설이고 있다. ${maru.sex}은(는) 진짜 마음을 말해야 할지 고민하고 있다.`,
       );
-      await maru.say_and_wait(`……미안해.。`);
+      await maru.say_and_wait(`……미안해.`);
       await era.printAndWait(`${maru.name}의 목소리는 가라앉아 있다.`);
       era.printButton(`「아니, 오히려 내가.」`, 1);
       await era.input();
@@ -4397,7 +4397,7 @@ module.exports = {
         await you.say_and_wait(`하고 싶은 이야기가 있어. 옥상에서.`);
         await maru.say_and_wait(`여기서는 말할 수 없는 일이야?`);
         await you.say_and_wait(`미안해, 한 번만 나한테 맡겨줘. 부탁이야.`);
-        await maru.say_and_wait(`응? ${callname}？`);
+        await maru.say_and_wait(`응? ${callname}?`);
         await you.say_and_wait(`부탁이야.`);
         await era.printAndWait(`${you.name}은(는) 깊이 고개를 숙였다.`);
         await maru.say_and_wait(`그렇게까지 하다니……`, true);
@@ -4759,7 +4759,7 @@ module.exports = {
       await maru.say_and_wait(`몇 번을 봐도 질리지 않아♪`);
       await maru.say_and_wait(`……여기까지 오느라 수고했어, ${callname}.`);
       await maru.say_and_wait(`무슨 일이 있어도 우리는 함께야, 알겠지?`);
-      await era.printAndWait(` ${maru.name}은(는)  ${you.name}을(를) 세게 끌어안았다.。`);
+      await era.printAndWait(` ${maru.name}은(는)  ${you.name}을(를) 세게 끌어안았다.`);
       await era.printAndWait(`세 여신은 다정하게 아이들을 지켜보고 있다.`);
       await darley.say_and_wait(`……다정한 아이야. 네 소원은 반드시 이루어질 것이다.`);
     };
@@ -4867,7 +4867,7 @@ module.exports = {
         await era.printAndWait(`왜 주웠는지는 자신도 모른다. 하지만——`);
         await era.printAndWait(`이대로 놓친다면.`);
         await era.printAndWait(`무언가를 잃을 것 같다.`);
-        await you.say_and_wait(`……미안해.、${maru.name}。`);
+        await you.say_and_wait(`……미안해, ${maru.name}.`);
         await you.say_and_wait(`어떻게든 한 번은 가봐야 해.`);
       }
       return [ret];
@@ -4989,7 +4989,7 @@ module.exports = {
         await era.printAndWait(`왜 주웠는지는 자신도 모른다. 하지만——`);
         await era.printAndWait(`이대로 놓친다면.`);
         await era.printAndWait(`무언가를 잃을 것 같다.`);
-        await you.say_and_wait(`……미안해.、${maru.name}。`);
+        await you.say_and_wait(`……미안해, ${maru.name}.`);
         await you.say_and_wait(`어떻게든 한 번은 가봐야 해.`);
       }
       return [ret];
@@ -6074,7 +6074,7 @@ module.exports = {
         `날아간 종이뭉치는 포물선을 그리며 다른 종이뭉치에 부딪혔다.`,
       );
       await era.printAndWait(`도망치고 싶은 마음, 할 수 없다는 낙담이 이렇게 퍼져간다.`);
-      await era.printAndWait(`똑똑.。`);
+      await era.printAndWait(`똑똑.`);
       await you.say_as_passer_by_and_wait(
         `${maru.uma_sex_title}A`,
         `${you.actual_name_with_title} 맞습니까?`,
@@ -8113,7 +8113,7 @@ module.exports = {
       await maru.say_and_wait(
         `어디서부터 이야기해야 할까. 사실 그날 밤, 나도 현장에 있었어.`,
       );
-      await you.say_and_wait(`뭐야?！`);
+      await you.say_and_wait(`뭐야?!`);
       await era.printAndWait(
         `${you.name}의 등에 오한이 달리고 두 다리가 떨린다. 그대로 돌아서 도망치고 싶다. 하지만 남은 이성이 인간은 ${maru.uma_sex_title}을(를) 이길 수 없다고 알려줬다.`,
       );
@@ -8370,7 +8370,7 @@ module.exports = {
       await era.printAndWait(
         `이런 기묘한 일에 이상할 만큼 진지한 자신이 갑자기 우스워져 고개를 흔들고 옷을 입으려 했다.`,
       );
-      await maru.say_and_wait(`똑똑.。`);
+      await maru.say_and_wait(`똑똑.`);
       await era.printAndWait(`문 너머에서 노크 소리가 들렸다.`);
       if (era.get('love:4') >= 75) {
         await maru.say_and_wait(`예~ ${callname}, 일어났어?`);
@@ -8463,7 +8463,7 @@ module.exports = {
         `${you.name}은(는) 고개를 흔들며 손에 든 서류로 다시 집중하려던 순간.`,
       );
       await maru.say_and_wait(`흥흥흥♪`);
-      await maru.say_and_wait(`예————${callname}。`);
+      await maru.say_and_wait(`예————${callname}.`);
       await era.printAndWait(
         `문손잡이가 돌아가고 ${you.name}을(를) 매료시키는 그 ${maru.teen_sex_title}이(가) 문을 열었다.`,
       );
@@ -8719,7 +8719,7 @@ module.exports = {
           `하아, 아무튼 다른 아이에게는 절대 말하지 마. 이번 상대가 나라면 그나마 괜찮아. 아니, 나라도 안 돼.`,
         );
       }
-      await you.say_and_wait(`그러고 보니.、${maru.name}。`);
+      await you.say_and_wait(`그러고 보니, ${maru.name}.`);
       await you.say_and_wait(`갑작스럽지만 계속 궁금했던 게 있어.`);
       await maru.say_and_wait(
         `어머, ${callname}도 ${maru.elder_sibling_sex_title}에게 물어볼 때가 있네?`,
