@@ -161,7 +161,7 @@ module.exports = {
         `${you.name}이(가) 손에 든 휴대폰을 가볍게 흔들어 보이자, 갈색 털의 ${treve.sex}는 고개를 끄덕였다.`,
       );
       await era.printAndWait(
-        `일단 지금 전화를 걸어도 ${you.name}에게 폐가 되지는 않을 것이다.`,
+        `여기서 통화를 이어가도 ${you.name}에게 큰 방해가 되지는 않을 것이다.`,
       );
       era.printButton('「실력을 봐야 알겠죠.」', 1);
       await era.input();
@@ -233,7 +233,7 @@ module.exports = {
         `그리고 ${you.name}은(는) 무기질적인 신호음과 함께 전화를 끊었다.`,
       );
       await era.printAndWait(
-        `천천히 휴대폰을 챙겨 넣은 뒤 깍지를 끼고, 돌이 깔린 보도를 사이에 둔 채 맞은편에 앉아 있는 ${treve.sex}를 다시 정면으로 마주 보았다.`,
+        `휴대전화를 천천히 집어넣고 두 손을 마주 잡은 채, 돌바닥 보도 건너편에 앉아 있는 ${treve.sex}를 다시 바라보았다.`,
       );
       era.printButton('「저기— 여기서 뭐 하고 있어?」', 1);
       await era.input();
@@ -273,7 +273,7 @@ module.exports = {
         '진짜예요. 제게 말을 걸어주신 트레이너분들은 있었지만, 아무도 제 담당 트레이너가 되어주진 않으셨어요.',
       );
       await era.printAndWait(
-        `${you.name}은(는) 내심 의사소통이 잘 안 될까 봐 불안했지만, 첫 대화에서는 특별한 장벽이 느껴지지 않았다.`,
+        `${you.name}은(는) 언어가 통하지 않을까 걱정했지만, 막상 말을 나눠 보니 별다른 장벽은 없었다.`,
       );
       era.printButton('「왜?」', 1);
       await era.input();
