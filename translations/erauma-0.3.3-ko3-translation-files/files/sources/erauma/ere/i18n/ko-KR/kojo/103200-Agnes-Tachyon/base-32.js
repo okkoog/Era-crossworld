@@ -182,9 +182,9 @@ module.exports = {
 
     await era.printAndWait([
       you.get_colored_name(),
-      "의 손길은 매우 빨랐다. ",
+      "의 움직임은 빨랐다. ",
       tachyon.get_colored_name(),
-      "의 약 덕분에 단련된 체력도 충분했던 덕분인지,",
+      "의 약 덕분에 길러진 체력도 충분했다.",
     ]);
     await era.printAndWait([
       tachyon.get_colored_name(),
