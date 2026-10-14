@@ -740,7 +740,7 @@ module.exports = {
     return f;
   })(),
 
-  // [번역 대상] before_sank_hai
+  // [번역 완료] before_sank_hai
   before_sank_hai: (() => {
     const title = '변수 · 군중 심리의 자극';
     /**
@@ -930,7 +930,7 @@ module.exports = {
           you.get_colored_name(),
           '이(가) 서둘러 다가가 ',
           tachyon.get_colored_name(),
-          ' を助けた。睨みというより欲求不満の色気を帯びた視線を受けながら、',
+          '을(를) 부축했다. 노려본다기보다 욕구불만이 묻어나는 요염한 시선을 받으면서,',,
           tachyon.sex,
           '를 데리고 서둘러 대기실로 돌아갔다.',
         ]);
@@ -945,7 +945,7 @@ module.exports = {
         era.printButton('「그럼 후배들도 챙겨 줘야지.」', 2);
         await era.input();
         await tachyon.say_and_wait(
-          '欲を煽っておいて、今さら他人のところへ行くつもり……それはいけませんわ',
+          '욕구를 잔뜩 부추겨 놓고 이제 와서 다른 사람에게 가실 생각인가요…… 그건 안 되죠.',
         );
         era.println();
         await era.printAndWait([
@@ -954,7 +954,7 @@ module.exports = {
         ]);
         era.println();
         await tachyon.say_and_wait([
-          'レース前……時間は足りるでしょう❤️ こんな退屈な玩具はもう……中を、直接満たしたくはないのですか❤️',
+          '레이스 전까지…… 시간은 충분하겠죠❤️ 이런 따분한 장난감은 이제 그만…… 직접 안쪽을 채우고 싶지는 않으신가요❤️',
         ]);
         era.drawLine();
         await era.printAndWait([
@@ -964,7 +964,7 @@ module.exports = {
         await era.printAndWait([
           '다만……이번만큼은,',
           tachyon.sex,
-          'の勝負服がしっかり隠れているのが幸いだった。でなければ、妙に膨らんだ下腹に全員が気づいただろう',
+          '의 승부복이 몸을 단단히 가려 주는 게 다행이었다. 그렇지 않았다면 이상하게 부풀어 오른 아랫배를 모두가 눈치챘을 테니까.',
         ]);
       }
       era.printButton('「시간 다 됐어, 타키온.」', 1);
