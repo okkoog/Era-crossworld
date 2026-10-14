@@ -18,9 +18,9 @@ module.exports = {
       '와(과) 함께 훈련 성과도 확인했다. 그래도 조금 기운이 없다.',
     ]);
     await maru.print_and_wait([
-      '그건',
+      '그런 변화는 ',
       callname,
-      '의 눈에도 그 변화는 숨길 수 없었다. 이유는 모르지만 다음 레이스까지 시간이 있으니 트레이너에게 상태를 보여보자는 모양이다.',
+      '의 눈에도 뚜렷했다. 이유는 알 수 없지만 다음 레이스까지 시간이 있으니 트레이너에게 상태를 보여 주려는 모양이었다.',
     ]);
     await maru.print_and_wait([
       '평소 후배들을 잘 챙기는 탓인지,',
@@ -46,14 +46,14 @@ module.exports = {
     await maru.say_and_wait([
       '……그런 거였구나. 고마워,',
       m_call_m,
-      '。',
+      '.',
     ]);
     era.println();
     await maru.print_and_wait([
       maru.get_colored_name(),
       '은(는) 트레이너를 향한 호감을 깨달았다.',
     ]);
-    await maru.print_and_wait([callname, '을(를) 불러내자']);
+    await maru.print_and_wait([callname, '을(를) 불러내 보자.']);
     era.drawLine();
     await era.printAndWait([
       '어느 이른 아침,',
@@ -137,7 +137,7 @@ module.exports = {
       maru.uma_sex_title,
       '들을 내려다보고 있다.',
     ]);
-    era.printButton(`${y_call_m}？`, 1);
+    era.printButton(`${y_call_m}?`, 1);
     await era.input();
     await maru.say_and_wait([callname, ', 드디어 찾아줬네.']);
     era.printButton('「그렇게 다리를 꼬고 있으면 치마 안이 보이는데?」', 1);
