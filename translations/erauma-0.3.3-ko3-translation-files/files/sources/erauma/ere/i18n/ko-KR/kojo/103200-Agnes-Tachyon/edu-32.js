@@ -112,12 +112,12 @@ module.exports = {
         tachyon.get_colored_name(),
         '. 그, 영문을 알 수 없었던 ',
         tachyon.uma_sex_title,
-        '。',
+        '.',
       ]);
       await era.printAndWait([
         '그날 연구실에서 헤어진 뒤로 한 번도 만나지 못한 ',
         tachyon.uma_sex_title,
-        '。',
+        '.',
       ]);
       await era.printAndWait([
         '식당 텔레비전에서 연말의 화제인 아리마 기념을 틀어 놓았을 뿐이었다.',
@@ -3475,7 +3475,7 @@ module.exports = {
             await tachyon.say_and_wait('후우, 이제 좀 살 것 같군.');
             era.println();
             await era.printAndWait([
-              '…………？',
+              '…………?',
               tachyon.get_colored_name(),
               '의 눈이……?',
             ]);
@@ -4066,7 +4066,7 @@ module.exports = {
 
       await tachyon.say_and_wait([
         callname,
-        '！',
+        '!',
         callname,
         '! 알아냈네(Eureka)…… 드디어 알아냈다고!',
       ]);
@@ -4551,7 +4551,7 @@ module.exports = {
         tachyon.get_colored_name(),
         '와 같은 빈 교실을 이용하는, 영적인 기운을 가진 흑갈색 털의 ',
         tachyon.uma_sex_title,
-        '、',
+        ', ',
         coffee.get_colored_name(),
       ]);
       era.println();
@@ -6085,7 +6085,7 @@ module.exports = {
     } else if (era.get('love:32') >= 75) {
       if (stmn_rat > 0.45) {
         buffer.push(async () => {
-          await tachyon.say_and_wait([callname, '！']);
+          await tachyon.say_and_wait([callname, '!']);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
@@ -6138,7 +6138,7 @@ module.exports = {
           await tachyon.say_and_wait('하지만, 싫지 않네♡');
         },
         async () => {
-          await tachyon.say_and_wait([callname, '！ ', callname, '………아']);
+          await tachyon.say_and_wait([callname, '! ', callname, '………아']);
           era.println();
           await era.printAndWait([
             tachyon.get_colored_name(),
@@ -9599,7 +9599,7 @@ module.exports = {
         era.println();
         await era.printAndWait('…………이 녀석은 정말.');
       } else if (relation > 225) {
-        await tachyon.say_and_wait(['하하하! ', callname, '！']);
+        await tachyon.say_and_wait(['하하하! ', callname, '!']);
         era.println();
         await era.printAndWait([
           '호탕한 웃음소리와 함께 트레이닝실 문을 박차고 들어온 것은, 뒤에 커다란 봉투를 든 ',
@@ -9805,7 +9805,7 @@ module.exports = {
         );
         await era.printAndWait('포장을 열어보니, 안에는 무지개색 초콜릿 한 조각이 들어있었다.');
         era.println();
-        await tachyon.say_and_wait(['으음…… 마…… 맞다…… ', callname, '……？']);
+        await tachyon.say_and_wait(['으음…… 마…… 맞다…… ', callname, '……?']);
         await tachyon.say_and_wait('발…… 발렌타인…… 초콜릿이야……');
         era.drawLine();
         await era.printAndWait('이렇게나 불길한 발렌타인 선물은 난생처음 본다.');
