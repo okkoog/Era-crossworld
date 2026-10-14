@@ -192,11 +192,11 @@ module.exports = {
     await era.printAndWait([
       '한가한 잡담과 매일의 일정을 소화하는 동안,',
       you.get_colored_name(),
-      '은(는)',
+      '은(는) ',
       maru.sex,
       '이(가) 예전보다 ',
       you.get_colored_name(),
-      '을(를) 신경 쓰는 것 같았다.',
+      '을(를) 전보다 더 신경 쓴다는 것을 느꼈다.',
     ]);
     era.printButton('「왜 수영장이야?」', 1);
     await era.input();
@@ -207,7 +207,7 @@ module.exports = {
       '그리고 같은 팀의 명문가 아가씨가 트레이너를 좋아하지만 트레이너는 주인공만 바라보지.',
     );
     await maru.say_and_wait(
-      '소꿉친구에 약혼까지 정해진 자존심 때문에 명문가 아가씨는 주인공에게 사츠키상에서 승부를 걸어.',
+      '소꿉친구이자 약혼 상대라는 자존심에 명문가 아가씨는 주인공에게 사츠키상 승부를 걸어.',
     );
     await maru.say_and_wait(
       '명문가 아가씨의 압도적인 강함에 맞서 주인공은 트레이너의 격려로 수영장 특훈을 시작하고.',
