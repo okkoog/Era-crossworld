@@ -1021,33 +1021,33 @@ module.exports = {
         '은(는) 무언가 떠올랐다는 듯 입을 열었다.',
       ]);
       await era.printAndWait(
-        '言いながら、バスタオルの裾をコッソリ巻き上げ、太腿の付け根近くまで上げる',
+        '말하면서 목욕 수건 자락을 슬쩍 말아 올려 허벅지 위쪽까지 끌어올렸다.',
       );
       era.println();
       await tachyon.say_and_wait(
-        'バスタオルを巻いたままなのは、少々申し訳ないですけれど……',
+        '목욕 수건을 두른 채인 건 조금 실례지만……',
       );
       await tachyon.say_and_wait(
-        'でも、下は本当に何も履いていませんのよ……見ます？',
+        '하지만 그 안에는 정말 아무것도 입지 않았답니다…… 보시겠어요?',
       );
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
-        ' は遊び心のある目で ',
+        '은(는) 장난기 어린 눈빛으로 ',
         you.get_colored_name(),
-        ' を見ながら、手でバスタオルの結び目をゆっくりほどいていく',
+        '을(를) 바라보며 천천히 수건의 매듭을 풀기 시작했다.',
       ]);
       if (tachyon.sex_code !== 1) {
         await era.printAndWait([
           you.get_colored_name(),
           ' は、タオルの下にほのかに見える、少し湿った隙間を見た',
         ]);
-        await era.printAndWait('……たぶん、温泉水だろう');
+        await era.printAndWait('……아마 온천물일 것이다.');
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' はまだ湯に入っていないとわかっていても、',
+          '이(가) 아직 탕에 들어가지 않았다는 걸 알면서도,',
           you.get_colored_name(),
-          ' はそう自分を欺くことにした',
+          '은(는) 그렇게 스스로를 속이기로 했다'
         ]);
       }
       era.printButton('「온천 안에서는 좀 곤란하지 않을까……」', 1);
