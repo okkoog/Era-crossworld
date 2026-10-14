@@ -2438,11 +2438,11 @@ module.exports = {
               tachyon.get_colored_name(),
               '……주변 시선은 아랑곳하지 않고 힘 빠진 두 팔로 끊임없이 포옹을 갈구하는 ',
               tachyon.sex,
-              'は、',
+              '은(는),',
             ]);
             await era.printAndWait([
               tachyon.sex,
-              'を満たすまで、そんなことに構う余裕などないだろう。',
+              '을(를) 만족시켜 주기 전까지는, 아마 주변을 신경 쓸 겨를도 없을 것이다.',
             ]);
           },
         );
