@@ -2091,7 +2091,7 @@ module.exports = {
         callname,
         '의 이름을 부르고 있었다. 마치 이곳에 없는 누군가를 찾는 것처럼',
       ]);
-      await era.printAndWait(['아니…… ', callname, '……？']);
+      await era.printAndWait(['아니…… ', callname, '……?']);
       await era.printAndWait([
         '그게 누구지? ',
         you.get_colored_name(),
