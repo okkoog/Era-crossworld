@@ -1891,21 +1891,21 @@ module.exports = {
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' は忘れていた。この数日、実験で欲を溜めていたのは ',
+        '은(는) 잊고 있었다. 지난 며칠 동안 실험 탓에 욕구를 참아 온 사람은 ',
         you.get_colored_name(),
-        ' 一人ではなかった',
+        ' 혼자만이 아니었다.',
       ]);
       await era.printAndWait([
-        '傍で実験し続けていた ',
+        '곁에서 함께 실험을 계속해 온 ',
         tachyon.get_colored_name(),
-        ' も、同じだったはずだ',
+        '도 분명 마찬가지였을 것이다.',
       ]);
-      await era.printAndWait('つまり……ご褒美というより、口実だったのか……');
+      await era.printAndWait('그러니까…… 보상이라기보다는 핑계였던 건가……');
       era.println();
       await era.printAndWait([
-        'そう思うと、',
+        '그렇게 생각하자,',,
         you.get_colored_name(),
-        ' の胸に悪戯心が湧く',
+        '의 마음속에 장난기가 솟아올랐다.',
       ]);
       await era.printAndWait([
         you.get_colored_name(),
@@ -1930,12 +1930,12 @@ module.exports = {
       await era.printAndWait([
         'だが ',
         you.get_colored_name(),
-        ' は動かない。意図を悟った ',
+        '은(는) 움직이지 않았다. 그 의도를 알아차린 ',
         tachyon.get_colored_name(),
-        ' は、恨みがましい顔をした',
+        '은(는) 원망스러운 표정을 지었다.',
       ]);
       era.println();
-      await tachyon.say_and_wait('……ひどいですわ');
+      await tachyon.say_and_wait('……너무하시네요.');
       era.println();
       await era.printAndWait([
         tachyon.get_colored_name(),
@@ -2230,19 +2230,19 @@ module.exports = {
       await tachyon.say_and_wait('わん……わんわん❤️');
       await era.printAndWait([
         you.get_colored_name(),
-        ' の困惑した顔を見て、',
+        '의 당황한 얼굴을 보고,',,
         tachyon.get_colored_name(),
-        ' は自分が何をしたか、急に我に返ったらしい',
+        '은(는) 자신이 무슨 짓을 했는지 깨닫고 갑자기 정신을 차린 듯했다.',
       ]);
-      await era.printAndWait('頬が、一瞬で真っ赤になる');
+      await era.printAndWait('뺨이 순식간에 새빨개졌다.');
       era.println();
       await tachyon.say_and_wait([
         callname,
-        '……違いますわ、私……していません……あなたが思ったようなことでは……',
+        '……아니에요, 저는…… 그러지 않았어요…… 당신이 생각하시는 그런 게 아니라……',
       ]);
       era.println();
       await era.printAndWait(
-        '何が起きたかは分からないが、まずは何事もなかったことにしておこう',
+        '무슨 일이 벌어진 건지는 모르겠지만, 우선 아무 일도 없었던 것으로 하자.',
       );
     };
     f.title = '실험의 보상·세 번째';
