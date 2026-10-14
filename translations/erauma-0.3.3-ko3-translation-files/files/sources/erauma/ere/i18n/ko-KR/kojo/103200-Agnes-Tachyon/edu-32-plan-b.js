@@ -1076,7 +1076,7 @@ module.exports = {
           tachyon.get_colored_name(),
           '이(가) ',
           you.get_colored_name(),
-          '에게 몸을 포개고,',',
+          '에게 몸을 포개고,',
         ]);
       }
     };
