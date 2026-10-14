@@ -885,7 +885,7 @@ module.exports = {
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は手元に隠したスイッチを、そっと押した',
+          '은(는) 몰래 손에 숨기고 있던 어떤 버튼을 눌렀다.',
         ]);
         era.println();
         await you.say_as_passer_by_and_wait(
@@ -895,9 +895,9 @@ module.exports = {
         await tachyon.say_and_wait('후후, 물론이…… 윽!');
         era.println();
         await era.printAndWait([
-          'サインの瞬間に起動した小さな玩具で、',
+          '사인을 하던 찰나에 작동된 작은 장난감 때문에, ',
           tachyon.get_colored_name(),
-          ' のサインは少し歪んだ',
+          '의 사인이 조금 삐뚤어지고 말았다.',
         ]);
         await era.printAndWait(
           '다행히 동경하는 눈빛을 반짝이던 팬은 그 정도 실수는 신경 쓰지 않았다.',
@@ -911,7 +911,7 @@ module.exports = {
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' は頷いて、申し訳なさそうに笑った……そしてリモコンの強度を一段上げた',
+          '은(는) 고개를 끄덕이며 미안하다는 듯 미소 지었다…… 그리고, 손에 든 리모컨의 강도를 한 단계 높였다.',
         ]);
         era.println();
         await you.say_as_passer_by_and_wait(
@@ -928,16 +928,16 @@ module.exports = {
         await era.input();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は慌てて ',
+          '이(가) 서둘러 다가가 ',
           tachyon.get_colored_name(),
           ' を助けた。睨みというより欲求不満の色気を帯びた視線を受けながら、',
           tachyon.sex,
-          'を連れて選手控室へ戻った',
+          '를 데리고 서둘러 대기실로 돌아갔다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
           '……まったく……そんなに嫉妬しないでください……後輩にまで焼き餅を……',
-          you.sex_code === 1 ? '男なら、もう少し器を大きくなさいな' : '',
+          you.sex_code === 1 ? '남자라면 좀 더 대범하게 굴어야 하지 않겠나.' : '',
         ]);
         era.printButton('「그럼 카페의 레이스를 보러 갈게.」', 1, {
           disabled: !coffee_sank_hai,
@@ -950,7 +950,7 @@ module.exports = {
         era.println();
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' は後ろからそっと抱きついた',
+          '이 뒤에서 살며시 껴안아 왔다.',
         ]);
         era.println();
         await tachyon.say_and_wait([
