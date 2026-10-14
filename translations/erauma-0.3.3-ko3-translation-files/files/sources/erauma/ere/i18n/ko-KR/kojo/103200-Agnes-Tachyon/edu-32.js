@@ -4695,7 +4695,7 @@ module.exports = {
           '의 강경한 말투는 끝까지 이어지지 못하고 나지막한 신음으로 변했다.',
         ]);
         await era.printAndWait(
-          '誰が想像しよう。ふくらはぎの内側を軽く押しただけで、あれほど強気な口から、こんな甘い声が出るとは',
+          '누가 상상이나 했을까. 종아리 안쪽을 가볍게 눌렀을 뿐인데 그토록 당당한 목소리에서 이런 소리가 나올 줄이야.',
         );
         await era.printAndWait([
           '물론 ',
@@ -4742,7 +4742,7 @@ module.exports = {
         era.println();
         await era.printAndWait([
           you.get_colored_name(),
-          ' は聞こえないふりをして押し続けた',
+          '은(는) 못 들은 척하며 계속 눌렀다.',
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
@@ -4769,13 +4769,13 @@ module.exports = {
         ]);
         await era.printAndWait([
           tachyon.get_colored_name(),
-          ' が両脚を強く引き抜いた力が、',
+          '가 두 다리를 힘껏 빼내는 바람에,',
           you.get_colored_name(),
-          ' の理性を呼び覚ました。目の前の',
+          '은(는) 정신을 차렸다. 눈앞의',
           tachyon.teen_sex_title,
-          'は、実際には成人男性の三倍の力を持つ',
+          '은(는) 사실 성인 남성보다 세 배 이상의 힘을 지닌',
           tachyon.uma_sex_title,
-          'なのだと',
+          '라는 사실을 말이다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
