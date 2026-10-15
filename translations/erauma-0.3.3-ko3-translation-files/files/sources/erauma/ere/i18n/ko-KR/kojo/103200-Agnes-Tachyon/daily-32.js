@@ -4227,7 +4227,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          'そういえば、モルモット……いいえ、性奴隷君。まだ覚えていますかしら。',
+          '그러고 보니, 모르모트…… 아니, 성노예 군. 아직 기억하고 있나요?',
         );
         era.println();
 
@@ -4298,7 +4298,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          '受け止めなさい。漏らしたら終わりですわよ。',
+          '똑바로 받아내세요. 흘리면 그걸로 끝이랍니다.',
         );
         era.println();
 
@@ -4342,7 +4342,7 @@ module.exports = {
         await era.printAndWait([
           `${you.name} が顔を上げると、見えたのは担当`,
           tachyon.uma_sex_title,
-          '兼主人の脚だった。',
+          '이자 주인인 타키온의 다리였다.',
         ]);
         await era.printAndWait(
           '그 무엇보다 아끼고 자신의 다리보다도 소중히 여겼던 아름다운 발이었다.',
@@ -4457,7 +4457,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          'ねえねえ、溢れてばかりじゃありませんこと？ せっかくの研究室をこんなにして……',
+          '저기, 자꾸 흘리기만 하는 거 아닌가요? 모처럼 마련한 연구실을 이 지경으로 만들다니……',
         );
         era.println();
 
@@ -4494,7 +4494,7 @@ module.exports = {
       );
       if (love < 75) {
         await tachyon.say_and_wait(
-          'どちらにするかは、あなた自身が決めなさい、性奴隷『君』～',
+          '어느 쪽을 택할지는 스스로 결정하세요, 성노예 『군』～',
         );
       } else {
         await tachyon.say_and_wait(
@@ -4515,7 +4515,7 @@ module.exports = {
           `床に残された ${you.name} は、腹が風船のように膨らみ、口角から白汁を流したまま、室内で力なく息をしていた。`,
         );
         await era.printAndWait(
-          `ご褒美か、罰か……${you.name} は隅の掃除道具棚を見た。`,
+          `상인가, 벌인가…… ${you.name}은(는) 구석의 청소도구 보관함을 바라보았다.`,
         );
       } else {
         await era.printAndWait(
@@ -4740,7 +4740,7 @@ module.exports = {
         era.println();
       }
       await tachyon.say_and_wait(
-        'こちらは、『かつて』あなたに恋慕していた子たちが残したものですわ。',
+        '이것들은 『예전에』 당신을 연모하던 이들이 남긴 흔적이랍니다.',
       );
       era.println();
       await era.printAndWait([
@@ -4825,7 +4825,7 @@ module.exports = {
         era.println();
 
         await era.printAndWait(
-          `タキオンは荒々しく ${you.name} のボールギャグを外した。`,
+          `타키온은 거칠게 ${you.name}의 재갈을 풀었다.`,
         );
         await era.printAndWait(
           `外した瞬間、先の衝撃と、${you.name} の腹にまだ残っていた精液のせいで、${you.name} は堪らずタキオンへ向かい、腹の中の精液、愛液、胃酸を残らず吐き出そうとした。`,
@@ -4864,7 +4864,7 @@ module.exports = {
           `タキオンは遠慮なく ${you.name} の口を満たすと、足を止めず研究室へ戻り、今日の研究を続けた。`,
         );
         await era.printAndWait(
-          `今日最初の奉仕を終えた ${you.name} は虚ろな目で虚空を見つめ、いったい何がこうなるまで進んだのかを考えた。`,
+          `오늘의 첫 시중을 마친 ${you.name}은(는) 멍한 눈으로 허공을 바라보며, 어쩌다가 상황이 여기까지 왔는지 생각했다.`,
         );
         await era.printAndWait(
           '……하지만 그런 생각조차 이제는 아무 의미 없었다. 개조 수술 때 들었던 말처럼, 모든 것은 이미 되돌릴 수 없으니까.',
