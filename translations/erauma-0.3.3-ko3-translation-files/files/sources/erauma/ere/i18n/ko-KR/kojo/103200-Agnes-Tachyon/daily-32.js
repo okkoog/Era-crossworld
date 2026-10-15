@@ -4179,7 +4179,7 @@ module.exports = {
           `地面に蹲るウマ娘———つまり ${you.name}——は聞こえないふりをして、眼前の巨物に奉仕し続けた。`,
         );
         await era.printAndWait(
-          '雌が二人、という言い方は客観的には少し違うかもしれないが、結論はだいたい同じだ。',
+          '암컷이 둘이라는 표현은 객관적으로 조금 다를지도 모르지만, 결론은 대체로 같다.',
         );
         await era.printAndWait(
           `誰が見ても、${you.name} の、限界まで張っているのに上に括ったローターより短い生殖器を、正常な雄が雌を孕ませる器官だとは認めないだろう。強いて言えば……そう、陰核と呼ぶ方がまだ相応しい。`,
@@ -4355,7 +4355,7 @@ module.exports = {
         await tachyon.say_and_wait(
           '性奴隷としての能力……完全に不合格ですわね。',
         );
-        await tachyon.say_and_wait('もっとちゃんと調教しないと……');
+        await tachyon.say_and_wait('좀 더 제대로 길들여야겠군요……');
         era.println();
 
         await era.printAndWait(
@@ -4419,12 +4419,12 @@ module.exports = {
           'ふふ、性奴隷になっても、私たちの体はいちばん噛み合っていますわね。',
         );
         await tachyon.say_and_wait(
-          '当然ですわ。モルモット君の体は私が改造したんですもの。全部、私の基準で調整してありますわ。',
+          '당연하지요. 모르모트 군의 몸은 제가 개조했으니까요. 전부 제 기준에 맞춰 조정해 두었답니다.',
         );
         era.println();
 
         await era.printAndWait('자신의 몸은 주인에게 맞춰 개조되었다.');
-        await era.printAndWait('自分は主人の専用性奴隷だ。');
+        await era.printAndWait('나는 주인 전용 성노예다.');
         era.println();
 
         await era.printAndWait(
@@ -4773,14 +4773,14 @@ module.exports = {
         await tachyon.say_and_wait('농담일세.');
         era.println();
         await era.printAndWait(
-          `ふいにタキオンは ${you.name} の顔を支え、${you.name} の口を塞いでいたボールギャグを優しく外した。`,
+          `문득 타키온은 ${you.name}의 얼굴을 받치고 입을 막고 있던 재갈을 부드럽게 풀어 주었다.`,
         );
         await era.printAndWait(
           `外した瞬間、先の衝撃と、${you.name} の腹にまだ残っていた精液のせいで、${you.name} は堪らずタキオンへ向かい、腹の中の精液、愛液、胃酸を残らず吐いた。`,
         );
         era.println();
         await era.printAndWait(
-          `目の前のタキオンの白衣を汚してしまい、${you.name} の顔は青ざめた。先の責めだけでなく、その不敬のせいでもあった。`,
+          `눈앞의 타키온이 입은 흰 가운을 더럽히자 ${you.name}의 안색이 창백해졌다. 앞서 당한 꾸지람뿐 아니라 그 무례까지 걱정됐기 때문이다.`,
         );
         era.println();
 
@@ -4838,7 +4838,7 @@ module.exports = {
 
         await era.printAndWait('아아, 진작 알았어야 했다.');
         await era.printAndWait(
-          `${tachyon.sex}がわざわざギャグを外して楽をさせてくれるはずがない。`,
+          `${tachyon.sex}이(가) 일부러 재갈을 풀어 편하게 해 줄 리가 없었다.`,
         );
         await era.printAndWait(
           `${you.name} が口を開いた瞬間、${tachyon.sex}の下の巨根が、吐き出そうとしたものも言葉もすべて塞いだ。`,
