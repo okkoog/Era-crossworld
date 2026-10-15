@@ -4567,9 +4567,9 @@ module.exports = {
       era.println();
 
       await tachyon.say_and_wait([
-        'ちっち……容赦ないですわね。一般的な',
+        '쯧쯧…… 정말 가차 없군요. 평범한 ',
         tachyon.uma_sex_title,
-        'の性欲を、見くびっていたかしら。',
+        '의 성욕을 얕봤던 걸까요.',
       ]);
       era.println();
 
@@ -4675,7 +4675,7 @@ module.exports = {
         await tachyon.say_and_wait([
           '게다가,',,
           call_5,
-          ' も私の提案を受けて実験に付き合ってくれましたわ。ちっち、うちのモルモット君の顔は大きいですわね。寮長まで魔の手から逃げられませんわ。',
+          '도 제안을 받아들여 실험에 협력해 줬답니다. 쯧쯧, 우리 모르모트 군은 인맥이 참 넓군요. 기숙사장까지 마수에서 벗어나지 못하다니.',
         ]);
         era.println();
 
@@ -4686,7 +4686,7 @@ module.exports = {
       }
       if (era.get('cflag:36:招募状态') === recruit_flags.yes) {
         await tachyon.say_and_wait([
-          'ちっち。毎日論理だ論理だと言いながら、閨では理性を全部忘れますわね……',
+          '쯧쯧. 평소엔 그렇게 논리를 따지면서, 침실에서는 이성을 완전히 잊는군요……',
           call_36,
         ]);
         era.println();
@@ -4912,9 +4912,9 @@ module.exports = {
             '에게 복도 저편에서 이쪽으로 다가오는 발소리를 들려주었다.',
           ]);
           await era.printAndWait([
-            'では、今度はどの',
+            '그럼 이번에는 어떤 ',
             tachyon.uma_sex_title,
-            'さまが奉仕を要するのだろう。',
+            '님이 시중을 필요로 하는 걸까.',
           ]);
           await era.printAndWait([
             'いつの間にか、',
