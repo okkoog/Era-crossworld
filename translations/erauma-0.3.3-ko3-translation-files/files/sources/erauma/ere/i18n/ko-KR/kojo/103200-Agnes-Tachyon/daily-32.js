@@ -4773,7 +4773,7 @@ module.exports = {
         await tachyon.say_and_wait('농담일세.');
         era.println();
         await era.printAndWait(
-          `문득 타키온은 ${you.name}의 얼굴을 받치고 입을 막고 있던 재갈을 부드럽게 풀어 주었다.`,
+          `문득 타키온은 ${you.name}의 얼굴을 받치고 ${you.name}의 입을 막고 있던 재갈을 부드럽게 풀어 주었다.`,
         );
         await era.printAndWait(
           `外した瞬間、先の衝撃と、${you.name} の腹にまだ残っていた精液のせいで、${you.name} は堪らずタキオンへ向かい、腹の中の精液、愛液、胃酸を残らず吐いた。`,
