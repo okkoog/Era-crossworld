@@ -4168,7 +4168,7 @@ module.exports = {
       );
       if (era.get('cflag:32:性别') === 0) {
         await era.printAndWait(
-          'ウマ娘の体にあるはずのない器官。その理由は、もちろんタキオンの薬が作ったものだ。',
+          '우마무스메의 몸에는 원래 있을 리 없는 기관이다. 물론 타키온의 약물이 만들어 낸 결과였다.',
         );
         era.println();
         await tachyon.say_and_wait(
@@ -4237,7 +4237,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          '改造手術は全部私がしましたわ。だからあなたの性感帯については、この世でいちばんよく知っているのは、間違いなく私ですわ。',
+          '개조 수술은 전부 제가 했답니다. 그러니 당신의 민감한 부위를 이 세상에서 가장 잘 아는 사람은 틀림없이 저겠죠.',
         );
         era.println();
 
@@ -4353,7 +4353,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          '性奴隷としての能力……完全に不合格ですわね。',
+          '성노예로서의 능력은…… 완전히 불합격이군요.',
         );
         await tachyon.say_and_wait('좀 더 제대로 길들여야겠군요……');
         era.println();
@@ -4501,7 +4501,7 @@ module.exports = {
           '어느 쪽을 택할지는 스스로 결정하세요～',
         );
         await tachyon.say_and_wait(
-          'でも安心なさい。どちらにせよ、たっぷり可愛がってあげますわ❤️',
+          '하지만 안심하세요. 어느 쪽이든 실컷 귀여워해 줄 테니까요❤️',
         );
       }
       era.println();
@@ -4592,7 +4592,7 @@ module.exports = {
         '은(는) 연민도 동정도 느끼지 않았다.',
       ]);
       await era.printAndWait(
-        `${tachyon.sex}は容赦なく足を上げ、${you.name} の腹を踏んだ。`,
+        `${tachyon.sex}은(는) 가차 없이 다리를 들어 ${you.name}의 배를 짓밟았다.`,
       );
       await era.printAndWait(
         `踏まれた瞬間、${you.name} はエビのように体を縮めたが、それでもしっかりと踏みつけられた。もともと膨らんだ腹を踏まれた瞬間、強制的に空気を抜かれた風船のように、栓にしていた二本の按摩棒を下の口から噴き出し、続いて腹いっぱいの愛液と精液が溢れた。縮こまる ${you.name} は全身を震わせ、その短い間にまた一度絶頂し、短い肉棒からも薄い種汁が漏れた。`,
