@@ -4531,7 +4531,7 @@ module.exports = {
 
   // 한국어 작업 모듈 연결: ws_punishment3
   ws_punishment3: (() => {
-    const title = '実験記録：孕袋と複数ウマ娘の体液研究';
+    const title = '실험 기록: 임신 주머니와 복수 우마무스메의 체액 연구';
     /**
      * @param {CharaTalk} tachyon アグネスタキオン
      * @param {CharaTalk|false} child アグネスタキオンとプレイヤーの子。いなければ false
@@ -4874,7 +4874,7 @@ module.exports = {
           ' は三日分溜まった白濁を懸命に飲み込み、自分が汚した廊下の床を見た……',
         ]);
         era.println();
-        if ((await degeneration_to_evil('口で', '掃除道具で')) === 1) {
+        if ((await degeneration_to_evil('입으로', '청소도구로')) === 1) {
           await era.printAndWait(
             '어차피 이제는 돌아갈 수 없다. 그렇다면 차라리 이성을 내려놓고 모든 것을 받아들이면 된다.',
           );
