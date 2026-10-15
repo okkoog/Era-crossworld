@@ -4197,7 +4197,7 @@ module.exports = {
         tachyon.uma_sex_title,
         `の主人の片方の睾丸より小さい「陰核」が、今日四発目、水のように薄い液を噴いた。`,
       ]);
-      await era.printAndWait('それも、眼前の主人の不興を買った。');
+      await era.printAndWait('그러나 그 일은 눈앞의 주인의 불쾌감을 샀다.');
       era.println();
 
       if (love < 75) {
@@ -4281,10 +4281,10 @@ module.exports = {
           `${tachyon.sex}は ${you.name} の頭を強く押さえ、前後に激しく突き動かした。`,
         );
         await era.printAndWait(
-          '普通の人間の体なら、こんな弄り方では命に関わるだろう。',
+          '보통 사람의 몸이었다면 이런 거친 취급은 목숨을 위협했을 것이다.',
         );
         await era.printAndWait(
-          `幸か不幸か、今の ${you.name} はウマ娘で、しかも特殊な改造を受けたウマ娘だ。`,
+          `다행인지 불행인지 지금의 ${you.name}은(는) 우마무스메였고, 특수한 개조까지 받은 몸이었다.`,
         );
         await era.printAndWait(
           `だからどれだけ乱暴でも、${you.name} の体は耐え、それをすべて快感へ変える。`,
@@ -4328,13 +4328,13 @@ module.exports = {
         );
         era.println();
 
-        await era.printAndWait('「ドン！」');
+        await era.printAndWait('「쿵!」');
         era.println();
 
         await era.printAndWait([
-          'ふいに、鋭い痛みで ',
+          '느닷없이 날카로운 통증에 ',
           you.get_colored_name(),
-          ' は目を覚ました。',
+          '은(는) 눈을 떴다.',
         ]);
         await era.printAndWait(
           `${you.name} は思わず声を上げようとしたが、開いた喉へすぐまた白濁が注がれた。`,
@@ -4345,7 +4345,7 @@ module.exports = {
           '兼主人の脚だった。',
         ]);
         await era.printAndWait(
-          '自分が何より大切にし、自分の脚より大事にしてきた美しい足。',
+          '그 무엇보다 아끼고 자신의 다리보다도 소중히 여겼던 아름다운 발이었다.',
         );
         await era.printAndWait(
           `それが今、情け容赦なく ${you.name} の腹を踏んでいる。`,
@@ -4364,7 +4364,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          'せっかくの研究室をこんな有様に……ちっ、我慢なりませんわ。',
+          '애써 마련한 연구실을 이 꼴로 만들다니…… 쯧, 참을 수가 없군요.',
         );
         era.println();
 
@@ -4389,7 +4389,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          'そんなに捨てられるのが怖いですの？ いい子、いい子。',
+          '그렇게 버림받는 것이 두려운가요? 착하지, 착해요.',
         );
         await tachyon.say_and_wait(
           '安心なさい。他人に体を触らせるつもりもありませんわ……でも恋人なら、相手の性欲を満たすのも義務でしょう？',
@@ -4470,7 +4470,7 @@ module.exports = {
         era.println();
 
         await tachyon.say_and_wait(
-          'いい子、いい子。きちんと綺麗にするのがいい子ですわ。',
+          '착하지, 착해요. 제대로 깨끗이 치우는 게 착한 아이랍니다.',
         );
         era.println();
 
@@ -4507,7 +4507,7 @@ module.exports = {
       era.println();
 
       await era.printAndWait(
-        '言い終えると、タキオンはズボンを履いて研究室を出た。',
+        '말을 마친 타키온은 바지를 입고 연구실을 나갔다.',
       );
 
       if (love < 75) {
@@ -4787,7 +4787,7 @@ module.exports = {
         await tachyon.say_and_wait('……괜찮네, 모르모트 군.');
         era.println();
         await era.printAndWait(
-          `タキオンは吐瀉物のついていない袖で、${you.name} の口元を優しく拭った。`,
+          `타키온은 토사물이 묻지 않은 소매로 ${you.name}의 입가를 부드럽게 닦아 주었다.`,
         );
         era.println();
         await tachyon.say_and_wait(
@@ -4799,7 +4799,7 @@ module.exports = {
         );
         await era.printAndWait('부드럽고, 따스하며, 모든 것을 포용하는 입맞춤이었다.');
         await era.printAndWait(
-          `いつの間にか ${you.name} は、昔の日々に戻ったような気がした。`,
+          `어느새 ${you.name}은(는) 옛날로 돌아간 듯한 기분이 들었다.`,
         );
         era.println();
 
@@ -4810,7 +4810,7 @@ module.exports = {
           `${you.name} はタキオンの白衣の下で、ますます膨らむ膨らみを見て、自分の立場を思い出した。`,
         );
         await era.printAndWait(
-          `タキオンも気づき、照れたように ${you.name} へ笑った。`,
+          `타키온도 이를 눈치채고 ${you.name}에게 쑥스러운 듯 웃어 보였다.`,
         );
         era.println();
 
@@ -4876,7 +4876,7 @@ module.exports = {
         era.println();
         if ((await degeneration_to_evil('口で', '掃除道具で')) === 1) {
           await era.printAndWait(
-            'どうせもう戻れない。なら思い切って理性を捨て、全部味わえばいい。',
+            '어차피 이제는 돌아갈 수 없다. 그렇다면 차라리 이성을 내려놓고 모든 것을 받아들이면 된다.',
           );
           era.println();
           await era.printAndWait([
@@ -4928,7 +4928,7 @@ module.exports = {
           era.println();
           await era.printAndWait([
             you.get_colored_name(),
-            ' はもがいて立ち上がった——',
+            '은(는) 몸부림치며 일어섰다——',
             you.uma_sex_title,
             'の体でも、三日弄ばれたばかりの ',
             you.get_colored_name(),
@@ -4977,7 +4977,7 @@ module.exports = {
             '에게 복도에서 이쪽으로 다가오는 누군가의 발소리를 정확히 들려주었다.',
           ]);
           await era.printAndWait(
-            '今日の使用者か。答えるまでもない。薬が漏れやすいこの廊下へ近づく理由など、それ以外に思いつかない。',
+            '오늘 찾아올 사람이겠지. 굳이 확인할 필요도 없었다. 약물이 새어 나오기 쉬운 이 복도에 접근할 이유로는 그것밖에 떠오르지 않았다.',
           );
           await era.printAndWait([
             '하지만 ',
