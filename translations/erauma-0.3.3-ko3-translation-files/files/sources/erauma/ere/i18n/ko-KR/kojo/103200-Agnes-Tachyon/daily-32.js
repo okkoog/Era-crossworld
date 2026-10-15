@@ -4369,7 +4369,7 @@ module.exports = {
         era.println();
 
         await era.printAndWait(
-          `タキオンは厭わしげに言い、ふと何か思いついたように身をかがめ、${you.name} に囁いた。`,
+          `타키온은 질색하는 투로 말하더니, 문득 무언가 떠올랐다는 듯 몸을 숙여 ${you.name}에게 속삭였다.`,
         );
       } else {
         await tachyon.say_and_wait(
@@ -4423,7 +4423,7 @@ module.exports = {
         );
         era.println();
 
-        await era.printAndWait('自分の体は、主人に合わせて改造された。');
+        await era.printAndWait('자신의 몸은 주인에게 맞춰 개조되었다.');
         await era.printAndWait('自分は主人の専用性奴隷だ。');
         era.println();
 
@@ -4462,7 +4462,7 @@ module.exports = {
         era.println();
 
         await era.printAndWait(
-          `主人の不機嫌な声を聞き、${you.name} は一瞬で目が覚めた。`,
+          `주인의 불쾌한 목소리에 ${you.name}은(는) 순식간에 정신이 들었다.`,
         );
         await era.printAndWait(
           `床に自分が無駄にした主人の精を見て、${you.name} は慌て、いちばん無駄にしない方法を選ぶしかなかった……`,
@@ -4481,16 +4481,16 @@ module.exports = {
       era.println();
       if (love < 75) {
         await tachyon.say_and_wait(
-          `十分後に戻りますわ。そのときまだ片付いていなければ、『罰』をあげますわ。`,
+          `10분 뒤에 돌아오겠어요. 그때까지 정리하지 못했다면 『벌』을 내리겠어요.`,
         );
       } else {
-        await tachyon.say_and_wait('ええ……そうしましょう');
+        await tachyon.say_and_wait('그래요…… 그렇게 하죠.');
         await tachyon.say_and_wait(
-          'いい子。十分後に戻りますわ。そのときまだ片付いていなければ、『罰』をあげますわ。',
+          '착하군요. 10분 뒤에 돌아오겠어요. 그때까지 정리하지 못했다면 『벌』을 내리겠어요.',
         );
       }
       await tachyon.say_and_wait(
-        'もう片付いていれば、『ご褒美』をあげますわ。',
+        '그때까지 다 치웠다면 『상』을 주겠어요.',
       );
       if (love < 75) {
         await tachyon.say_and_wait(
@@ -4498,7 +4498,7 @@ module.exports = {
         );
       } else {
         await tachyon.say_and_wait(
-          'どちらにするかは、あなた自身が決めなさい～',
+          '어느 쪽을 택할지는 스스로 결정하세요～',
         );
         await tachyon.say_and_wait(
           'でも安心なさい。どちらにせよ、たっぷり可愛がってあげますわ❤️',
@@ -4521,9 +4521,9 @@ module.exports = {
         await era.printAndWait(
           `床に残された ${you.name} は、腹が風船のように膨らみ、まだ白汁を噴きながら、力なく床を掃除していた。`,
         );
-        await era.printAndWait(`ご褒美か、罰か……`);
+        await era.printAndWait(`상인가, 벌인가……`);
       }
-      await era.printAndWait('では、どう選ぶ？');
+      await era.printAndWait('그렇다면 어느 쪽을 선택하겠는가?');
     };
     f.title = title;
     return f;
@@ -4600,7 +4600,7 @@ module.exports = {
       era.println();
 
       await tachyon.say_and_wait(
-        'いい量ですわ。これならしばらく実験に足りますわね。',
+        '양이 제법 되네요. 이 정도면 당분간 실험에 충분하겠어요.',
       );
       era.println();
 
@@ -4639,7 +4639,7 @@ module.exports = {
       if (era.get('cflag:94:招募状态') === recruit_flags.yes) {
         await tachyon.say_and_wait([
           call_94,
-          ' も……最初はあんなに恥ずかしがっていたのに……',
+          '도…… 처음에는 그렇게 부끄러워했는데……',
         ]);
         era.println();
 
@@ -4650,14 +4650,14 @@ module.exports = {
 
         await tachyon.say_and_wait([
           call_94,
-          ' の声は、研究室にいてもはっきり聞こえましたわ。',
+          '의 목소리는 연구실 안에서도 똑똑히 들렸답니다.',
         ]);
         era.println();
       }
       if (era.get('cflag:9:招募状态') === recruit_flags.yes) {
         await tachyon.say_and_wait([
           call_9,
-          '……ふふ、さすが私が目をかけた子。この方面でも一位ですわ。',
+          '……후후, 역시 내가 눈여겨본 사람이군요. 이쪽 분야에서도 일등이라니.',
         ]);
         era.println();
 
@@ -4673,7 +4673,7 @@ module.exports = {
       }
       if (era.get('cflag:5:招募状态') === recruit_flags.yes) {
         await tachyon.say_and_wait([
-          'それに、',
+          '게다가,',,
           call_5,
           ' も私の提案を受けて実験に付き合ってくれましたわ。ちっち、うちのモルモット君の顔は大きいですわね。寮長まで魔の手から逃げられませんわ。',
         ]);
@@ -4727,7 +4727,7 @@ module.exports = {
         era.println();
 
         await era.printAndWait(
-          'タキオンはまた強く一踏みし、嘲りと侮蔑を込めて言った。',
+          '타키온은 다시 한 번 세게 짓밟으며 조롱과 멸시를 담아 말했다.',
         );
         era.println();
         await tachyon.say_and_wait(
@@ -4907,9 +4907,9 @@ module.exports = {
           await era.printAndWait('「뚜벅…… 뚜벅……」');
           await era.printAndWait([
             you.uma_sex_title,
-            'の鋭い耳が、',
+            '의 예민한 귀가,',,
             you.get_colored_name(),
-            ' に、廊下手前からこちらへ歩いてくる足音を拾わせた。',
+            '에게 복도 저편에서 이쪽으로 다가오는 발소리를 들려주었다.',
           ]);
           await era.printAndWait([
             'では、今度はどの',
@@ -4960,7 +4960,7 @@ module.exports = {
             '은(는) 그럼에도 고집스럽게 서서 빗자루와 쓰레받기로 청소를 이어나갔다.',
           ]);
           await era.printAndWait(
-            '自分は人間だ。ウマ娘でも、性奴隷でも、孕袋でもない。',
+            '나는 인간이다. 우마무스메도, 성노예도, 출산을 위한 도구도 아니다.',
           );
           await era.printAndWait([
             '그런 마지막 자존심이 ',
